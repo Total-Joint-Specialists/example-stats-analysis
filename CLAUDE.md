@@ -15,7 +15,7 @@ Public Quarto website and repository. It teaches TJS research assistants (beginn
 6. **Exercise solutions are collapsed:** `::: {.callout-tip collapse="true"}` titled `Solution`, with a language tabset inside.
 7. **Stub pages** carry "(coming soon)" in the title and a `.coming-soon` callout. Remove both when the page is written.
 8. **Reporting conventions** (spec section 4, page 0.2): mean (SD) or median (IQR); n (%); p to 3 decimals with a floor of "p < 0.001"; a 95% CI with every estimate.
-9. **Never hand-edit `data/` or `templates/`.** Change `data-raw/` and run `just data`. Seeds are fixed (see `docs/superpowers/plans/2026-10-05-phase-1-synthetic-data.md`). Never change a seed or parameter to make a test pass.
+9. **Never hand-edit `data/` or `templates/`.** Change `data-raw/` and run `just data`. Seeds and effect sizes are the default arguments of each `make_*()` function in `data-raw/R/`. Never loosen a test or change a seed or parameter just to make a test pass; if an effect weakens, strengthen it deliberately and record why.
 
 ## Commands
 

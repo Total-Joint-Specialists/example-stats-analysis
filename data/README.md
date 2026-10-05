@@ -12,7 +12,7 @@ fails if the committed CSVs differ from what the generator produces.
 
 | File | One row per | Used for |
 |------|------|------|
-| `cohort.csv` | primary THA/TKA case (604 cases, 520 patients, 84 bilateral) | Table 1, most of the test catalog, regression, survival |
+| `cohort.csv` | primary THA/TKA case (600 cases, 520 patients, 80 bilateral) | Table 1, most of the test catalog, regression, survival |
 | `proms_long.csv` | case × visit (pre-op, 6 wk, 3 mo, 1 yr) | paired tests, repeated measures, mixed models |
 | `matched_sets.csv` | case in a matched triplet (implants A, B, C) | stratified Cox |
 | `radiographic_reliability.csv` | knee × rater × session | ICC, Bland-Altman, kappa |

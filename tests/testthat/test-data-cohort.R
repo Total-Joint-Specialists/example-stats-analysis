@@ -79,13 +79,16 @@ test_that("deaths compete with revisions", {
                           data = cohort)
   one_minus_km <- 1 - summary(km, times = 10, extend = TRUE)$surv
   cif <- summary(aj, times = 10, extend = TRUE)$pstate[, 2]
-  expect_gt(one_minus_km - cif, 0.005)
+  # "Visibly" lower (spec 5.4): at least 2 percentage points at 10 years.
+  expect_gt(one_minus_km - cif, 0.02)
 })
 
 test_that("posterior THA approach violates proportional hazards", {
   tha <- cohort[cohort$procedure == "THA", ]
   fit <- survival::coxph(survival::Surv(followup_years, revised) ~ approach, data = tha)
-  expect_lt(survival::cox.zph(fit)$table["approach", "p"], 0.05)
+  # A clear violation with margin, whichever time transform a page uses.
+  expect_lt(survival::cox.zph(fit, transform = "km")$table["approach", "p"], 0.01)
+  expect_lt(survival::cox.zph(fit, transform = "rank")$table["approach", "p"], 0.01)
 })
 
 test_that("no 1-year satisfaction for cases whose follow-up ended before 1 year", {

@@ -20,8 +20,8 @@ rgompertz_time <- function(a, b) {
   log1p(e * b / a) / b
 }
 
-make_cohort <- function(seed = 20261007, hr_c = 2.5, base_rate = 0.015,
-                        early_mult = 10, early_cut = 0.5) {
+make_cohort <- function(seed = 20261008, hr_c = 2.5, base_rate = 0.015,
+                        early_mult = 10, early_cut = 0.5, death_rate = 0.02) {
   set.seed(seed)
   n_pat     <- 520
   n_bilat   <- 85
@@ -53,7 +53,7 @@ make_cohort <- function(seed = 20261007, hr_c = 2.5, base_rate = 0.015,
 
   # Patient-level follow-up end: death (Gompertz in age), loss to follow-up
   # (3%/yr), or administrative end of data.
-  t_death <- rgompertz_time(0.008 * exp(0.1 * (patients$age1 - 66)), 0.1)
+  t_death <- rgompertz_time(death_rate * exp(0.1 * (patients$age1 - 66)), 0.1)
   t_ltfu  <- stats::rexp(n_pat, 0.03)
   patients$death_date <- patients$date1 + round(t_death * 365.25)
   patients$ltfu_date  <- patients$date1 + round(t_ltfu * 365.25)

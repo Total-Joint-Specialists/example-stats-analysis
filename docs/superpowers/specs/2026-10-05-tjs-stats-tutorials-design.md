@@ -404,14 +404,14 @@ after every regeneration, and the build fails if any is missing.
 | 1-yr PROM ceiling effect | rank tests, page 3 | ≥ 15% at max score |
 | PROM improves pre → 1yr | paired tests, mixed models | paired p < 0.001 |
 | Implant C has a higher revision hazard (built in as HR 2.5) | log-rank, Cox | HR 1.5–3.5, log-rank p < 0.05 |
-| Mortality rises with age; deaths ≥ revisions in the oldest group | competing risks | CIF < 1−KM visibly at 10 yr |
-| Posterior THA approach multiplies revision hazard ×10 in the first 6 months only | PH violation | `cox.zph` p < 0.05 for approach |
+| Mortality rises with age (Gompertz, 2%/yr at 66); deaths ≥ revisions in the oldest group | competing risks | 1−KM exceeds the CIF by ≥ 2 points at 10 yr |
+| Posterior THA approach multiplies revision hazard ×10 in the first 6 months only | PH violation | `cox.zph` p < 0.01 for approach (km and rank transforms) |
 | Raters agree well but not perfectly; rater 2 bias of about +0.5° | ICC, Bland-Altman, kappa | ICC 0.80–0.95; mean bias 0.3–0.7°; CPAK kappa 0.5–0.85 |
 | Walking-aid use rises at 6 weeks, falls by 1 year | McNemar, Cochran's Q | McNemar pre-op vs 6 wk p < 0.05 |
 | Satisfaction tracks PROM improvement | Spearman | ρ > 0.3 |
 | Age vs op time weakly related; BMI vs op time moderately related | correlation, regression | r(BMI, op time) 0.3–0.5 |
 
-Revision rates are inflated (about 11% at a median of 5 years) so the survival
+Revision rates are inflated (about 13% overall; 1−KM 22% at 10 years) so the survival
 lessons have enough events; the codebook says so. Each generator has a fixed
 seed, chosen in prototyping so every assertion passes; regenerating with a
 different seed is not supported. Tests also require regenerating to reproduce

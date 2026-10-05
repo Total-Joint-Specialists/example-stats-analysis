@@ -1,5 +1,5 @@
 variable,label,type,units,allowed_values,notes
-set_id,Matched set ID,id,,,One case per implant design in each set
+set_id,Matched set ID,id,,,SYNTHETIC DATA - not real patients. One case per implant design in each set
 case_id,Procedure (case) ID,id,,,Links to cohort.csv
 procedure,Procedure,categorical,,THA|TKA,Matched exactly
 implant,Implant design,categorical,,A|B|C,

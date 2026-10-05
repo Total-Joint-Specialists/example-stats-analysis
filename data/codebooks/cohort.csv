@@ -1,5 +1,5 @@
 variable,label,type,units,allowed_values,notes
-case_id,Procedure (case) ID,id,,,One row per case
+case_id,Procedure (case) ID,id,,,SYNTHETIC DATA - not real patients. One row per case
 patient_id,Patient ID,id,,,Bilateral patients have two cases
 site,Surgery site,categorical,,Site A|Site B,
 surgeon,Surgeon,categorical,,S1|S2|S3,

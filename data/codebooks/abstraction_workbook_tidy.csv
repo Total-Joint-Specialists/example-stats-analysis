@@ -1,5 +1,5 @@
 variable,label,type,units,allowed_values,notes
-case_id,Study ID,id,,,Name and MRN are dropped during tidying
+case_id,Study ID,id,,,SYNTHETIC DATA - not real patients. Name and MRN are dropped during tidying
 site,Surgery site,categorical,,Site A|Site B,From the sheet name
 surgery_date,Date of surgery,date,,,
 age,Age at surgery,integer,years,40..89,

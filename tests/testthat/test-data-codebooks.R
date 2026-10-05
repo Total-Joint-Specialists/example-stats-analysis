@@ -35,3 +35,11 @@ test_that("each tidy dataset and answer key has a codebook", {
                            "radiographic_reliability.csv",
                            "abstraction_workbook_tidy.csv", "survey_items_long.csv"))
 })
+
+test_that("every codebook says the data are synthetic", {
+  for (book in books) {
+    cb <- readr::read_csv(data_path("codebooks", book), show_col_types = FALSE,
+                          col_types = readr::cols(.default = "c"))
+    expect_match(cb$notes[1], "^SYNTHETIC DATA - not real patients", label = book)
+  }
+})

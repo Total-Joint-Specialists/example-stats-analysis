@@ -10,7 +10,7 @@ cb <- function(...) {
 }
 
 codebooks <- function() {
-  list(
+  books <- list(
     cohort = cb(
       "case_id", "Procedure (case) ID", "id", "", "", "One row per case",
       "patient_id", "Patient ID", "id", "", "", "Bilateral patients have two cases",
@@ -101,6 +101,11 @@ codebooks <- function() {
       "response", "Item response", "integer", "", "0|1|2|3|4", "0 = none ... 4 = extreme; blank = not answered"
     )
   )
+  # Every codebook can be read on its own, so each one says it is synthetic.
+  lapply(books, function(b) {
+    b$notes[1] <- trimws(paste("SYNTHETIC DATA - not real patients.", b$notes[1]))
+    b
+  })
 }
 
 write_codebooks <- function(books, dir) {

@@ -1,5 +1,5 @@
 variable,label,type,units,allowed_values,notes
-knee_id,Knee ID,id,,,
+knee_id,Knee ID,id,,,SYNTHETIC DATA - not real patients.
 rater,Rater,categorical,,R1|R2,
 session,Reading session,integer,,1|2,Sessions at least 2 weeks apart
 hka_deg,Hip-knee-ankle angle,numeric,degrees,165..195,180 = neutral; < 180 = varus

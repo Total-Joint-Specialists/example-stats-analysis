@@ -1,0 +1,10 @@
+---
+title: "18 · Example study report (coming soon)"
+description: "A complete mini-study from raw workbook to manuscript-style Results."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+

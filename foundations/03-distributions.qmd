@@ -1,0 +1,10 @@
+---
+title: "3 · Distributions & choosing a test (coming soon)"
+description: "Check whether data look normal, and use that to pick the right test."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+

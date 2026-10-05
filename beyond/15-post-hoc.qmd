@@ -1,0 +1,10 @@
+---
+title: "15 · Post-hoc tests & multiple comparisons (coming soon)"
+description: "Which groups differ after ANOVA, Kruskal-Wallis, chi-square, or Friedman."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+

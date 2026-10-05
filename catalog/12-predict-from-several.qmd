@@ -1,0 +1,17 @@
+---
+title: "12 · Predict a value from several variables (coming soon)"
+description: "Multiple linear and nonlinear regression, multiple logistic regression, Cox regression."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+
+## Multiple linear regression {#multiple-linear-regression}
+
+## Multiple nonlinear regression {#multiple-nonlinear-regression}
+
+## Multiple logistic regression {#multiple-logistic-regression}
+
+## Cox regression {#cox}

@@ -1,0 +1,10 @@
+---
+title: "Working with real TJS data (coming soon)"
+description: "Keeping patient data safe: what counts as PHI and where data may live."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+

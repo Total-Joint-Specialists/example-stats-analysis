@@ -1,0 +1,17 @@
+---
+title: "9 · Compare three or more matched groups (coming soon)"
+description: "Repeated-measures ANOVA, Friedman test, Cochran's Q, stratified Cox regression."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+
+## Repeated-measures ANOVA {#repeated-measures-anova}
+
+## Friedman test {#friedman}
+
+## Cochran's Q test {#cochran-q}
+
+## Stratified Cox regression {#stratified-cox}

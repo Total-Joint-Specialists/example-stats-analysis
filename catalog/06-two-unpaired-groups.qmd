@@ -1,0 +1,17 @@
+---
+title: "6 · Compare two unpaired groups (coming soon)"
+description: "Unpaired t test, Mann-Whitney test, Fisher's exact test, log-rank test."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+
+## Unpaired t test {#unpaired-t}
+
+## Mann-Whitney test {#mann-whitney}
+
+## Fisher's exact test and chi-square {#fisher-chi-square}
+
+## Log-rank test {#log-rank}

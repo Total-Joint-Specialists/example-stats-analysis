@@ -1,0 +1,15 @@
+---
+title: "10 · Quantify association between two variables (coming soon)"
+description: "Pearson correlation, Spearman correlation, contingency coefficients."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+
+## Pearson correlation {#pearson}
+
+## Spearman correlation {#spearman}
+
+## Contingency coefficients {#contingency-coefficients}

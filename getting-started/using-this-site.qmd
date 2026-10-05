@@ -1,0 +1,10 @@
+---
+title: "How to use this site (coming soon)"
+description: "Choosing R or Python, running examples, callouts, reporting, exercises."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+

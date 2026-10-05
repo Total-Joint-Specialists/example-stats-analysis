@@ -1,0 +1,10 @@
+---
+title: "1 · Tidy data (coming soon)"
+description: "What tidy data is, how to collect it, how to tidy messy spreadsheets, and how to prove nothing changed."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+

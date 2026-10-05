@@ -1,0 +1,88 @@
+project:
+  type: website
+  output-dir: _site
+  execute-dir: project
+  render:
+    - index.qmd
+    - getting-started/*.qmd
+    - foundations/*.qmd
+    - catalog/*.qmd
+    - survival/*.qmd
+    - beyond/*.qmd
+    - report/*.qmd
+
+# Note: `engine: knitr` does NOT work here or in _metadata.yml. Each page
+# with code declares it in its own front matter.
+execute:
+  freeze: auto
+
+website:
+  title: "TJS Statistics Tutorials"
+  description: "Tidy data, Table 1, and every common statistical test, in R and Python, for Total Joint Specialists research assistants."
+  site-url: "https://total-joint-specialists.github.io/example-stats-analysis/"
+  repo-url: "https://github.com/Total-Joint-Specialists/example-stats-analysis"
+  repo-actions: [issue]
+  search: true
+  page-navigation: true
+  navbar:
+    left:
+      - text: "Decision table"
+        href: index.qmd
+      - text: "Getting started"
+        href: getting-started/setup.qmd
+    right:
+      - icon: github
+        href: "https://github.com/Total-Joint-Specialists/example-stats-analysis"
+        aria-label: "GitHub repository"
+  sidebar:
+    style: docked
+    contents:
+      - text: "Decision table"
+        href: index.qmd
+      - section: "Getting started"
+        contents:
+          - getting-started/setup.qmd
+          - getting-started/using-this-site.qmd
+          - getting-started/real-data.qmd
+      - section: "Part 1 · Foundations"
+        contents:
+          - foundations/01-tidy-data.qmd
+          - foundations/02-demographics.qmd
+          - foundations/03-distributions.qmd
+      - section: "Part 2 · Test catalog"
+        contents:
+          - catalog/04-describe-one-group.qmd
+          - catalog/05-one-group-vs-hypothetical.qmd
+          - catalog/06-two-unpaired-groups.qmd
+          - catalog/07-two-paired-groups.qmd
+          - catalog/08-three-plus-unmatched.qmd
+          - catalog/09-three-plus-matched.qmd
+          - catalog/10-association.qmd
+          - catalog/11-predict-from-one.qmd
+          - catalog/12-predict-from-several.qmd
+      - section: "Part 3 · Survival analysis"
+        contents:
+          - survival/13-kaplan-meier.qmd
+          - survival/14-cox-regression.qmd
+      - section: "Part 4 · Beyond the table"
+        contents:
+          - beyond/15-post-hoc.qmd
+          - beyond/16-mixed-models.qmd
+          - beyond/17-agreement.qmd
+      - section: "Part 5 · Putting it together"
+        contents:
+          - report/18-example-report.qmd
+  page-footer:
+    left: "Synthetic data only. Never put patient data in a repository."
+    right: "Text CC BY 4.0 · Code MIT"
+
+format:
+  html:
+    theme:
+      light: flatly
+      dark: darkly
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap

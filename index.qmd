@@ -1,0 +1,5 @@
+---
+title: "TJS Statistics Tutorials"
+---
+
+The decision table arrives in the next commit.

@@ -1,0 +1,10 @@
+---
+title: "16 · Mixed models for repeated PROMs (coming soon)"
+description: "PROMs at several visits, including patients who missed some."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+

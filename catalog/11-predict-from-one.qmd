@@ -1,0 +1,19 @@
+---
+title: "11 · Predict a value from another variable (coming soon)"
+description: "Simple linear and nonlinear regression, nonparametric regression, simple logistic regression, Cox regression."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+
+## Simple linear regression {#linear-regression}
+
+## Nonlinear regression {#nonlinear-regression}
+
+## Nonparametric regression {#nonparametric-regression}
+
+## Simple logistic regression {#logistic-regression}
+
+## Cox regression {#cox}

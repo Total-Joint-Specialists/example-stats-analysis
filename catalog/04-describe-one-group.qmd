@@ -1,0 +1,17 @@
+---
+title: "4 · Describe one group (coming soon)"
+description: "Mean and SD, median and IQR, proportion, and the Kaplan-Meier curve."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+
+## Mean and standard deviation {#mean-sd}
+
+## Median and interquartile range {#median-iqr}
+
+## Proportion {#proportion}
+
+## Kaplan-Meier survival curve {#kaplan-meier}

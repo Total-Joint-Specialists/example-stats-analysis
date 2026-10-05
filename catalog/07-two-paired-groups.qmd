@@ -1,0 +1,17 @@
+---
+title: "7 · Compare two paired groups (coming soon)"
+description: "Paired t test, Wilcoxon signed-rank test, McNemar's test, stratified Cox regression."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+
+## Paired t test {#paired-t}
+
+## Wilcoxon signed-rank test {#wilcoxon-signed-rank}
+
+## McNemar's test {#mcnemar}
+
+## Stratified Cox regression {#stratified-cox}

@@ -1,0 +1,10 @@
+---
+title: "Install & set up (coming soon)"
+description: "Everything you need on your computer to run the examples."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+

@@ -1,0 +1,17 @@
+---
+title: "5 · Compare one group to a hypothetical value (coming soon)"
+description: "One-sample t test, Wilcoxon signed-rank test, chi-square goodness-of-fit, binomial test."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+
+## One-sample t test {#one-sample-t}
+
+## Wilcoxon signed-rank test {#wilcoxon-signed-rank}
+
+## Chi-square goodness-of-fit test {#chi-square-gof}
+
+## Binomial test {#binomial-test}

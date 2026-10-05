@@ -1,0 +1,10 @@
+---
+title: "14 · Cox proportional hazards regression (coming soon)"
+description: "Hazard ratios, multivariable Cox, checking proportional hazards, stratified Cox."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+

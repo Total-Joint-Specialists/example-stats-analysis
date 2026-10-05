@@ -1,0 +1,10 @@
+---
+title: "13 · Kaplan-Meier & the log-rank test (coming soon)"
+description: "Censoring, KM curves with numbers at risk, survivorship, log-rank, competing risks."
+---
+
+::: {.callout-note .coming-soon}
+## Coming soon
+This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+:::
+

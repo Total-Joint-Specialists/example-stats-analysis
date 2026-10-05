@@ -7,7 +7,7 @@ Everything on this site uses invented data. Your real project won't. This page c
 
 ::: {.callout-warning}
 ## ⚠️ The one rule
-**Patient data never goes into a git repository.** That includes private repositories, commits, GitHub issues, screenshots and chat messages. This site's repository is **public**: anything committed here can be read by anyone on the internet, forever.
+**Patient data never goes into a git repository.** That includes private repositories, commits, GitHub issues, screenshots and chat messages. This site's repository is **public**: anything committed here can be read by anyone on the internet, forever. Never copy real data anywhere inside this tutorial folder, including `data/` and `scratch/`.
 :::
 
 ## What counts as protected health information (PHI)
@@ -17,7 +17,7 @@ US law (HIPAA) lists 18 kinds of identifiers. A dataset is only "de-identified" 
 ::: {.phi-identifiers}
 1. Names
 2. Geographic units smaller than a state: street address, city, county, and ZIP code. The first three digits of a ZIP code may stay if that area holds more than 20,000 people.
-3. All parts of dates except the year, when they relate to the patient: birth, admission, discharge, **surgery**, and death dates. Also any age older than 89 (group those patients as "90 or older").
+3. All parts of dates except the year, when they relate to the patient: birth, admission, discharge, **surgery**, and death dates. For patients older than 89, remove every part of every date that reveals their age, **including the year** (so no birth year), and group their ages as "90 or older".
 4. Telephone numbers
 5. Fax numbers
 6. Email addresses
@@ -35,10 +35,13 @@ US law (HIPAA) lists 18 kinds of identifiers. A dataset is only "de-identified" 
 18. Any other unique identifying number, characteristic, or code
 :::
 
+These identifiers must also be removed for the patient's relatives, employers, or household members. And Safe Harbor only counts if you have no actual knowledge that what's left could still identify someone.
+
 ## TJS-specific traps
 
 - **Surgery dates are dates.** Use "days from surgery" or the surgery year instead.
-- **Ages over 89.** Report them as "90 or older".
+- **Ages over 89.** Report them as "90 or older", and drop the birth year and any other date that reveals their age.
+- **Study IDs built from patient details.** A study ID made from initials, an MRN, or a birth date (like `JS-0412`) is still an identifier. Use arbitrary codes such as `C0001`.
 - **MRNs hide in file names.** Watch for names like `12345678_xray.png` or `chart_pull_MRN.xlsx`.
 - **Implant stickers.** Lot and serial numbers are device identifiers.
 - **Radiographs.** DICOM files carry the patient's name, MRN and dates in their headers, and some images have them burned into the pixels.

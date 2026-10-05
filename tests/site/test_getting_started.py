@@ -43,3 +43,21 @@ def test_setup_page_shows_how_to_read_data_without_cloning(site):
     url = ("https://raw.githubusercontent.com/Total-Joint-Specialists/"
            "example-stats-analysis/main/data/cohort.csv")
     assert url in text
+
+
+def test_real_data_page_states_the_full_age_over_89_rule(site):
+    text = load("getting-started/real-data.html").get_text(" ")
+    assert "including the year" in text
+    assert "birth year" in text
+
+
+def test_real_data_page_warns_about_derived_study_ids(site):
+    text = load("getting-started/real-data.html").get_text(" ")
+    assert "study ID" in text and "initials" in text
+    assert "relatives, employers, or household members" in text
+    assert "actual knowledge" in text
+
+
+def test_real_data_page_keeps_real_data_out_of_this_folder(site):
+    text = load("getting-started/real-data.html").get_text(" ")
+    assert "Never copy real data anywhere inside this tutorial folder" in text

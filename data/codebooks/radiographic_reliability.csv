@@ -1,0 +1,8 @@
+variable,label,type,units,allowed_values,notes
+knee_id,Knee ID,id,,,
+rater,Rater,categorical,,R1|R2,
+session,Reading session,integer,,1|2,Sessions at least 2 weeks apart
+hka_deg,Hip-knee-ankle angle,numeric,degrees,165..195,180 = neutral; < 180 = varus
+mpta_deg,Medial proximal tibial angle,numeric,degrees,78..96,
+ldfa_deg,Lateral distal femoral angle,numeric,degrees,80..97,
+cpak_class,CPAK class,categorical,,I|II|III|IV|V|VI|VII|VIII|IX,From this reading's MPTA and LDFA

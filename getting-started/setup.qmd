@@ -60,12 +60,15 @@ Download Positron from <https://positron.posit.co> and install it like any other
 
 ## 5. Get this repository
 
-In Terminal (Mac) or PowerShell (Windows), go to the folder where you keep projects and download ("clone") the repository:
+In Terminal (Mac) or PowerShell (Windows), make a `projects` folder and download ("clone") the repository into it:
 
 ```bash
-cd ~/Documents
+mkdir -p ~/projects
+cd ~/projects
 git clone https://github.com/Total-Joint-Specialists/example-stats-analysis.git
 ```
+
+Use a folder that is **not** synced to the cloud. `Documents` and `Desktop` are often synced by iCloud (Mac) or OneDrive (Windows). Syncing slows down, and can break, the R and Python environments that steps 6 and 7 create.
 
 Then, in Positron: **File → Open Folder…** and choose `example-stats-analysis`.
 

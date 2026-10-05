@@ -61,3 +61,10 @@ def test_real_data_page_warns_about_derived_study_ids(site):
 def test_real_data_page_keeps_real_data_out_of_this_folder(site):
     text = load("getting-started/real-data.html").get_text(" ")
     assert "Never copy real data anywhere inside this tutorial folder" in text
+
+
+def test_setup_page_avoids_cloud_synced_folders(site):
+    text = load("getting-started/setup.html").get_text()
+    assert "cd ~/Documents" not in text
+    assert "mkdir -p ~/projects" in text
+    assert "OneDrive" in text and "iCloud" in text

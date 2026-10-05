@@ -56,16 +56,16 @@ Part 1 — Foundations
   3   Distributions & choosing a test  foundations/03-distributions.qmd
 
 Part 2 — Test catalog (one page per table row)
-  4   Describe one group               tests/04-describe-one-group.qmd
+  4   Describe one group               catalog/04-describe-one-group.qmd
   5   Compare one group to a hypothetical value
-                                       tests/05-one-group-vs-hypothetical.qmd
-  6   Compare two unpaired groups      tests/06-two-unpaired-groups.qmd
-  7   Compare two paired groups        tests/07-two-paired-groups.qmd
-  8   Compare 3+ unmatched groups      tests/08-three-plus-unmatched.qmd
-  9   Compare 3+ matched groups        tests/09-three-plus-matched.qmd
-  10  Quantify association             tests/10-association.qmd
-  11  Predict from one variable        tests/11-predict-from-one.qmd
-  12  Predict from several variables   tests/12-predict-from-several.qmd
+                                       catalog/05-one-group-vs-hypothetical.qmd
+  6   Compare two unpaired groups      catalog/06-two-unpaired-groups.qmd
+  7   Compare two paired groups        catalog/07-two-paired-groups.qmd
+  8   Compare 3+ unmatched groups      catalog/08-three-plus-unmatched.qmd
+  9   Compare 3+ matched groups        catalog/09-three-plus-matched.qmd
+  10  Quantify association             catalog/10-association.qmd
+  11  Predict from one variable        catalog/11-predict-from-one.qmd
+  12  Predict from several variables   catalog/12-predict-from-several.qmd
 
 Part 3 — Survival analysis
   13  Kaplan-Meier & the log-rank test survival/13-kaplan-meier.qmd
@@ -322,8 +322,8 @@ patients; about 80 patients are bilateral.
 - **IDs and setting:** `case_id`, `patient_id`, `site` (Site A / Site B),
   `surgeon` (S1–S3), `procedure` (THA / TKA), `side`, `surgery_date`
   (synthetic, 2016–2024)
-- **Demographics:** `age`, `sex`, `bmi`, `asa` (1–4), `diabetes`, `smoker`
-  (never / former / current), `cci`
+- **Demographics:** `age`, `sex`, `bmi`, `asa` (1–4), `diabetes`,
+  `hypertension`, `sleep_apnea`, `smoker` (never / former / current), `cci`
 - **Perioperative:** `anesthesia` (spinal / general), `approach` (THA only:
   anterior / posterior), `implant` (A / B / C), `op_time_min`, `los_days`,
   `discharge` (home / facility)
@@ -351,7 +351,8 @@ implant design A, B and C). Matched on age (±3 y), sex, BMI (±3) and ASA.
 **`radiographic_reliability.csv`**: one row per knee × rater × session.
 
 - About 60 knees, 2 raters × 2 sessions.
-- Columns: `knee_id`, `rater`, `session`, `hka_deg`, `cpak_class` (I–IX).
+- Columns: `knee_id`, `rater`, `session`, `hka_deg`, `mpta_deg`, `ldfa_deg`,
+  `cpak_class` (I–IX, computed from that reading's MPTA and LDFA).
 
 ### 5.3 Messy datasets
 
@@ -402,14 +403,19 @@ after every regeneration, and the build fails if any is missing.
 | LOS right-skewed, many 0–1 days | non-normal data, rank tests | skewness > 1.5 |
 | 1-yr PROM ceiling effect | rank tests, page 3 | ≥ 15% at max score |
 | PROM improves pre → 1yr | paired tests, mixed models | paired p < 0.001 |
-| Implant C has a higher revision hazard | log-rank, Cox | HR ~2, log-rank p < 0.05 |
+| Implant C has a higher revision hazard (built in as HR 2.5) | log-rank, Cox | HR 1.5–3.5, log-rank p < 0.05 |
 | Mortality rises with age; deaths ≥ revisions in the oldest group | competing risks | CIF < 1−KM visibly at 10 yr |
-| Posterior THA approach raises early revision only (first 1 yr) | PH violation | Schoenfeld global p < 0.05 for approach |
-| Raters agree well but not perfectly; rater 2 bias of about +0.5° | ICC, Bland-Altman | ICC 0.80–0.95; mean bias 0.3–0.7° |
+| Posterior THA approach multiplies revision hazard ×10 in the first 6 months only | PH violation | `cox.zph` p < 0.05 for approach |
+| Raters agree well but not perfectly; rater 2 bias of about +0.5° | ICC, Bland-Altman, kappa | ICC 0.80–0.95; mean bias 0.3–0.7°; CPAK kappa 0.5–0.85 |
+| Walking-aid use rises at 6 weeks, falls by 1 year | McNemar, Cochran's Q | McNemar pre-op vs 6 wk p < 0.05 |
+| Satisfaction tracks PROM improvement | Spearman | ρ > 0.3 |
 | Age vs op time weakly related; BMI vs op time moderately related | correlation, regression | r(BMI, op time) 0.3–0.5 |
 
-Exact targets may be tuned during implementation. The assertions must still
-encode each teaching point.
+Revision rates are inflated (about 11% at a median of 5 years) so the survival
+lessons have enough events; the codebook says so. Each generator has a fixed
+seed, chosen in prototyping so every assertion passes; regenerating with a
+different seed is not supported. Tests also require regenerating to reproduce
+the committed CSVs byte for byte.
 
 ### 5.5 Data-collection template
 
@@ -479,7 +485,7 @@ Solutions sit in `callout-tip collapse="true"`, with an R ⟷ Python tabset insi
 example-stats-analysis/
 ├── _quarto.yml               # website config; explicit render list
 ├── index.qmd                 # home: decision table
-├── getting-started/  foundations/  tests/  survival/  beyond/  report/
+├── getting-started/  foundations/  catalog/  survival/  beyond/  report/
 ├── data/                     # committed synthetic data
 │   ├── README.md
 │   ├── codebooks/
@@ -488,12 +494,13 @@ example-stats-analysis/
 │   └── answer-keys/
 ├── data-raw/                 # generate.R, validate.R, make_template.R
 ├── templates/                # data-collection-template.xlsx
-├── R/                        # site helpers (check_agree.R, ggplot theme)
+├── R/                        # site helpers (check_agree.R)
+├── tests/                    # testthat/ (R), python/ (data), site/ (built-site checks)
 ├── _freeze/                  # committed computed results
 ├── renv.lock  renv/  .Rprofile
 ├── pyproject.toml  uv.lock  .python-version
 ├── Justfile                  # maintainer commands
-├── .github/workflows/        # publish.yml, links.yml
+├── .github/workflows/        # publish.yml, checks.yml
 ├── scratch/                  # gitignored; RA practice space
 ├── docs/superpowers/         # specs and plans (excluded from site render)
 ├── README.md  CLAUDE.md  LICENSE (MIT)  LICENSE-CONTENT (CC BY 4.0)
@@ -501,29 +508,37 @@ example-stats-analysis/
 
 ### 7.2 Rendering
 
-- Quarto website, `engine: knitr`. Python chunks run through `reticulate`
+- Quarto website. **Every page with executable code declares `engine: knitr`
+  in its own front matter.** Quarto ignores `engine` in `_quarto.yml` and in
+  `_metadata.yml` (verified), and a Python-only page would otherwise run in
+  Jupyter against the system Python. A source test enforces this.
+- Python chunks run through `reticulate`
   against the project's `uv` virtualenv (`RETICULATE_PYTHON` set in
   `.Rprofile` to `.venv/bin/python`).
 - `execute-dir: project`, so `data/...` paths resolve from the repo root in
   both languages. Phase 0 verifies this for reticulate Python chunks.
 - `freeze: auto`. Computed output is stored in `_freeze/` and committed.
 - `project.render` lists the content directories and `index.qmd` explicitly,
-  so `README.md`, `CLAUDE.md` and `docs/` are **not** rendered into the site.
+  so `README.md`, `CLAUDE.md`, `docs/` and `tests/` are **not** rendered into the site.
 - Tabsets use `group="language"`, so the language choice persists across
   pages.
-- Theme: `flatly` (light) / `darkly` (dark), matching existing TJS reports,
-  with left-side table of contents and code-copy buttons.
+- Theme: `flatly` (light) / `darkly` (dark), matching existing TJS reports.
+  Site navigation in a docked left sidebar; page table of contents on the right;
+  code-copy buttons.
 
 ### 7.3 Environments
 
 **R (`renv`):**
 
-- **Core and data:** tidyverse, janitor, readxl, openxlsx (template and
-  messy-file generation: merged cells, fills, validation)
+- **Core and data:** tidyverse, janitor, readxl, openxlsx2 (template and
+  messy-file generation: merged cells, fills, validation). Not `openxlsx`:
+  version 4.2.9 writes a dangling drawing reference that Python's openpyxl
+  refuses to open (verified)
 - **Tables and output:** gtsummary, gt, flextable, broom, broom.mixed,
   knitr, reticulate
 - **Survival:** survival, ggsurvfit, tidycmprsk
 - **Models and effect sizes:** lme4, lmerTest, emmeans, effectsize
+- **Testing:** testthat, withr
 - **Reliability and specialist tests:** irr, DescTools (Cochran's Q,
   Hodges-Lehmann), rstatix (Dunn, Games-Howell), PMCMRplus (Conover after
   Friedman)
@@ -533,6 +548,15 @@ example-stats-analysis/
 - **Core:** pandas, numpy, openpyxl
 - **Statistics:** scipy, statsmodels, lifelines, pingouin, scikit-posthocs
 - **Tables and plots:** tableone, matplotlib, seaborn
+- **Dev only:** pytest, beautifulsoup4 (site tests)
+
+R packages are declared in a `DESCRIPTION` file and locked with renv's
+explicit snapshot. Each phase adds only the packages it uses.
+
+**macOS prerequisite:** `renv::install()` / `renv::restore()` run a compiler
+check that fails if Xcode is installed but its license is unaccepted (verified
+on the maintainer's Mac). Fix once with `sudo xcodebuild -license accept`; the
+setup page lists it under troubleshooting.
 
 **Maintainer commands (`Justfile`):** `just setup` (renv restore + uv sync),
 `just data` (generate + validate), `just preview`, `just render`, `just check`.
@@ -542,8 +566,8 @@ RA-facing instructions never require `just`.
 
 GitHub Action `publish.yml`, triggered on push to `main`:
 
-- uses `quarto-dev/quarto-actions` to render from `_freeze/` and publish to
-  the `gh-pages` branch
+- uses `quarto-dev/quarto-actions` (Quarto pinned to 1.9.37, the maintainer's
+  local version) to render from `_freeze/` and publish to the `gh-pages` branch
 - needs no R or Python
 
 If a page changed without its freeze being refreshed, the Action fails
@@ -569,10 +593,15 @@ GitHub Pages serves from `gh-pages`.
 4. **Module 1 answer key.** Page 1's reference tidying solutions must
    reproduce `data/answer-keys/` exactly (`waldo::compare` /
    `pandas.testing.assert_frame_equal`). A mismatch stops the render.
-5. **Link check.** `links.yml` runs lychee with fragment checking against
-   the built site on PRs, covering all home-table anchors.
+5. **Site checks.** `checks.yml` builds the site from `_freeze/` on every PR
+   and push, then runs the pytest site tests (pages present, anchors present,
+   tabs grouped, solutions collapsed, coming-soon marking consistent, `engine:
+   knitr` declared) and lychee with fragment checking. Maintainers install
+   lychee from its GitHub release binary (Homebrew needs the Xcode license).
 6. **Human review.** Each page or small group of pages is merged via PR and
    reviewed by the TJS research lead before going live.
+7. **Reproducible data.** Regenerating must reproduce every committed CSV
+   byte for byte.
 
 ## 9. Build phases
 
@@ -580,7 +609,7 @@ Each phase is independently reviewable and publishable.
 
 | Phase | Deliverables |
 |---|---|
-| 0 | Repo scaffold; `_quarto.yml`; renv + uv environments; reticulate wiring verified; publish + link-check Actions; home decision table (links to stub pages); Getting Started 0.1–0.3; README, CLAUDE.md, licenses; GitHub repo created + Pages enabled (**confirm with owner before creating the public repo and enabling Pages**) |
+| 0 | Repo scaffold; `_quarto.yml`; renv + uv environments; reticulate wiring verified; publish + site-checks Actions; home decision table (links to stub pages); Getting Started 0.1–0.3; README, CLAUDE.md, licenses; GitHub repo created + Pages enabled (**confirm with owner before creating the public repo and enabling Pages**) |
 | 1 | `data-raw/generate.R`, `validate.R`, `make_template.R`; all datasets, codebooks, and the collection template |
 | 2 | Pages 1–3 |
 | 3 | Pages 4–12 |

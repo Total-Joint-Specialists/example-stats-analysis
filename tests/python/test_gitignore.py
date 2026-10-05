@@ -31,6 +31,30 @@ def ignored(path: str) -> bool:
         ".venv/bin/python",
         "_site/index.html",
         ".Renviron",
+        # real exports dropped next to the synthetic data
+        "data/real_export.csv",
+        "data/my_patients.xlsx",
+        "data/codebooks/real_codebook.csv",
+        "templates/filled_in_real.xlsx",
+        "data/.DS_Store",
+        "data/.Renviron",
+        "data/~$messy_abstraction_workbook.xlsx",
+        # other common data and spreadsheet formats
+        "cohort.RData",
+        "analysis.Rdata",
+        "export.ods",
+        "Book1.numbers",
+        "export.xlsb",
+        "export.txt",
+        "redcap_export.json",
+        "data.sqlite",
+        "cohort.db",
+        "export.xpt",
+        "cohort.pkl",
+        "cohort.pickle",
+        "cohort.qs",
+        "export.sav.gz",
+        "archive.7z",
     ],
 )
 def test_risky_or_generated_files_are_ignored(path):
@@ -48,6 +72,12 @@ def test_risky_or_generated_files_are_ignored(path):
         "scratch/README.md",
         "_freeze/getting-started/using-this-site/execute-results/html.json",
         "renv.lock",
+        "renv/settings.json",
+        "data/README.md",
+        "data/CHECKSUMS.sha256",
+        "data/proms_long.csv",
+        "data/answer-keys/abstraction_workbook_tidy.csv",
+        "data/messy_survey_export.csv",
     ],
 )
 def test_project_files_are_not_ignored(path):

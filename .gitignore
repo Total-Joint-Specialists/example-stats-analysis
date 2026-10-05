@@ -19,18 +19,54 @@ scratch/*
 # --- This repo is PUBLIC. Data files are blocked everywhere ... ---
 *.csv
 *.tsv
+*.txt
+*.json
 *.xlsx
 *.xls
 *.xlsm
+*.xlsb
+*.ods
+*.numbers
 *.sav
 *.dta
 *.sas7bdat
+*.xpt
 *.rds
 *.rda
+*.[Rr][Dd]ata
+*.qs
 *.parquet
 *.feather
+*.pkl
+*.pickle
+*.sqlite
+*.db
 *.dcm
 *.zip
-# --- ... except the synthetic files in data/ and templates/ ---
-!/data/**
-!/templates/**
+*.gz
+*.7z
+
+# --- ... except these named synthetic files (add new ones here, by name) ---
+!/data/cohort.csv
+!/data/proms_long.csv
+!/data/matched_sets.csv
+!/data/radiographic_reliability.csv
+!/data/messy_abstraction_workbook.xlsx
+!/data/messy_survey_export.csv
+!/data/codebooks/cohort.csv
+!/data/codebooks/proms_long.csv
+!/data/codebooks/matched_sets.csv
+!/data/codebooks/radiographic_reliability.csv
+!/data/codebooks/abstraction_workbook_tidy.csv
+!/data/codebooks/survey_items_long.csv
+!/data/answer-keys/abstraction_workbook_tidy.csv
+!/data/answer-keys/survey_items_long.csv
+!/templates/data-collection-template.xlsx
+
+# --- ... and tool files that happen to use blocked extensions ---
+!/renv/settings.json
+!/_freeze/**
+
+# --- Never commit these, even inside the folders re-included above ---
+.DS_Store
+~$*

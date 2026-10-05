@@ -1,0 +1,27 @@
+name: Publish site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 1.9.37
+
+      # Builds from _freeze/ (no R or Python). If a page changed without its
+      # freeze being refreshed, this step fails because R is not installed.
+      - uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

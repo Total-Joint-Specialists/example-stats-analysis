@@ -1,0 +1,32 @@
+name: Site checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 1.9.37
+
+      - name: Build the site from frozen results (no R or Python)
+        run: quarto render
+
+      - uses: astral-sh/setup-uv@v10
+
+      - name: Site tests
+        run: uv run --only-group dev pytest tests/site -q
+
+      - name: Repo tests (gitignore, docs)
+        run: uv run pytest tests/python/test_gitignore.py tests/python/test_repo_docs.py -q
+
+      - name: Internal links and #anchors
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --include-fragments --no-progress _site

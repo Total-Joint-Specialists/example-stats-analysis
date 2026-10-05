@@ -579,10 +579,12 @@ GitHub Pages serves from `gh-pages`.
 
 1. **Render halts on error.** Quarto's default; `error: true` is never set.
 2. **R ⟷ Python agreement.** After each test section, a hidden R chunk calls
-   `check_agree(r_res, py$py_res, tol = 1e-6)` (`R/check_agree.R`):
+   `check_agree(list(<R values>), list(<reticulate::py$... values>))`
+   (`R/check_agree.R`, sourced in a hidden chunk at the top of each page;
+   default `tol = 1e-6`, relative to magnitude):
    - It compares the test statistic, the p-value, and the point estimate where
      both languages compute the same quantity.
-   - A mismatch stops the render.
+   - A mismatch, a missing value, or a non-number stops the render.
    - Where defaults differ (Welch vs Student, continuity corrections, exact vs
      asymptotic), both blocks set the method explicitly.
    - CIs computed by genuinely different methods are documented in the

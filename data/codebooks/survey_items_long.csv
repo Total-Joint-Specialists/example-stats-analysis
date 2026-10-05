@@ -1,0 +1,6 @@
+variable,label,type,units,allowed_values,notes
+case_id,Study ID,id,,,
+instrument,PROM instrument,categorical,,HOOS JR|KOOS JR,
+visit,Visit,categorical,,preop|6wk|3mo|1yr,
+item,Item number,integer,,1..7,"KOOS JR has 7 items, HOOS JR 6"
+response,Item response,integer,,0|1|2|3|4,0 = none ... 4 = extreme; blank = not answered

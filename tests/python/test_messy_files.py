@@ -32,3 +32,23 @@ def test_workbook_reads_in_pandas():
     assert list(sheets) == ["Site A", "Site B"]
     assert sheets["Site B"].shape[1] == sheets["Site A"].shape[1] + 1
 
+
+def test_survey_export_reshapes_to_answer_key():
+    visit_order = {"preop": 0, "6wk": 1, "3mo": 2, "1yr": 3}
+    wide = pd.read_csv(DATA / "messy_survey_export.csv", skiprows=[1], dtype=str)
+    long = wide.melt(
+        id_vars=["ResponseId", "case_id", "instrument"],
+        var_name="column",
+        value_name="response",
+    )
+    parts = long["column"].str.extract(r"(?P<inst>KOOS|HOOS)_Q(?P<item>\d)_(?P<visit>.+)")
+    long = pd.concat([long, parts], axis=1)
+    long = long[long["instrument"].str[:4] == long["inst"]]
+    long = long.assign(
+        item=long["item"].astype(int),
+        response=pd.to_numeric(long["response"]),
+        order=long["visit"].map(visit_order),
+    ).sort_values(["case_id", "order", "item"])
+    got = long[["case_id", "instrument", "visit", "item", "response"]].reset_index(drop=True)
+    expected = pd.read_csv(KEYS / "survey_items_long.csv")
+    pd.testing.assert_frame_equal(got, expected, check_dtype=False)

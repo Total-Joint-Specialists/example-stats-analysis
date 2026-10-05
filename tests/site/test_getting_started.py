@@ -20,3 +20,19 @@ def test_setup_page_shows_every_command_an_ra_types(site):
 
 def test_setup_page_is_no_longer_a_stub(site):
     assert load("getting-started/setup.html").select_one(".coming-soon") is None
+
+
+def test_real_data_page_lists_all_18_safe_harbor_identifiers(site):
+    items = load("getting-started/real-data.html").select(".phi-identifiers ol > li")
+    assert len(items) == 18
+
+
+def test_real_data_page_covers_tjs_traps(site):
+    text = load("getting-started/real-data.html").get_text(" ")
+    for phrase in ["MRN", "older than 89", "implant", "DICOM", "AI", "git status",
+                   "git diff --staged"]:
+        assert phrase in text, phrase
+
+
+def test_real_data_page_is_no_longer_a_stub(site):
+    assert load("getting-started/real-data.html").select_one(".coming-soon") is None

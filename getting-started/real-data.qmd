@@ -1,10 +1,85 @@
 ---
-title: "Working with real TJS data (coming soon)"
-description: "Keeping patient data safe: what counts as PHI and where data may live."
+title: "Working with real TJS data"
+description: "Keeping patient data safe: what counts as PHI, where TJS data lives, and the checks to run before every commit."
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+Everything on this site uses invented data. Your real project won't. This page covers the rules that keep patients and TJS safe. Read it before you open any real dataset.
+
+::: {.callout-warning}
+## ⚠️ The one rule
+**Patient data never goes into a git repository.** That includes private repositories, commits, GitHub issues, screenshots and chat messages. This site's repository is **public**: anything committed here can be read by anyone on the internet, forever.
 :::
 
+## What counts as protected health information (PHI)
+
+US law (HIPAA) lists 18 kinds of identifiers. A dataset is only "de-identified" under the Safe Harbor method when **all 18** are removed:
+
+::: {.phi-identifiers}
+1. Names
+2. Geographic units smaller than a state: street address, city, county, and ZIP code. The first three digits of a ZIP code may stay if that area holds more than 20,000 people.
+3. All parts of dates except the year, when they relate to the patient: birth, admission, discharge, **surgery**, and death dates. Also any age older than 89 (group those patients as "90 or older").
+4. Telephone numbers
+5. Fax numbers
+6. Email addresses
+7. Social Security numbers
+8. Medical record numbers (MRNs)
+9. Health plan beneficiary numbers
+10. Account numbers
+11. Certificate or license numbers
+12. Vehicle identifiers and serial numbers, including license plates
+13. Device identifiers and serial numbers, including **implant serial and lot numbers**
+14. Web addresses (URLs)
+15. IP addresses
+16. Biometric identifiers, such as fingerprints and voice prints
+17. Full-face photographs and comparable images
+18. Any other unique identifying number, characteristic, or code
+:::
+
+## TJS-specific traps
+
+- **Surgery dates are dates.** Use "days from surgery" or the surgery year instead.
+- **Ages over 89.** Report them as "90 or older".
+- **MRNs hide in file names.** Watch for names like `12345678_xray.png` or `chart_pull_MRN.xlsx`.
+- **Implant stickers.** Lot and serial numbers are device identifiers.
+- **Radiographs.** DICOM files carry the patient's name, MRN and dates in their headers, and some images have them burned into the pixels.
+- **Free-text "notes" columns.** They collect names, phone numbers and dates.
+- **Screenshots of the chart.** They're PHI too.
+
+## Where TJS data lives
+
+- Study data lives in TJS-controlled Google Sheets and Google Drive folders that your project lead shares with your TJS account.
+- Project repositories read data at run time, either straight from the Google Sheet or from a local `data/` folder that is listed in `.gitignore` *before the first commit*.
+- The crosswalk that links MRNs to study IDs lives only with the data, never in a repository.
+- What leaves the secure environment is aggregate: tables, figures and model results. Your IRB protocol may require hiding small counts (for example, cells with fewer than 11 patients).
+
+## How TJS projects handle data in code
+
+These rules come from TJS project repositories. [Tidy data](../foundations/01-tidy-data.qmd) practices each one.
+
+1. **Read everything as text at first.** Dates arrive in several formats, numbers contain stray text, and lists sit inside single cells. Convert types as a deliberate, recorded step, never silently while reading.
+2. **Match columns by name, not position.** Two tabs of the same sheet can have different columns.
+3. **Check what you changed.** After every cleaning step, compare row counts and summaries before and after.
+
+## AI tools
+
+**Never paste real patient data into an AI chatbot or any website.** That includes ChatGPT, Claude, Copilot and online "data cleaners". The only exception is a tool your project lead confirms is approved for PHI. The synthetic data on this site is fine to paste anywhere.
+
+## Before every commit
+
+Run these two commands and read the output:
+
+```bash
+git status
+git diff --staged
+```
+
+Check that no data file, export or screenshot is listed. If you see one, unstage it with `git restore --staged <file>`.
+
+## If something goes wrong
+
+If PHI reaches a commit, a push or an issue:
+
+1. **Stop.** Don't try to fix it with another commit. Git keeps the history.
+2. **Tell your project lead right away.** The data has to be purged from history, and the incident may need to be reported under TJS policy.
+
+Reporting quickly is always the right call, and nobody will be upset that you did.

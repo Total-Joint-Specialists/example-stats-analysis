@@ -55,3 +55,23 @@ test_that("text dates use English month names whatever the computer's locale", {
   out <- env$fmt_date_text(rep(as.Date("2024-03-04"), 50))
   expect_setequal(out, c("3/4/24", "2024-03-04", "March 4 2024"))
 })
+
+test_that("revision years in the Notes column match the cohort", {
+  cohort <- read_tidy("cohort.csv")
+  rev <- cohort[cohort$event_status == 1, ]
+  rev_year <- stats::setNames(format(rev$surgery_date + round(rev$followup_years * 365.25), "%Y"),
+                              rev$case_id)
+  checked <- 0
+  for (s in c("Site A", "Site B")) {
+    raw <- raw_sheet(s)
+    hdr <- trimws(unlist(raw[4, ]))
+    body <- raw[-(1:4), ]
+    ids <- trimws(body[[which(hdr == "Study ID")]])
+    notes <- body[[which(hdr == "Notes")]]
+    hit <- !is.na(notes) & grepl("^revised \\d{4}", notes)
+    years <- sub("^revised (\\d{4}).*", "\\1", notes[hit])
+    expect_equal(unname(years), unname(rev_year[ids[hit]]), label = paste(s, "note years"))
+    checked <- checked + sum(hit)
+  }
+  expect_gt(checked, 0)
+})

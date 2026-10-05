@@ -87,3 +87,9 @@ test_that("posterior THA approach violates proportional hazards", {
   fit <- survival::coxph(survival::Surv(followup_years, revised) ~ approach, data = tha)
   expect_lt(survival::cox.zph(fit)$table["approach", "p"], 0.05)
 })
+
+test_that("no 1-year satisfaction for cases whose follow-up ended before 1 year", {
+  early <- cohort$followup_years < 1
+  expect_gt(sum(early), 0)
+  expect_true(all(is.na(cohort$satisfaction_1yr[early])))
+})

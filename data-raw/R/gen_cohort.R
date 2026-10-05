@@ -139,6 +139,9 @@ make_cohort <- function(seed = 20261007, hr_c = 2.5, base_rate = 0.015,
   cases$followup_years <- round(pmax(as.numeric(stop_date - cases$surgery_date) / 365.25,
                                      0.01), 2)
 
+  # A 1-year satisfaction score needs a joint that was still followed at 1 year.
+  cases$satisfaction_1yr[cases$followup_years < 1] <- NA_integer_
+
   cases |>
     dplyr::select(case_id, patient_id, site, surgeon, procedure, side, surgery_date,
                   age, sex, bmi, asa, diabetes, hypertension, sleep_apnea, smoker, cci,

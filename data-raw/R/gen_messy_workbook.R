@@ -34,6 +34,9 @@ make_abstraction_truth <- function(cohort, proms, seed = 20261011) {
     dplyr::transmute(
       .name = sprintf("TESTPATIENT, %s-%03d", sample(words, n, TRUE), seq_len(n)),
       .mrn  = sprintf("SYN-%06d", sample(100000:999999, n)),
+      .rev_date = dplyr::if_else(revised == 1,
+                                 surgery_date + round(followup_years * 365.25),
+                                 as.Date(NA)),
       case_id, site, surgery_date, age, sex, bmi, asa, diabetes, hypertension,
       sleep_apnea, procedure, side, los_days, revised,
       prom_preop_date = surgery_date + pre_days,
@@ -115,7 +118,7 @@ render_sheet_values <- function(t) {
     if (stats::runif(1) < 0.15) return(if (x == 1) "1 day" else sprintf("%d days", x))
     x
   })
-  rev_year <- format(t$surgery_date + round(stats::runif(n, 30, 1500)), "%Y")
+  rev_year <- format(t$.rev_date, "%Y")   # the cohort's own revision date
   notes <- ifelse(t$revised == 1 & stats::runif(n) < 0.5,
                   sprintf("revised %s for %s", rev_year,
                           sample(c("instability", "loosening", "infection"), n, TRUE)),

@@ -106,6 +106,28 @@ On Windows, if `Rscript` is "not recognized", run the R check from Positron's R 
 source("getting-started/check_setup.R")
 ```
 
+## Reading the data without cloning
+
+You can try any example without steps 5–8. Point the read function at GitHub instead of the `data/` folder:
+
+::: {.panel-tabset group="language"}
+## R
+
+```r
+cohort <- readr::read_csv("https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/cohort.csv")
+```
+
+## Python
+
+```python
+import pandas as pd
+
+cohort = pd.read_csv("https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/cohort.csv")
+```
+:::
+
+In any example, replace `"data/"` with `"https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/"`.
+
 ## Troubleshooting
 
 | You see | Do this |

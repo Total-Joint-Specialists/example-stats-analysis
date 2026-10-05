@@ -22,3 +22,10 @@ preview:
 check: render
     uv run pytest tests/site -q
     lychee --offline --include-fragments --no-progress _site
+
+# Regenerate the synthetic data and template, then check them in both languages
+data:
+    Rscript data-raw/generate.R
+    Rscript data-raw/make_template.R
+    Rscript data-raw/validate.R
+    uv run pytest tests/python -q

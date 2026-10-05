@@ -17,5 +17,9 @@ for (pkg in c("knitr", "rmarkdown", "reticulate", "testthat")) {
          "run renv::restore() in the R console")
 }
 
+report("practice data readable (data/cohort.csv)",
+       file.exists("data/cohort.csv") && nrow(utils::read.csv("data/cohort.csv")) > 0,
+       "run this from the example-stats-analysis folder")
+
 cat(if (ok) "\nAll good - you are ready.\n" else "\nFix the problems above, then run this again.\n")
 if (!interactive()) quit(status = if (ok) 0 else 1)

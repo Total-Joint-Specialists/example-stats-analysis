@@ -23,8 +23,8 @@ jobs:
       - name: Site tests
         run: uv run --only-group dev pytest tests/site -q
 
-      - name: Repo tests (gitignore, docs)
-        run: uv run pytest tests/python/test_gitignore.py tests/python/test_repo_docs.py -q
+      - name: Python tests (data files, template, setup check, repo)
+        run: uv run pytest tests/python -q
 
       - name: Internal links and #anchors
         uses: lycheeverse/lychee-action@v2

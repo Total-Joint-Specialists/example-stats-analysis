@@ -36,3 +36,10 @@ def test_real_data_page_covers_tjs_traps(site):
 
 def test_real_data_page_is_no_longer_a_stub(site):
     assert load("getting-started/real-data.html").select_one(".coming-soon") is None
+
+
+def test_setup_page_shows_how_to_read_data_without_cloning(site):
+    text = load("getting-started/setup.html").get_text()
+    url = ("https://raw.githubusercontent.com/Total-Joint-Specialists/"
+           "example-stats-analysis/main/data/cohort.csv")
+    assert url in text

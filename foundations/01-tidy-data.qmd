@@ -1,10 +1,803 @@
 ---
-title: "1 · Tidy data (coming soon)"
+title: "1 · Tidy data"
 description: "What tidy data is, how to collect it, how to tidy messy spreadsheets, and how to prove nothing changed."
+engine: knitr
+execute:
+  message: false
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+Most of the time in a research project goes into getting the data into shape, not into the statistics. Mistakes made here are the dangerous kind: the code runs, the tables look fine, and the numbers are wrong. This page shows how to collect data so it arrives clean, how to clean it when it doesn't, and how to prove your cleaning didn't change anything it shouldn't have.
+
+## What tidy data means {#what-tidy-means}
+
+Data are **tidy** when:
+
+1. every **variable** is a column,
+2. every **observation** is a row, and
+3. every **kind of observational unit** gets its own table.
+
+::: {.callout-note}
+## 💡 In plain language
+One fact per cell, one patient-thing per row, and never two kinds of rows mixed in one table. A spreadsheet that's easy for a person to read is often hard for a computer to analyze, and the other way round. Statistics software wants the second kind.
 :::
 
+Here's a typical untidy PROM sheet: one row per patient, with a column for each visit. The *visit* is a variable, but it's hiding in the column names.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+
+wide <- tibble(
+  case_id = c("C0001", "C0002", "C0003"),
+  preop   = c(41.2, 55.0, 38.7),
+  `6wk`   = c(60.1, NA,   58.3),
+  `1yr`   = c(88.0, 92.4, 79.5)
+)
+wide
+
+# Tidy: one row per case per visit
+long <- wide |>
+  pivot_longer(-case_id, names_to = "visit", values_to = "prom_score")
+long
+```
+
+## Python
+
+```{python}
+import pandas as pd
+
+wide = pd.DataFrame({
+    "case_id": ["C0001", "C0002", "C0003"],
+    "preop":   [41.2, 55.0, 38.7],
+    "6wk":     [60.1, None, 58.3],
+    "1yr":     [88.0, 92.4, 79.5],
+})
+print(wide)
+
+# Tidy: one row per case per visit
+long = wide.melt(id_vars="case_id", var_name="visit", value_name="prom_score")
+print(long)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"rows": float(len(long)), "mean": float(long["prom_score"].mean())}
+```
+
+```{r}
+#| include: false
+check_agree(list(rows = nrow(long), mean = mean(long$prom_score, na.rm = TRUE)), reticulate::py$chk)
+```
+
+In the long version, "Is the 6-week score missing?" is just a row with a blank, and "average score at each visit" is one line of code. In the wide version, every new visit means a new column and rewritten code.
+
+Untidy patterns we see most often in TJS sheets, and the tidy fix for each:
+
+| You see | Problem | Tidy fix |
+|------|------|------|
+| `DM, HTN, OSA` in one cell | Several values in one cell | One yes/no column per condition |
+| `R TKA` | Two variables in one cell | Separate `side` and `procedure` columns |
+| `32.1 kg/m2` | Units typed into a number | A number column; units go in the data dictionary |
+| Red-filled cells mean "revised" | Color as data (invisible to software) | A `revised` column |
+| `Date`, `Score`, `Date`, `Score` | Repeated columns per visit | Long format: one row per visit |
+| `N/A`, `unk`, `-`, `999`, blank | Five ways to say "missing" | One: an empty cell |
+| A title row, a totals row | Not data | Delete them; keep notes elsewhere |
+
+## Collecting tidy data {#collecting}
+
+The cheapest cleaning is the cleaning you never have to do. Before anyone abstracts a single chart, write the **data dictionary**: every variable's name, meaning, type, units and allowed values. Then build the collection sheet from the dictionary.
+
+This site includes a template you can copy: [`templates/data-collection-template.xlsx`](https://github.com/Total-Joint-Specialists/example-stats-analysis/raw/main/templates/data-collection-template.xlsx). It has four sheets:
+
+- **README** — the rules below, for whoever does the abstraction.
+- **data** — one header row, and dropdowns or range checks on every column except the study ID, so typos can't get in.
+- **dictionary** — what each column means.
+- **missing_codes** — exactly what to enter when a value isn't in the chart.
+
+The rules the template enforces:
+
+1. One row per procedure, one column per variable, one value per cell.
+2. A study ID, never the MRN or name. The MRN-to-study-ID crosswalk lives in a separate, secured file.
+3. Categories from dropdowns only (no `F` vs `female`).
+4. Numbers only in number columns; units live in the dictionary.
+5. Real dates, not text.
+6. Missing means: dropdown "Not recorded", or an empty number/date cell.
+7. No colors, bold, comments, merged cells, title rows or totals rows.
+
+You can read the dictionary sheet like any other data:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(readxl)
+
+dictionary <- read_excel("templates/data-collection-template.xlsx", sheet = "dictionary")
+dictionary
+```
+
+## Python
+
+```{python}
+dictionary = pd.read_excel("templates/data-collection-template.xlsx", sheet_name="dictionary")
+print(dictionary.to_string())
+```
+:::
+
+```{python}
+#| include: false
+chk = {"rows": float(len(dictionary))}
+```
+
+```{r}
+#| include: false
+check_agree(list(rows = nrow(dictionary)), reticulate::py$chk)
+```
+
+## Tidying a messy workbook {#tidying}
+
+Real abstraction sheets rarely follow those rules. `data/messy_abstraction_workbook.xlsx` copies the problems we see in TJS sheets. Open it in Excel and look before you run any code:
+
+- two tabs, **Site A** and **Site B**, whose columns don't line up (Site B has an extra `MUA` column in the middle)
+- two banner rows and a row of merged group headers above the real header
+- a **TOTAL** row at the bottom of each tab
+- two `Date` and two `Score` columns (pre-op and 1-year PROMs)
+- mixed date formats, units in number cells, Roman-numeral ASA classes, five spellings of "missing"
+- revisions marked only by a red fill on the Study ID cell
+- duplicated rows
+
+We'll fix it one step at a time. Every step is small enough to check. Run the steps in order: each one starts from the result of the step before.
+
+### Step 1: read both tabs, as text
+
+Read everything as text first. If you let the software guess types, it silently turns `32.1 kg/m2` into a missing value, and you never find out. We'll convert types deliberately in step 5.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+path <- "data/messy_abstraction_workbook.xlsx"
+
+read_site <- function(sheet) {
+  # skip = 3 jumps over the two banner rows and the group-header row
+  raw <- read_excel(path, sheet = sheet, skip = 3, col_types = "text",
+                    .name_repair = "minimal")
+  names(raw) <- str_trim(names(raw))   # "Study ID " has a trailing space on Site B
+
+  # The two Date/Score pairs: the group header says pre-op first, then 1 year
+  names(raw)[names(raw) == "Date"]  <- c("prom_preop_date", "prom_1yr_date")
+  names(raw)[names(raw) == "Score"] <- c("prom_preop", "prom_1yr")
+
+  raw |>
+    janitor::clean_names() |> # "Pt Name" -> pt_name, "Study ID" -> study_id
+    mutate(site = sheet)      # remember which tab each row came from
+}
+
+raw <- bind_rows(read_site("Site A"), read_site("Site B"))   # matches columns by name
+nrow(raw)
+names(raw)
+```
+
+## Python
+
+```{python}
+import re
+
+path = "data/messy_abstraction_workbook.xlsx"
+
+def read_site(sheet):
+    # header=3 uses the 4th row as column names (after banners and group headers)
+    raw = pd.read_excel(path, sheet_name=sheet, header=3, dtype=str)
+    names = [str(c).strip() for c in raw.columns]   # "Study ID " has a trailing space on Site B
+
+    # pandas renames repeated headers to "Date.1" and "Score.1"
+    pairs = {"Date": "prom_preop_date", "Score": "prom_preop",
+             "Date.1": "prom_1yr_date", "Score.1": "prom_1yr"}
+    names = [pairs.get(n, n) for n in names]
+
+    # "Pt Name" -> pt_name, "Study ID" -> study_id
+    raw.columns = [re.sub(r"[^0-9a-z]+", "_", n.lower()).strip("_") for n in names]
+    return raw.assign(site=sheet)   # remember which tab each row came from
+
+raw = pd.concat([read_site("Site A"), read_site("Site B")], ignore_index=True)  # matches by name
+print(len(raw))
+print(list(raw.columns))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"rows": float(len(raw))}
+```
+
+```{r}
+#| include: false
+check_agree(list(rows = nrow(raw)), reticulate::py$chk)
+```
+
+126 rows: 60 patients per tab, plus 2 duplicates and a totals row in each. Because we stacked the tabs **by column name**, Site B's extra `MUA` column didn't shift anything. Site A rows simply have `mua` missing. Copying cells by position would have put LOS values under the wrong heading.
+
+In R we call `janitor::clean_names()` with the package name in front instead of loading janitor with `library()`. Loading janitor replaces R's own `chisq.test()` and `fisher.test()` with its own versions, which would quietly change results on later pages.
+
+::: {.callout-tip}
+## 🔀 R vs Python: the same Excel file, read differently
+- **Repeated headers.** R (with `.name_repair = "minimal"`) keeps both `Date` columns as `Date`. pandas renames the second to `Date.1`.
+- **Real Excel dates.** Read as text, R gives the Excel serial number (`42010` means 6 Jan 2015). pandas gives `2015-01-06 00:00:00`. Step 5 handles both.
+:::
+
+### Step 2: drop rows and columns that aren't data
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+step2 <- raw |>
+  filter(is.na(pt_name) | pt_name != "TOTAL") |>   # the totals rows
+  distinct() |>                                      # exact duplicate rows
+  select(-pt_name, -mrn, -mua)                       # identifiers, and a column we don't need
+
+nrow(step2)
+```
+
+## Python
+
+```{python}
+step2 = (raw[raw["pt_name"] != "TOTAL"]           # the totals rows
+         .drop_duplicates()                        # exact duplicate rows
+         .drop(columns=["pt_name", "mrn", "mua"])) # identifiers, and a column we don't need
+print(len(step2))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"rows": float(len(step2))}
+```
+
+```{r}
+#| include: false
+check_agree(list(rows = nrow(step2)), reticulate::py$chk)
+```
+
+Names and MRNs go as early as possible. Everything after this point works on a study ID only.
+
+### Step 3: one way to say "missing"
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+missing_codes <- c("N/A", "unk", "-", "999")
+
+step3 <- step2 |>
+  mutate(across(everything(), \(x) if_else(x %in% missing_codes, NA, x)))
+
+# How many BMI values are missing now?
+sum(is.na(step3$bmi))
+```
+
+## Python
+
+```{python}
+missing_codes = ["N/A", "unk", "-", "999"]
+
+step3 = step2.replace(missing_codes, pd.NA)
+
+# How many BMI values are missing now?
+print(step3["bmi"].isna().sum())
+```
+:::
+
+```{python}
+#| include: false
+chk = {"missing_bmi": float(step3["bmi"].isna().sum())}
+```
+
+```{r}
+#| include: false
+check_agree(list(missing_bmi = sum(is.na(step3$bmi))), reticulate::py$chk)
+```
+
+::: {.callout-warning}
+## ⚠️ Watch out: `999` is only a missing code if your dictionary says so
+In this sheet `999` means "missing" in number columns. In another sheet it could be a real value. Write every missing code into the data dictionary *before* collection starts.
+:::
+
+### Step 4: recover the color-coded revisions
+
+The sheet marks revised cases only with a red fill on the Study ID cell. Most software reading a spreadsheet can't see colors at all, which is exactly why color must never carry data. Here we have to dig it out.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+library(tidyxl)
+
+cells   <- xlsx_cells(path)                                 # one row per spreadsheet cell
+fills   <- xlsx_formats(path)$local$fill$patternFill$fgColor$rgb  # fill color of each format
+
+revised_ids <- cells |>
+  filter(fills[local_format_id] %in% "FFFF9999") |>         # the red fill
+  pull(character) |>
+  str_trim() |>
+  unique()
+
+length(revised_ids)
+```
+
+## Python
+
+```{python}
+import openpyxl
+
+workbook = openpyxl.load_workbook(path)
+
+revised_ids = set()
+for sheet in workbook.worksheets:
+    for row in sheet.iter_rows(min_row=5):        # data starts on row 5
+        for cell in row:
+            if cell.fill.fgColor.rgb == "FFFF9999":   # the red fill
+                revised_ids.add(str(cell.value).strip())
+
+print(len(revised_ids))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"revised": float(len(revised_ids))}
+```
+
+```{r}
+#| include: false
+check_agree(list(revised = length(revised_ids)), reticulate::py$chk)
+```
+
+The `Notes` column mentions some revisions ("revised 2021 for loosening"), but not all of them. If we had trusted the notes we would have missed cases. Only the colors were complete.
+
+### Step 5: give every column its real type
+
+Now convert each text column into what it really is. One small function handles the mixed date formats.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+# Dates arrive as Excel serial numbers ("42010"), "1/13/15", "2015-04-21",
+# or "February 10 2015". Handle the serial numbers, then let lubridate try
+# month-day-year and year-month-day for the rest.
+parse_messy_date <- function(x, orders = c("mdy", "ymd")) {
+  serial <- !is.na(x) & str_detect(x, "^\\d{5}$")
+  out <- as.Date(rep(NA, length(x)))
+  out[serial]  <- janitor::excel_numeric_to_date(as.numeric(x[serial]))
+  out[!serial] <- as.Date(parse_date_time(x[!serial], orders = orders, quiet = TRUE))
+  out
+}
+
+tidy <- step3 |>
+  rename(procedure_text = procedure) |>   # keep the raw text until we've split it
+  transmute(
+    case_id      = str_trim(study_id),
+    site,
+    surgery_date = parse_messy_date(dos),
+    age          = parse_number(age),            # "67 yo"      -> 67
+    sex          = if_else(str_to_lower(str_sub(sex, 1, 1)) == "f", "Female", "Male"),
+    bmi          = parse_number(bmi),            # "BMI 31.2"   -> 31.2
+    asa          = as.integer(as.roman(str_remove(asa, "^ASA "))),  # "II", "ASA 2", "2" -> 2
+    diabetes     = as.integer(str_detect(comorbidities, regex("\\bDM\\b", ignore_case = TRUE))),
+    hypertension = as.integer(str_detect(comorbidities, regex("\\bHTN\\b", ignore_case = TRUE))),
+    sleep_apnea  = as.integer(str_detect(comorbidities, regex("\\bOSA\\b", ignore_case = TRUE))),
+    procedure    = if_else(str_detect(procedure_text, regex("TKA|knee", ignore_case = TRUE)), "TKA", "THA"),
+    side         = if_else(str_detect(procedure_text, "\\b(L|Left)\\b"), "L", "R"),
+    los_days     = parse_number(los),            # "0 (same day)" -> 0
+    revised      = as.integer(case_id %in% revised_ids),
+    prom_preop_date = parse_messy_date(prom_preop_date),
+    prom_preop      = parse_number(prom_preop),
+    prom_1yr_date   = parse_messy_date(prom_1yr_date),
+    prom_1yr        = parse_number(prom_1yr)
+  ) |>
+  arrange(site, case_id)
+
+glimpse(tidy)
+```
+
+## Python
+
+```{python}
+def number(text):
+    # The first number in each cell: "67 yo" -> 67, "BMI 31.2" -> 31.2
+    return pd.to_numeric(text.str.extract(r"(\d+\.?\d*)")[0])
+
+asa_roman = {"I": "1", "II": "2", "III": "3", "IV": "4"}
+procedure_text = step3["procedure"]   # keep the raw text until we've split it
+
+tidy = pd.DataFrame({
+    "case_id":      step3["study_id"].str.strip(),
+    "site":         step3["site"],
+    "surgery_date": pd.to_datetime(step3["dos"], format="mixed"),
+    "age":          number(step3["age"]),
+    "sex":          step3["sex"].str[0].str.lower().map({"f": "Female", "m": "Male"}),
+    "bmi":          number(step3["bmi"]),
+    "asa":          pd.to_numeric(step3["asa"].str.replace("ASA ", "").replace(asa_roman)),
+    "diabetes":     step3["comorbidities"].str.contains(r"\bDM\b", case=False).astype(int),
+    "hypertension": step3["comorbidities"].str.contains(r"\bHTN\b", case=False).astype(int),
+    "sleep_apnea":  step3["comorbidities"].str.contains(r"\bOSA\b", case=False).astype(int),
+    "procedure":    procedure_text.str.contains(r"TKA|knee", case=False).map({True: "TKA", False: "THA"}),
+    "side":         procedure_text.str.contains(r"\b(?:L|Left)\b").map({True: "L", False: "R"}),
+    "los_days":     number(step3["los"]),
+    "revised":      step3["study_id"].str.strip().isin(revised_ids).astype(int),
+    "prom_preop_date": pd.to_datetime(step3["prom_preop_date"], format="mixed"),
+    "prom_preop":      number(step3["prom_preop"]),
+    "prom_1yr_date":   pd.to_datetime(step3["prom_1yr_date"], format="mixed"),
+    "prom_1yr":        number(step3["prom_1yr"]),
+}).sort_values(["site", "case_id"]).reset_index(drop=True)
+
+tidy.info()
+```
+:::
+
+```{python}
+#| include: false
+chk = {"rows": float(len(tidy)), "mean_bmi": float(tidy["bmi"].mean()),
+       "revised": float(tidy["revised"].sum()), "tka": float((tidy["procedure"] == "TKA").sum())}
+```
+
+```{r}
+#| include: false
+check_agree(list(rows = nrow(tidy), mean_bmi = mean(tidy$bmi, na.rm = TRUE),
+                 revised = sum(tidy$revised), tka = sum(tidy$procedure == "TKA")), reticulate::py$chk)
+```
+
+```{r}
+#| include: false
+# Spec 8.4: the reference solution must reproduce the answer key exactly.
+key <- read_csv("data/answer-keys/abstraction_workbook_tidy.csv", show_col_types = FALSE)
+stopifnot(isTRUE(all.equal(as.data.frame(tidy), as.data.frame(key), check.attributes = FALSE)))
+```
+
+```{python}
+#| include: false
+key = pd.read_csv("data/answer-keys/abstraction_workbook_tidy.csv",
+                  parse_dates=["surgery_date", "prom_preop_date", "prom_1yr_date"])
+pd.testing.assert_frame_equal(tidy, key, check_dtype=False)
+```
+
+::: {.callout-tip}
+## 🔀 R vs Python: dates
+R needs a separate step for Excel serial numbers (`janitor::excel_numeric_to_date()`). pandas already turned those cells into date-times, so `pd.to_datetime(..., format="mixed")` handles every format in one go. `"1/13/15"` is read month-first in both: US style, which is what TJS sheets use.
+:::
+
+## Reshaping a survey export {#reshaping}
+
+`data/messy_survey_export.csv` is what survey platforms produce: one row per patient, one column per question per visit (`KOOS_Q3_6wk`), and a second header row of question labels. To analyze it we need one row per patient, visit and item.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+survey_path <- "data/messy_survey_export.csv"
+
+header <- read_lines(survey_path, n_max = 1) |> str_split_1(",")
+wide <- read_csv(survey_path, skip = 2, col_names = header,          # skip both header rows
+                 col_types = cols(.default = "c"))
+
+items <- wide |>
+  pivot_longer(
+    -c(ResponseId, case_id, instrument),
+    names_to = c("inst", "item", "visit"),
+    names_pattern = "(KOOS|HOOS)_Q(\\d)_(.*)",       # "KOOS_Q3_6wk" -> KOOS, 3, 6wk
+    values_to = "response"
+  ) |>
+  filter(substr(instrument, 1, 4) == inst) |>         # keep each patient's own instrument
+  mutate(item = as.integer(item), response = as.integer(response),
+         visit_order = match(visit, c("preop", "6wk", "3mo", "1yr"))) |>
+  arrange(case_id, visit_order, item) |>
+  select(case_id, instrument, visit, item, response)
+
+items
+```
+
+## Python
+
+```{python}
+survey_path = "data/messy_survey_export.csv"
+
+wide = pd.read_csv(survey_path, skiprows=[1], dtype=str)   # skip the question-label row
+
+items = wide.melt(id_vars=["ResponseId", "case_id", "instrument"],
+                  var_name="column", value_name="response")
+parts = items["column"].str.extract(r"(?P<inst>KOOS|HOOS)_Q(?P<item>\d)_(?P<visit>.+)")
+items = pd.concat([items, parts], axis=1)
+items = items[items["instrument"].str[:4] == items["inst"]]   # keep each patient's own instrument
+
+visit_order = {"preop": 0, "6wk": 1, "3mo": 2, "1yr": 3}
+items = (items.assign(item=items["item"].astype(int),
+                      response=pd.to_numeric(items["response"]),
+                      order=items["visit"].map(visit_order))
+              .sort_values(["case_id", "order", "item"])
+              [["case_id", "instrument", "visit", "item", "response"]]
+              .reset_index(drop=True))
+print(items)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"rows": float(len(items)), "mean": float(items["response"].mean())}
+```
+
+```{r}
+#| include: false
+check_agree(list(rows = nrow(items), mean = mean(items$response, na.rm = TRUE)), reticulate::py$chk)
+survey_key <- read_csv("data/answer-keys/survey_items_long.csv", show_col_types = FALSE)
+stopifnot(isTRUE(all.equal(as.data.frame(items), as.data.frame(survey_key), check.attributes = FALSE)))
+```
+
+```{python}
+#| include: false
+pd.testing.assert_frame_equal(items, pd.read_csv("data/answer-keys/survey_items_long.csv"),
+                              check_dtype=False)
+```
+
+A KOOS JR patient now has 7 items × 4 visits = 28 rows. A missed visit still has its rows, with the response blank, so "expected but not answered" stays visible.
+
+## Checking nothing changed {#integrity}
+
+On a real project nobody hands you an answer key. These checks need nothing but the raw sheet and your result. Run them after every cleaning job.
+
+**1. Rows and IDs.** You should have exactly one row per case, and the count should match what you expect.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+nrow(tidy)                       # 60 per site
+n_distinct(tidy$case_id)         # must equal nrow: no duplicate IDs
+count(tidy, site)
+```
+
+## Python
+
+```{python}
+print(len(tidy))                       # 60 per site
+print(tidy["case_id"].nunique())       # must equal len: no duplicate IDs
+print(tidy["site"].value_counts())
+```
+:::
+
+**2. Missing values didn't appear or disappear.** Every missing BMI in the result should trace back to a missing code or blank in the sheet.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+missing_in_sheet  <- sum(is.na(step2$bmi) | step2$bmi %in% missing_codes)
+missing_in_result <- sum(is.na(tidy$bmi))
+c(sheet = missing_in_sheet, result = missing_in_result)
+```
+
+## Python
+
+```{python}
+missing_in_sheet = (step2["bmi"].isna() | step2["bmi"].isin(missing_codes)).sum()
+missing_in_result = tidy["bmi"].isna().sum()
+print(missing_in_sheet, missing_in_result)
+```
+:::
+
+**3. Cross-tab every recode.** Each messy spelling should map to exactly one clean value, and nothing should map to missing by accident.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+tibble(raw = step3$sex, clean = if_else(str_to_lower(str_sub(step3$sex, 1, 1)) == "f", "Female", "Male")) |>
+  count(raw, clean)
+```
+
+## Python
+
+```{python}
+recode = pd.DataFrame({"raw": step3["sex"],
+                       "clean": step3["sex"].str[0].str.lower().map({"f": "Female", "m": "Male"})})
+print(recode.value_counts().sort_index())
+```
+:::
+
+**4. Range and logic checks.** Values a person can't have, and dates in the wrong order.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+tidy |>
+  summarise(
+    age_out_of_range  = sum(age < 18 | age > 110, na.rm = TRUE),
+    bmi_out_of_range  = sum(bmi < 10 | bmi > 80, na.rm = TRUE),
+    prom_out_of_range = sum(prom_preop < 0 | prom_preop > 100 | prom_1yr < 0 | prom_1yr > 100, na.rm = TRUE),
+    preop_after_surgery = sum(prom_preop_date > surgery_date, na.rm = TRUE),
+    one_year_before_surgery = sum(prom_1yr_date < surgery_date, na.rm = TRUE)
+  )
+```
+
+## Python
+
+```{python}
+checks = {
+    "age_out_of_range": ((tidy["age"] < 18) | (tidy["age"] > 110)).sum(),
+    "bmi_out_of_range": ((tidy["bmi"] < 10) | (tidy["bmi"] > 80)).sum(),
+    "prom_out_of_range": ((tidy["prom_preop"] < 0) | (tidy["prom_preop"] > 100) |
+                          (tidy["prom_1yr"] < 0) | (tidy["prom_1yr"] > 100)).sum(),
+    "preop_after_surgery": (tidy["prom_preop_date"] > tidy["surgery_date"]).sum(),
+    "one_year_before_surgery": (tidy["prom_1yr_date"] < tidy["surgery_date"]).sum(),
+}
+print(pd.Series(checks))
+```
+:::
+
+All zeros: good.
+
+**5. Spot-check against the sheet.** Pick a few random rows and compare them, by eye, with the workbook.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+set.seed(1)
+tidy |> slice_sample(n = 3) |> select(case_id, site, surgery_date, age, bmi, procedure, side)
+```
+
+## Python
+
+```{python}
+print(tidy.sample(n=3, random_state=1)[["case_id", "site", "surgery_date", "age", "bmi", "procedure", "side"]])
+```
+:::
+
+### What a failing check looks like
+
+Suppose we had parsed the surgery dates day-first (European style) by mistake. Nothing crashes. Two of the checks above catch it: the missing count, and a logic check that every pre-op PROM falls within a month before surgery.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+wrong <- parse_messy_date(step3$dos, orders = c("dmy", "ymd"))   # the mistake
+preop <- parse_messy_date(step3$prom_preop_date)
+
+outside_window <- function(surgery) {
+  days_before <- as.numeric(surgery - preop)
+  sum(days_before < 0 | days_before > 31, na.rm = TRUE)
+}
+c(missing_correct   = sum(is.na(tidy$surgery_date)),
+  missing_day_first = sum(is.na(wrong)),
+  window_correct    = outside_window(parse_messy_date(step3$dos)),
+  window_day_first  = outside_window(wrong))
+```
+
+## Python
+
+```{python}
+wrong = pd.to_datetime(step3["dos"], format="mixed", dayfirst=True)   # the mistake
+preop = pd.to_datetime(step3["prom_preop_date"], format="mixed")
+
+def outside_window(surgery):
+    days_before = (surgery - preop).dt.days
+    return int(((days_before < 0) | (days_before > 31)).sum())
+
+print(pd.Series({
+    "missing_correct": tidy["surgery_date"].isna().sum(),
+    "missing_day_first": wrong.isna().sum(),
+    "window_correct": outside_window(pd.to_datetime(step3["dos"], format="mixed")),
+    "window_day_first": outside_window(wrong),
+}))
+```
+:::
+
+With the correct parse, nothing is missing and every pre-op PROM falls in its window. With the day-first parse, R can't read `"1/13/15"` (there's no 13th month), so dates go missing. pandas quietly switches to month-first whenever day-first is impossible, so in Python nothing goes missing at all. In **both** languages, dates like `"3/4/24"` parse "successfully" as 3 April instead of 4 March, and the window check flags every one of them.
+
+::: {.callout-warning}
+## ⚠️ Watch out: one check is never enough
+The missing-count check caught this bug in R but not in Python. The logic check caught it in both. Run all five checks every time; they catch different mistakes.
+:::
+
+### Finally: compare with the answer key
+
+Because this is a teaching dataset, there *is* a known right answer: `data/answer-keys/abstraction_workbook_tidy.csv`. Our result matches it exactly.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+answer <- read_csv("data/answer-keys/abstraction_workbook_tidy.csv", show_col_types = FALSE)
+all.equal(as.data.frame(tidy), as.data.frame(answer), check.attributes = FALSE)
+```
+
+## Python
+
+```{python}
+answer = pd.read_csv("data/answer-keys/abstraction_workbook_tidy.csv",
+                     parse_dates=["surgery_date", "prom_preop_date", "prom_1yr_date"])
+pd.testing.assert_frame_equal(tidy, answer, check_dtype=False)   # silent means identical
+print("identical")
+```
+:::
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+koos_case <- items$case_id[items$instrument == "KOOS JR"][1]
+stopifnot(
+  nrow(raw) == 126,
+  nrow(tidy) == 120,
+  all(table(tidy$site) == 60),
+  sum(items$case_id == koos_case) == 28
+)
+```
+
+## Exercises {#exercises}
+
+**1.** Use a cross-tab (check 3) to confirm the ASA recode: every raw spelling should map to one class from 1 to 4.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+tibble(raw = step3$asa,
+       clean = as.integer(as.roman(str_remove(step3$asa, "^ASA ")))) |>
+  count(raw, clean)
+```
+
+## Python
+
+```{python}
+asa = pd.DataFrame({"raw": step3["asa"],
+                    "clean": pd.to_numeric(step3["asa"].str.replace("ASA ", "").replace(asa_roman))})
+print(asa.value_counts(dropna=False).sort_index())
+```
+:::
+
+`2`, `II` and `ASA 2` all become 2, and the missing codes stay missing.
+:::
+
+**2.** A colleague's sheet has one row per patient and the columns `koos_left_preop`, `koos_left_1yr`, `koos_right_preop`, `koos_right_1yr`. Is it tidy? If not, what should one row be?
+
+::: {.callout-tip collapse="true"}
+## Solution
+Not tidy: *side* and *visit* are hiding in the column names. One row should be one knee at one visit, with columns `patient_id`, `side`, `visit`, `koos`. Reshape it with `pivot_longer()` (R) or `melt()` (Python), splitting each column name into side and visit, as we did for the survey export.
+:::
+
+**3.** How many cases have a 1-year PROM recorded but no pre-op PROM? Why would that matter for an analysis of improvement?
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+tidy |> filter(!is.na(prom_1yr), is.na(prom_preop)) |> nrow()
+```
+
+## Python
+
+```{python}
+print(((tidy["prom_1yr"].notna()) & (tidy["prom_preop"].isna())).sum())
+```
+:::
+
+Those patients have no baseline, so their improvement can't be computed. An analysis of change silently drops them. Report how many, so readers know.
+:::

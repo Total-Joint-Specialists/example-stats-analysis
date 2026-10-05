@@ -41,3 +41,38 @@ def test_every_page_with_code_declares_knitr():
     offenders = [str(f.relative_to(ROOT)) for f in qmd_files()
                  if missing_knitr(f.read_text(encoding="utf-8"))]
     assert offenders == [], "Add `engine: knitr` to the front matter of: " + ", ".join(offenders)
+
+
+HIDDEN_CHUNK = re.compile(r"```\{(r|python)\}\n#\| include: false\n(.*?)\n```", re.DOTALL)
+
+
+def test_tidy_page_checks_both_answer_keys_in_both_languages():
+    """Spec 8.4: page 1's reference solutions must reproduce the answer keys exactly."""
+    chunks = HIDDEN_CHUNK.findall((ROOT / "foundations" / "01-tidy-data.qmd").read_text(encoding="utf-8"))
+    for key in ["abstraction_workbook_tidy.csv", "survey_items_long.csv"]:
+        assert any(lang == "r" and key in code and "stopifnot(isTRUE(all.equal(" in code
+                   for lang, code in chunks), f"no hidden R check against {key}"
+        assert any(lang == "python" and key in code and "assert_frame_equal" in code
+                   for lang, code in chunks), f"no hidden Python check against {key}"
+
+
+def written_foundations():
+    """Foundations pages that are no longer "(coming soon)" stubs."""
+    for path in sorted((ROOT / "foundations").glob("*.qmd")):
+        text = path.read_text(encoding="utf-8")
+        if "(coming soon)" not in front_matter(text):
+            yield path.name, text
+
+
+def test_foundations_exercise_solutions_are_executed():
+    """Solutions run on every render, so a typo in one can't ship unnoticed."""
+    for name, text in written_foundations():
+        exercises = text[text.index("## Exercises {#exercises}"):]
+        assert "```r\n" not in exercises and "```python\n" not in exercises, name
+
+
+def test_foundations_pages_guard_the_numbers_in_their_prose():
+    for name, text in written_foundations():
+        chunks = HIDDEN_CHUNK.findall(text)
+        assert any(lang == "r" and "Prose guard" in code and "stopifnot(" in code
+                   for lang, code in chunks), name

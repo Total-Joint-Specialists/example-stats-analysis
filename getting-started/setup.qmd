@@ -111,16 +111,26 @@ source("getting-started/check_setup.R")
 
 ## Reading the data without cloning
 
-You can try any example without steps 5–8. Point the read function at GitHub instead of the `data/` folder:
+You can skip step 5 (cloning) and read the practice data straight from GitHub. You still need the packages, so install them first.
 
 ::: {.panel-tabset group="language"}
 ## R
 
 ```r
+install.packages(c("readr", "readxl"))   # once
+
 cohort <- readr::read_csv("https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/cohort.csv")
 ```
 
 ## Python
+
+Start Python with the packages it needs. In a terminal:
+
+```bash
+uv run --with pandas --with openpyxl python
+```
+
+Then:
 
 ```python
 import pandas as pd
@@ -129,7 +139,27 @@ cohort = pd.read_csv("https://raw.githubusercontent.com/Total-Joint-Specialists/
 ```
 :::
 
-In any example, replace `"data/"` with `"https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/"`.
+Every CSV works the same way. In any example, replace `"data/"` with `"https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/"`.
+
+Excel files are different. R's `read_excel()` can't read a web address, so download the file first. Python's `pd.read_excel()` can read the address directly.
+
+::: {.panel-tabset group="language"}
+## R
+
+```r
+url <- "https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/messy_abstraction_workbook.xlsx"
+path <- tempfile(fileext = ".xlsx")
+download.file(url, path, mode = "wb")   # "wb" keeps the file intact on Windows
+site_a <- readxl::read_excel(path, sheet = "Site A")
+```
+
+## Python
+
+```python
+url = "https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/messy_abstraction_workbook.xlsx"
+site_a = pd.read_excel(url, sheet_name="Site A")
+```
+:::
 
 ## Troubleshooting
 

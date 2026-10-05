@@ -68,3 +68,11 @@ def test_setup_page_avoids_cloud_synced_folders(site):
     assert "cd ~/Documents" not in text
     assert "mkdir -p ~/projects" in text
     assert "OneDrive" in text and "iCloud" in text
+
+
+def test_no_clone_instructions_install_packages_and_handle_excel(site):
+    text = load("getting-started/setup.html").get_text()
+    assert "without steps 5–8" not in text
+    assert 'install.packages(c("readr", "readxl"))' in text
+    assert "uv run --with pandas --with openpyxl python" in text
+    assert 'download.file(url, path, mode = "wb")' in text

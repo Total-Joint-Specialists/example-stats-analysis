@@ -18,7 +18,7 @@ jobs:
       - name: Build the site from frozen results (no R or Python)
         run: quarto render
 
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.2.0
 
       - name: Site tests
         run: uv run --only-group dev pytest tests/site -q

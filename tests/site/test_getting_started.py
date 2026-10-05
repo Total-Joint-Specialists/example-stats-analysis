@@ -28,7 +28,7 @@ def test_real_data_page_lists_all_18_safe_harbor_identifiers(site):
 
 
 def test_real_data_page_covers_tjs_traps(site):
-    text = load("getting-started/real-data.html").get_text(" ")
+    text = load("getting-started/real-data.html").get_text()  # no separator: keeps highlighted code intact
     for phrase in ["MRN", "older than 89", "implant", "DICOM", "AI", "git status",
                    "git diff --staged"]:
         assert phrase in text, phrase

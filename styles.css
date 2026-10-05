@@ -1,0 +1,13 @@
+/* Home-page decision table */
+.decision-table table {
+  font-size: 0.9rem;
+}
+
+.decision-table td {
+  vertical-align: top;
+}
+
+.decision-table td:first-child,
+.decision-table th:first-child {
+  min-width: 11rem;
+}

@@ -1,0 +1,1014 @@
+[
+  {
+    "objectID": "report/18-example-report.html",
+    "href": "report/18-example-report.html",
+    "title": "18 · Example study report (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 5 · Putting it together",
+      "18 · Example study report (coming soon)"
+    ]
+  },
+  {
+    "objectID": "beyond/16-mixed-models.html",
+    "href": "beyond/16-mixed-models.html",
+    "title": "16 · Mixed models for repeated PROMs (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 4 · Beyond the table",
+      "16 · Mixed models for repeated PROMs (coming soon)"
+    ]
+  },
+  {
+    "objectID": "survival/14-cox-regression.html",
+    "href": "survival/14-cox-regression.html",
+    "title": "14 · Cox proportional hazards regression (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 3 · Survival analysis",
+      "14 · Cox proportional hazards regression (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/12-predict-from-several.html",
+    "href": "catalog/12-predict-from-several.html",
+    "title": "12 · Predict a value from several variables (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "12 · Predict a value from several variables (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/12-predict-from-several.html#multiple-linear-regression",
+    "href": "catalog/12-predict-from-several.html#multiple-linear-regression",
+    "title": "12 · Predict a value from several variables (coming soon)",
+    "section": "Multiple linear regression",
+    "text": "Multiple linear regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "12 · Predict a value from several variables (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/12-predict-from-several.html#multiple-nonlinear-regression",
+    "href": "catalog/12-predict-from-several.html#multiple-nonlinear-regression",
+    "title": "12 · Predict a value from several variables (coming soon)",
+    "section": "Multiple nonlinear regression",
+    "text": "Multiple nonlinear regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "12 · Predict a value from several variables (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/12-predict-from-several.html#multiple-logistic-regression",
+    "href": "catalog/12-predict-from-several.html#multiple-logistic-regression",
+    "title": "12 · Predict a value from several variables (coming soon)",
+    "section": "Multiple logistic regression",
+    "text": "Multiple logistic regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "12 · Predict a value from several variables (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/12-predict-from-several.html#cox",
+    "href": "catalog/12-predict-from-several.html#cox",
+    "title": "12 · Predict a value from several variables (coming soon)",
+    "section": "Cox regression",
+    "text": "Cox regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "12 · Predict a value from several variables (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/10-association.html",
+    "href": "catalog/10-association.html",
+    "title": "10 · Quantify association between two variables (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "10 · Quantify association between two variables (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/10-association.html#pearson",
+    "href": "catalog/10-association.html#pearson",
+    "title": "10 · Quantify association between two variables (coming soon)",
+    "section": "Pearson correlation",
+    "text": "Pearson correlation",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "10 · Quantify association between two variables (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/10-association.html#spearman",
+    "href": "catalog/10-association.html#spearman",
+    "title": "10 · Quantify association between two variables (coming soon)",
+    "section": "Spearman correlation",
+    "text": "Spearman correlation",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "10 · Quantify association between two variables (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/10-association.html#contingency-coefficients",
+    "href": "catalog/10-association.html#contingency-coefficients",
+    "title": "10 · Quantify association between two variables (coming soon)",
+    "section": "Contingency coefficients",
+    "text": "Contingency coefficients",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "10 · Quantify association between two variables (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/08-three-plus-unmatched.html",
+    "href": "catalog/08-three-plus-unmatched.html",
+    "title": "8 · Compare three or more unmatched groups (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "8 · Compare three or more unmatched groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/08-three-plus-unmatched.html#one-way-anova",
+    "href": "catalog/08-three-plus-unmatched.html#one-way-anova",
+    "title": "8 · Compare three or more unmatched groups (coming soon)",
+    "section": "One-way ANOVA",
+    "text": "One-way ANOVA",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "8 · Compare three or more unmatched groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/08-three-plus-unmatched.html#kruskal-wallis",
+    "href": "catalog/08-three-plus-unmatched.html#kruskal-wallis",
+    "title": "8 · Compare three or more unmatched groups (coming soon)",
+    "section": "Kruskal-Wallis test",
+    "text": "Kruskal-Wallis test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "8 · Compare three or more unmatched groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/08-three-plus-unmatched.html#chi-square",
+    "href": "catalog/08-three-plus-unmatched.html#chi-square",
+    "title": "8 · Compare three or more unmatched groups (coming soon)",
+    "section": "Chi-square test",
+    "text": "Chi-square test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "8 · Compare three or more unmatched groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/08-three-plus-unmatched.html#cox",
+    "href": "catalog/08-three-plus-unmatched.html#cox",
+    "title": "8 · Compare three or more unmatched groups (coming soon)",
+    "section": "Cox regression",
+    "text": "Cox regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "8 · Compare three or more unmatched groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/06-two-unpaired-groups.html",
+    "href": "catalog/06-two-unpaired-groups.html",
+    "title": "6 · Compare two unpaired groups (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "6 · Compare two unpaired groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/06-two-unpaired-groups.html#unpaired-t",
+    "href": "catalog/06-two-unpaired-groups.html#unpaired-t",
+    "title": "6 · Compare two unpaired groups (coming soon)",
+    "section": "Unpaired t test",
+    "text": "Unpaired t test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "6 · Compare two unpaired groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/06-two-unpaired-groups.html#mann-whitney",
+    "href": "catalog/06-two-unpaired-groups.html#mann-whitney",
+    "title": "6 · Compare two unpaired groups (coming soon)",
+    "section": "Mann-Whitney test",
+    "text": "Mann-Whitney test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "6 · Compare two unpaired groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/06-two-unpaired-groups.html#fisher-chi-square",
+    "href": "catalog/06-two-unpaired-groups.html#fisher-chi-square",
+    "title": "6 · Compare two unpaired groups (coming soon)",
+    "section": "Fisher’s exact test and chi-square",
+    "text": "Fisher’s exact test and chi-square",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "6 · Compare two unpaired groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/06-two-unpaired-groups.html#log-rank",
+    "href": "catalog/06-two-unpaired-groups.html#log-rank",
+    "title": "6 · Compare two unpaired groups (coming soon)",
+    "section": "Log-rank test",
+    "text": "Log-rank test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "6 · Compare two unpaired groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/04-describe-one-group.html",
+    "href": "catalog/04-describe-one-group.html",
+    "title": "4 · Describe one group (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "4 · Describe one group (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/04-describe-one-group.html#mean-sd",
+    "href": "catalog/04-describe-one-group.html#mean-sd",
+    "title": "4 · Describe one group (coming soon)",
+    "section": "Mean and standard deviation",
+    "text": "Mean and standard deviation",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "4 · Describe one group (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/04-describe-one-group.html#median-iqr",
+    "href": "catalog/04-describe-one-group.html#median-iqr",
+    "title": "4 · Describe one group (coming soon)",
+    "section": "Median and interquartile range",
+    "text": "Median and interquartile range",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "4 · Describe one group (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/04-describe-one-group.html#proportion",
+    "href": "catalog/04-describe-one-group.html#proportion",
+    "title": "4 · Describe one group (coming soon)",
+    "section": "Proportion",
+    "text": "Proportion",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "4 · Describe one group (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/04-describe-one-group.html#kaplan-meier",
+    "href": "catalog/04-describe-one-group.html#kaplan-meier",
+    "title": "4 · Describe one group (coming soon)",
+    "section": "Kaplan-Meier survival curve",
+    "text": "Kaplan-Meier survival curve",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "4 · Describe one group (coming soon)"
+    ]
+  },
+  {
+    "objectID": "foundations/02-demographics.html",
+    "href": "foundations/02-demographics.html",
+    "title": "2 · Demographics (Table 1) (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 1 · Foundations",
+      "2 · Demographics (Table 1) (coming soon)"
+    ]
+  },
+  {
+    "objectID": "getting-started/using-this-site.html",
+    "href": "getting-started/using-this-site.html",
+    "title": "How to use this site",
+    "section": "",
+    "text": "Every example on this site is written twice: once in R and once in Python. Both give the same answer. Click a tab to choose. The site remembers your choice on every page, so you only pick once.\nHere is a tiny example: five pretend patients’ ages, their mean, and their standard deviation (SD).\n\nRPython\n\n\n\nages &lt;- c(64, 71, 58, 69, 75)   # five pretend patients' ages\n\nmean_age &lt;- mean(ages)           # the average\nsd_age &lt;- sd(ages)               # the standard deviation\n\nmean_age\n\n[1] 67.4\n\nsd_age\n\n[1] 6.580274\n\n\n\n\n\nimport pandas as pd\n\nages = pd.Series([64, 71, 58, 69, 75])   # five pretend patients' ages\n\nmean_age = ages.mean()                    # the average\nsd_age = ages.std()                       # the standard deviation\n\nprint(mean_age)\n\n67.4\n\nprint(sd_age)\n\n6.580273550544841\n\n\n\n\n\nBoth say the mean age is 67.4 years with an SD of 6.6 years.\n\n\n\n\n\n\nTip🔀 R vs Python: the standard deviation trap\n\n\n\nPython has two common ways to compute an SD, and they disagree. pandas (ages.std()) divides by n − 1, like R’s sd(). numpy (np.std(ages)) divides by n unless you write np.std(ages, ddof=1). Medical papers report the n − 1 version. Whenever the two languages’ defaults differ, this site sets them explicitly and explains why in a box like this one.\n\n\nBehind the scenes, every page checks that the R and Python answers match. If they ever disagree, the site refuses to build, so you can trust that both tabs say the same thing.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "How to use this site"
+    ]
+  },
+  {
+    "objectID": "getting-started/using-this-site.html#pick-your-language-once",
+    "href": "getting-started/using-this-site.html#pick-your-language-once",
+    "title": "How to use this site",
+    "section": "",
+    "text": "Every example on this site is written twice: once in R and once in Python. Both give the same answer. Click a tab to choose. The site remembers your choice on every page, so you only pick once.\nHere is a tiny example: five pretend patients’ ages, their mean, and their standard deviation (SD).\n\nRPython\n\n\n\nages &lt;- c(64, 71, 58, 69, 75)   # five pretend patients' ages\n\nmean_age &lt;- mean(ages)           # the average\nsd_age &lt;- sd(ages)               # the standard deviation\n\nmean_age\n\n[1] 67.4\n\nsd_age\n\n[1] 6.580274\n\n\n\n\n\nimport pandas as pd\n\nages = pd.Series([64, 71, 58, 69, 75])   # five pretend patients' ages\n\nmean_age = ages.mean()                    # the average\nsd_age = ages.std()                       # the standard deviation\n\nprint(mean_age)\n\n67.4\n\nprint(sd_age)\n\n6.580273550544841\n\n\n\n\n\nBoth say the mean age is 67.4 years with an SD of 6.6 years.\n\n\n\n\n\n\nTip🔀 R vs Python: the standard deviation trap\n\n\n\nPython has two common ways to compute an SD, and they disagree. pandas (ages.std()) divides by n − 1, like R’s sd(). numpy (np.std(ages)) divides by n unless you write np.std(ages, ddof=1). Medical papers report the n − 1 version. Whenever the two languages’ defaults differ, this site sets them explicitly and explains why in a box like this one.\n\n\nBehind the scenes, every page checks that the R and Python answers match. If they ever disagree, the site refuses to build, so you can trust that both tabs say the same thing.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "How to use this site"
+    ]
+  },
+  {
+    "objectID": "getting-started/using-this-site.html#running-the-code-yourself",
+    "href": "getting-started/using-this-site.html#running-the-code-yourself",
+    "title": "How to use this site",
+    "section": "Running the code yourself",
+    "text": "Running the code yourself\n\nOpen the repository folder in Positron (see Install & set up).\nSave practice files in the scratch/ folder, for example scratch/practice.R or scratch/practice.py. Git ignores everything in scratch/, so practice files can never be committed by accident.\nCopy code with the copy button that appears in the top-right corner of every code block.\nRun a line with Cmd+Enter (Mac) or Ctrl+Enter (Windows). Positron sends it to the console.\n\nData paths such as data/cohort.csv are relative to the repository’s top folder. Positron starts there when you open the folder, so the paths just work.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "How to use this site"
+    ]
+  },
+  {
+    "objectID": "getting-started/using-this-site.html#the-boxes-youll-see",
+    "href": "getting-started/using-this-site.html#the-boxes-youll-see",
+    "title": "How to use this site",
+    "section": "The boxes you’ll see",
+    "text": "The boxes you’ll see\n\n\n\n\n\n\nNote💡 In plain language\n\n\n\nThe idea without the jargon. If a page loses you, read these boxes first.\n\n\n\n\n\n\n\n\nWarning⚠️ Watch out\n\n\n\nMistakes we see often, and how to avoid them.\n\n\n\n\n\n\n\n\nTip🔀 R vs Python\n\n\n\nWhere the two languages’ defaults differ, and what this site does about it.\n\n\n\n\n\n\n\n\nNote🔍 Under the hood\n\n\n\n\n\nThe math, for the curious. These start closed: click to open. You never need them to use a test correctly.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "How to use this site"
+    ]
+  },
+  {
+    "objectID": "getting-started/using-this-site.html#how-results-are-reported",
+    "href": "getting-started/using-this-site.html#how-results-are-reported",
+    "title": "How to use this site",
+    "section": "How results are reported",
+    "text": "How results are reported\nEvery “How to report it” paragraph on this site follows the same rules, which match what JOA and JBJS reviewers expect.\n\n\n\n\n\n\n\n\nWhat\nReport it as\nExample\n\n\n\n\nContinuous, roughly symmetric\nmean (SD)\nage 67.4 (6.6) years\n\n\nContinuous, skewed\nmedian (IQR)\nlength of stay 1 (0–2) days\n\n\nCategories\nn (%)\n312 (52%) female\n\n\np-values\nthree decimals; never “p = 0.000”\np = 0.017; p &lt; 0.001\n\n\nEffect estimates\nwith a 95% confidence interval\ndifference 1.6 kg/m² (95% CI 0.7 to 2.5)\n\n\n\nThe examples in the table are illustrations, not results from our data. Demographics (Table 1) shows the full Table 1 layout.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "How to use this site"
+    ]
+  },
+  {
+    "objectID": "getting-started/using-this-site.html#exercises",
+    "href": "getting-started/using-this-site.html#exercises",
+    "title": "How to use this site",
+    "section": "Exercises",
+    "text": "Exercises\nEach page ends with two to four short exercises on the practice data. They get harder in three steps: run the same analysis on a different variable, pick the right test for a short scenario, then write the Results sentence. Solutions are hidden in both languages. Try first, then check.\nTry it: using the same five ages, find the median.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nRPython\n\n\nages &lt;- c(64, 71, 58, 69, 75)\nmedian(ages)   # 69\n\n\nimport pandas as pd\n\nages = pd.Series([64, 71, 58, 69, 75])\nages.median()   # 69.0",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "How to use this site"
+    ]
+  },
+  {
+    "objectID": "getting-started/using-this-site.html#getting-help",
+    "href": "getting-started/using-this-site.html#getting-help",
+    "title": "How to use this site",
+    "section": "Getting help",
+    "text": "Getting help\n\nSomething on this site is wrong or confusing? Open an issue on GitHub.\nA question about your own project? Ask your TJS project lead.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "How to use this site"
+    ]
+  },
+  {
+    "objectID": "getting-started/real-data.html",
+    "href": "getting-started/real-data.html",
+    "title": "Working with real TJS data",
+    "section": "",
+    "text": "Everything on this site uses invented data. Your real project won’t. This page covers the rules that keep patients and TJS safe. Read it before you open any real dataset.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Working with real TJS data"
+    ]
+  },
+  {
+    "objectID": "getting-started/real-data.html#what-counts-as-protected-health-information-phi",
+    "href": "getting-started/real-data.html#what-counts-as-protected-health-information-phi",
+    "title": "Working with real TJS data",
+    "section": "What counts as protected health information (PHI)",
+    "text": "What counts as protected health information (PHI)\nUS law (HIPAA) lists 18 kinds of identifiers. A dataset is only “de-identified” under the Safe Harbor method when all 18 are removed:\n\n\nNames\nGeographic units smaller than a state: street address, city, county, and ZIP code. The first three digits of a ZIP code may stay if that area holds more than 20,000 people.\nAll parts of dates except the year, when they relate to the patient: birth, admission, discharge, surgery, and death dates. For patients older than 89, remove every part of every date that reveals their age, including the year (so no birth year), and group their ages as “90 or older”.\nTelephone numbers\nFax numbers\nEmail addresses\nSocial Security numbers\nMedical record numbers (MRNs)\nHealth plan beneficiary numbers\nAccount numbers\nCertificate or license numbers\nVehicle identifiers and serial numbers, including license plates\nDevice identifiers and serial numbers, including implant serial and lot numbers\nWeb addresses (URLs)\nIP addresses\nBiometric identifiers, such as fingerprints and voice prints\nFull-face photographs and comparable images\nAny other unique identifying number, characteristic, or code\n\n\nThese identifiers must also be removed for the patient’s relatives, employers, or household members. And Safe Harbor only counts if you have no actual knowledge that what’s left could still identify someone.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Working with real TJS data"
+    ]
+  },
+  {
+    "objectID": "getting-started/real-data.html#tjs-specific-traps",
+    "href": "getting-started/real-data.html#tjs-specific-traps",
+    "title": "Working with real TJS data",
+    "section": "TJS-specific traps",
+    "text": "TJS-specific traps\n\nSurgery dates are dates. Use “days from surgery” or the surgery year instead.\nAges over 89. Report them as “90 or older”, and drop the birth year and any other date that reveals their age.\nStudy IDs built from patient details. A study ID made from initials, an MRN, or a birth date (like JS-0412) is still an identifier. Use arbitrary codes such as C0001.\nMRNs hide in file names. Watch for names like 12345678_xray.png or chart_pull_MRN.xlsx.\nImplant stickers. Lot and serial numbers are device identifiers.\nRadiographs. DICOM files carry the patient’s name, MRN and dates in their headers, and some images have them burned into the pixels.\nFree-text “notes” columns. They collect names, phone numbers and dates.\nScreenshots of the chart. They’re PHI too.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Working with real TJS data"
+    ]
+  },
+  {
+    "objectID": "getting-started/real-data.html#where-tjs-data-lives",
+    "href": "getting-started/real-data.html#where-tjs-data-lives",
+    "title": "Working with real TJS data",
+    "section": "Where TJS data lives",
+    "text": "Where TJS data lives\n\nStudy data lives in TJS-controlled Google Sheets and Google Drive folders that your project lead shares with your TJS account.\nProject repositories read data at run time, either straight from the Google Sheet or from a local data/ folder that is listed in .gitignore before the first commit.\nThe crosswalk that links MRNs to study IDs lives only with the data, never in a repository.\nWhat leaves the secure environment is aggregate: tables, figures and model results. Your IRB protocol may require hiding small counts (for example, cells with fewer than 11 patients).",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Working with real TJS data"
+    ]
+  },
+  {
+    "objectID": "getting-started/real-data.html#how-tjs-projects-handle-data-in-code",
+    "href": "getting-started/real-data.html#how-tjs-projects-handle-data-in-code",
+    "title": "Working with real TJS data",
+    "section": "How TJS projects handle data in code",
+    "text": "How TJS projects handle data in code\nThese rules come from TJS project repositories. Tidy data practices each one.\n\nRead everything as text at first. Dates arrive in several formats, numbers contain stray text, and lists sit inside single cells. Convert types as a deliberate, recorded step, never silently while reading.\nMatch columns by name, not position. Two tabs of the same sheet can have different columns.\nCheck what you changed. After every cleaning step, compare row counts and summaries before and after.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Working with real TJS data"
+    ]
+  },
+  {
+    "objectID": "getting-started/real-data.html#ai-tools",
+    "href": "getting-started/real-data.html#ai-tools",
+    "title": "Working with real TJS data",
+    "section": "AI tools",
+    "text": "AI tools\nNever paste real patient data into an AI chatbot or any website. That includes ChatGPT, Claude, Copilot and online “data cleaners”. The only exception is a tool your project lead confirms is approved for PHI. The synthetic data on this site is fine to paste anywhere.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Working with real TJS data"
+    ]
+  },
+  {
+    "objectID": "getting-started/real-data.html#before-every-commit",
+    "href": "getting-started/real-data.html#before-every-commit",
+    "title": "Working with real TJS data",
+    "section": "Before every commit",
+    "text": "Before every commit\nRun these two commands and read the output:\ngit status\ngit diff --staged\nCheck that no data file, export or screenshot is listed. If you see one, unstage it with git restore --staged &lt;file&gt;.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Working with real TJS data"
+    ]
+  },
+  {
+    "objectID": "getting-started/real-data.html#if-something-goes-wrong",
+    "href": "getting-started/real-data.html#if-something-goes-wrong",
+    "title": "Working with real TJS data",
+    "section": "If something goes wrong",
+    "text": "If something goes wrong\nIf PHI reaches a commit, a push or an issue:\n\nStop. Don’t try to fix it with another commit. Git keeps the history.\nTell your project lead right away. The data has to be purged from history, and the incident may need to be reported under TJS policy.\n\nReporting quickly is always the right call, and nobody will be upset that you did.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Working with real TJS data"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "TJS Statistics Tutorials",
+    "section": "",
+    "text": "ImportantSYNTHETIC DATA\n\n\n\nEvery dataset on this site is invented. None of it describes real patients, and real patient data never goes in this repository. Before you touch real data, read Working with real TJS data.\nNew here? Start with Install & set up, then How to use this site.",
+    "crumbs": [
+      "Decision table"
+    ]
+  },
+  {
+    "objectID": "index.html#which-test-do-i-need",
+    "href": "index.html#which-test-do-i-need",
+    "title": "TJS Statistics Tutorials",
+    "section": "Which test do I need?",
+    "text": "Which test do I need?\n\nFind your goal in the left column (for example, compare two unpaired groups).\nFind your type of data along the top. Not sure whether your measurements are Gaussian (normally distributed)? Read Distributions & choosing a test first.\nClick the test.\n\n\n\n\n\nGoal\nMeasurement (Gaussian population)\nRank, score, or measurement (non-Gaussian population)\nBinomial (two possible outcomes)\nSurvival time\n\n\n\n\nDescribe one group\nMean, SD\nMedian, interquartile range\nProportion\nKaplan-Meier survival curve\n\n\nCompare one group to a hypothetical value\nOne-sample t test\nWilcoxon signed-rank test\nChi-square or binomial test\n—\n\n\nCompare two unpaired groups\nUnpaired t test\nMann-Whitney test\nFisher’s exact test (chi-square for large samples)\nLog-rank (Mantel-Haenszel) test\n\n\nCompare two paired groups\nPaired t test\nWilcoxon signed-rank test\nMcNemar’s test\nConditional proportional hazards regression\n\n\nCompare three or more unmatched groups\nOne-way ANOVA\nKruskal-Wallis test\nChi-square test\nCox proportional hazards regression\n\n\nCompare three or more matched groups\nRepeated-measures ANOVA\nFriedman test\nCochran’s Q\nConditional proportional hazards regression\n\n\nQuantify association between two variables\nPearson correlation\nSpearman correlation\nContingency coefficients\n—\n\n\nPredict a value from another measured variable\nSimple linear regression or nonlinear regression\nNonparametric regression\nSimple logistic regression\nCox proportional hazards regression\n\n\nPredict a value from several measured or binomial variables\nMultiple linear regression or multiple nonlinear regression\n—\nMultiple logistic regression\nCox proportional hazards regression\n\n\n\n\nAdapted from Harvey Motulsky, Intuitive Biostatistics (Oxford University Press), and the GraphPad Statistics Guide.",
+    "crumbs": [
+      "Decision table"
+    ]
+  },
+  {
+    "objectID": "index.html#beyond-the-table",
+    "href": "index.html#beyond-the-table",
+    "title": "TJS Statistics Tutorials",
+    "section": "Beyond the table",
+    "text": "Beyond the table\n\n\n\nIf you need to…\nRead\n\n\n\n\nEstimate survivorship, draw Kaplan-Meier curves with numbers at risk, or handle death as a competing risk\n13 · Kaplan-Meier & the log-rank test\n\n\nAdjust a time-to-event comparison for several factors, or check proportional hazards\n14 · Cox proportional hazards regression\n\n\nFind out which groups differ after ANOVA, Kruskal-Wallis, or chi-square\n15 · Post-hoc tests & multiple comparisons\n\n\nAnalyze PROMs collected at several visits, including patients who missed some\n16 · Mixed models for repeated PROMs\n\n\nMeasure how well two raters, or one rater on two days, agree on a measurement\n17 · Agreement & reliability",
+    "crumbs": [
+      "Decision table"
+    ]
+  },
+  {
+    "objectID": "index.html#new-to-statistics",
+    "href": "index.html#new-to-statistics",
+    "title": "TJS Statistics Tutorials",
+    "section": "New to statistics?",
+    "text": "New to statistics?\nWork through the site in order: Getting started, then Part 1 · Foundations, then the catalog pages your project needs. Each page ends with short exercises and hidden solutions.",
+    "crumbs": [
+      "Decision table"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html",
+    "href": "getting-started/setup.html",
+    "title": "Install & set up",
+    "section": "",
+    "text": "This takes 30–45 minutes the first time, and you only do it once per computer. Follow the steps in order. Each step ends with a quick check.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#install-r",
+    "href": "getting-started/setup.html#install-r",
+    "title": "Install & set up",
+    "section": "1. Install R",
+    "text": "1. Install R\n\nGo to https://cloud.r-project.org.\nClick Download R for macOS or Download R for Windows.\n\nMac: pick the installer for your chip. Apple menu → About This Mac: “Apple M…” means Apple silicon (arm64), and “Intel” means Intel (x86_64).\nWindows: click base, then the download link at the top of the page.\n\nOpen the downloaded file and accept the defaults.\n\nCheck: Positron will find R in step 4. On a Mac you can also open Terminal and type R --version.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#install-uv-and-python",
+    "href": "getting-started/setup.html#install-uv-and-python",
+    "title": "Install & set up",
+    "section": "2. Install uv and Python",
+    "text": "2. Install uv and Python\nMac: open Terminal and run:\ncurl -LsSf https://astral.sh/uv/install.sh | sh\nWindows: open PowerShell and run:\npowershell -ExecutionPolicy ByPass -c \"irm https://astral.sh/uv/install.ps1 | iex\"\nClose the window, open a new one, and install Python:\nuv python install 3.13\nCheck: uv --version prints a version number.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#install-git",
+    "href": "getting-started/setup.html#install-git",
+    "title": "Install & set up",
+    "section": "3. Install Git",
+    "text": "3. Install Git\n\nMac: in Terminal, run xcode-select --install and click Install. This installs Apple’s command-line tools, which include Git.\nWindows: download Git from https://git-scm.com/downloads and accept the defaults.\n\nCheck: git --version prints a version number.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#install-positron",
+    "href": "getting-started/setup.html#install-positron",
+    "title": "Install & set up",
+    "section": "4. Install Positron",
+    "text": "4. Install Positron\nDownload Positron from https://positron.posit.co and install it like any other app. Positron runs R and Python side by side. Prefer RStudio or VS Code? See Other editors.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#get-this-repository",
+    "href": "getting-started/setup.html#get-this-repository",
+    "title": "Install & set up",
+    "section": "5. Get this repository",
+    "text": "5. Get this repository\nIn Terminal (Mac) or PowerShell (Windows), make a projects folder and download (“clone”) the repository into it:\nmkdir -p ~/projects\ncd ~/projects\ngit clone https://github.com/Total-Joint-Specialists/example-stats-analysis.git\nUse a folder that is not synced to the cloud. Documents and Desktop are often synced by iCloud (Mac) or OneDrive (Windows). Syncing slows down, and can break, the R and Python environments that steps 6 and 7 create.\nThen, in Positron: File → Open Folder… and choose example-stats-analysis.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#install-the-r-packages",
+    "href": "getting-started/setup.html#install-the-r-packages",
+    "title": "Install & set up",
+    "section": "6. Install the R packages",
+    "text": "6. Install the R packages\nIn Positron, start an R console: use the language picker at the top right of the Console pane and choose R. Because R starts inside the repository folder, it switches on this project’s package list. Then run:\nrenv::restore()\nAnswer Y if asked. This installs every R package the tutorials use, at the exact versions we tested. It takes a few minutes.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#install-the-python-packages",
+    "href": "getting-started/setup.html#install-the-python-packages",
+    "title": "Install & set up",
+    "section": "7. Install the Python packages",
+    "text": "7. Install the Python packages\nOpen Positron’s terminal (Terminal → New Terminal). It opens in the repository folder. Run:\nuv sync\nThis creates a private Python environment in the .venv folder with every package the tutorials use. Then tell Positron to use it: in the Console pane’s language picker, choose the Python whose path includes .venv.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#check-that-everything-works",
+    "href": "getting-started/setup.html#check-that-everything-works",
+    "title": "Install & set up",
+    "section": "8. Check that everything works",
+    "text": "8. Check that everything works\nIn Positron’s terminal, run both checks:\nRscript getting-started/check_setup.R\nuv run python getting-started/check_setup.py\nEach check ends with All good - you are ready. If a line says PROBLEM, it tells you what to do. Fix it and run the check again.\nOn Windows, if Rscript is “not recognized”, run the R check from Positron’s R console instead:\nsource(\"getting-started/check_setup.R\")",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#reading-the-data-without-cloning",
+    "href": "getting-started/setup.html#reading-the-data-without-cloning",
+    "title": "Install & set up",
+    "section": "Reading the data without cloning",
+    "text": "Reading the data without cloning\nYou can skip step 5 (cloning) and read the practice data straight from GitHub. You still need the packages, so install them first.\n\nRPython\n\n\ninstall.packages(c(\"readr\", \"readxl\"))   # once\n\ncohort &lt;- readr::read_csv(\"https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/cohort.csv\")\n\n\nStart Python with the packages it needs. In a terminal:\nuv run --with pandas --with openpyxl python\nThen:\nimport pandas as pd\n\ncohort = pd.read_csv(\"https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/cohort.csv\")\n\n\n\nEvery CSV works the same way. In any example, replace \"data/\" with \"https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/\".\nExcel files are different. R’s read_excel() can’t read a web address, so download the file first. Python’s pd.read_excel() can read the address directly.\n\nRPython\n\n\nurl &lt;- \"https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/messy_abstraction_workbook.xlsx\"\npath &lt;- tempfile(fileext = \".xlsx\")\ndownload.file(url, path, mode = \"wb\")   # \"wb\" keeps the file intact on Windows\nsite_a &lt;- readxl::read_excel(path, sheet = \"Site A\")\n\n\nurl = \"https://raw.githubusercontent.com/Total-Joint-Specialists/example-stats-analysis/main/data/messy_abstraction_workbook.xlsx\"\nsite_a = pd.read_excel(url, sheet_name=\"Site A\")",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#troubleshooting",
+    "href": "getting-started/setup.html#troubleshooting",
+    "title": "Install & set up",
+    "section": "Troubleshooting",
+    "text": "Troubleshooting\n\n\n\n\n\n\n\nYou see\nDo this\n\n\n\n\nYou have not agreed to the Xcode license (Mac, during renv::restore())\nIn Terminal, run sudo xcodebuild -license accept and type your Mac password. Then run renv::restore() again.\n\n\nthere is no package called 'renv'\nIn the R console, run install.packages(\"renv\"). Restart R (Session → Restart R) and run renv::restore() again.\n\n\nuv: command not found, or “not recognized”\nClose the terminal window, open a new one, and try again.\n\n\ngit: command not found\nRepeat step 3.\n\n\nPython can’t find pandas in Positron\nChoose the .venv Python in the Console language picker (step 7), then restart the console.\n\n\nAnything else\nCopy the whole error message and send it to your TJS project lead.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "getting-started/setup.html#other-editors",
+    "href": "getting-started/setup.html#other-editors",
+    "title": "Install & set up",
+    "section": "Other editors",
+    "text": "Other editors\n\nRStudio (https://posit.co/download/rstudio-desktop/) is great for R. It can run Python too, but Positron is simpler when you use both.\nVS Code (https://code.visualstudio.com) works too: install the R and Python extensions.\n\nEverything else on this page stays the same.",
+    "crumbs": [
+      "Decision table",
+      "Getting started",
+      "Install & set up"
+    ]
+  },
+  {
+    "objectID": "foundations/01-tidy-data.html",
+    "href": "foundations/01-tidy-data.html",
+    "title": "1 · Tidy data (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 1 · Foundations",
+      "1 · Tidy data (coming soon)"
+    ]
+  },
+  {
+    "objectID": "foundations/03-distributions.html",
+    "href": "foundations/03-distributions.html",
+    "title": "3 · Distributions & choosing a test (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 1 · Foundations",
+      "3 · Distributions & choosing a test (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/05-one-group-vs-hypothetical.html",
+    "href": "catalog/05-one-group-vs-hypothetical.html",
+    "title": "5 · Compare one group to a hypothetical value (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "5 · Compare one group to a hypothetical value (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/05-one-group-vs-hypothetical.html#one-sample-t",
+    "href": "catalog/05-one-group-vs-hypothetical.html#one-sample-t",
+    "title": "5 · Compare one group to a hypothetical value (coming soon)",
+    "section": "One-sample t test",
+    "text": "One-sample t test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "5 · Compare one group to a hypothetical value (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/05-one-group-vs-hypothetical.html#wilcoxon-signed-rank",
+    "href": "catalog/05-one-group-vs-hypothetical.html#wilcoxon-signed-rank",
+    "title": "5 · Compare one group to a hypothetical value (coming soon)",
+    "section": "Wilcoxon signed-rank test",
+    "text": "Wilcoxon signed-rank test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "5 · Compare one group to a hypothetical value (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/05-one-group-vs-hypothetical.html#chi-square-gof",
+    "href": "catalog/05-one-group-vs-hypothetical.html#chi-square-gof",
+    "title": "5 · Compare one group to a hypothetical value (coming soon)",
+    "section": "Chi-square goodness-of-fit test",
+    "text": "Chi-square goodness-of-fit test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "5 · Compare one group to a hypothetical value (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/05-one-group-vs-hypothetical.html#binomial-test",
+    "href": "catalog/05-one-group-vs-hypothetical.html#binomial-test",
+    "title": "5 · Compare one group to a hypothetical value (coming soon)",
+    "section": "Binomial test",
+    "text": "Binomial test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "5 · Compare one group to a hypothetical value (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/07-two-paired-groups.html",
+    "href": "catalog/07-two-paired-groups.html",
+    "title": "7 · Compare two paired groups (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "7 · Compare two paired groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/07-two-paired-groups.html#paired-t",
+    "href": "catalog/07-two-paired-groups.html#paired-t",
+    "title": "7 · Compare two paired groups (coming soon)",
+    "section": "Paired t test",
+    "text": "Paired t test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "7 · Compare two paired groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/07-two-paired-groups.html#wilcoxon-signed-rank",
+    "href": "catalog/07-two-paired-groups.html#wilcoxon-signed-rank",
+    "title": "7 · Compare two paired groups (coming soon)",
+    "section": "Wilcoxon signed-rank test",
+    "text": "Wilcoxon signed-rank test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "7 · Compare two paired groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/07-two-paired-groups.html#mcnemar",
+    "href": "catalog/07-two-paired-groups.html#mcnemar",
+    "title": "7 · Compare two paired groups (coming soon)",
+    "section": "McNemar’s test",
+    "text": "McNemar’s test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "7 · Compare two paired groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/07-two-paired-groups.html#stratified-cox",
+    "href": "catalog/07-two-paired-groups.html#stratified-cox",
+    "title": "7 · Compare two paired groups (coming soon)",
+    "section": "Stratified Cox regression",
+    "text": "Stratified Cox regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "7 · Compare two paired groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/09-three-plus-matched.html",
+    "href": "catalog/09-three-plus-matched.html",
+    "title": "9 · Compare three or more matched groups (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "9 · Compare three or more matched groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/09-three-plus-matched.html#repeated-measures-anova",
+    "href": "catalog/09-three-plus-matched.html#repeated-measures-anova",
+    "title": "9 · Compare three or more matched groups (coming soon)",
+    "section": "Repeated-measures ANOVA",
+    "text": "Repeated-measures ANOVA",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "9 · Compare three or more matched groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/09-three-plus-matched.html#friedman",
+    "href": "catalog/09-three-plus-matched.html#friedman",
+    "title": "9 · Compare three or more matched groups (coming soon)",
+    "section": "Friedman test",
+    "text": "Friedman test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "9 · Compare three or more matched groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/09-three-plus-matched.html#cochran-q",
+    "href": "catalog/09-three-plus-matched.html#cochran-q",
+    "title": "9 · Compare three or more matched groups (coming soon)",
+    "section": "Cochran’s Q test",
+    "text": "Cochran’s Q test",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "9 · Compare three or more matched groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/09-three-plus-matched.html#stratified-cox",
+    "href": "catalog/09-three-plus-matched.html#stratified-cox",
+    "title": "9 · Compare three or more matched groups (coming soon)",
+    "section": "Stratified Cox regression",
+    "text": "Stratified Cox regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "9 · Compare three or more matched groups (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/11-predict-from-one.html",
+    "href": "catalog/11-predict-from-one.html",
+    "title": "11 · Predict a value from another variable (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "11 · Predict a value from another variable (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/11-predict-from-one.html#linear-regression",
+    "href": "catalog/11-predict-from-one.html#linear-regression",
+    "title": "11 · Predict a value from another variable (coming soon)",
+    "section": "Simple linear regression",
+    "text": "Simple linear regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "11 · Predict a value from another variable (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/11-predict-from-one.html#nonlinear-regression",
+    "href": "catalog/11-predict-from-one.html#nonlinear-regression",
+    "title": "11 · Predict a value from another variable (coming soon)",
+    "section": "Nonlinear regression",
+    "text": "Nonlinear regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "11 · Predict a value from another variable (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/11-predict-from-one.html#nonparametric-regression",
+    "href": "catalog/11-predict-from-one.html#nonparametric-regression",
+    "title": "11 · Predict a value from another variable (coming soon)",
+    "section": "Nonparametric regression",
+    "text": "Nonparametric regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "11 · Predict a value from another variable (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/11-predict-from-one.html#logistic-regression",
+    "href": "catalog/11-predict-from-one.html#logistic-regression",
+    "title": "11 · Predict a value from another variable (coming soon)",
+    "section": "Simple logistic regression",
+    "text": "Simple logistic regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "11 · Predict a value from another variable (coming soon)"
+    ]
+  },
+  {
+    "objectID": "catalog/11-predict-from-one.html#cox",
+    "href": "catalog/11-predict-from-one.html#cox",
+    "title": "11 · Predict a value from another variable (coming soon)",
+    "section": "Cox regression",
+    "text": "Cox regression",
+    "crumbs": [
+      "Decision table",
+      "Part 2 · Test catalog",
+      "11 · Predict a value from another variable (coming soon)"
+    ]
+  },
+  {
+    "objectID": "survival/13-kaplan-meier.html",
+    "href": "survival/13-kaplan-meier.html",
+    "title": "13 · Kaplan-Meier & the log-rank test (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 3 · Survival analysis",
+      "13 · Kaplan-Meier & the log-rank test (coming soon)"
+    ]
+  },
+  {
+    "objectID": "beyond/15-post-hoc.html",
+    "href": "beyond/15-post-hoc.html",
+    "title": "15 · Post-hoc tests & multiple comparisons (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 4 · Beyond the table",
+      "15 · Post-hoc tests & multiple comparisons (coming soon)"
+    ]
+  },
+  {
+    "objectID": "beyond/17-agreement.html",
+    "href": "beyond/17-agreement.html",
+    "title": "17 · Agreement & reliability (coming soon)",
+    "section": "",
+    "text": "NoteComing soon\n\n\n\nThis page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.",
+    "crumbs": [
+      "Decision table",
+      "Part 4 · Beyond the table",
+      "17 · Agreement & reliability (coming soon)"
+    ]
+  }
+]

@@ -7,6 +7,8 @@ from sitelib import ROOT, load
 SECTIONS = {
     "foundations/01-tidy-data.html": [
         "what-tidy-means", "collecting", "tidying", "reshaping", "integrity", "exercises"],
+    "foundations/02-demographics.html": [
+        "setup", "one-group", "which-summary", "by-group", "smd", "missing", "export", "exercises"],
 }
 
 

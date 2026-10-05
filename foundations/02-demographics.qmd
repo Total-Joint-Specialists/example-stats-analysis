@@ -1,10 +1,409 @@
 ---
-title: "2 · Demographics (Table 1) (coming soon)"
-description: "Build a publication-ready Table 1 for one group or several."
+title: "2 · Demographics (Table 1)"
+description: "Build a publication-ready Table 1 for one group or several: choosing summaries, comparing groups, standardized mean differences, missing data, and exporting to Word."
+engine: knitr
+execute:
+  message: false
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+Almost every clinical paper starts with **Table 1**: who was studied. Reviewers read it first, to decide whether your patients look like theirs and whether your groups were comparable to begin with. This page builds one from scratch.
+
+::: {.callout-note}
+## 💡 In plain language
+Table 1 *describes* your patients. It doesn't answer your research question. Its job is to let a reader judge who your results apply to, and whether your groups started out alike.
 :::
 
+## Load the data and pick the variables {#setup}
+
+We'll describe the practice cohort: 600 primary hip and knee replacements (THA and TKA). Table 1 usually holds the characteristics measured *before* surgery.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+library(gtsummary)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE) |>
+  mutate(asa = factor(asa))   # ASA class is a category, not a number
+
+table1_vars <- c("age", "sex", "bmi", "asa", "diabetes", "smoker", "los_days")
+
+labels <- list(age ~ "Age, years", sex ~ "Sex", bmi ~ "BMI, kg/m²", asa ~ "ASA class",
+               diabetes ~ "Diabetes", smoker ~ "Smoking status",
+               los_days ~ "Length of stay, days")
+```
+
+## Python
+
+```{python}
+import pandas as pd
+from tableone import TableOne
+
+cohort = pd.read_csv("data/cohort.csv")
+cohort["asa"] = cohort["asa"].astype(str)   # ASA class is a category, not a number
+
+table1_vars = ["age", "sex", "bmi", "asa", "diabetes", "smoker", "los_days"]
+categorical = ["sex", "asa", "diabetes", "smoker"]
+
+labels = {"age": "Age, years", "sex": "Sex", "bmi": "BMI, kg/m²", "asa": "ASA class",
+          "diabetes": "Diabetes", "smoker": "Smoking status",
+          "los_days": "Length of stay, days"}
+```
+:::
+
+::: {.callout-warning}
+## ⚠️ Watch out: one row per procedure, not per patient
+The cohort has one row per *procedure*. 80 patients had both sides done, so 600 procedures come from 520 patients. Say which one your table counts, for example in a footnote: "600 procedures in 520 patients".
+:::
+
+## One group {#one-group}
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+table_one <- cohort |>
+  select(all_of(table1_vars)) |>
+  tbl_summary(
+    type      = list(los_days ~ "continuous"),          # few distinct values, but still a number
+    statistic = list(all_continuous() ~ "{mean} ({sd})",
+                     los_days ~ "{median} ({p25}–{p75})"),
+    label     = labels
+  )
+table_one
+```
+
+## Python
+
+```{python}
+table_one = TableOne(
+    cohort,
+    columns=table1_vars,
+    categorical=categorical,
+    nonnormal=["los_days"],      # report median [Q1, Q3] instead of mean (SD)
+    rename=labels,
+)
+print(table_one.tabulate(tablefmt="github"))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"n": float(len(cohort)), "mean_age": float(cohort["age"].mean()),
+       "sd_age": float(cohort["age"].std()), "female": float((cohort["sex"] == "Female").sum()),
+       "median_los": float(cohort["los_days"].median())}
+```
+
+```{r}
+#| include: false
+check_agree(list(n = nrow(cohort), mean_age = mean(cohort$age), sd_age = sd(cohort$age),
+                 female = sum(cohort$sex == "Female"), median_los = median(cohort$los_days)),
+            reticulate::py$chk)
+```
+
+::: {.callout-warning}
+## ⚠️ Watch out: tell the software what each variable is
+Software guesses variable types, and the guesses are often wrong:
+
+- **ASA class** looks like a number, so it gets averaged ("mean ASA 2.4"). It's a category.
+- **Length of stay** has only a few distinct values, so gtsummary treats it as a category and lists "0 days, 1 day, 2 days…". It's a count.
+- **0/1 columns** such as `diabetes` should show one "yes" row.
+
+Set the type of every variable yourself (`type =` in R, `categorical =` in Python).
+:::
+
+## Mean (SD) or median (IQR)? {#which-summary}
+
+- **Roughly symmetric** continuous variables (age, BMI): mean (SD).
+- **Skewed or bounded** variables (length of stay, most PROMs): median (IQR). One patient with a 30-day stay drags the mean far more than the median.
+- **Categories**: n (%).
+
+How do you know whether a variable is skewed? Look at it: [Distributions & choosing a test](03-distributions.qmd) shows how. Length of stay is strongly right-skewed, which is why it gets a median.
+
+::: {.callout-tip}
+## 🔀 R vs Python: quartiles
+gtsummary and tableone calculate quartiles slightly differently. gtsummary uses a method that always returns an observed value; tableone interpolates between values. With whole-number data like length of stay you can see the difference: the THA upper quartile is 2 days in R and 1.8 in Python. Neither is wrong. Say in your Methods which software you used.
+:::
+
+## Comparing groups {#by-group}
+
+Most studies compare groups. Here: THA vs TKA.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+by_procedure <- cohort |>
+  select(procedure, all_of(table1_vars)) |>
+  tbl_summary(
+    by        = procedure,
+    type      = list(los_days ~ "continuous"),
+    statistic = list(all_continuous() ~ "{mean} ({sd})",
+                     los_days ~ "{median} ({p25}–{p75})"),
+    label     = labels
+  ) |>
+  add_overall() |>
+  add_p(test = list(all_continuous() ~ "t.test",       # Welch's t test
+                    los_days ~ "kruskal.test",          # rank-based, for the skewed variable
+                    all_categorical() ~ "chisq.test"))  # chi-square
+by_procedure
+```
+
+## Python
+
+```{python}
+by_procedure = TableOne(
+    cohort,
+    columns=table1_vars,
+    categorical=categorical,
+    nonnormal=["los_days"],
+    groupby="procedure",
+    pval=True,               # Welch's t test, Kruskal-Wallis, chi-square
+    htest_name=True,         # show which test produced each p-value
+    rename=labels,
+)
+print(by_procedure.tabulate(tablefmt="github"))
+```
+:::
+
+```{python}
+#| include: false
+p_values = by_procedure.htest_table["P-Value"]
+chk = {v: float(p_values[v]) for v in table1_vars}
+```
+
+```{r}
+#| include: false
+p_r <- by_procedure$table_body |> filter(row_type == "label")
+check_agree(as.list(setNames(p_r$p.value, p_r$variable)), reticulate::py$chk)
+```
+
+Each p-value comes from a test you'll meet in the catalog: [Welch's t test](../catalog/06-two-unpaired-groups.qmd#unpaired-t) for the symmetric continuous variables, a [rank-based test](../catalog/06-two-unpaired-groups.qmd#mann-whitney) for length of stay (Kruskal-Wallis with two groups is the Mann-Whitney test), and the [chi-square test](../catalog/06-two-unpaired-groups.qmd#fisher-chi-square) for the categories.
+
+## p-values or standardized mean differences? {#smd}
+
+Look at sex in the table above: 66% of THA patients are women against 50% of TKA patients, p < 0.001. Is that a real difference between hip and knee patients?
+
+In this practice dataset we know the answer, because we wrote the program that made it: sex was drawn **completely independently** of procedure. The difference is pure chance. (In real arthroplasty cohorts, TKA patients are usually *more* often female.) That's the first problem with p-values in Table 1: across a long table, chance differences turn up.
+
+The second problem is that a p-value mixes up *how big* a difference is with *how many patients* you have. With 6,000 patients a trivial difference gets p < 0.001. With 30, a large one doesn't.
+
+The **standardized mean difference (SMD)** measures only the size of the imbalance, in standard-deviation units, whatever the sample size. A common rule of thumb: |SMD| below 0.1 is negligible.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+balance <- cohort |>
+  select(procedure, all_of(table1_vars)) |>
+  tbl_summary(
+    by        = procedure,
+    type      = list(los_days ~ "continuous"),
+    statistic = list(all_continuous() ~ "{mean} ({sd})",
+                     los_days ~ "{median} ({p25}–{p75})"),
+    label     = labels
+  ) |>
+  add_difference(test = everything() ~ "smd")
+balance
+```
+
+## Python
+
+```{python}
+balance = TableOne(
+    cohort,
+    columns=table1_vars,
+    categorical=categorical,
+    nonnormal=["los_days"],
+    groupby="procedure",
+    smd=True,
+    rename=labels,
+)
+print(balance.smd_table)
+```
+:::
+
+```{python}
+#| include: false
+smd = balance.smd_table.iloc[:, 0]
+chk = {v: abs(float(smd[v])) for v in table1_vars}
+```
+
+```{r}
+#| include: false
+smd_r <- balance$table_body |> filter(row_type == "label")
+# Continuous SMDs differ in the 3rd decimal (variance divided by n in R's smd
+# package, n - 1 in tableone), documented in the R vs Python box below.
+check_agree(as.list(setNames(abs(smd_r$estimate), smd_r$variable)), reticulate::py$chk, tol = 0.005)
+```
+
+Sex (SMD 0.31) and BMI (0.33) are the imbalances worth mentioning. The rest are small.
+
+::: {.callout-tip}
+## 🔀 R vs Python: SMDs differ slightly
+- **Sign.** gtsummary subtracts TKA from THA; tableone subtracts THA from TKA. Report the absolute value, or say which group was subtracted from which.
+- **Third decimal.** For continuous variables, R's `smd` package divides the variances by *n*, while tableone divides by *n − 1* (the usual textbook formula). Age comes out as 0.105 in both after rounding, but the raw values differ slightly. Categorical SMDs match exactly.
+:::
+
+**Which should you report?**
+
+- **Matched or weighted cohorts** (propensity-score studies, such as TJS's age-80 matched study): SMDs only. The matching made the groups alike on purpose, so a test of "did they differ?" makes no sense.
+- **Other observational comparisons**: many journals still expect p-values. Give SMDs alongside, and discuss differences by their size, not their p-value.
+
+## Missing data {#missing}
+
+The tidy version of the messy workbook from [page 1](01-tidy-data.qmd) has a few BMIs, ASA classes and lengths of stay that the abstractor couldn't find. Missing values must show up in Table 1. Never drop them silently.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+abstraction <- read_csv("data/answer-keys/abstraction_workbook_tidy.csv", show_col_types = FALSE) |>
+  mutate(asa = factor(asa))
+
+abstraction |>
+  select(site, age, bmi, asa, los_days) |>
+  tbl_summary(by = site, type = list(los_days ~ "continuous"),
+              statistic = list(all_continuous() ~ "{mean} ({sd})",
+                               los_days ~ "{median} ({p25}–{p75})"),
+              missing_text = "Missing")
+```
+
+## Python
+
+```{python}
+abstraction = pd.read_csv("data/answer-keys/abstraction_workbook_tidy.csv")
+abstraction["asa"] = abstraction["asa"].astype("Int64").astype("string")   # a category; blanks stay missing
+
+missing_table = TableOne(abstraction, columns=["age", "bmi", "asa", "los_days"],
+                         categorical=["asa"], nonnormal=["los_days"],
+                         groupby="site", missing=True,
+                         include_null=False)   # count blanks as missing, not as a "None" category
+print(missing_table.tabulate(tablefmt="github"))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"missing_bmi": float(abstraction["bmi"].isna().sum()),
+       "missing_asa": float(abstraction["asa"].isna().sum())}
+```
+
+```{r}
+#| include: false
+check_agree(list(missing_bmi = sum(is.na(abstraction$bmi)),
+                 missing_asa = sum(is.na(abstraction$asa))), reticulate::py$chk)
+```
+
+R adds a "Missing" row under each variable that has any. Python adds a "Missing" column. Either way, the percentages are of the patients with a value, and the reader can see how many were left out.
+
+## Exporting to Word {#export}
+
+Journals want Table 1 in Word. Save it into your `scratch/` folder (git ignores it), open it, and paste it into the manuscript.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+by_procedure |>
+  as_flex_table() |>
+  flextable::save_as_docx(path = "scratch/table1.docx")
+```
+
+## Python
+
+```{python}
+from docx import Document
+
+table = by_procedure.tableone.reset_index()
+headers = [" ".join(str(part) for part in col if part).strip() for col in table.columns]
+
+doc = Document()
+grid = doc.add_table(rows=1, cols=len(headers))
+for cell, header in zip(grid.rows[0].cells, headers):
+    cell.text = header
+for _, row in table.iterrows():
+    for cell, value in zip(grid.add_row().cells, row):
+        cell.text = "" if pd.isna(value) else str(value)
+doc.save("scratch/table1-python.docx")
+```
+:::
+
+In Word, tidy the formatting to the journal's style: usually no vertical lines, and a footnote that says which statistics are shown ("mean (SD); median (IQR); n (%)") and which tests produced the p-values.
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+pct <- function(x) round(100 * mean(x))
+los_tha <- cohort$los_days[cohort$procedure == "THA"]
+stopifnot(
+  nrow(cohort) == 600, n_distinct(cohort$patient_id) == 520,
+  sum(table(cohort$patient_id) == 2) == 80,
+  sum(cohort$procedure == "THA") == 270, sum(cohort$procedure == "TKA") == 330,
+  pct(cohort$sex[cohort$procedure == "THA"] == "Female") == 66,
+  pct(cohort$sex[cohort$procedure == "TKA"] == "Female") == 50,
+  round(mean(cohort$age), 1) == 65.5, round(sd(cohort$age), 1) == 9.4,
+  sum(cohort$sex == "Female") == 343, pct(cohort$sex == "Female") == 57,
+  median(cohort$los_days) == 1,
+  all(quantile(cohort$los_days, c(0.25, 0.75), type = 2) == c(0, 1)),
+  quantile(los_tha, 0.75, type = 2) == 2,
+  round(quantile(los_tha, 0.75, type = 7), 1) == 1.8,
+  round(abs(smd_r$estimate[smd_r$variable == "sex"]), 2) == 0.31,
+  round(abs(smd_r$estimate[smd_r$variable == "bmi"]), 2) == 0.33
+)
+```
+
+## Exercises {#exercises}
+
+**1.** Make a Table 1 comparing **Site A with Site B** instead of THA with TKA. Which variable differs most between sites, by SMD?
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+cohort |>
+  select(site, all_of(table1_vars)) |>
+  tbl_summary(by = site, type = list(los_days ~ "continuous"),
+              statistic = list(all_continuous() ~ "{mean} ({sd})",
+                               los_days ~ "{median} ({p25}–{p75})"),
+              label = labels) |>
+  add_difference(test = everything() ~ "smd")
+```
+
+## Python
+
+```{python}
+by_site = TableOne(cohort, columns=table1_vars, categorical=categorical,
+                   nonnormal=["los_days"], groupby="site", smd=True, rename=labels)
+print(by_site.smd_table)
+```
+:::
+
+Site was assigned at random in this dataset, so every SMD should be small. If one isn't, it's chance again.
+:::
+
+**2.** A fellow is comparing patients aged 80 or older with younger patients, matched on sex, BMI and ASA class. Should the baseline table show p-values or SMDs? Why?
+
+::: {.callout-tip collapse="true"}
+## Solution
+SMDs. The matching was designed to make the groups alike, so testing whether they differ answers a question nobody asked, and with matched data the p-value mostly reflects sample size. SMDs show how well the matching worked: aim for |SMD| below 0.1 on every matching variable.
+:::
+
+**3.** Write the first sentence of the Results describing this cohort, using the reporting conventions from [How to use this site](../getting-started/using-this-site.qmd).
+
+::: {.callout-tip collapse="true"}
+## Solution
+"We included 600 primary arthroplasties (270 THA and 330 TKA) in 520 patients. Mean age was 65.5 (SD 9.4) years and 343 procedures (57%) were in women. Median length of stay was 1 (IQR 0–1) day."
+
+Check every number against your own table: mean and SD for age, n (%) for sex, median (IQR) for length of stay.
+:::

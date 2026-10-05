@@ -8,7 +8,7 @@
 
 <meta name="description" content="What tidy data is, how to collect it, how to tidy messy spreadsheets, and how to prove nothing changed.">
 
-<title>1 · Tidy data (coming soon) – TJS Statistics Tutorials</title>
+<title>1 · Tidy data – TJS Statistics Tutorials</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -288,7 +323,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">Part 1 · Foundations</a></li><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">1 · Tidy data (coming soon)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">Part 1 · Foundations</a></li><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">1 · Tidy data</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -347,19 +382,19 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../foundations/01-tidy-data.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">1 · Tidy data (coming soon)</span></a>
+ <span class="menu-text">1 · Tidy data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../foundations/02-demographics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">2 · Demographics (Table 1) (coming soon)</span></a>
+ <span class="menu-text">2 · Demographics (Table 1)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../foundations/03-distributions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">3 · Distributions &amp; choosing a test (coming soon)</span></a>
+ <span class="menu-text">3 · Distributions &amp; choosing a test</span></a>
   </div>
 </li>
       </ul>
@@ -503,16 +538,38 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-tidy-means" id="toc-what-tidy-means" class="nav-link active" data-scroll-target="#what-tidy-means">What tidy data means</a></li>
+  <li><a href="#collecting" id="toc-collecting" class="nav-link" data-scroll-target="#collecting">Collecting tidy data</a></li>
+  <li><a href="#tidying" id="toc-tidying" class="nav-link" data-scroll-target="#tidying">Tidying a messy workbook</a>
+  <ul class="collapse">
+  <li><a href="#step-1-read-both-tabs-as-text" id="toc-step-1-read-both-tabs-as-text" class="nav-link" data-scroll-target="#step-1-read-both-tabs-as-text">Step 1: read both tabs, as text</a></li>
+  <li><a href="#step-2-drop-rows-and-columns-that-arent-data" id="toc-step-2-drop-rows-and-columns-that-arent-data" class="nav-link" data-scroll-target="#step-2-drop-rows-and-columns-that-arent-data">Step 2: drop rows and columns that aren’t data</a></li>
+  <li><a href="#step-3-one-way-to-say-missing" id="toc-step-3-one-way-to-say-missing" class="nav-link" data-scroll-target="#step-3-one-way-to-say-missing">Step 3: one way to say “missing”</a></li>
+  <li><a href="#step-4-recover-the-color-coded-revisions" id="toc-step-4-recover-the-color-coded-revisions" class="nav-link" data-scroll-target="#step-4-recover-the-color-coded-revisions">Step 4: recover the color-coded revisions</a></li>
+  <li><a href="#step-5-give-every-column-its-real-type" id="toc-step-5-give-every-column-its-real-type" class="nav-link" data-scroll-target="#step-5-give-every-column-its-real-type">Step 5: give every column its real type</a></li>
+  </ul></li>
+  <li><a href="#reshaping" id="toc-reshaping" class="nav-link" data-scroll-target="#reshaping">Reshaping a survey export</a></li>
+  <li><a href="#integrity" id="toc-integrity" class="nav-link" data-scroll-target="#integrity">Checking nothing changed</a>
+  <ul class="collapse">
+  <li><a href="#what-a-failing-check-looks-like" id="toc-what-a-failing-check-looks-like" class="nav-link" data-scroll-target="#what-a-failing-check-looks-like">What a failing check looks like</a></li>
+  <li><a href="#finally-compare-with-the-answer-key" id="toc-finally-compare-with-the-answer-key" class="nav-link" data-scroll-target="#finally-compare-with-the-answer-key">Finally: compare with the answer key</a></li>
+  </ul></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">Part 1 · Foundations</a></li><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">1 · Tidy data (coming soon)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">Part 1 · Foundations</a></li><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">1 · Tidy data</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">1 · Tidy data (coming soon)</h1>
+<h1 class="title">1 · Tidy data</h1>
 </div>
 
 <div>
@@ -534,21 +591,1136 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="coming-soon callout callout-style-default callout-note callout-titled">
+<!-- data-checksum: 9e548efb7ad4232927ffa99aa2cdeca7 -->
+<p>Most of the time in a research project goes into getting the data into shape, not into the statistics. Mistakes made here are the dangerous kind: the code runs, the tables look fine, and the numbers are wrong. This page shows how to collect data so it arrives clean, how to clean it when it doesn’t, and how to prove your cleaning didn’t change anything it shouldn’t have.</p>
+<section id="what-tidy-means" class="level2">
+<h2 class="anchored" data-anchor-id="what-tidy-means">What tidy data means</h2>
+<p>Data are <strong>tidy</strong> when:</p>
+<ol type="1">
+<li>every <strong>variable</strong> is a column,</li>
+<li>every <strong>observation</strong> is a row, and</li>
+<li>every <strong>kind of observational unit</strong> gets its own table.</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming soon
+<span class="screen-reader-only">Note</span>💡 In plain language
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.</p>
+<p>One fact per cell, one patient-thing per row, and never two kinds of rows mixed in one table. A spreadsheet that’s easy for a person to read is often hard for a computer to analyze, and the other way round. Statistics software wants the second kind.</p>
+</div>
+</div>
+<p>Here’s a typical untidy PROM sheet: one row per patient, with a column for each visit. The <em>visit</em> is a variable, but it’s hiding in the column names.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>wide <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">case_id =</span> <span class="fu">c</span>(<span class="st">"C0001"</span>, <span class="st">"C0002"</span>, <span class="st">"C0003"</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">preop   =</span> <span class="fu">c</span>(<span class="fl">41.2</span>, <span class="fl">55.0</span>, <span class="fl">38.7</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">6wk</span><span class="st">`</span>   <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">60.1</span>, <span class="cn">NA</span>,   <span class="fl">58.3</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">1yr</span><span class="st">`</span>   <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">88.0</span>, <span class="fl">92.4</span>, <span class="fl">79.5</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>wide</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  case_id preop `6wk` `1yr`
+  &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 C0001    41.2  60.1  88  
+2 C0002    55    NA    92.4
+3 C0003    38.7  58.3  79.5</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy: one row per case per visit</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>long <span class="ot">&lt;-</span> wide <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>case_id, <span class="at">names_to =</span> <span class="st">"visit"</span>, <span class="at">values_to =</span> <span class="st">"prom_score"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>long</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 3
+  case_id visit prom_score
+  &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt;
+1 C0001   preop       41.2
+2 C0001   6wk         60.1
+3 C0001   1yr         88  
+4 C0002   preop       55  
+5 C0002   6wk         NA  
+6 C0002   1yr         92.4
+7 C0003   preop       38.7
+8 C0003   6wk         58.3
+9 C0003   1yr         79.5</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>wide <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"case_id"</span>: [<span class="st">"C0001"</span>, <span class="st">"C0002"</span>, <span class="st">"C0003"</span>],</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"preop"</span>:   [<span class="fl">41.2</span>, <span class="fl">55.0</span>, <span class="fl">38.7</span>],</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"6wk"</span>:     [<span class="fl">60.1</span>, <span class="va">None</span>, <span class="fl">58.3</span>],</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1yr"</span>:     [<span class="fl">88.0</span>, <span class="fl">92.4</span>, <span class="fl">79.5</span>],</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(wide)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  case_id  preop   6wk   1yr
+0   C0001   41.2  60.1  88.0
+1   C0002   55.0   NaN  92.4
+2   C0003   38.7  58.3  79.5</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy: one row per case per visit</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">long</span> <span class="op">=</span> wide.melt(id_vars<span class="op">=</span><span class="st">"case_id"</span>, var_name<span class="op">=</span><span class="st">"visit"</span>, value_name<span class="op">=</span><span class="st">"prom_score"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">long</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  case_id  visit  prom_score
+0   C0001  preop        41.2
+1   C0002  preop        55.0
+2   C0003  preop        38.7
+3   C0001    6wk        60.1
+4   C0002    6wk         NaN
+5   C0003    6wk        58.3
+6   C0001    1yr        88.0
+7   C0002    1yr        92.4
+8   C0003    1yr        79.5</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>In the long version, “Is the 6-week score missing?” is just a row with a blank, and “average score at each visit” is one line of code. In the wide version, every new visit means a new column and rewritten code.</p>
+<p>Untidy patterns we see most often in TJS sheets, and the tidy fix for each:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>You see</th>
+<th>Problem</th>
+<th>Tidy fix</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>DM, HTN, OSA</code> in one cell</td>
+<td>Several values in one cell</td>
+<td>One yes/no column per condition</td>
+</tr>
+<tr class="even">
+<td><code>R TKA</code></td>
+<td>Two variables in one cell</td>
+<td>Separate <code>side</code> and <code>procedure</code> columns</td>
+</tr>
+<tr class="odd">
+<td><code>32.1 kg/m2</code></td>
+<td>Units typed into a number</td>
+<td>A number column; units go in the data dictionary</td>
+</tr>
+<tr class="even">
+<td>Red-filled cells mean “revised”</td>
+<td>Color as data (invisible to software)</td>
+<td>A <code>revised</code> column</td>
+</tr>
+<tr class="odd">
+<td><code>Date</code>, <code>Score</code>, <code>Date</code>, <code>Score</code></td>
+<td>Repeated columns per visit</td>
+<td>Long format: one row per visit</td>
+</tr>
+<tr class="even">
+<td><code>N/A</code>, <code>unk</code>, <code>-</code>, <code>999</code>, blank</td>
+<td>Five ways to say “missing”</td>
+<td>One: an empty cell</td>
+</tr>
+<tr class="odd">
+<td>A title row, a totals row</td>
+<td>Not data</td>
+<td>Delete them; keep notes elsewhere</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="collecting" class="level2">
+<h2 class="anchored" data-anchor-id="collecting">Collecting tidy data</h2>
+<p>The cheapest cleaning is the cleaning you never have to do. Before anyone abstracts a single chart, write the <strong>data dictionary</strong>: every variable’s name, meaning, type, units and allowed values. Then build the collection sheet from the dictionary.</p>
+<p>This site includes a template you can copy: <a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/raw/main/templates/data-collection-template.xlsx"><code>templates/data-collection-template.xlsx</code></a>. It has four sheets:</p>
+<ul>
+<li><strong>README</strong> — the rules below, for whoever does the abstraction.</li>
+<li><strong>data</strong> — one header row, and dropdowns or range checks on every column except the study ID, so typos can’t get in.</li>
+<li><strong>dictionary</strong> — what each column means.</li>
+<li><strong>missing_codes</strong> — exactly what to enter when a value isn’t in the chart.</li>
+</ul>
+<p>The rules the template enforces:</p>
+<ol type="1">
+<li>One row per procedure, one column per variable, one value per cell.</li>
+<li>A study ID, never the MRN or name. The MRN-to-study-ID crosswalk lives in a separate, secured file.</li>
+<li>Categories from dropdowns only (no <code>F</code> vs <code>female</code>).</li>
+<li>Numbers only in number columns; units live in the dictionary.</li>
+<li>Real dates, not text.</li>
+<li>Missing means: dropdown “Not recorded”, or an empty number/date cell.</li>
+<li>No colors, bold, comments, merged cells, title rows or totals rows.</li>
+</ol>
+<p>You can read the dictionary sheet like any other data:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>dictionary <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"templates/data-collection-template.xlsx"</span>, <span class="at">sheet =</span> <span class="st">"dictionary"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>dictionary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 5
+   variable     label                    type        units allowed              
+   &lt;chr&gt;        &lt;chr&gt;                    &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;                
+ 1 study_id     Study ID (never the MRN) id          &lt;NA&gt;  e.g. C0001           
+ 2 surgery_date Date of surgery          date        &lt;NA&gt;  2000-01-01 to 2030-1…
+ 3 procedure    Procedure                categorical &lt;NA&gt;  THA, TKA, Not record…
+ 4 side         Operative side           categorical &lt;NA&gt;  L, R, Not recorded   
+ 5 age          Age at surgery           integer     years 18 to 110            
+ 6 sex          Sex                      categorical &lt;NA&gt;  Female, Male, Not re…
+ 7 bmi          Body mass index          numeric     kg/m2 10 to 80             
+ 8 asa          ASA class                categorical &lt;NA&gt;  1, 2, 3, 4, Not reco…
+ 9 diabetes     Diabetes mellitus        categorical &lt;NA&gt;  Yes, No, Not recorded
+10 hypertension Hypertension             categorical &lt;NA&gt;  Yes, No, Not recorded
+11 sleep_apnea  Obstructive sleep apnea  categorical &lt;NA&gt;  Yes, No, Not recorded
+12 los_days     Length of stay           integer     days  0 to 60              
+13 revised      Revised during follow-up categorical &lt;NA&gt;  Yes, No, Not recorded</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dictionary <span class="op">=</span> pd.read_excel(<span class="st">"templates/data-collection-template.xlsx"</span>, sheet_name<span class="op">=</span><span class="st">"dictionary"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(dictionary.to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        variable                     label         type  units                     allowed
+0       study_id  Study ID (never the MRN)           id    NaN                  e.g. C0001
+1   surgery_date           Date of surgery         date    NaN    2000-01-01 to 2030-12-31
+2      procedure                 Procedure  categorical    NaN      THA, TKA, Not recorded
+3           side            Operative side  categorical    NaN          L, R, Not recorded
+4            age            Age at surgery      integer  years                   18 to 110
+5            sex                       Sex  categorical    NaN  Female, Male, Not recorded
+6            bmi           Body mass index      numeric  kg/m2                    10 to 80
+7            asa                 ASA class  categorical    NaN    1, 2, 3, 4, Not recorded
+8       diabetes         Diabetes mellitus  categorical    NaN       Yes, No, Not recorded
+9   hypertension              Hypertension  categorical    NaN       Yes, No, Not recorded
+10   sleep_apnea   Obstructive sleep apnea  categorical    NaN       Yes, No, Not recorded
+11      los_days            Length of stay      integer   days                     0 to 60
+12       revised  Revised during follow-up  categorical    NaN       Yes, No, Not recorded</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tidying" class="level2">
+<h2 class="anchored" data-anchor-id="tidying">Tidying a messy workbook</h2>
+<p>Real abstraction sheets rarely follow those rules. <code>data/messy_abstraction_workbook.xlsx</code> copies the problems we see in TJS sheets. Open it in Excel and look before you run any code:</p>
+<ul>
+<li>two tabs, <strong>Site A</strong> and <strong>Site B</strong>, whose columns don’t line up (Site B has an extra <code>MUA</code> column in the middle)</li>
+<li>two banner rows and a row of merged group headers above the real header</li>
+<li>a <strong>TOTAL</strong> row at the bottom of each tab</li>
+<li>two <code>Date</code> and two <code>Score</code> columns (pre-op and 1-year PROMs)</li>
+<li>mixed date formats, units in number cells, Roman-numeral ASA classes, five spellings of “missing”</li>
+<li>revisions marked only by a red fill on the Study ID cell</li>
+<li>duplicated rows</li>
+</ul>
+<p>We’ll fix it one step at a time. Every step is small enough to check. Run the steps in order: each one starts from the result of the step before.</p>
+<section id="step-1-read-both-tabs-as-text" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-read-both-tabs-as-text">Step 1: read both tabs, as text</h3>
+<p>Read everything as text first. If you let the software guess types, it silently turns <code>32.1 kg/m2</code> into a missing value, and you never find out. We’ll convert types deliberately in step 5.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">"data/messy_abstraction_workbook.xlsx"</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>read_site <span class="ot">&lt;-</span> <span class="cf">function</span>(sheet) {</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># skip = 3 jumps over the two banner rows and the group-header row</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  raw <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(path, <span class="at">sheet =</span> sheet, <span class="at">skip =</span> <span class="dv">3</span>, <span class="at">col_types =</span> <span class="st">"text"</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">.name_repair =</span> <span class="st">"minimal"</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(raw) <span class="ot">&lt;-</span> <span class="fu">str_trim</span>(<span class="fu">names</span>(raw))   <span class="co"># "Study ID " has a trailing space on Site B</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># The two Date/Score pairs: the group header says pre-op first, then 1 year</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(raw)[<span class="fu">names</span>(raw) <span class="sc">==</span> <span class="st">"Date"</span>]  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"prom_preop_date"</span>, <span class="st">"prom_1yr_date"</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(raw)[<span class="fu">names</span>(raw) <span class="sc">==</span> <span class="st">"Score"</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"prom_preop"</span>, <span class="st">"prom_1yr"</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  raw <span class="sc">|&gt;</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span> <span class="co"># "Pt Name" -&gt; pt_name, "Study ID" -&gt; study_id</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">site =</span> sheet)      <span class="co"># remember which tab each row came from</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>raw <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">read_site</span>(<span class="st">"Site A"</span>), <span class="fu">read_site</span>(<span class="st">"Site B"</span>))   <span class="co"># matches columns by name</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(raw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 126</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(raw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "pt_name"         "mrn"             "study_id"        "dos"            
+ [5] "age"             "sex"             "bmi"             "asa"            
+ [9] "comorbidities"   "procedure"       "los"             "prom_preop_date"
+[13] "prom_preop"      "prom_1yr_date"   "prom_1yr"        "notes"          
+[17] "site"            "mua"            </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> <span class="st">"data/messy_abstraction_workbook.xlsx"</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_site(sheet):</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># header=3 uses the 4th row as column names (after banners and group headers)</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    raw <span class="op">=</span> pd.read_excel(path, sheet_name<span class="op">=</span>sheet, header<span class="op">=</span><span class="dv">3</span>, dtype<span class="op">=</span><span class="bu">str</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    names <span class="op">=</span> [<span class="bu">str</span>(c).strip() <span class="cf">for</span> c <span class="kw">in</span> raw.columns]   <span class="co"># "Study ID " has a trailing space on Site B</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># pandas renames repeated headers to "Date.1" and "Score.1"</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    pairs <span class="op">=</span> {<span class="st">"Date"</span>: <span class="st">"prom_preop_date"</span>, <span class="st">"Score"</span>: <span class="st">"prom_preop"</span>,</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Date.1"</span>: <span class="st">"prom_1yr_date"</span>, <span class="st">"Score.1"</span>: <span class="st">"prom_1yr"</span>}</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    names <span class="op">=</span> [pairs.get(n, n) <span class="cf">for</span> n <span class="kw">in</span> names]</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># "Pt Name" -&gt; pt_name, "Study ID" -&gt; study_id</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    raw.columns <span class="op">=</span> [re.sub(<span class="vs">r"</span><span class="pp">[^0-9a-z]</span><span class="op">+</span><span class="vs">"</span>, <span class="st">"_"</span>, n.lower()).strip(<span class="st">"_"</span>) <span class="cf">for</span> n <span class="kw">in</span> names]</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> raw.assign(site<span class="op">=</span>sheet)   <span class="co"># remember which tab each row came from</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> pd.concat([read_site(<span class="st">"Site A"</span>), read_site(<span class="st">"Site B"</span>)], ignore_index<span class="op">=</span><span class="va">True</span>)  <span class="co"># matches by name</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(raw))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>126</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">list</span>(raw.columns))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>['pt_name', 'mrn', 'study_id', 'dos', 'age', 'sex', 'bmi', 'asa', 'comorbidities', 'procedure', 'los', 'prom_preop_date', 'prom_preop', 'prom_1yr_date', 'prom_1yr', 'notes', 'site', 'mua']</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>126 rows: 60 patients per tab, plus 2 duplicates and a totals row in each. Because we stacked the tabs <strong>by column name</strong>, Site B’s extra <code>MUA</code> column didn’t shift anything. Site A rows simply have <code>mua</code> missing. Copying cells by position would have put LOS values under the wrong heading.</p>
+<p>In R we call <code>janitor::clean_names()</code> with the package name in front instead of loading janitor with <code>library()</code>. Loading janitor <em>masks</em> R’s own <code>chisq.test()</code> and <code>fisher.test()</code> with janitor’s versions. They give the same answers for ordinary tables, but the masking message is confusing, and it becomes harder to tell which function you’re actually calling.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: the same Excel file, read differently
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Repeated headers.</strong> R (with <code>.name_repair = "minimal"</code>) keeps both <code>Date</code> columns as <code>Date</code>. pandas renames the second to <code>Date.1</code>.</li>
+<li><strong>Real Excel dates.</strong> Read as text, R gives the Excel serial number (<code>42010</code> means 6 Jan 2015). pandas gives <code>2015-01-06 00:00:00</code>. Step 5 handles both.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="step-2-drop-rows-and-columns-that-arent-data" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-drop-rows-and-columns-that-arent-data">Step 2: drop rows and columns that aren’t data</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>step2 <span class="ot">&lt;-</span> raw <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(pt_name) <span class="sc">|</span> pt_name <span class="sc">!=</span> <span class="st">"TOTAL"</span>) <span class="sc">|&gt;</span>   <span class="co"># the totals rows</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">|&gt;</span>                                      <span class="co"># exact duplicate rows</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>pt_name, <span class="sc">-</span>mrn, <span class="sc">-</span>mua)                       <span class="co"># identifiers, and a column we don't need</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(step2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 120</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>step2 <span class="op">=</span> (raw[raw[<span class="st">"pt_name"</span>] <span class="op">!=</span> <span class="st">"TOTAL"</span>]           <span class="co"># the totals rows</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>         .drop_duplicates()                        <span class="co"># exact duplicate rows</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>         .drop(columns<span class="op">=</span>[<span class="st">"pt_name"</span>, <span class="st">"mrn"</span>, <span class="st">"mua"</span>])) <span class="co"># identifiers, and a column we don't need</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(step2))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>120</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Names and MRNs go as early as possible. Everything after this point works on a study ID only.</p>
+</section>
+<section id="step-3-one-way-to-say-missing" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-one-way-to-say-missing">Step 3: one way to say “missing”</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>missing_codes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"N/A"</span>, <span class="st">"unk"</span>, <span class="st">"-"</span>, <span class="st">"999"</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>step3 <span class="ot">&lt;-</span> step2 <span class="sc">|&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), \(x) <span class="fu">if_else</span>(x <span class="sc">%in%</span> missing_codes, <span class="cn">NA</span>, x)))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co"># How many BMI values are missing now?</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(step3<span class="sc">$</span>bmi))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>missing_codes <span class="op">=</span> [<span class="st">"N/A"</span>, <span class="st">"unk"</span>, <span class="st">"-"</span>, <span class="st">"999"</span>]</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>step3 <span class="op">=</span> step2.replace(missing_codes, pd.NA)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co"># How many BMI values are missing now?</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(step3[<span class="st">"bmi"</span>].isna().<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>8</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: <code>999</code> is only a missing code if your dictionary says so
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this sheet <code>999</code> means “missing” in number columns. In another sheet it could be a real value. Write every missing code into the data dictionary <em>before</em> collection starts.</p>
+</div>
+</div>
+</section>
+<section id="step-4-recover-the-color-coded-revisions" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-recover-the-color-coded-revisions">Step 4: recover the color-coded revisions</h3>
+<p>The sheet marks revised cases only with a red fill on the Study ID cell. Most software reading a spreadsheet can’t see colors at all, which is exactly why color must never carry data. Here we have to dig it out.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyxl)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>cells   <span class="ot">&lt;-</span> <span class="fu">xlsx_cells</span>(path)                                 <span class="co"># one row per spreadsheet cell</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>fills   <span class="ot">&lt;-</span> <span class="fu">xlsx_formats</span>(path)<span class="sc">$</span>local<span class="sc">$</span>fill<span class="sc">$</span>patternFill<span class="sc">$</span>fgColor<span class="sc">$</span>rgb  <span class="co"># fill color of each format</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>revised_ids <span class="ot">&lt;-</span> cells <span class="sc">|&gt;</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fills[local_format_id] <span class="sc">%in%</span> <span class="st">"FFFF9999"</span>) <span class="sc">|&gt;</span>         <span class="co"># the red fill</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(character) <span class="sc">|&gt;</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_trim</span>() <span class="sc">|&gt;</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>()</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(revised_ids)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 18</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> openpyxl</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>workbook <span class="op">=</span> openpyxl.load_workbook(path)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>revised_ids <span class="op">=</span> <span class="bu">set</span>()</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> sheet <span class="kw">in</span> workbook.worksheets:</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> sheet.iter_rows(min_row<span class="op">=</span><span class="dv">5</span>):        <span class="co"># data starts on row 5</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> cell <span class="kw">in</span> row:</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> cell.fill.fgColor.rgb <span class="op">==</span> <span class="st">"FFFF9999"</span>:   <span class="co"># the red fill</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>                revised_ids.add(<span class="bu">str</span>(cell.value).strip())</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(revised_ids))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>18</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The <code>Notes</code> column mentions some revisions (“revised 2021 for loosening”), but not all of them. If we had trusted the notes we would have missed cases. Only the colors were complete.</p>
+</section>
+<section id="step-5-give-every-column-its-real-type" class="level3">
+<h3 class="anchored" data-anchor-id="step-5-give-every-column-its-real-type">Step 5: give every column its real type</h3>
+<p>Now convert each text column into what it really is. One small function handles the mixed date formats. Each recode lists the values it expects and turns anything else into a missing value, so a surprise like <code>U</code> for sex shows up instead of silently becoming “Male”.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dates arrive as Excel serial numbers ("42010"), "1/13/15", "2015-04-21",</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co"># or "February 10 2015". Handle the serial numbers, then let lubridate try</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="co"># month-day-year and year-month-day for the rest.</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>parse_messy_date <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">orders =</span> <span class="fu">c</span>(<span class="st">"mdy"</span>, <span class="st">"ymd"</span>)) {</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  serial <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.na</span>(x) <span class="sc">&amp;</span> <span class="fu">str_detect</span>(x, <span class="st">"^</span><span class="sc">\\</span><span class="st">d{5}$"</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">length</span>(x)))</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  out[serial]  <span class="ot">&lt;-</span> janitor<span class="sc">::</span><span class="fu">excel_numeric_to_date</span>(<span class="fu">as.numeric</span>(x[serial]))</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  out[<span class="sc">!</span>serial] <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">parse_date_time</span>(x[<span class="sc">!</span>serial], <span class="at">orders =</span> orders, <span class="at">quiet =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  out</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>tidy <span class="ot">&lt;-</span> step3 <span class="sc">|&gt;</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">procedure_text =</span> procedure) <span class="sc">|&gt;</span>   <span class="co"># keep the raw text until we've split it</span></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">case_id      =</span> <span class="fu">str_trim</span>(study_id),</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>    site,</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">surgery_date =</span> <span class="fu">parse_messy_date</span>(dos),</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">age          =</span> <span class="fu">parse_number</span>(age),            <span class="co"># "67 yo"      -&gt; 67</span></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex          =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(sex, <span class="fu">regex</span>(<span class="st">"^f"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Female"</span>,</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">str_detect</span>(sex, <span class="fu">regex</span>(<span class="st">"^m"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Male"</span>),  <span class="co"># anything else -&gt; NA</span></span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi          =</span> <span class="fu">parse_number</span>(bmi),            <span class="co"># "BMI 31.2"   -&gt; 31.2</span></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">asa          =</span> <span class="fu">as.integer</span>(<span class="fu">as.roman</span>(<span class="fu">str_remove</span>(asa, <span class="st">"^ASA "</span>))),  <span class="co"># "II", "ASA 2", "2" -&gt; 2</span></span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">diabetes     =</span> <span class="fu">as.integer</span>(<span class="fu">str_detect</span>(comorbidities, <span class="fu">regex</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">bDM</span><span class="sc">\\</span><span class="st">b"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">hypertension =</span> <span class="fu">as.integer</span>(<span class="fu">str_detect</span>(comorbidities, <span class="fu">regex</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">bHTN</span><span class="sc">\\</span><span class="st">b"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">sleep_apnea  =</span> <span class="fu">as.integer</span>(<span class="fu">str_detect</span>(comorbidities, <span class="fu">regex</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">bOSA</span><span class="sc">\\</span><span class="st">b"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">procedure    =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(procedure_text, <span class="fu">regex</span>(<span class="st">"TKA|knee"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"TKA"</span>,</span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">str_detect</span>(procedure_text, <span class="fu">regex</span>(<span class="st">"THA|hip"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"THA"</span>),</span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">side         =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(procedure_text, <span class="st">"</span><span class="sc">\\</span><span class="st">b(L|Left)</span><span class="sc">\\</span><span class="st">b"</span>) <span class="sc">~</span> <span class="st">"L"</span>,</span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">str_detect</span>(procedure_text, <span class="st">"</span><span class="sc">\\</span><span class="st">b(R|Right)</span><span class="sc">\\</span><span class="st">b"</span>) <span class="sc">~</span> <span class="st">"R"</span>),</span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">los_days     =</span> <span class="fu">parse_number</span>(los),            <span class="co"># "0 (same day)" -&gt; 0</span></span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">revised      =</span> <span class="fu">as.integer</span>(case_id <span class="sc">%in%</span> revised_ids),</span>
+<span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">prom_preop_date =</span> <span class="fu">parse_messy_date</span>(prom_preop_date),</span>
+<span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">prom_preop      =</span> <span class="fu">parse_number</span>(prom_preop),</span>
+<span id="cb33-34"><a href="#cb33-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">prom_1yr_date   =</span> <span class="fu">parse_messy_date</span>(prom_1yr_date),</span>
+<span id="cb33-35"><a href="#cb33-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">prom_1yr        =</span> <span class="fu">parse_number</span>(prom_1yr)</span>
+<span id="cb33-36"><a href="#cb33-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb33-37"><a href="#cb33-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(site, case_id)</span>
+<span id="cb33-38"><a href="#cb33-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-39"><a href="#cb33-39" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(tidy)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 120
+Columns: 18
+$ case_id         &lt;chr&gt; "C0004", "C0007", "C0017", "C0034", "C0035", "C0045", …
+$ site            &lt;chr&gt; "Site A", "Site A", "Site A", "Site A", "Site A", "Sit…
+$ surgery_date    &lt;date&gt; 2015-01-22, 2015-02-08, 2015-05-14, 2015-08-20, 2015-…
+$ age             &lt;dbl&gt; 66, 50, 53, 71, 52, 60, 59, 66, 68, 61, 71, 50, 61, 68…
+$ sex             &lt;chr&gt; "Male", "Male", "Female", "Male", "Female", "Male", "F…
+$ bmi             &lt;dbl&gt; 24.2, 35.3, 34.7, 22.2, 33.5, 35.9, 29.8, 25.5, 30.2, …
+$ asa             &lt;int&gt; 2, 3, 2, 3, 1, 3, 2, 2, 3, 3, 2, 2, 2, 3, 2, 1, 3, 3, …
+$ diabetes        &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ hypertension    &lt;int&gt; 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, …
+$ sleep_apnea     &lt;int&gt; 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ procedure       &lt;chr&gt; "TKA", "TKA", "THA", "THA", "THA", "TKA", "THA", "THA"…
+$ side            &lt;chr&gt; "L", "L", "L", "L", "R", "R", "R", "L", "R", "R", "L",…
+$ los_days        &lt;dbl&gt; 0, 0, 0, 2, 0, 1, 1, 0, 2, 0, 4, 1, 3, 0, 2, 0, 1, 1, …
+$ revised         &lt;int&gt; 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, …
+$ prom_preop_date &lt;date&gt; 2015-01-08, 2015-01-25, 2015-05-07, 2015-08-09, 2015-…
+$ prom_preop      &lt;dbl&gt; 49.9, 61.7, 36.3, 45.5, 33.8, 36.2, 46.4, 44.2, 33.8, …
+$ prom_1yr_date   &lt;date&gt; 2016-01-16, NA, 2016-06-09, 2016-08-15, 2016-08-22, 2…
+$ prom_1yr        &lt;dbl&gt; 91.6, NA, 99.7, 82.1, 85.5, 63.6, 68.2, 74.0, NA, NA, …</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> number(text):</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The first number in each cell: "67 yo" -&gt; 67, "BMI 31.2" -&gt; 31.2</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.to_numeric(text.<span class="bu">str</span>.extract(<span class="vs">r"</span><span class="kw">(</span><span class="dv">\d</span><span class="op">+</span><span class="ch">\.</span><span class="op">?</span><span class="dv">\d</span><span class="op">*</span><span class="kw">)</span><span class="vs">"</span>)[<span class="dv">0</span>])</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>asa_roman <span class="op">=</span> {<span class="st">"I"</span>: <span class="st">"1"</span>, <span class="st">"II"</span>: <span class="st">"2"</span>, <span class="st">"III"</span>: <span class="st">"3"</span>, <span class="st">"IV"</span>: <span class="st">"4"</span>}</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>procedure_text <span class="op">=</span> step3[<span class="st">"procedure"</span>]   <span class="co"># keep the raw text until we've split it</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>tidy <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"case_id"</span>:      step3[<span class="st">"study_id"</span>].<span class="bu">str</span>.strip(),</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"site"</span>:         step3[<span class="st">"site"</span>],</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surgery_date"</span>: pd.to_datetime(step3[<span class="st">"dos"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"mixed"</span>),</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"age"</span>:          number(step3[<span class="st">"age"</span>]),</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sex"</span>:          step3[<span class="st">"sex"</span>].<span class="bu">str</span>[<span class="dv">0</span>].<span class="bu">str</span>.lower().<span class="bu">map</span>({<span class="st">"f"</span>: <span class="st">"Female"</span>, <span class="st">"m"</span>: <span class="st">"Male"</span>}),</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bmi"</span>:          number(step3[<span class="st">"bmi"</span>]),</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"asa"</span>:          pd.to_numeric(step3[<span class="st">"asa"</span>].<span class="bu">str</span>.replace(<span class="st">"ASA "</span>, <span class="st">""</span>).replace(asa_roman)),</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"diabetes"</span>:     step3[<span class="st">"comorbidities"</span>].<span class="bu">str</span>.contains(<span class="vs">r"</span><span class="dv">\b</span><span class="vs">DM</span><span class="dv">\b</span><span class="vs">"</span>, case<span class="op">=</span><span class="va">False</span>).astype(<span class="bu">int</span>),</span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hypertension"</span>: step3[<span class="st">"comorbidities"</span>].<span class="bu">str</span>.contains(<span class="vs">r"</span><span class="dv">\b</span><span class="vs">HTN</span><span class="dv">\b</span><span class="vs">"</span>, case<span class="op">=</span><span class="va">False</span>).astype(<span class="bu">int</span>),</span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sleep_apnea"</span>:  step3[<span class="st">"comorbidities"</span>].<span class="bu">str</span>.contains(<span class="vs">r"</span><span class="dv">\b</span><span class="vs">OSA</span><span class="dv">\b</span><span class="vs">"</span>, case<span class="op">=</span><span class="va">False</span>).astype(<span class="bu">int</span>),</span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"procedure"</span>:    np.select([procedure_text.<span class="bu">str</span>.contains(<span class="vs">r"TKA</span><span class="cf">|</span><span class="vs">knee"</span>, case<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>                               procedure_text.<span class="bu">str</span>.contains(<span class="vs">r"THA</span><span class="cf">|</span><span class="vs">hip"</span>, case<span class="op">=</span><span class="va">False</span>)],</span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a>                              [<span class="st">"TKA"</span>, <span class="st">"THA"</span>], default<span class="op">=</span><span class="va">None</span>),          <span class="co"># anything else -&gt; missing</span></span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"side"</span>:         np.select([procedure_text.<span class="bu">str</span>.contains(<span class="vs">r"</span><span class="dv">\b</span>(?:<span class="vs">L</span><span class="cf">|</span><span class="vs">Left</span>)<span class="dv">\b</span><span class="vs">"</span>),</span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a>                               procedure_text.<span class="bu">str</span>.contains(<span class="vs">r"</span><span class="dv">\b</span>(?:<span class="vs">R</span><span class="cf">|</span><span class="vs">Right</span>)<span class="dv">\b</span><span class="vs">"</span>)],</span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a>                              [<span class="st">"L"</span>, <span class="st">"R"</span>], default<span class="op">=</span><span class="va">None</span>),</span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"los_days"</span>:     number(step3[<span class="st">"los"</span>]),</span>
+<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"revised"</span>:      step3[<span class="st">"study_id"</span>].<span class="bu">str</span>.strip().isin(revised_ids).astype(<span class="bu">int</span>),</span>
+<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prom_preop_date"</span>: pd.to_datetime(step3[<span class="st">"prom_preop_date"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"mixed"</span>),</span>
+<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prom_preop"</span>:      number(step3[<span class="st">"prom_preop"</span>]),</span>
+<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prom_1yr_date"</span>:   pd.to_datetime(step3[<span class="st">"prom_1yr_date"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"mixed"</span>),</span>
+<span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prom_1yr"</span>:        number(step3[<span class="st">"prom_1yr"</span>]),</span>
+<span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a>}).sort_values([<span class="st">"site"</span>, <span class="st">"case_id"</span>]).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb35-34"><a href="#cb35-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-35"><a href="#cb35-35" aria-hidden="true" tabindex="-1"></a>tidy.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.DataFrame'&gt;
+RangeIndex: 120 entries, 0 to 119
+Data columns (total 18 columns):
+ #   Column           Non-Null Count  Dtype         
+---  ------           --------------  -----         
+ 0   case_id          120 non-null    str           
+ 1   site             120 non-null    str           
+ 2   surgery_date     120 non-null    datetime64[us]
+ 3   age              120 non-null    int64         
+ 4   sex              120 non-null    str           
+ 5   bmi              112 non-null    float64       
+ 6   asa              117 non-null    float64       
+ 7   diabetes         120 non-null    int64         
+ 8   hypertension     120 non-null    int64         
+ 9   sleep_apnea      120 non-null    int64         
+ 10  procedure        120 non-null    str           
+ 11  side             120 non-null    str           
+ 12  los_days         117 non-null    float64       
+ 13  revised          120 non-null    int64         
+ 14  prom_preop_date  115 non-null    datetime64[us]
+ 15  prom_preop       115 non-null    float64       
+ 16  prom_1yr_date    98 non-null     datetime64[us]
+ 17  prom_1yr         98 non-null     float64       
+dtypes: datetime64[us](3), float64(5), int64(5), str(5)
+memory usage: 17.0 KB</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: dates
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R needs a separate step for Excel serial numbers (<code>janitor::excel_numeric_to_date()</code>). pandas already turned those cells into date-times, so <code>pd.to_datetime(..., format="mixed")</code> handles every format in one go. <code>"1/13/15"</code> is read month-first in both: US style, which is what TJS sheets use.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="reshaping" class="level2">
+<h2 class="anchored" data-anchor-id="reshaping">Reshaping a survey export</h2>
+<p><code>data/messy_survey_export.csv</code> is what survey platforms produce: one row per patient, one column per question per visit (<code>KOOS_Q3_6wk</code>), and a second header row of question labels. To analyze it we need one row per patient, visit and item.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>survey_path <span class="ot">&lt;-</span> <span class="st">"data/messy_survey_export.csv"</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>header <span class="ot">&lt;-</span> <span class="fu">read_lines</span>(survey_path, <span class="at">n_max =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">str_split_1</span>(<span class="st">","</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>wide <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(survey_path, <span class="at">skip =</span> <span class="dv">2</span>, <span class="at">col_names =</span> header,          <span class="co"># skip both header rows</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">col_types =</span> <span class="fu">cols</span>(<span class="at">.default =</span> <span class="st">"c"</span>))</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> wide <span class="sc">|&gt;</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>    <span class="sc">-</span><span class="fu">c</span>(ResponseId, case_id, instrument),</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"inst"</span>, <span class="st">"item"</span>, <span class="st">"visit"</span>),</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_pattern =</span> <span class="st">"(KOOS|HOOS)_Q(</span><span class="sc">\\</span><span class="st">d)_(.*)"</span>,       <span class="co"># "KOOS_Q3_6wk" -&gt; KOOS, 3, 6wk</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"response"</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">substr</span>(instrument, <span class="dv">1</span>, <span class="dv">4</span>) <span class="sc">==</span> inst) <span class="sc">|&gt;</span>         <span class="co"># keep each patient's own instrument</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">item =</span> <span class="fu">as.integer</span>(item), <span class="at">response =</span> <span class="fu">as.integer</span>(response),</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">visit_order =</span> <span class="fu">match</span>(visit, <span class="fu">c</span>(<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(case_id, visit_order, item) <span class="sc">|&gt;</span></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, instrument, visit, item, response)</span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>items</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3,928 × 5
+   case_id instrument visit  item response
+   &lt;chr&gt;   &lt;chr&gt;      &lt;chr&gt; &lt;int&gt;    &lt;int&gt;
+ 1 C0004   KOOS JR    preop     1        3
+ 2 C0004   KOOS JR    preop     2        3
+ 3 C0004   KOOS JR    preop     3        2
+ 4 C0004   KOOS JR    preop     4        3
+ 5 C0004   KOOS JR    preop     5        2
+ 6 C0004   KOOS JR    preop     6        2
+ 7 C0004   KOOS JR    preop     7        2
+ 8 C0004   KOOS JR    6wk       1        1
+ 9 C0004   KOOS JR    6wk       2        1
+10 C0004   KOOS JR    6wk       3        3
+# ℹ 3,918 more rows</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>survey_path <span class="op">=</span> <span class="st">"data/messy_survey_export.csv"</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>wide <span class="op">=</span> pd.read_csv(survey_path, skiprows<span class="op">=</span>[<span class="dv">1</span>], dtype<span class="op">=</span><span class="bu">str</span>)   <span class="co"># skip the question-label row</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>items <span class="op">=</span> wide.melt(id_vars<span class="op">=</span>[<span class="st">"ResponseId"</span>, <span class="st">"case_id"</span>, <span class="st">"instrument"</span>],</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>                  var_name<span class="op">=</span><span class="st">"column"</span>, value_name<span class="op">=</span><span class="st">"response"</span>)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>parts <span class="op">=</span> items[<span class="st">"column"</span>].<span class="bu">str</span>.extract(<span class="vs">r"</span><span class="kw">(</span><span class="fu">?P&lt;inst&gt;</span><span class="vs">KOOS</span><span class="cf">|</span><span class="vs">HOOS</span><span class="kw">)</span><span class="vs">_Q</span><span class="kw">(</span><span class="fu">?P&lt;item&gt;</span><span class="dv">\d</span><span class="kw">)</span><span class="vs">_</span><span class="kw">(</span><span class="fu">?P&lt;visit&gt;</span><span class="dv">.</span><span class="op">+</span><span class="kw">)</span><span class="vs">"</span>)</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>items <span class="op">=</span> pd.concat([items, parts], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>items <span class="op">=</span> items[items[<span class="st">"instrument"</span>].<span class="bu">str</span>[:<span class="dv">4</span>] <span class="op">==</span> items[<span class="st">"inst"</span>]]   <span class="co"># keep each patient's own instrument</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>visit_order <span class="op">=</span> {<span class="st">"preop"</span>: <span class="dv">0</span>, <span class="st">"6wk"</span>: <span class="dv">1</span>, <span class="st">"3mo"</span>: <span class="dv">2</span>, <span class="st">"1yr"</span>: <span class="dv">3</span>}</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>items <span class="op">=</span> (items.assign(item<span class="op">=</span>items[<span class="st">"item"</span>].astype(<span class="bu">int</span>),</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>                      response<span class="op">=</span>pd.to_numeric(items[<span class="st">"response"</span>]),</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>                      order<span class="op">=</span>items[<span class="st">"visit"</span>].<span class="bu">map</span>(visit_order))</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>              .sort_values([<span class="st">"case_id"</span>, <span class="st">"order"</span>, <span class="st">"item"</span>])</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>              [[<span class="st">"case_id"</span>, <span class="st">"instrument"</span>, <span class="st">"visit"</span>, <span class="st">"item"</span>, <span class="st">"response"</span>]]</span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>              .reset_index(drop<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(items)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     case_id instrument  visit  item  response
+0      C0004    KOOS JR  preop     1       3.0
+1      C0004    KOOS JR  preop     2       3.0
+2      C0004    KOOS JR  preop     3       2.0
+3      C0004    KOOS JR  preop     4       3.0
+4      C0004    KOOS JR  preop     5       2.0
+...      ...        ...    ...   ...       ...
+3923   C0600    KOOS JR    1yr     3       1.0
+3924   C0600    KOOS JR    1yr     4       0.0
+3925   C0600    KOOS JR    1yr     5       0.0
+3926   C0600    KOOS JR    1yr     6       0.0
+3927   C0600    KOOS JR    1yr     7       0.0
+
+[3928 rows x 5 columns]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>A KOOS JR patient now has 7 items × 4 visits = 28 rows. A missed visit still has its rows, with the response blank, so “expected but not answered” stays visible.</p>
+</section>
+<section id="integrity" class="level2">
+<h2 class="anchored" data-anchor-id="integrity">Checking nothing changed</h2>
+<p>On a real project nobody hands you an answer key. These checks need nothing but the raw sheet and your result. Run them after every cleaning job.</p>
+<p><strong>1. Rows and IDs.</strong> You should have exactly one row per case, and the count should match what you expect.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(tidy)                       <span class="co"># 60 per site</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 120</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(tidy<span class="sc">$</span>case_id)         <span class="co"># must equal nrow: no duplicate IDs</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 120</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(tidy, site)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  site       n
+  &lt;chr&gt;  &lt;int&gt;
+1 Site A    60
+2 Site B    60</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(tidy))                       <span class="co"># 60 per site</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>120</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tidy[<span class="st">"case_id"</span>].nunique())       <span class="co"># must equal len: no duplicate IDs</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>120</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tidy[<span class="st">"site"</span>].value_counts())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>site
+Site A    60
+Site B    60
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p><strong>2. Missing values didn’t appear or disappear.</strong> Every missing BMI in the result should trace back to a missing code or blank in the sheet.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>missing_in_sheet  <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(step2<span class="sc">$</span>bmi) <span class="sc">|</span> step2<span class="sc">$</span>bmi <span class="sc">%in%</span> missing_codes)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>missing_in_result <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(tidy<span class="sc">$</span>bmi))</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">sheet =</span> missing_in_sheet, <span class="at">result =</span> missing_in_result)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> sheet result 
+     8      8 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>missing_in_sheet <span class="op">=</span> (step2[<span class="st">"bmi"</span>].isna() <span class="op">|</span> step2[<span class="st">"bmi"</span>].isin(missing_codes)).<span class="bu">sum</span>()</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>missing_in_result <span class="op">=</span> tidy[<span class="st">"bmi"</span>].isna().<span class="bu">sum</span>()</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(missing_in_sheet, missing_in_result)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>8 8</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p><strong>3. Cross-tab every recode.</strong> Put each raw value next to the value that ended up in the finished table (matched by case ID). Each messy spelling should map to exactly one clean value, and nothing should map to missing by accident. Comparing with <code>tidy</code> itself, rather than re-running the recode, is what lets this check catch a mistake in step 5.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>step3 <span class="sc">|&gt;</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">case_id =</span> <span class="fu">str_trim</span>(study_id), <span class="at">raw =</span> sex) <span class="sc">|&gt;</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">select</span>(tidy, case_id, <span class="at">clean =</span> sex), <span class="at">by =</span> <span class="st">"case_id"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(raw, clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 3
+  raw    clean      n
+  &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt;
+1 F      Female    16
+2 Female Female    17
+3 M      Male      19
+4 Male   Male      12
+5 f      Female    20
+6 female Female    18
+7 male   Male      18</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>raw_sex <span class="op">=</span> pd.DataFrame({<span class="st">"case_id"</span>: step3[<span class="st">"study_id"</span>].<span class="bu">str</span>.strip(), <span class="st">"raw"</span>: step3[<span class="st">"sex"</span>]})</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>recode <span class="op">=</span> raw_sex.merge(tidy[[<span class="st">"case_id"</span>, <span class="st">"sex"</span>]].rename(columns<span class="op">=</span>{<span class="st">"sex"</span>: <span class="st">"clean"</span>}), on<span class="op">=</span><span class="st">"case_id"</span>)</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(recode.groupby([<span class="st">"raw"</span>, <span class="st">"clean"</span>], dropna<span class="op">=</span><span class="va">False</span>).size())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>raw     clean 
+F       Female    16
+Female  Female    17
+M       Male      19
+Male    Male      12
+f       Female    20
+female  Female    18
+male    Male      18
+dtype: int64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p><strong>4. Range and logic checks.</strong> Values a person can’t have, and dates in the wrong order.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>tidy <span class="sc">|&gt;</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_out_of_range  =</span> <span class="fu">sum</span>(age <span class="sc">&lt;</span> <span class="dv">18</span> <span class="sc">|</span> age <span class="sc">&gt;</span> <span class="dv">110</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi_out_of_range  =</span> <span class="fu">sum</span>(bmi <span class="sc">&lt;</span> <span class="dv">10</span> <span class="sc">|</span> bmi <span class="sc">&gt;</span> <span class="dv">80</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">prom_out_of_range =</span> <span class="fu">sum</span>(prom_preop <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">|</span> prom_preop <span class="sc">&gt;</span> <span class="dv">100</span> <span class="sc">|</span> prom_1yr <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">|</span> prom_1yr <span class="sc">&gt;</span> <span class="dv">100</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">preop_after_surgery =</span> <span class="fu">sum</span>(prom_preop_date <span class="sc">&gt;</span> surgery_date, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">one_year_before_surgery =</span> <span class="fu">sum</span>(prom_1yr_date <span class="sc">&lt;</span> surgery_date, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  age_out_of_range bmi_out_of_range prom_out_of_range preop_after_surgery
+             &lt;int&gt;            &lt;int&gt;             &lt;int&gt;               &lt;int&gt;
+1                0                0                 0                   0
+# ℹ 1 more variable: one_year_before_surgery &lt;int&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>checks <span class="op">=</span> {</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"age_out_of_range"</span>: ((tidy[<span class="st">"age"</span>] <span class="op">&lt;</span> <span class="dv">18</span>) <span class="op">|</span> (tidy[<span class="st">"age"</span>] <span class="op">&gt;</span> <span class="dv">110</span>)).<span class="bu">sum</span>(),</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bmi_out_of_range"</span>: ((tidy[<span class="st">"bmi"</span>] <span class="op">&lt;</span> <span class="dv">10</span>) <span class="op">|</span> (tidy[<span class="st">"bmi"</span>] <span class="op">&gt;</span> <span class="dv">80</span>)).<span class="bu">sum</span>(),</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prom_out_of_range"</span>: ((tidy[<span class="st">"prom_preop"</span>] <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">|</span> (tidy[<span class="st">"prom_preop"</span>] <span class="op">&gt;</span> <span class="dv">100</span>) <span class="op">|</span></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>                          (tidy[<span class="st">"prom_1yr"</span>] <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">|</span> (tidy[<span class="st">"prom_1yr"</span>] <span class="op">&gt;</span> <span class="dv">100</span>)).<span class="bu">sum</span>(),</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"preop_after_surgery"</span>: (tidy[<span class="st">"prom_preop_date"</span>] <span class="op">&gt;</span> tidy[<span class="st">"surgery_date"</span>]).<span class="bu">sum</span>(),</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"one_year_before_surgery"</span>: (tidy[<span class="st">"prom_1yr_date"</span>] <span class="op">&lt;</span> tidy[<span class="st">"surgery_date"</span>]).<span class="bu">sum</span>(),</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.Series(checks))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>age_out_of_range           0
+bmi_out_of_range           0
+prom_out_of_range          0
+preop_after_surgery        0
+one_year_before_surgery    0
+dtype: int64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>All zeros: good.</p>
+<p><strong>5. Spot-check against the sheet.</strong> Pick a few random rows and compare them, by eye, with the workbook.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-13-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-1" role="tab" aria-controls="tabset-13-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-2" role="tab" aria-controls="tabset-13-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-13-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-13-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>tidy <span class="sc">|&gt;</span> <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(case_id, site, surgery_date, age, bmi, procedure, side)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 7
+  case_id site   surgery_date   age   bmi procedure side 
+  &lt;chr&gt;   &lt;chr&gt;  &lt;date&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;
+1 C0064   Site B 2016-02-07      51  34.1 THA       R    
+2 C0332   Site A 2020-01-01      65  30.6 TKA       L    
+3 C0004   Site A 2015-01-22      66  24.2 TKA       L    </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-13-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tidy.sample(n<span class="op">=</span><span class="dv">3</span>, random_state<span class="op">=</span><span class="dv">1</span>)[[<span class="st">"case_id"</span>, <span class="st">"site"</span>, <span class="st">"surgery_date"</span>, <span class="st">"age"</span>, <span class="st">"bmi"</span>, <span class="st">"procedure"</span>, <span class="st">"side"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   case_id    site surgery_date  age   bmi procedure side
+95   C0353  Site B   2020-04-13   72  22.7       THA    R
+54   C0451  Site A   2021-11-08   65  18.0       TKA    R
+59   C0557  Site A   2023-06-08   59  28.3       THA    R</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section id="what-a-failing-check-looks-like" class="level3">
+<h3 class="anchored" data-anchor-id="what-a-failing-check-looks-like">What a failing check looks like</h3>
+<p>Suppose we had parsed the surgery dates day-first (European style) by mistake. Nothing crashes. Two checks catch it: a missing count (check 2, applied to the dates) and a new logic check that every pre-op PROM falls within a month before surgery.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-14-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-1" role="tab" aria-controls="tabset-14-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-2" role="tab" aria-controls="tabset-14-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-14-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-14-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>wrong <span class="ot">&lt;-</span> <span class="fu">parse_messy_date</span>(step3<span class="sc">$</span>dos, <span class="at">orders =</span> <span class="fu">c</span>(<span class="st">"dmy"</span>, <span class="st">"ymd"</span>))   <span class="co"># the mistake</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>preop <span class="ot">&lt;-</span> <span class="fu">parse_messy_date</span>(step3<span class="sc">$</span>prom_preop_date)</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>outside_window <span class="ot">&lt;-</span> <span class="cf">function</span>(surgery) {</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>  days_before <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(surgery <span class="sc">-</span> preop)</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(days_before <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">|</span> days_before <span class="sc">&gt;</span> <span class="dv">31</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">missing_correct   =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(tidy<span class="sc">$</span>surgery_date)),</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">missing_day_first =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(wrong)),</span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">window_correct    =</span> <span class="fu">outside_window</span>(<span class="fu">parse_messy_date</span>(step3<span class="sc">$</span>dos)),</span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">window_day_first  =</span> <span class="fu">outside_window</span>(wrong))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  missing_correct missing_day_first    window_correct  window_day_first 
+                0                37                 0                 7 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-14-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>wrong <span class="op">=</span> pd.to_datetime(step3[<span class="st">"dos"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"mixed"</span>, dayfirst<span class="op">=</span><span class="va">True</span>)   <span class="co"># the mistake</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>preop <span class="op">=</span> pd.to_datetime(step3[<span class="st">"prom_preop_date"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"mixed"</span>)</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> outside_window(surgery):</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>    days_before <span class="op">=</span> (surgery <span class="op">-</span> preop).dt.days</span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">int</span>(((days_before <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">|</span> (days_before <span class="op">&gt;</span> <span class="dv">31</span>)).<span class="bu">sum</span>())</span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.Series({</span>
+<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing_correct"</span>: tidy[<span class="st">"surgery_date"</span>].isna().<span class="bu">sum</span>(),</span>
+<span id="cb71-10"><a href="#cb71-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing_day_first"</span>: wrong.isna().<span class="bu">sum</span>(),</span>
+<span id="cb71-11"><a href="#cb71-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"window_correct"</span>: outside_window(pd.to_datetime(step3[<span class="st">"dos"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"mixed"</span>)),</span>
+<span id="cb71-12"><a href="#cb71-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"window_day_first"</span>: outside_window(wrong),</span>
+<span id="cb71-13"><a href="#cb71-13" aria-hidden="true" tabindex="-1"></a>}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>missing_correct       0
+missing_day_first     0
+window_correct        0
+window_day_first     36
+dtype: int64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>With the correct parse, nothing is missing and every pre-op PROM falls in its window. The day-first versions go wrong in different ways:</p>
+<ul>
+<li><strong>R</strong> can’t read dates like <code>"1/13/15"</code> day-first (there’s no 13th month), so 37 surgery dates go missing. Others, like <code>"3/4/24"</code>, parse “successfully” as 3 April instead of 4 March, and the window check flags 7 of them.</li>
+<li><strong>pandas</strong> never returns a missing date here: when day-first is impossible it quietly switches to month-first. Worse, <code>dayfirst=True</code> also flips <em>ISO</em> dates, so <code>2015-11-02</code> becomes 11 February. Only the window check notices: it flags 36 dates.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: one check is never enough
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Never use <code>dayfirst=True</code> (or day-first parsing in any tool) on a column that mixes formats. And notice that the missing count caught this bug in R but not in Python, while the logic check caught it in both. Run all the checks every time; they catch different mistakes.</p>
+</div>
+</div>
+</section>
+<section id="finally-compare-with-the-answer-key" class="level3">
+<h3 class="anchored" data-anchor-id="finally-compare-with-the-answer-key">Finally: compare with the answer key</h3>
+<p>Because this is a teaching dataset, there <em>is</em> a known right answer: <code>data/answer-keys/abstraction_workbook_tidy.csv</code>. Our result matches it exactly.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-15-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-15-1" role="tab" aria-controls="tabset-15-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-15-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-15-2" role="tab" aria-controls="tabset-15-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-15-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-15-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>answer <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/answer-keys/abstraction_workbook_tidy.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(<span class="fu">as.data.frame</span>(tidy), <span class="fu">as.data.frame</span>(answer), <span class="at">check.attributes =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-15-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-15-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>answer <span class="op">=</span> pd.read_csv(<span class="st">"data/answer-keys/abstraction_workbook_tidy.csv"</span>,</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>                     parse_dates<span class="op">=</span>[<span class="st">"surgery_date"</span>, <span class="st">"prom_preop_date"</span>, <span class="st">"prom_1yr_date"</span>])</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>pd.testing.assert_frame_equal(tidy, answer, check_dtype<span class="op">=</span><span class="va">False</span>)   <span class="co"># silent means identical</span></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"identical"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>identical</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p><strong>1.</strong> Use a cross-tab (check 3) to confirm the ASA recode: every raw spelling should map to one class from 1 to 4.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-16-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-1" role="tab" aria-controls="tabset-16-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-2" role="tab" aria-controls="tabset-16-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-16-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-16-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>step3 <span class="sc">|&gt;</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">case_id =</span> <span class="fu">str_trim</span>(study_id), <span class="at">raw =</span> asa) <span class="sc">|&gt;</span></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">select</span>(tidy, case_id, <span class="at">clean =</span> asa), <span class="at">by =</span> <span class="st">"case_id"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(raw, clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 3
+   raw   clean     n
+   &lt;chr&gt; &lt;int&gt; &lt;int&gt;
+ 1 1         1     7
+ 2 2         2    43
+ 3 3         3    24
+ 4 ASA 1     1     3
+ 5 ASA 2     2     4
+ 6 ASA 3     3     3
+ 7 I         1     2
+ 8 II        2    14
+ 9 III       3    17
+10 &lt;NA&gt;     NA     3</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-16-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>raw_asa <span class="op">=</span> pd.DataFrame({<span class="st">"case_id"</span>: step3[<span class="st">"study_id"</span>].<span class="bu">str</span>.strip(), <span class="st">"raw"</span>: step3[<span class="st">"asa"</span>]})</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>asa <span class="op">=</span> raw_asa.merge(tidy[[<span class="st">"case_id"</span>, <span class="st">"asa"</span>]].rename(columns<span class="op">=</span>{<span class="st">"asa"</span>: <span class="st">"clean"</span>}), on<span class="op">=</span><span class="st">"case_id"</span>)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(asa.groupby([<span class="st">"raw"</span>, <span class="st">"clean"</span>], dropna<span class="op">=</span><span class="va">False</span>).size())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>raw    clean
+1      1.0       7
+2      2.0      43
+3      3.0      24
+ASA 1  1.0       3
+ASA 2  2.0       4
+ASA 3  3.0       3
+I      1.0       2
+II     2.0      14
+III    3.0      17
+NaN    NaN       3
+dtype: int64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p><code>2</code>, <code>II</code> and <code>ASA 2</code> all become 2, and the missing codes stay missing.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> A colleague’s sheet has one row per patient and the columns <code>koos_left_preop</code>, <code>koos_left_1yr</code>, <code>koos_right_preop</code>, <code>koos_right_1yr</code>. Is it tidy? If not, what should one row be?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Not tidy: <em>side</em> and <em>visit</em> are hiding in the column names. One row should be one knee at one visit, with columns <code>patient_id</code>, <code>side</code>, <code>visit</code>, <code>koos</code>. Reshape it with <code>pivot_longer()</code> (R) or <code>melt()</code> (Python), splitting each column name into side and visit, as we did for the survey export.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> How many cases have a 1-year PROM recorded but no pre-op PROM? Why would that matter for an analysis of improvement?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-17-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-1" role="tab" aria-controls="tabset-17-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-17-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-2" role="tab" aria-controls="tabset-17-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-17-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-17-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>tidy <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(prom_1yr), <span class="fu">is.na</span>(prom_preop)) <span class="sc">|&gt;</span> <span class="fu">nrow</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-17-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-17-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(((tidy[<span class="st">"prom_1yr"</span>].notna()) <span class="op">&amp;</span> (tidy[<span class="st">"prom_preop"</span>].isna())).<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>5</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Those patients have no baseline, so their improvement can’t be computed. An analysis of change silently drops them. Report how many, so readers know.</p>
+</div>
 </div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -971,8 +2143,8 @@ ul.task-list li input[type="checkbox"] {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../foundations/02-demographics.html" class="pagination-link" aria-label="2 · Demographics (Table 1) (coming soon)">
-        <span class="nav-page-text">2 · Demographics (Table 1) (coming soon)</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../foundations/02-demographics.html" class="pagination-link" aria-label="2 · Demographics (Table 1)">
+        <span class="nav-page-text">2 · Demographics (Table 1)</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -984,7 +2156,7 @@ ul.task-list li input[type="checkbox"] {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>Text CC BY 4.0 · Code MIT</p>
 </div>

@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Check whether data look normal, and use that to pick the right test.">
+<meta name="description" content="Check whether data look normal, decide which column of the decision table you’re in, and understand p-values, effect sizes and confidence intervals.">
 
-<title>3 · Distributions &amp; choosing a test (coming soon) – TJS Statistics Tutorials</title>
+<title>3 · Distributions &amp; choosing a test – TJS Statistics Tutorials</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -77,6 +112,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -288,7 +326,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">Part 1 · Foundations</a></li><li class="breadcrumb-item"><a href="../foundations/03-distributions.html">3 · Distributions &amp; choosing a test (coming soon)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">Part 1 · Foundations</a></li><li class="breadcrumb-item"><a href="../foundations/03-distributions.html">3 · Distributions &amp; choosing a test</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -347,19 +385,19 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../foundations/01-tidy-data.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">1 · Tidy data (coming soon)</span></a>
+ <span class="menu-text">1 · Tidy data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../foundations/02-demographics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">2 · Demographics (Table 1) (coming soon)</span></a>
+ <span class="menu-text">2 · Demographics (Table 1)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../foundations/03-distributions.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">3 · Distributions &amp; choosing a test (coming soon)</span></a>
+ <span class="menu-text">3 · Distributions &amp; choosing a test</span></a>
   </div>
 </li>
       </ul>
@@ -503,21 +541,37 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#why" id="toc-why" class="nav-link active" data-scroll-target="#why">Why the shape of your data matters</a></li>
+  <li><a href="#look" id="toc-look" class="nav-link" data-scroll-target="#look">Look first: histograms and QQ plots</a></li>
+  <li><a href="#shapiro" id="toc-shapiro" class="nav-link" data-scroll-target="#shapiro">Formal tests: Shapiro-Wilk, and why not to trust it alone</a></li>
+  <li><a href="#within-groups" id="toc-within-groups" class="nav-link" data-scroll-target="#within-groups">Check within groups, not the pooled data</a></li>
+  <li><a href="#robustness" id="toc-robustness" class="nav-link" data-scroll-target="#robustness">How much does normality matter?</a></li>
+  <li><a href="#transform" id="toc-transform" class="nav-link" data-scroll-target="#transform">Skew, ceilings and transformations</a></li>
+  <li><a href="#ordinal" id="toc-ordinal" class="nav-link" data-scroll-target="#ordinal">Ordinal data always go in the rank column</a></li>
+  <li><a href="#paired" id="toc-paired" class="nav-link" data-scroll-target="#paired">Paired or unpaired? Matched or unmatched?</a></li>
+  <li><a href="#flowchart" id="toc-flowchart" class="nav-link" data-scroll-target="#flowchart">From your question to a test</a></li>
+  <li><a href="#effect-sizes" id="toc-effect-sizes" class="nav-link" data-scroll-target="#effect-sizes">p-values, effect sizes and confidence intervals</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">Part 1 · Foundations</a></li><li class="breadcrumb-item"><a href="../foundations/03-distributions.html">3 · Distributions &amp; choosing a test (coming soon)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../foundations/01-tidy-data.html">Part 1 · Foundations</a></li><li class="breadcrumb-item"><a href="../foundations/03-distributions.html">3 · Distributions &amp; choosing a test</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">3 · Distributions &amp; choosing a test (coming soon)</h1>
+<h1 class="title">3 · Distributions &amp; choosing a test</h1>
 </div>
 
 <div>
   <div class="description">
-    Check whether data look normal, and use that to pick the right test.
+    Check whether data look normal, decide which column of the decision table you’re in, and understand p-values, effect sizes and confidence intervals.
   </div>
 </div>
 
@@ -534,21 +588,788 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="coming-soon callout callout-style-default callout-note callout-titled">
+<!-- data-checksum: 9e548efb7ad4232927ffa99aa2cdeca7 -->
+<p>The <a href="../index.html">decision table</a> asks two questions: what’s your <strong>goal</strong> (the row), and what <strong>type of data</strong> do you have (the column). This page is about the second question, especially the hardest part of it: is a measurement “Gaussian” (normally distributed) enough for the left-hand column?</p>
+<section id="why" class="level2">
+<h2 class="anchored" data-anchor-id="why">Why the shape of your data matters</h2>
+<p>The tests in the first column (t tests, ANOVA, Pearson correlation) compare <strong>means</strong>, and they assume the data within each group follow a roughly bell-shaped, normal distribution. The tests in the second column (Mann-Whitney, Wilcoxon, Kruskal-Wallis, Spearman) work on <strong>ranks</strong>. They don’t assume a normal distribution.</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming soon
+<span class="screen-reader-only">Note</span>💡 In plain language
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.</p>
+<p>A mean is a fair summary of a bell-shaped pile of numbers. It’s a poor summary of a lopsided one: a few very long hospital stays drag the mean far away from what’s typical. Tests built on means inherit that problem. Rank-based tests only ask “which values are bigger?”, so a few extreme values can’t dominate.</p>
+</div>
+</div>
+</section>
+<section id="look" class="level2">
+<h2 class="anchored" data-anchor-id="look">Look first: histograms and QQ plots</h2>
+<p>Always plot before you test. Here are three variables from the practice data: age, length of stay, and the 1-year PROM score.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cohort   <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>proms    <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/proms_long.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>one_year <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span> <span class="fu">filter</span>(visit <span class="sc">==</span> <span class="st">"1yr"</span>, <span class="sc">!</span><span class="fu">is.na</span>(prom_score))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>shapes <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">variable =</span> <span class="st">"Age, years"</span>,           <span class="at">value =</span> cohort<span class="sc">$</span>age),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">variable =</span> <span class="st">"Length of stay, days"</span>, <span class="at">value =</span> cohort<span class="sc">$</span>los_days),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">variable =</span> <span class="st">"1-year PROM score"</span>,    <span class="at">value =</span> one_year<span class="sc">$</span>prom_score)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(shapes, <span class="fu">aes</span>(value)) <span class="sc">+</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> variable, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-distributions_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>proms <span class="op">=</span> pd.read_csv(<span class="st">"data/proms_long.csv"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>one_year <span class="op">=</span> proms[(proms[<span class="st">"visit"</span>] <span class="op">==</span> <span class="st">"1yr"</span>) <span class="op">&amp;</span> proms[<span class="st">"prom_score"</span>].notna()]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>shapes <span class="op">=</span> {</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Age, years"</span>: cohort[<span class="st">"age"</span>],</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Length of stay, days"</span>: cohort[<span class="st">"los_days"</span>],</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1-year PROM score"</span>: one_year[<span class="st">"prom_score"</span>],</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">3</span>))</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (name, values) <span class="kw">in</span> <span class="bu">zip</span>(axes, shapes.items()):</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    ax.hist(values, bins<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    ax.set_title(name)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-distributions_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>Age</strong> is a fairly symmetric bell.</li>
+<li><strong>Length of stay</strong> piles up at 0 and 1 days and has a long tail to the right: <strong>right-skewed</strong>.</li>
+<li><strong>1-year PROM</strong> piles up against the top of the scale (100), with a tail to the left: a <strong>ceiling effect</strong>.</li>
+</ul>
+<p>A <strong>QQ plot</strong> makes the comparison with a normal distribution easier to see. If the data are normal, the points fall on the straight line.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(shapes, <span class="fu">aes</span>(<span class="at">sample =</span> value)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_qq</span>() <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_qq_line</span>() <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> variable, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-distributions_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">3</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (name, values) <span class="kw">in</span> <span class="bu">zip</span>(axes, shapes.items()):</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    stats.probplot(values, plot<span class="op">=</span>ax)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    ax.set_title(name)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-distributions_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>How to read them:</p>
+<ul>
+<li>Points <strong>on the line</strong>: close to normal (age).</li>
+<li>Points <strong>curving up at the right end</strong>: right skew (length of stay). The flat steps are the many ties at 0, 1 and 2 days.</li>
+<li>Points <strong>flattening at the top</strong>: a ceiling (the PROM). Many patients share the maximum score.</li>
+</ul>
+<p>A number for lopsidedness is the <strong>skewness</strong>: 0 for a symmetric shape, positive for a tail to the right, negative for a tail to the left.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>skewness <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">mean</span>((x <span class="sc">-</span> <span class="fu">mean</span>(x))<span class="sc">^</span><span class="dv">3</span>) <span class="sc">/</span> <span class="fu">sd</span>(x)<span class="sc">^</span><span class="dv">3</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">age      =</span> <span class="fu">skewness</span>(cohort<span class="sc">$</span>age),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">los      =</span> <span class="fu">skewness</span>(cohort<span class="sc">$</span>los_days),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">prom_1yr =</span> <span class="fu">skewness</span>(one_year<span class="sc">$</span>prom_score))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        age         los    prom_1yr 
+-0.05351075  1.60890277 -0.72708937 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> skewness(x):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ((x <span class="op">-</span> x.mean()) <span class="op">**</span> <span class="dv">3</span>).mean() <span class="op">/</span> x.std() <span class="op">**</span> <span class="dv">3</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.Series({</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"age"</span>: skewness(cohort[<span class="st">"age"</span>]),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"los"</span>: skewness(cohort[<span class="st">"los_days"</span>]),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prom_1yr"</span>: skewness(one_year[<span class="st">"prom_score"</span>]),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>age        -0.053511
+los         1.608903
+prom_1yr   -0.727089
+dtype: float64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: skewness functions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Packages define skewness in slightly different ways (<code>scipy.stats.skew()</code> and the R package <code>e1071</code> each use their own formula), so the third decimal can differ between them. We wrote the formula out by hand in both languages so the numbers match exactly.</p>
+</div>
+</div>
+</section>
+<section id="shapiro" class="level2">
+<h2 class="anchored" data-anchor-id="shapiro">Formal tests: Shapiro-Wilk, and why not to trust it alone</h2>
+<p>The <strong>Shapiro-Wilk test</strong> asks: “Could these numbers plausibly come from a normal distribution?” A small p-value means “probably not”. It’s tempting to let it decide: p &lt; 0.05 → rank test, otherwise → t test. That rule fails in both directions.</p>
+<p><strong>It’s too sensitive with large samples.</strong> Our 600 ages look like a textbook bell curve, yet:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(cohort<span class="sc">$</span>age)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  cohort$age
+W = 0.99131, p-value = 0.001361</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.shapiro(cohort[<span class="st">"age"</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ShapiroResult(statistic=np.float64(0.991313509056761), pvalue=np.float64(0.001361050169338618))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>p = 0.001: “not normal”. With 600 values the test can detect departures far too small to matter. A t test on these ages would be perfectly fine.</p>
+<p><strong>It’s too weak with small samples.</strong> Take just the first 10 patients’ 1-year PROM scores, from a variable we <em>know</em> is skewed with a ceiling:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>first_ten <span class="ot">&lt;-</span> <span class="fu">head</span>(one_year<span class="sc">$</span>prom_score, <span class="dv">10</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>first_ten</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 89.3 97.1 82.6 91.6 92.9 96.1 97.5 95.2 84.3 81.2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(first_ten)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  first_ten
+W = 0.89073, p-value = 0.1728</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>first_ten <span class="op">=</span> one_year[<span class="st">"prom_score"</span>].head(<span class="dv">10</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(first_ten.tolist())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[89.3, 97.1, 82.6, 91.6, 92.9, 96.1, 97.5, 95.2, 84.3, 81.2]</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.shapiro(first_ten))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ShapiroResult(statistic=np.float64(0.8907320100006012), pvalue=np.float64(0.17282366095024826))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>p = 0.173: “no evidence against normality”. Ten values simply can’t reveal the shape, which is exactly when the shape matters most.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: don’t let one p-value choose your test
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Decide from the plots, from what you know about the measurement (a bounded score, a count of days), and from the sample size. Use Shapiro-Wilk as supporting evidence, not as the judge. Then say how you decided in your Methods.</p>
+</div>
+</div>
+</section>
+<section id="within-groups" class="level2">
+<h2 class="anchored" data-anchor-id="within-groups">Check within groups, not the pooled data</h2>
+<p>The normality assumption is about the data <strong>within each group</strong> (or, for regression models, the <strong>residuals</strong>: what’s left after the model’s prediction). Pooling groups with different centers can make perfectly normal data look non-normal.</p>
+<p>Here’s an extreme, made-up example: two groups of 200 values, each exactly normal, 4 standard deviations apart.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>group_a <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fu">ppoints</span>(<span class="dv">200</span>), <span class="at">mean =</span> <span class="dv">40</span>, <span class="at">sd =</span> <span class="dv">5</span>)   <span class="co"># 200 perfectly normal values</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>group_b <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fu">ppoints</span>(<span class="dv">200</span>), <span class="at">mean =</span> <span class="dv">60</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(group_a)<span class="sc">$</span>p.value                       <span class="co"># one group alone</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">c</span>(group_a, group_b))<span class="sc">$</span>p.value           <span class="co"># both groups pooled</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9.267769e-11</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>points <span class="op">=</span> (np.arange(<span class="dv">1</span>, <span class="dv">201</span>) <span class="op">-</span> <span class="fl">0.5</span>) <span class="op">/</span> <span class="dv">200</span>            <span class="co"># the same probabilities as R's ppoints(200)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>group_a <span class="op">=</span> stats.norm.ppf(points, loc<span class="op">=</span><span class="dv">40</span>, scale<span class="op">=</span><span class="dv">5</span>)   <span class="co"># 200 perfectly normal values</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>group_b <span class="op">=</span> stats.norm.ppf(points, loc<span class="op">=</span><span class="dv">60</span>, scale<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.shapiro(group_a).pvalue)                              <span class="co"># one group alone</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.999999999999995</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.shapiro(np.concatenate([group_a, group_b])).pvalue)   <span class="co"># both groups pooled</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>9.26776946181564e-11</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Each group alone passes easily (p ≈ 1). Pooled, p &lt; 0.001: the histogram of the pooled values has two humps, which is not what a normal distribution looks like.</p>
+<p>In real data the groups are usually much closer together. BMI differs by only about a third of a standard deviation between THA and TKA patients, so pooling barely matters. What you see instead is Shapiro-Wilk’s verdict bouncing around 0.05 depending on how you slice the same data:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(cohort<span class="sc">$</span>bmi)<span class="sc">$</span>p.value                         <span class="co"># pooled</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.04425462</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>cohort <span class="sc">|&gt;</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(procedure) <span class="sc">|&gt;</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">shapiro_p =</span> <span class="fu">shapiro.test</span>(bmi)<span class="sc">$</span>p.value)       <span class="co"># each group on its own</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  procedure shapiro_p
+  &lt;chr&gt;         &lt;dbl&gt;
+1 THA          0.0513
+2 TKA          0.124 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(bmi <span class="sc">~</span> procedure, <span class="at">data =</span> cohort)                <span class="co"># residual = BMI minus its group's mean</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">residuals</span>(fit))<span class="sc">$</span>p.value</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.306292</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">tibble</span>(<span class="at">residual =</span> <span class="fu">residuals</span>(fit)), <span class="fu">aes</span>(<span class="at">sample =</span> residual)) <span class="sc">+</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_qq</span>() <span class="sc">+</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_qq_line</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-distributions_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.shapiro(cohort[<span class="st">"bmi"</span>]).pvalue)               <span class="co"># pooled</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.04425461560416669</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> procedure, group <span class="kw">in</span> cohort.groupby(<span class="st">"procedure"</span>):     <span class="co"># each group on its own</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(procedure, stats.shapiro(group[<span class="st">"bmi"</span>]).pvalue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>THA 0.05134144815391971
+TKA 0.12354544393057915</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># residual = BMI minus its group's mean</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>residuals <span class="op">=</span> cohort[<span class="st">"bmi"</span>] <span class="op">-</span> cohort.groupby(<span class="st">"procedure"</span>)[<span class="st">"bmi"</span>].transform(<span class="st">"mean"</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.shapiro(residuals).pvalue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.30629201181168864</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">4</span>, <span class="dv">3</span>))</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> stats.probplot(residuals, plot<span class="op">=</span>ax)                   <span class="co"># "_ =" hides probplot's returned numbers</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-distributions_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Pooled p = 0.044, THA alone 0.051, TKA alone 0.124, residuals 0.306: four slices of the same data, on both sides of 0.05, while the QQ plot is a near-perfect straight line. That’s the lesson of the previous section again: decide from the plots and what you know about the measurement, not from one p-value.</p>
+</section>
+<section id="robustness" class="level2">
+<h2 class="anchored" data-anchor-id="robustness">How much does normality matter?</h2>
+<p>Less than you might think, once groups are reasonably large. Tests on means rely on the <strong>average</strong> being roughly normal, not on every individual value. Thanks to the <em>central limit theorem</em>, averages of about 30 or more values are close to normal even when the values themselves are skewed.</p>
+<p>A practical guide:</p>
+<ul>
+<li><strong>About 30 or more per group, moderate skew, no wild outliers:</strong> t tests and ANOVA are fine. With very skewed data, the rank test is still often the better summary.</li>
+<li><strong>Strong skew or extreme outliers:</strong> use the rank column.</li>
+<li><strong>Small groups (under about 15 per group):</strong> plots can’t show the shape, and no test has much power. Choose from what you know about the measurement: the rank column for skewed or ordinal measures, the Gaussian column for measurements known to be roughly normal. Expect wide confidence intervals either way.</li>
+<li><strong>Ordinal scales, or a ceiling or floor:</strong> use the rank column whatever the sample size (below).</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>🔍 Under the hood: the central limit theorem
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>If you take many random samples of size <em>n</em> from almost any distribution and compute each sample’s mean, those means form a distribution that gets closer to normal as <em>n</em> grows. Its spread shrinks in proportion to 1/√n.&nbsp;t tests are built on the distribution of the mean, which is why they tolerate non-normal raw data when <em>n</em> is large. “About 30” is a rule of thumb, not a law: the more skewed the data, the larger <em>n</em> needs to be.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="transform" class="level2">
+<h2 class="anchored" data-anchor-id="transform">Skew, ceilings and transformations</h2>
+<p>A common fix for right skew is to analyze the <strong>logarithm</strong> of the values. For length of stay we have to use log(days + 1), because log(0) doesn’t exist.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">skew_raw      =</span> <span class="fu">skewness</span>(cohort<span class="sc">$</span>los_days),</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">skew_log      =</span> <span class="fu">skewness</span>(<span class="fu">log1p</span>(cohort<span class="sc">$</span>los_days)),   <span class="co"># log1p(x) = log(1 + x)</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">share_zero    =</span> <span class="fu">mean</span>(cohort<span class="sc">$</span>los_days <span class="sc">==</span> <span class="dv">0</span>),</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ceiling_1yr   =</span> <span class="fu">mean</span>(one_year<span class="sc">$</span>prom_score <span class="sc">==</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   skew_raw    skew_log  share_zero ceiling_1yr 
+  1.6089028   0.5940202   0.4850000   0.1696035 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.Series({</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"skew_raw"</span>: skewness(cohort[<span class="st">"los_days"</span>]),</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"skew_log"</span>: skewness(np.log1p(cohort[<span class="st">"los_days"</span>])),   <span class="co"># log1p(x) = log(1 + x)</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"share_zero"</span>: (cohort[<span class="st">"los_days"</span>] <span class="op">==</span> <span class="dv">0</span>).mean(),</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ceiling_1yr"</span>: (one_year[<span class="st">"prom_score"</span>] <span class="op">==</span> <span class="dv">100</span>).mean(),</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>skew_raw       1.608903
+skew_log       0.594020
+share_zero     0.485000
+ceiling_1yr    0.169604
+dtype: float64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The log helps (skewness falls from about 1.6 to 0.6), but nearly half the stays are 0 days and no transformation can spread out a pile of identical values. Results on a log scale are also harder to explain (“a 0.3 difference in log(days + 1)”). Here the rank-based tests are simpler and more honest.</p>
+<p>The same goes for the <strong>ceiling</strong>: 17% of patients score the maximum at 1 year, and no transformation can tell those patients apart. Compare groups with rank-based tests, or report the proportion reaching the ceiling (or a clinically important improvement) as a yes/no outcome.</p>
+</section>
+<section id="ordinal" class="level2">
+<h2 class="anchored" data-anchor-id="ordinal">Ordinal data always go in the rank column</h2>
+<p><strong>Ordinal</strong> data have an order but no fixed spacing: satisfaction from 1 (“very dissatisfied”) to 5 (“very satisfied”), ASA class, pain “none / mild / moderate / severe”. The step from 4 to 5 isn’t necessarily the same size as the step from 1 to 2, so averages are hard to interpret.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(cohort, satisfaction_1yr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  satisfaction_1yr     n
+             &lt;dbl&gt; &lt;int&gt;
+1                1    15
+2                2    23
+3                3    52
+4                4   162
+5                5   250
+6               NA    98</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cohort[<span class="st">"satisfaction_1yr"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>satisfaction_1yr
+1.0     15
+2.0     23
+3.0     52
+4.0    162
+5.0    250
+NaN     98
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Report ordinal data as counts and percentages, or as a median (IQR), and compare groups with rank-based tests. Never compute a t test on Likert scores, however many patients you have.</p>
+</section>
+<section id="paired" class="level2">
+<h2 class="anchored" data-anchor-id="paired">Paired or unpaired? Matched or unmatched?</h2>
+<p>The decision table’s rows also ask whether your groups are <strong>independent</strong> or <strong>paired/matched</strong>.</p>
+<ul>
+<li><strong>Unpaired (independent):</strong> different patients in each group. THA vs TKA; Site A vs Site B; men vs women.</li>
+<li><strong>Paired:</strong> the same patients measured twice, or natural pairs. Pre-op vs 1-year PROM in the same patients; left vs right knee in bilateral patients; two raters measuring the same X-rays.</li>
+<li><strong>Matched:</strong> each patient in one group has been chosen to resemble a patient in the other group (by age, sex, BMI…). Treat matched sets like pairs.</li>
+</ul>
+<p><strong>Bilateral patients need care.</strong> In our cohort, 80 patients appear twice, once for each side, usually in the same group. Their two procedures share the same person’s age, sex and health, so they are not independent. Tests that treat every row as a separate patient are then a little overconfident (p-values too small, CIs too narrow). Either analyse one procedure per patient (for example, the first), or use methods built for clustered data, such as <a href="../beyond/16-mixed-models.html">mixed models</a>. Say which you did.</p>
+<p>Pairing matters because measurements on the same patient are related. A paired analysis uses each patient as their own control, which removes the patient-to-patient variation and usually gives a more precise answer. Analyzing paired data as if unpaired is one of the most common mistakes in the literature.</p>
+</section>
+<section id="flowchart" class="level2">
+<h2 class="anchored" data-anchor-id="flowchart">From your question to a test</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+  A[What is your goal?] --&gt; B[Describe one group]
+  A --&gt; M[Compare one group to a hypothetical value]
+  A --&gt; C[Compare groups or measurements]
+  A --&gt; D[Association or prediction]
+  C --&gt; E{Same patients or matched?}
+  E --&gt;|No| F[Unpaired rows]
+  E --&gt;|Yes| G[Paired / matched rows]
+  B --&gt; H{What type of outcome?}
+  M --&gt; H
+  F --&gt; H
+  G --&gt; H
+  D --&gt; H
+  H --&gt;|Measurement, roughly normal within groups| I[Gaussian column]
+  H --&gt;|Strongly skewed, bounded, or ordinal| J[Rank column]
+  H --&gt;|Yes / no| K[Binomial column]
+  H --&gt;|Time until an event| L[Survival column]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Then find your row and column in the <a href="../index.html">decision table</a>. Some worked examples from TJS-style questions:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Question</th>
+<th>Row</th>
+<th>Column</th>
+<th>Test</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Do TKA patients have a higher BMI than THA patients?</td>
+<td>Two unpaired groups</td>
+<td>Gaussian</td>
+<td><a href="../catalog/06-two-unpaired-groups.html#unpaired-t">Unpaired t test</a></td>
+</tr>
+<tr class="even">
+<td>Is length of stay different between Site A and Site B?</td>
+<td>Two unpaired groups</td>
+<td>Rank (skewed)</td>
+<td><a href="../catalog/06-two-unpaired-groups.html#mann-whitney">Mann-Whitney test</a></td>
+</tr>
+<tr class="odd">
+<td>Did KOOS JR improve from pre-op to 1 year?</td>
+<td>Two paired groups</td>
+<td>Rank (ceiling)</td>
+<td><a href="../catalog/07-two-paired-groups.html#wilcoxon-signed-rank">Wilcoxon signed-rank test</a></td>
+</tr>
+<tr class="even">
+<td>Is 90-day readmission more common in men?</td>
+<td>Two unpaired groups</td>
+<td>Binomial</td>
+<td><a href="../catalog/06-two-unpaired-groups.html#fisher-chi-square">Fisher’s exact test</a></td>
+</tr>
+<tr class="odd">
+<td>Does satisfaction differ between surgeons S1, S2 and S3?</td>
+<td>Three or more unmatched groups</td>
+<td>Rank (ordinal)</td>
+<td><a href="../catalog/08-three-plus-unmatched.html#kruskal-wallis">Kruskal-Wallis test</a></td>
+</tr>
+<tr class="even">
+<td>Does implant design affect revision-free survival?</td>
+<td>Three or more unmatched groups</td>
+<td>Survival</td>
+<td><a href="../catalog/08-three-plus-unmatched.html#cox">Cox regression</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="effect-sizes" class="level2">
+<h2 class="anchored" data-anchor-id="effect-sizes">p-values, effect sizes and confidence intervals</h2>
+<p>Every test on this site reports three things. They answer different questions, and a good Results section gives all three.</p>
+<ul>
+<li>The <strong>effect size</strong> answers <em>how big?</em> For example, the difference between two means.</li>
+<li>The <strong>95% confidence interval (CI)</strong> answers <em>how sure are we about that size?</em> It’s the range of effect sizes compatible with the data.</li>
+<li>The <strong>p-value</strong> answers <em>how surprising would data like these be if there were really no difference at all?</em> It doesn’t measure the size or importance of an effect.</li>
+</ul>
+<p>Here’s all three for BMI in TKA vs THA, using the unpaired (Welch’s) t test from <a href="../catalog/06-two-unpaired-groups.html#unpaired-t">page 6</a>:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>bmi_test <span class="ot">&lt;-</span> <span class="fu">t.test</span>(bmi <span class="sc">~</span> procedure, <span class="at">data =</span> cohort)   <span class="co"># Welch's t test (R's default)</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>bmi_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  bmi by procedure
+t = -4.0705, df = 580.09, p-value = 5.341e-05
+alternative hypothesis: true difference in means between group THA and group TKA is not equal to 0
+95 percent confidence interval:
+ -2.647347 -0.924101
+sample estimates:
+mean in group THA mean in group TKA 
+         29.46185          31.24758 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>difference <span class="ot">&lt;-</span> <span class="fu">unname</span>(bmi_test<span class="sc">$</span>estimate[<span class="dv">2</span>] <span class="sc">-</span> bmi_test<span class="sc">$</span>estimate[<span class="dv">1</span>])   <span class="co"># TKA minus THA</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">rev</span>(bmi_test<span class="sc">$</span>conf.int)                                        <span class="co"># flip to TKA minus THA</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">difference =</span> difference, <span class="at">ci_low =</span> ci[<span class="dv">1</span>], <span class="at">ci_high =</span> ci[<span class="dv">2</span>], <span class="at">p =</span> bmi_test<span class="sc">$</span>p.value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+  difference ci_low ci_high         p
+       &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+1       1.79  0.924    2.65 0.0000534</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>tka <span class="op">=</span> cohort.loc[cohort[<span class="st">"procedure"</span>] <span class="op">==</span> <span class="st">"TKA"</span>, <span class="st">"bmi"</span>]</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>tha <span class="op">=</span> cohort.loc[cohort[<span class="st">"procedure"</span>] <span class="op">==</span> <span class="st">"THA"</span>, <span class="st">"bmi"</span>]</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>bmi_test <span class="op">=</span> stats.ttest_ind(tka, tha, equal_var<span class="op">=</span><span class="va">False</span>)   <span class="co"># Welch's t test</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> bmi_test.confidence_interval()</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.Series({<span class="st">"difference"</span>: tka.mean() <span class="op">-</span> tha.mean(),</span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"ci_low"</span>: ci.low, <span class="st">"ci_high"</span>: ci.high, <span class="st">"p"</span>: bmi_test.pvalue}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>difference    1.785724
+ci_low        0.924101
+ci_high       2.647347
+p             0.000053
+dtype: float64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>TKA patients had a higher BMI than THA patients (mean difference 1.8 kg/m², 95% CI 0.9 to 2.6; p &lt; 0.001).</p>
+</blockquote>
+<p>Is a difference of 1.8 kg/m² <em>clinically</em> important? The p-value can’t tell you. Ask whether a difference anywhere in the CI (0.9 to 2.6 kg/m²) would change risk or management, for example complication rates. That’s clinical judgment, not statistics. <strong>Statistically significant</strong> means only that data like these would be unusual if there were really no difference. It doesn’t mean the difference is large or important.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: two classic misreadings
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>“p = 0.20, so there’s no difference.”</strong> No.&nbsp;It means the data couldn’t rule out zero. Look at the CI: if it runs from “harmful” to “very helpful”, the study was too small to say.</li>
+<li><strong>“p &lt; 0.001, so the effect is large.”</strong> No.&nbsp;With enough patients, tiny differences get tiny p-values. Look at the effect size and CI.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: which group comes first
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’s <code>t.test(bmi ~ procedure)</code> subtracts in alphabetical order of the groups (THA minus TKA). <code>scipy</code>’s <code>ttest_ind(tka, tha)</code> subtracts the second argument from the first. Same answer, opposite sign. Always say which group was subtracted from which, as we did above.</p>
+</div>
+</div>
+<p>For PROMs, judge differences against the <strong>minimal clinically important difference (MCID)</strong>: the smallest change patients notice as meaningful. Published MCIDs vary with the study and the method used to derive them, so cite the one you use. Be careful how you use it: an MCID is a <em>within-patient</em> threshold for one person’s change. A difference between two groups’ averages that is smaller than the MCID doesn’t prove no patient benefited, and a larger one doesn’t mean every patient did. Comparing the proportion of patients in each group who reached the MCID is often the clearer analysis.</p>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p><strong>1.</strong> Draw a histogram and a QQ plot of the <strong>pre-op</strong> PROM score. Is it closer to normal than the 1-year score? Why might that be?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>preop <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span> <span class="fu">filter</span>(visit <span class="sc">==</span> <span class="st">"preop"</span>, <span class="sc">!</span><span class="fu">is.na</span>(prom_score))</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(preop, <span class="fu">aes</span>(prom_score)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-distributions_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(preop, <span class="fu">aes</span>(<span class="at">sample =</span> prom_score)) <span class="sc">+</span> <span class="fu">geom_qq</span>() <span class="sc">+</span> <span class="fu">geom_qq_line</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-distributions_files/figure-html/unnamed-chunk-39-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">skewness</span>(preop<span class="sc">$</span>prom_score)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1431982</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>preop <span class="op">=</span> proms[(proms[<span class="st">"visit"</span>] <span class="op">==</span> <span class="st">"preop"</span>) <span class="op">&amp;</span> proms[<span class="st">"prom_score"</span>].notna()]</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">3</span>))</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> axes[<span class="dv">0</span>].hist(preop[<span class="st">"prom_score"</span>], bins<span class="op">=</span><span class="dv">30</span>)   <span class="co"># "_ =" hides the returned counts</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> stats.probplot(preop[<span class="st">"prom_score"</span>], plot<span class="op">=</span>axes[<span class="dv">1</span>])</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03-distributions_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(skewness(preop[<span class="st">"prom_score"</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.14319820568938835</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Much closer to normal: skewness about 0.1 and the QQ points follow the line. Before surgery, scores sit in the middle of the scale, far from the ceiling. After a successful operation many patients hit the maximum, which creates the ceiling.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> A fellow wants to compare operative time between surgeons S1 and S2, about 40 cases each. The histogram is fairly symmetric, with a few long cases. Which column of the decision table would you use, and how would you justify it in the Methods?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The Gaussian column (an unpaired t test, Welch’s version) is reasonable. With about 40 cases per group and a roughly symmetric shape, the t test is robust. Check the QQ plot within each surgeon, and check that the few long cases aren’t extreme outliers. Methods: “Operative time was approximately normally distributed within each group on visual inspection of histograms and QQ plots, and was compared with Welch’s t test.” If the long cases were extreme, a Mann-Whitney test would be the safer choice; say so.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> A study reports: “1-year KOOS JR was 2.1 points higher with the new implant (95% CI −1.5 to 5.7; p = 0.25).” Suppose the MCID for KOOS JR is 14 points. Write one sentence interpreting this result.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>“The study found no clear difference in 1-year KOOS JR between implants: the estimate (2.1 points) and the whole 95% CI (−1.5 to 5.7) are far smaller than the 14-point MCID, so a large average benefit of the new implant is unlikely.”</p>
+<p>This is stronger than “not significant”: the CI rules out a large average difference. Strictly, the MCID is a within-patient threshold, so the clearest follow-up analysis compares the proportion of patients in each group who improved by at least 14 points.</p>
+</div>
 </div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -966,8 +1787,8 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../foundations/02-demographics.html" class="pagination-link" aria-label="2 · Demographics (Table 1) (coming soon)">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">2 · Demographics (Table 1) (coming soon)</span>
+      <a href="../foundations/02-demographics.html" class="pagination-link" aria-label="2 · Demographics (Table 1)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">2 · Demographics (Table 1)</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
@@ -984,7 +1805,7 @@ ul.task-list li input[type="checkbox"] {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>Text CC BY 4.0 · Code MIT</p>
 </div>

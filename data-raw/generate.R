@@ -7,11 +7,13 @@ for (f in list.files("data-raw/R", pattern = "[.]R$", full.names = TRUE)) source
 dir.create("data/codebooks", recursive = TRUE, showWarnings = FALSE)
 dir.create("data/answer-keys", recursive = TRUE, showWarnings = FALSE)
 
-cohort <- make_cohort()
-proms  <- make_proms_long(cohort)
+cohort  <- make_cohort()
+proms   <- make_proms_long(cohort)
+matched <- make_matched_sets(cohort)
 
-write_tidy(cohort, "data/cohort.csv")
-write_tidy(proms,  "data/proms_long.csv")
+write_tidy(cohort,  "data/cohort.csv")
+write_tidy(proms,   "data/proms_long.csv")
+write_tidy(matched, "data/matched_sets.csv")
 
-write_codebooks(codebooks()[c("cohort", "proms_long")], "data/codebooks")
+write_codebooks(codebooks()[c("cohort", "proms_long", "matched_sets")], "data/codebooks")
 message("Synthetic data written to data/")

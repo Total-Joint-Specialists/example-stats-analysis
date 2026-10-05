@@ -1,0 +1,29 @@
+variable,label,type,units,allowed_values,notes
+case_id,Procedure (case) ID,id,,,One row per case
+patient_id,Patient ID,id,,,Bilateral patients have two cases
+site,Surgery site,categorical,,Site A|Site B,
+surgeon,Surgeon,categorical,,S1|S2|S3,
+procedure,Procedure,categorical,,THA|TKA,
+side,Operative side,categorical,,L|R,
+surgery_date,Date of surgery (synthetic),date,,,Time zero for survival
+age,Age at surgery,integer,years,40..89,
+sex,Sex,categorical,,Female|Male,
+bmi,Body mass index,numeric,kg/m2,18..55,
+asa,ASA physical status class,integer,,1|2|3|4,Ordinal
+diabetes,Diabetes mellitus,binary,,0|1,1 = yes
+hypertension,Hypertension,binary,,0|1,1 = yes
+sleep_apnea,Obstructive sleep apnea,binary,,0|1,1 = yes
+smoker,Smoking status,categorical,,never|former|current,
+cci,Charlson comorbidity index,integer,points,0..15,
+anesthesia,Primary anesthesia,categorical,,spinal|general,
+approach,Surgical approach (THA only),categorical,,anterior|posterior,Blank for TKA
+implant,Implant design,categorical,,A|B|C,
+op_time_min,Operative time,integer,minutes,45..200,
+los_days,Length of stay,integer,days,0..30,0 = same-day discharge
+discharge,Discharge destination,categorical,,home|facility,
+readmit_90d,Readmitted within 90 days,binary,,0|1,1 = yes
+complication_90d,Any complication within 90 days,binary,,0|1,1 = yes
+satisfaction_1yr,Satisfaction at 1 year,integer,,1|2|3|4|5,"Likert: 1 = very dissatisfied, 5 = very satisfied; blank = no response"
+followup_years,Follow-up from surgery to event or censoring,numeric,years,0.01..11.5,
+event_status,Status at end of follow-up,integer,,0|1|2,"0 = censored, 1 = revision, 2 = death. Revision rates are inflated for teaching"
+revised,Revised during follow-up,binary,,0|1,1 = yes; equals event_status == 1

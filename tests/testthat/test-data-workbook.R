@@ -45,3 +45,13 @@ test_that("the answer key matches the cohort and carries no names or MRNs", {
     expect_equal(j[[col]], j[[paste0(col, "_cohort")]], label = col)
   }
 })
+
+test_that("text dates use English month names whatever the computer's locale", {
+  env <- new.env()
+  sys.source(testthat::test_path("..", "..", "data-raw", "R", "gen_messy_workbook.R"), envir = env)
+  withr::local_locale(c(LC_TIME = "de_CH.UTF-8"))
+  skip_if_not(grepl("de_CH", Sys.getlocale("LC_TIME")), "de_CH locale not installed")
+  withr::local_seed(1)
+  out <- env$fmt_date_text(rep(as.Date("2024-03-04"), 50))
+  expect_setequal(out, c("3/4/24", "2024-03-04", "March 4 2024"))
+})

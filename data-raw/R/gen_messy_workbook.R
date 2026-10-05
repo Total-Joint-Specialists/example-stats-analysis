@@ -57,11 +57,13 @@ missing_code <- function(k, numeric = FALSE) {
 
 fmt_date_text <- function(d) {
   style <- sample(c("mdy", "iso", "long"), length(d), TRUE)
+  month <- as.integer(format(d, "%m"))
+  day   <- as.integer(format(d, "%d"))
+  # month.name is always English; format("%B") would follow the computer's locale.
   ifelse(style == "mdy",
-         sprintf("%d/%d/%s", as.integer(format(d, "%m")), as.integer(format(d, "%d")),
-                 format(d, "%y")),
+         sprintf("%d/%d/%s", month, day, format(d, "%y")),
          ifelse(style == "iso", format(d, "%Y-%m-%d"),
-                gsub(" +", " ", format(d, "%B %e %Y"))))
+                sprintf("%s %d %s", month.name[month], day, format(d, "%Y"))))
 }
 
 # A cell is either a real Excel date, a number, or text. Encode each cell as a

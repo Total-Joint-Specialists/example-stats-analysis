@@ -12,7 +12,8 @@ report(sprintf("R version %s", getRversion()), getRversion() >= "4.4",
        "install R 4.4 or newer from https://cloud.r-project.org")
 report("project packages switched on (renv)", nzchar(Sys.getenv("RENV_PROJECT")),
        "start R inside the example-stats-analysis folder")
-for (pkg in c("knitr", "rmarkdown", "reticulate", "testthat")) {
+for (pkg in c("knitr", "rmarkdown", "reticulate", "testthat", "tidyverse", "readxl",
+             "tidyxl", "gtsummary", "flextable")) {
   report(paste("R package", pkg), requireNamespace(pkg, quietly = TRUE),
          "run renv::restore() in the R console")
 }

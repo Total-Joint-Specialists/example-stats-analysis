@@ -3,15 +3,21 @@ Description: R dependencies for the TJS statistics tutorial site. Not a
     package; renv reads this file to decide what to lock.
 Imports:
     dplyr,
+    flextable,
+    gtsummary,
     irr,
+    janitor,
     knitr,
     openxlsx2,
     readr,
     readxl,
     reticulate,
     rmarkdown,
+    smd,
     survival,
     testthat,
     tibble,
     tidyr,
+    tidyverse,
+    tidyxl,
     withr

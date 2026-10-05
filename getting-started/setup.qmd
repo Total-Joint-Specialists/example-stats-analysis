@@ -1,10 +1,125 @@
 ---
-title: "Install & set up (coming soon)"
-description: "Everything you need on your computer to run the examples."
+title: "Install & set up"
+description: "Everything you need on your computer to run the examples: R, Python, Git, Positron, and this repository."
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+This takes 30–45 minutes the first time, and you only do it once per computer. Follow the steps in order. Each step ends with a quick check.
+
+::: {.callout-note}
+## 💡 In plain language
+**R** and **Python** are the programming languages that do the statistics. **Positron** is the app you type code into. **Git** downloads this repository (a folder of code and data) and keeps track of changes. **uv** installs Python and its add-on packages.
 :::
 
+::: {.callout-tip}
+## Just want to read?
+You don't need to install anything to read this site. Install only when you're ready to run code yourself.
+:::
+
+## 1. Install R
+
+1. Go to <https://cloud.r-project.org>.
+2. Click **Download R for macOS** or **Download R for Windows**.
+   - **Mac:** pick the installer for your chip. Apple menu → **About This Mac**: "Apple M…" means *Apple silicon (arm64)*, and "Intel" means *Intel (x86_64)*.
+   - **Windows:** click **base**, then the download link at the top of the page.
+3. Open the downloaded file and accept the defaults.
+
+**Check:** Positron will find R in step 4. On a Mac you can also open Terminal and type `R --version`.
+
+## 2. Install uv and Python
+
+**Mac:** open Terminal and run:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+**Windows:** open PowerShell and run:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Close the window, open a new one, and install Python:
+
+```bash
+uv python install 3.13
+```
+
+**Check:** `uv --version` prints a version number.
+
+## 3. Install Git
+
+- **Mac:** in Terminal, run `xcode-select --install` and click **Install**. This installs Apple's command-line tools, which include Git.
+- **Windows:** download Git from <https://git-scm.com/downloads> and accept the defaults.
+
+**Check:** `git --version` prints a version number.
+
+## 4. Install Positron
+
+Download Positron from <https://positron.posit.co> and install it like any other app. Positron runs R and Python side by side. Prefer RStudio or VS Code? See [Other editors](#other-editors).
+
+## 5. Get this repository
+
+In Terminal (Mac) or PowerShell (Windows), go to the folder where you keep projects and download ("clone") the repository:
+
+```bash
+cd ~/Documents
+git clone https://github.com/Total-Joint-Specialists/example-stats-analysis.git
+```
+
+Then, in Positron: **File → Open Folder…** and choose `example-stats-analysis`.
+
+## 6. Install the R packages
+
+In Positron, start an R console: use the language picker at the top right of the **Console** pane and choose **R**. Because R starts inside the repository folder, it switches on this project's package list. Then run:
+
+```r
+renv::restore()
+```
+
+Answer **Y** if asked. This installs every R package the tutorials use, at the exact versions we tested. It takes a few minutes.
+
+## 7. Install the Python packages
+
+Open Positron's terminal (**Terminal → New Terminal**). It opens in the repository folder. Run:
+
+```bash
+uv sync
+```
+
+This creates a private Python environment in the `.venv` folder with every package the tutorials use. Then tell Positron to use it: in the **Console** pane's language picker, choose the Python whose path includes `.venv`.
+
+## 8. Check that everything works
+
+In Positron's terminal, run both checks:
+
+```bash
+Rscript getting-started/check_setup.R
+uv run python getting-started/check_setup.py
+```
+
+Each check ends with `All good - you are ready.` If a line says `PROBLEM`, it tells you what to do. Fix it and run the check again.
+
+On Windows, if `Rscript` is "not recognized", run the R check from Positron's R console instead:
+
+```r
+source("getting-started/check_setup.R")
+```
+
+## Troubleshooting
+
+| You see | Do this |
+|------|------|
+| `You have not agreed to the Xcode license` (Mac, during `renv::restore()`) | In Terminal, run `sudo xcodebuild -license accept` and type your Mac password. Then run `renv::restore()` again. |
+| `there is no package called 'renv'` | In the R console, run `install.packages("renv")`. Restart R (**Session → Restart R**) and run `renv::restore()` again. |
+| `uv: command not found`, or "not recognized" | Close the terminal window, open a new one, and try again. |
+| `git: command not found` | Repeat step 3. |
+| Python can't find `pandas` in Positron | Choose the `.venv` Python in the Console language picker (step 7), then restart the console. |
+| Anything else | Copy the whole error message and send it to your TJS project lead. |
+
+## Other editors {#other-editors}
+
+- **RStudio** (<https://posit.co/download/rstudio-desktop/>) is great for R. It can run Python too, but Positron is simpler when you use both.
+- **VS Code** (<https://code.visualstudio.com>) works too: install the R and Python extensions.
+
+Everything else on this page stays the same.

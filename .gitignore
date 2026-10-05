@@ -1,1 +1,35 @@
+# --- Local environments and build output ---
 .DS_Store
+.Rhistory
+.RData
+.Rproj.user/
+.Renviron
+.venv/
+__pycache__/
+.pytest_cache/
+.quarto/
+_site/
+/.luarc.json
+
+# --- Practice space: everything in scratch/ stays on your computer ---
+scratch/*
+!scratch/README.md
+
+# --- This repo is PUBLIC. Data files are blocked everywhere ... ---
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.xlsm
+*.sav
+*.dta
+*.sas7bdat
+*.rds
+*.rda
+*.parquet
+*.feather
+*.dcm
+*.zip
+# --- ... except the synthetic files in data/ and templates/ ---
+!/data/**
+!/templates/**

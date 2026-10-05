@@ -1,0 +1,9 @@
+Type: project
+Description: R dependencies for the TJS statistics tutorial site. Not a
+    package; renv reads this file to decide what to lock.
+Imports:
+    knitr,
+    reticulate,
+    rmarkdown,
+    testthat,
+    withr

@@ -6,7 +6,8 @@ Revision rates are deliberately higher than real-world rates, so the survival
 examples have enough events.
 
 Never edit these files by hand. Change `data-raw/` and run `just data`. A test
-fails if the committed CSVs differ from what the generator produces.
+fails if the committed CSVs differ from what the generator produces, and
+`CHECKSUMS.md5` (written by the generator) lets CI catch a hand-edited CSV too.
 
 ## Tidy datasets (codebooks in `codebooks/`)
 

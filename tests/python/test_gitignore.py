@@ -74,7 +74,7 @@ def test_risky_or_generated_files_are_ignored(path):
         "renv.lock",
         "renv/settings.json",
         "data/README.md",
-        "data/CHECKSUMS.sha256",
+        "data/CHECKSUMS.md5",
         "data/proms_long.csv",
         "data/answer-keys/abstraction_workbook_tidy.csv",
         "data/messy_survey_export.csv",

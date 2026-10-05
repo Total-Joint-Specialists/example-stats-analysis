@@ -1,6 +1,7 @@
 """Python-side checks on the tidy CSVs: every file opens in pandas, matches its
 codebook, and stores missing values as blank cells (never the text "NA")."""
 
+import hashlib
 from pathlib import Path
 
 import pandas as pd
@@ -34,3 +35,17 @@ def test_cohort_dates_parse():
     cohort = pd.read_csv(DATA / "cohort.csv", parse_dates=["surgery_date"])
     assert len(cohort) > 0
     assert cohort["surgery_date"].dt.year.between(2015, 2025).all()
+
+
+def test_csvs_match_the_generators_checksums():
+    """CI runs no R, so this is what catches a CSV edited by hand (or re-saved by
+    Excel): data-raw/generate.R records an MD5 for every CSV it writes."""
+    listed = {}
+    for line in (DATA / "CHECKSUMS.md5").read_text(encoding="utf-8").splitlines():
+        digest, name = line.split("  ", 1)
+        listed[name] = digest
+    on_disk = sorted(str(p.relative_to(DATA)) for p in DATA.rglob("*.csv"))
+    assert sorted(listed) == on_disk
+    for name, digest in listed.items():
+        actual = hashlib.md5((DATA / name).read_bytes()).hexdigest()
+        assert actual == digest, f"data/{name} differs from what data-raw/generate.R wrote"

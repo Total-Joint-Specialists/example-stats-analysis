@@ -25,4 +25,5 @@ write_tidy(truth, "data/answer-keys/abstraction_workbook_tidy.csv")
 write_tidy(items, "data/answer-keys/survey_items_long.csv")
 
 write_codebooks(codebooks(), "data/codebooks")
+write_checksums("data")
 message("Synthetic data written to data/")

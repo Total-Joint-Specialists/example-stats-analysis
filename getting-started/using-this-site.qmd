@@ -1,10 +1,140 @@
 ---
-title: "How to use this site (coming soon)"
-description: "Choosing R or Python, running examples, callouts, reporting, exercises."
+title: "How to use this site"
+description: "Choosing R or Python, running the examples yourself, the callout boxes, how results are reported, and how exercises work."
+engine: knitr
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+## Pick your language once
+
+Every example on this site is written twice: once in **R** and once in **Python**. Both give the same answer. Click a tab to choose. The site remembers your choice on every page, so you only pick once.
+
+Here is a tiny example: five pretend patients' ages, their mean, and their standard deviation (SD).
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+ages <- c(64, 71, 58, 69, 75)   # five pretend patients' ages
+
+mean_age <- mean(ages)           # the average
+sd_age <- sd(ages)               # the standard deviation
+
+mean_age
+sd_age
+```
+
+## Python
+
+```{python}
+import pandas as pd
+
+ages = pd.Series([64, 71, 58, 69, 75])   # five pretend patients' ages
+
+mean_age = ages.mean()                    # the average
+sd_age = ages.std()                       # the standard deviation
+
+print(mean_age)
+print(sd_age)
+```
 :::
 
+```{r}
+#| include: false
+check_agree(
+  list(mean = mean_age, sd = sd_age),
+  list(mean = reticulate::py$mean_age, sd = reticulate::py$sd_age)
+)
+```
+
+Both say the mean age is 67.4 years with an SD of 6.6 years.
+
+::: {.callout-tip}
+## 🔀 R vs Python: the standard deviation trap
+Python has two common ways to compute an SD, and they disagree. `pandas` (`ages.std()`) divides by *n − 1*, like R's `sd()`. `numpy` (`np.std(ages)`) divides by *n* unless you write `np.std(ages, ddof=1)`. Medical papers report the *n − 1* version. Whenever the two languages' defaults differ, this site sets them explicitly and explains why in a box like this one.
+:::
+
+Behind the scenes, every page checks that the R and Python answers match. If they ever disagree, the site refuses to build, so you can trust that both tabs say the same thing.
+
+## Running the code yourself
+
+1. Open the repository folder in Positron (see [Install & set up](setup.qmd)).
+2. Save practice files in the `scratch/` folder, for example `scratch/practice.R` or `scratch/practice.py`. Git ignores everything in `scratch/`, so practice files can never be committed by accident.
+3. Copy code with the copy button that appears in the top-right corner of every code block.
+4. Run a line with **Cmd+Enter** (Mac) or **Ctrl+Enter** (Windows). Positron sends it to the console.
+
+Data paths such as `data/cohort.csv` are relative to the repository's top folder. Positron starts there when you open the folder, so the paths just work.
+
+## The boxes you'll see
+
+::: {.callout-note}
+## 💡 In plain language
+The idea without the jargon. If a page loses you, read these boxes first.
+:::
+
+::: {.callout-warning}
+## ⚠️ Watch out
+Mistakes we see often, and how to avoid them.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python
+Where the two languages' defaults differ, and what this site does about it.
+:::
+
+::: {.callout-note collapse="true"}
+## 🔍 Under the hood
+The math, for the curious. These start closed: click to open. You never need them to use a test correctly.
+:::
+
+## How results are reported
+
+Every "How to report it" paragraph on this site follows the same rules, which match what JOA and JBJS reviewers expect.
+
+| What | Report it as | Example |
+|------|------|------|
+| Continuous, roughly symmetric | mean (SD) | age 67.4 (6.6) years |
+| Continuous, skewed | median (IQR) | length of stay 1 (0–2) days |
+| Categories | n (%) | 312 (52%) female |
+| p-values | three decimals; never "p = 0.000" | p = 0.017; p < 0.001 |
+| Effect estimates | with a 95% confidence interval | difference 1.6 kg/m² (95% CI 0.7 to 2.5) |
+
+The examples in the table are illustrations, not results from our data. [Demographics (Table 1)](../foundations/02-demographics.qmd) shows the full Table 1 layout.
+
+## Exercises
+
+Each page ends with two to four short exercises on the practice data. They get harder in three steps: run the same analysis on a different variable, pick the right test for a short scenario, then write the Results sentence. Solutions are hidden in both languages. Try first, then check.
+
+**Try it:** using the same five ages, find the **median**.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```r
+ages <- c(64, 71, 58, 69, 75)
+median(ages)   # 69
+```
+
+## Python
+
+```python
+import pandas as pd
+
+ages = pd.Series([64, 71, 58, 69, 75])
+ages.median()   # 69.0
+```
+:::
+
+:::
+
+## Getting help
+
+- Something on this site is wrong or confusing? [Open an issue](https://github.com/Total-Joint-Specialists/example-stats-analysis/issues) on GitHub.
+- A question about your own project? Ask your TJS project lead.

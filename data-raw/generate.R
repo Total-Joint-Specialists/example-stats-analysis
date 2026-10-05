@@ -11,12 +11,17 @@ cohort  <- make_cohort()
 proms   <- make_proms_long(cohort)
 matched <- make_matched_sets(cohort)
 rel     <- make_reliability()
+truth   <- make_abstraction_truth(cohort, proms)
 
 write_tidy(cohort,  "data/cohort.csv")
 write_tidy(proms,   "data/proms_long.csv")
 write_tidy(matched, "data/matched_sets.csv")
 write_tidy(rel,     "data/radiographic_reliability.csv")
 
+write_messy_workbook(truth, "data/messy_abstraction_workbook.xlsx")
+write_tidy(truth, "data/answer-keys/abstraction_workbook_tidy.csv")
+
 write_codebooks(codebooks()[c("cohort", "proms_long", "matched_sets",
-                              "radiographic_reliability")], "data/codebooks")
+                              "radiographic_reliability",
+                              "abstraction_workbook_tidy")], "data/codebooks")
 message("Synthetic data written to data/")

@@ -8,7 +8,10 @@ dir.create("data/codebooks", recursive = TRUE, showWarnings = FALSE)
 dir.create("data/answer-keys", recursive = TRUE, showWarnings = FALSE)
 
 cohort <- make_cohort()
-write_tidy(cohort, "data/cohort.csv")
+proms  <- make_proms_long(cohort)
 
-write_codebooks(codebooks()["cohort"], "data/codebooks")
+write_tidy(cohort, "data/cohort.csv")
+write_tidy(proms,  "data/proms_long.csv")
+
+write_codebooks(codebooks()[c("cohort", "proms_long")], "data/codebooks")
 message("Synthetic data written to data/")

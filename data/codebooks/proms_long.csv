@@ -1,0 +1,10 @@
+variable,label,type,units,allowed_values,notes
+case_id,Procedure (case) ID,id,,,Links to cohort.csv
+patient_id,Patient ID,id,,,
+visit,Scheduled visit,categorical,,preop|6wk|3mo|1yr,
+visit_days,Days from surgery to the visit,integer,days,-30..400,Negative = before surgery; blank = visit missed
+instrument,PROM instrument,categorical,,HOOS JR|KOOS JR,"HOOS JR for THA, KOOS JR for TKA"
+prom_score,HOOS JR / KOOS JR interval score,numeric,points,0..100,100 = best
+vr12_pcs,VR-12 physical component score,numeric,points,0..100,
+vr12_mcs,VR-12 mental component score,numeric,points,0..100,
+walking_aid,Uses a walking aid,binary,,0|1,1 = yes

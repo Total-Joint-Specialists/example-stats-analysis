@@ -29,3 +29,6 @@ data:
     Rscript data-raw/make_template.R
     Rscript data-raw/validate.R
     uv run pytest tests/python -q
+    # Freeze only notices .qmd changes, so re-render every folder whose pages read data/.
+    # (Rendering a folder always re-runs its code.) Add catalog, survival, ... as they gain code.
+    quarto render foundations

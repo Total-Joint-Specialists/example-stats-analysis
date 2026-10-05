@@ -11,6 +11,13 @@ execute:
 source("R/check_agree.R")
 ```
 
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
 Most of the time in a research project goes into getting the data into shape, not into the statistics. Mistakes made here are the dangerous kind: the code runs, the tables look fine, and the numbers are wrong. This page shows how to collect data so it arrives clean, how to clean it when it doesn't, and how to prove your cleaning didn't change anything it shouldn't have.
 
 ## What tidy data means {#what-tidy-means}
@@ -227,7 +234,7 @@ check_agree(list(rows = nrow(raw)), reticulate::py$chk)
 
 126 rows: 60 patients per tab, plus 2 duplicates and a totals row in each. Because we stacked the tabs **by column name**, Site B's extra `MUA` column didn't shift anything. Site A rows simply have `mua` missing. Copying cells by position would have put LOS values under the wrong heading.
 
-In R we call `janitor::clean_names()` with the package name in front instead of loading janitor with `library()`. Loading janitor replaces R's own `chisq.test()` and `fisher.test()` with its own versions, which would quietly change results on later pages.
+In R we call `janitor::clean_names()` with the package name in front instead of loading janitor with `library()`. Loading janitor *masks* R's own `chisq.test()` and `fisher.test()` with janitor's versions. They give the same answers for ordinary tables, but the masking message is confusing, and it becomes harder to tell which function you're actually calling.
 
 ::: {.callout-tip}
 ## 🔀 R vs Python: the same Excel file, read differently
@@ -367,7 +374,7 @@ The `Notes` column mentions some revisions ("revised 2021 for loosening"), but n
 
 ### Step 5: give every column its real type
 
-Now convert each text column into what it really is. One small function handles the mixed date formats.
+Now convert each text column into what it really is. One small function handles the mixed date formats. Each recode lists the values it expects and turns anything else into a missing value, so a surprise like `U` for sex shows up instead of silently becoming "Male".
 
 ::: {.panel-tabset group="language"}
 ## R
@@ -391,14 +398,17 @@ tidy <- step3 |>
     site,
     surgery_date = parse_messy_date(dos),
     age          = parse_number(age),            # "67 yo"      -> 67
-    sex          = if_else(str_to_lower(str_sub(sex, 1, 1)) == "f", "Female", "Male"),
+    sex          = case_when(str_detect(sex, regex("^f", ignore_case = TRUE)) ~ "Female",
+                             str_detect(sex, regex("^m", ignore_case = TRUE)) ~ "Male"),  # anything else -> NA
     bmi          = parse_number(bmi),            # "BMI 31.2"   -> 31.2
     asa          = as.integer(as.roman(str_remove(asa, "^ASA "))),  # "II", "ASA 2", "2" -> 2
     diabetes     = as.integer(str_detect(comorbidities, regex("\\bDM\\b", ignore_case = TRUE))),
     hypertension = as.integer(str_detect(comorbidities, regex("\\bHTN\\b", ignore_case = TRUE))),
     sleep_apnea  = as.integer(str_detect(comorbidities, regex("\\bOSA\\b", ignore_case = TRUE))),
-    procedure    = if_else(str_detect(procedure_text, regex("TKA|knee", ignore_case = TRUE)), "TKA", "THA"),
-    side         = if_else(str_detect(procedure_text, "\\b(L|Left)\\b"), "L", "R"),
+    procedure    = case_when(str_detect(procedure_text, regex("TKA|knee", ignore_case = TRUE)) ~ "TKA",
+                             str_detect(procedure_text, regex("THA|hip", ignore_case = TRUE)) ~ "THA"),
+    side         = case_when(str_detect(procedure_text, "\\b(L|Left)\\b") ~ "L",
+                             str_detect(procedure_text, "\\b(R|Right)\\b") ~ "R"),
     los_days     = parse_number(los),            # "0 (same day)" -> 0
     revised      = as.integer(case_id %in% revised_ids),
     prom_preop_date = parse_messy_date(prom_preop_date),
@@ -414,6 +424,8 @@ glimpse(tidy)
 ## Python
 
 ```{python}
+import numpy as np
+
 def number(text):
     # The first number in each cell: "67 yo" -> 67, "BMI 31.2" -> 31.2
     return pd.to_numeric(text.str.extract(r"(\d+\.?\d*)")[0])
@@ -432,8 +444,12 @@ tidy = pd.DataFrame({
     "diabetes":     step3["comorbidities"].str.contains(r"\bDM\b", case=False).astype(int),
     "hypertension": step3["comorbidities"].str.contains(r"\bHTN\b", case=False).astype(int),
     "sleep_apnea":  step3["comorbidities"].str.contains(r"\bOSA\b", case=False).astype(int),
-    "procedure":    procedure_text.str.contains(r"TKA|knee", case=False).map({True: "TKA", False: "THA"}),
-    "side":         procedure_text.str.contains(r"\b(?:L|Left)\b").map({True: "L", False: "R"}),
+    "procedure":    np.select([procedure_text.str.contains(r"TKA|knee", case=False),
+                               procedure_text.str.contains(r"THA|hip", case=False)],
+                              ["TKA", "THA"], default=None),          # anything else -> missing
+    "side":         np.select([procedure_text.str.contains(r"\b(?:L|Left)\b"),
+                               procedure_text.str.contains(r"\b(?:R|Right)\b")],
+                              ["L", "R"], default=None),
     "los_days":     number(step3["los"]),
     "revised":      step3["study_id"].str.strip().isin(revised_ids).astype(int),
     "prom_preop_date": pd.to_datetime(step3["prom_preop_date"], format="mixed"),
@@ -595,22 +611,24 @@ print(missing_in_sheet, missing_in_result)
 ```
 :::
 
-**3. Cross-tab every recode.** Each messy spelling should map to exactly one clean value, and nothing should map to missing by accident.
+**3. Cross-tab every recode.** Put each raw value next to the value that ended up in the finished table (matched by case ID). Each messy spelling should map to exactly one clean value, and nothing should map to missing by accident. Comparing with `tidy` itself, rather than re-running the recode, is what lets this check catch a mistake in step 5.
 
 ::: {.panel-tabset group="language"}
 ## R
 
 ```{r}
-tibble(raw = step3$sex, clean = if_else(str_to_lower(str_sub(step3$sex, 1, 1)) == "f", "Female", "Male")) |>
+step3 |>
+  transmute(case_id = str_trim(study_id), raw = sex) |>
+  left_join(select(tidy, case_id, clean = sex), by = "case_id") |>
   count(raw, clean)
 ```
 
 ## Python
 
 ```{python}
-recode = pd.DataFrame({"raw": step3["sex"],
-                       "clean": step3["sex"].str[0].str.lower().map({"f": "Female", "m": "Male"})})
-print(recode.value_counts().sort_index())
+raw_sex = pd.DataFrame({"case_id": step3["study_id"].str.strip(), "raw": step3["sex"]})
+recode = raw_sex.merge(tidy[["case_id", "sex"]].rename(columns={"sex": "clean"}), on="case_id")
+print(recode.groupby(["raw", "clean"], dropna=False).size())
 ```
 :::
 
@@ -666,7 +684,7 @@ print(tidy.sample(n=3, random_state=1)[["case_id", "site", "surgery_date", "age"
 
 ### What a failing check looks like
 
-Suppose we had parsed the surgery dates day-first (European style) by mistake. Nothing crashes. Two of the checks above catch it: the missing count, and a logic check that every pre-op PROM falls within a month before surgery.
+Suppose we had parsed the surgery dates day-first (European style) by mistake. Nothing crashes. Two checks catch it: a missing count (check 2, applied to the dates) and a new logic check that every pre-op PROM falls within a month before surgery.
 
 ::: {.panel-tabset group="language"}
 ## R
@@ -704,11 +722,20 @@ print(pd.Series({
 ```
 :::
 
-With the correct parse, nothing is missing and every pre-op PROM falls in its window. With the day-first parse, R can't read `"1/13/15"` (there's no 13th month), so dates go missing. pandas quietly switches to month-first whenever day-first is impossible, so in Python nothing goes missing at all. In **both** languages, dates like `"3/4/24"` parse "successfully" as 3 April instead of 4 March, and the window check flags every one of them.
+```{python}
+#| include: false
+# Prose guard (Python side) for the numbers quoted below.
+assert int(wrong.isna().sum()) == 0 and outside_window(wrong) == 36
+```
+
+With the correct parse, nothing is missing and every pre-op PROM falls in its window. The day-first versions go wrong in different ways:
+
+- **R** can't read dates like `"1/13/15"` day-first (there's no 13th month), so 37 surgery dates go missing. Others, like `"3/4/24"`, parse "successfully" as 3 April instead of 4 March, and the window check flags 7 of them.
+- **pandas** never returns a missing date here: when day-first is impossible it quietly switches to month-first. Worse, `dayfirst=True` also flips *ISO* dates, so `2015-11-02` becomes 11 February. Only the window check notices: it flags 36 dates.
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: one check is never enough
-The missing-count check caught this bug in R but not in Python. The logic check caught it in both. Run all five checks every time; they catch different mistakes.
+Never use `dayfirst=True` (or day-first parsing in any tool) on a column that mixes formats. And notice that the missing count caught this bug in R but not in Python, while the logic check caught it in both. Run all the checks every time; they catch different mistakes.
 :::
 
 ### Finally: compare with the answer key
@@ -741,7 +768,10 @@ stopifnot(
   nrow(raw) == 126,
   nrow(tidy) == 120,
   all(table(tidy$site) == 60),
-  sum(items$case_id == koos_case) == 28
+  sum(items$case_id == koos_case) == 28,
+  sum(is.na(wrong)) == 37,
+  outside_window(wrong) == 7,
+  outside_window(parse_messy_date(step3$dos)) == 0
 )
 ```
 
@@ -756,17 +786,18 @@ stopifnot(
 ## R
 
 ```{r}
-tibble(raw = step3$asa,
-       clean = as.integer(as.roman(str_remove(step3$asa, "^ASA ")))) |>
+step3 |>
+  transmute(case_id = str_trim(study_id), raw = asa) |>
+  left_join(select(tidy, case_id, clean = asa), by = "case_id") |>
   count(raw, clean)
 ```
 
 ## Python
 
 ```{python}
-asa = pd.DataFrame({"raw": step3["asa"],
-                    "clean": pd.to_numeric(step3["asa"].str.replace("ASA ", "").replace(asa_roman))})
-print(asa.value_counts(dropna=False).sort_index())
+raw_asa = pd.DataFrame({"case_id": step3["study_id"].str.strip(), "raw": step3["asa"]})
+asa = raw_asa.merge(tidy[["case_id", "asa"]].rename(columns={"asa": "clean"}), on="case_id")
+print(asa.groupby(["raw", "clean"], dropna=False).size())
 ```
 :::
 

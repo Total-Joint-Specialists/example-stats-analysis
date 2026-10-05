@@ -49,3 +49,55 @@ def test_distributions_page_has_the_flowchart(site):
 
 def test_tidy_page_says_to_run_the_steps_in_order(site):
     assert "Run the steps in order" in load("foundations/01-tidy-data.html").get_text(" ")
+
+
+# ---- review fixes ---------------------------------------------------------
+
+def text_of(page):
+    """Page text with smart quotes straightened and runs of whitespace collapsed."""
+    return " ".join(load(page).get_text(" ").replace("’", "'").split())
+
+
+@pytest.mark.parametrize("page", SECTIONS)
+def test_outputs_never_dump_raw_arrays_or_run_long(site, page):
+    for out in load(page).select(".cell-output"):
+        text = out.get_text()
+        assert "array(" not in text, f"{page}: raw array printed"
+        assert len(text.splitlines()) <= 60, f"{page}: {len(text.splitlines())}-line output"
+
+
+def test_tidy_page_explains_the_day_first_bug_correctly(site):
+    text = text_of("foundations/01-tidy-data.html")
+    assert "2015-11-02" in text and "Never use dayfirst=True" in text.replace("`", "")
+    assert "would quietly change results" not in text
+
+
+def test_demographics_page_states_smds_and_formats_consistently(site):
+    page = "foundations/02-demographics.html"
+    text = text_of(page)
+    assert "just over 0.1" in text
+    assert "Smoking status (0.23)" in text
+    assert "always returns an observed value" not in text
+    assert "tableone shows both" in text
+    assert "not independent" in text
+    html = str(load(page))
+    assert ">65.5 (9.4)<" in html and ">0.203<" in html     # R table: 1 decimal, 3-decimal p
+
+
+def test_distributions_page_states_statistics_correctly(site):
+    text = text_of("foundations/03-distributions.html")
+    assert "unlikely to be pure chance" not in text
+    assert "would be unusual if there were really no difference" in text
+    assert "bouncing around 0.05" in text
+    assert "make no assumption about the shape" not in text
+    assert "typical BMI of 30" not in text
+    assert "within-patient" in text                       # MCID caveat
+    assert "p = 0.173" in text                            # three-decimal p-values
+    assert "bilateral" in text and "independent" in text
+
+
+def test_flowchart_covers_hypothetical_values_and_matches_the_guidance(site):
+    soup = load("foundations/03-distributions.html")
+    chart = soup.select_one(".mermaid, pre.mermaid-js").get_text()
+    assert "hypothetical value" in chart
+    assert "small groups" not in chart

@@ -11,6 +11,13 @@ execute:
 source("R/check_agree.R")
 ```
 
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
 Almost every clinical paper starts with **Table 1**: who was studied. Reviewers read it first, to decide whether your patients look like theirs and whether your groups were comparable to begin with. This page builds one from scratch.
 
 ::: {.callout-note}
@@ -60,7 +67,7 @@ labels = {"age": "Age, years", "sex": "Sex", "bmi": "BMI, kg/m²", "asa": "ASA c
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: one row per procedure, not per patient
-The cohort has one row per *procedure*. 80 patients had both sides done, so 600 procedures come from 520 patients. Say which one your table counts, for example in a footnote: "600 procedures in 520 patients".
+The cohort has one row per *procedure*. 80 patients had both sides done, so 600 procedures come from 520 patients. Say which one your table counts, for example in a footnote: "600 procedures in 520 patients". The two procedures of a bilateral patient are not independent (same person, same age, sex and health), so tests that treat every row as a separate patient are slightly overconfident. [Distributions & choosing a test](03-distributions.qmd#paired) explains the options.
 :::
 
 ## One group {#one-group}
@@ -75,6 +82,7 @@ table_one <- cohort |>
     type      = list(los_days ~ "continuous"),          # few distinct values, but still a number
     statistic = list(all_continuous() ~ "{mean} ({sd})",
                      los_days ~ "{median} ({p25}–{p75})"),
+    digits    = list(all_continuous() ~ 1, los_days ~ 0),   # 65.5 (9.4); whole days
     label     = labels
   )
 table_one
@@ -114,7 +122,7 @@ Software guesses variable types, and the guesses are often wrong:
 
 - **ASA class** looks like a number, so it gets averaged ("mean ASA 2.4"). It's a category.
 - **Length of stay** has only a few distinct values, so gtsummary treats it as a category and lists "0 days, 1 day, 2 days…". It's a count.
-- **0/1 columns** such as `diabetes` should show one "yes" row.
+- **0/1 columns** such as `diabetes`: gtsummary shows a single row (how many are 1, i.e. yes), while tableone shows both the 0 and the 1 row. In a paper, show just the "yes" row.
 
 Set the type of every variable yourself (`type =` in R, `categorical =` in Python).
 :::
@@ -129,7 +137,7 @@ How do you know whether a variable is skewed? Look at it: [Distributions & choos
 
 ::: {.callout-tip}
 ## 🔀 R vs Python: quartiles
-gtsummary and tableone calculate quartiles slightly differently. gtsummary uses a method that always returns an observed value; tableone interpolates between values. With whole-number data like length of stay you can see the difference: the THA upper quartile is 2 days in R and 1.8 in Python. Neither is wrong. Say in your Methods which software you used.
+gtsummary and tableone use different formulas for quartiles (in R's terms, `quantile()` types 2 and 7). With whole-number data the results can differ. With whole-number data like length of stay you can see the difference: the THA upper quartile is 2 days in R and 1.8 in Python. Neither is wrong. Say in your Methods which software you used.
 :::
 
 ## Comparing groups {#by-group}
@@ -147,12 +155,14 @@ by_procedure <- cohort |>
     type      = list(los_days ~ "continuous"),
     statistic = list(all_continuous() ~ "{mean} ({sd})",
                      los_days ~ "{median} ({p25}–{p75})"),
+    digits    = list(all_continuous() ~ 1, los_days ~ 0),
     label     = labels
   ) |>
   add_overall() |>
-  add_p(test = list(all_continuous() ~ "t.test",       # Welch's t test
-                    los_days ~ "kruskal.test",          # rank-based, for the skewed variable
-                    all_categorical() ~ "chisq.test"))  # chi-square
+  add_p(test = list(all_continuous() ~ "t.test",        # Welch's t test
+                    los_days ~ "kruskal.test",           # rank-based, for the skewed variable
+                    all_categorical() ~ "chisq.test"),   # chi-square
+        pvalue_fun = label_style_pvalue(digits = 3))     # p to three decimals
 by_procedure
 ```
 
@@ -208,6 +218,7 @@ balance <- cohort |>
     type      = list(los_days ~ "continuous"),
     statistic = list(all_continuous() ~ "{mean} ({sd})",
                      los_days ~ "{median} ({p25}–{p75})"),
+    digits    = list(all_continuous() ~ 1, los_days ~ 0),
     label     = labels
   ) |>
   add_difference(test = everything() ~ "smd")
@@ -244,12 +255,12 @@ smd_r <- balance$table_body |> filter(row_type == "label")
 check_agree(as.list(setNames(abs(smd_r$estimate), smd_r$variable)), reticulate::py$chk, tol = 0.005)
 ```
 
-Sex (SMD 0.31) and BMI (0.33) are the imbalances worth mentioning. The rest are small.
+Sex (SMD 0.31) and BMI (0.33) are the clear imbalances. Age (0.10), ASA class (0.12) and smoking (0.15) are just over 0.1: worth a sentence, not alarm. Diabetes and length of stay are negligible.
 
 ::: {.callout-tip}
 ## 🔀 R vs Python: SMDs differ slightly
 - **Sign.** gtsummary subtracts TKA from THA; tableone subtracts THA from TKA. Report the absolute value, or say which group was subtracted from which.
-- **Third decimal.** For continuous variables, R's `smd` package divides the variances by *n*, while tableone divides by *n − 1* (the usual textbook formula). Age comes out as 0.105 in both after rounding, but the raw values differ slightly. Categorical SMDs match exactly.
+- **Fourth decimal.** For continuous variables, R's `smd` package divides the variances by *n*, while tableone divides by *n − 1* (the usual textbook formula). Age comes out as 0.1048 in R and 0.1046 in Python. Categorical SMDs match exactly.
 :::
 
 **Which should you report?**
@@ -273,6 +284,7 @@ abstraction |>
   tbl_summary(by = site, type = list(los_days ~ "continuous"),
               statistic = list(all_continuous() ~ "{mean} ({sd})",
                                los_days ~ "{median} ({p25}–{p75})"),
+              digits = list(all_continuous() ~ 1, los_days ~ 0),
               missing_text = "Missing")
 ```
 
@@ -342,7 +354,12 @@ In Word, tidy the formatting to the journal's style: usually no vertical lines, 
 #| include: false
 # Prose guard: numbers quoted in the text above. If the data change, update the text.
 pct <- function(x) round(100 * mean(x))
-los_tha <- cohort$los_days[cohort$procedure == "THA"]
+site_table <- cohort |>
+  select(site, all_of(table1_vars)) |>
+  tbl_summary(by = site, type = list(los_days ~ "continuous")) |>
+  add_difference(test = everything() ~ "smd")
+site_rows <- site_table$table_body |> filter(row_type == "label")
+site_smd <- setNames(abs(site_rows$estimate), site_rows$variable)
 stopifnot(
   nrow(cohort) == 600, n_distinct(cohort$patient_id) == 520,
   sum(table(cohort$patient_id) == 2) == 80,
@@ -352,12 +369,30 @@ stopifnot(
   round(mean(cohort$age), 1) == 65.5, round(sd(cohort$age), 1) == 9.4,
   sum(cohort$sex == "Female") == 343, pct(cohort$sex == "Female") == 57,
   median(cohort$los_days) == 1,
-  all(quantile(cohort$los_days, c(0.25, 0.75), type = 2) == c(0, 1)),
-  quantile(los_tha, 0.75, type = 2) == 2,
-  round(quantile(los_tha, 0.75, type = 7), 1) == 1.8,
+  # what the libraries actually display (Python side checked in the next chunk)
+  by_procedure$table_body$stat_1[by_procedure$table_body$variable == "los_days" &
+                                   by_procedure$table_body$row_type == "label"] == "1 (0–2)",
+  by_procedure$table_body$stat_0[by_procedure$table_body$variable == "los_days" &
+                                   by_procedure$table_body$row_type == "label"] == "1 (0–1)",
+  by_procedure$table_body$stat_0[by_procedure$table_body$variable == "age" &
+                                   by_procedure$table_body$row_type == "label"] == "65.5 (9.4)",
+  round(abs(smd_r$estimate[smd_r$variable == "age"]), 2) == 0.10,
+  round(abs(smd_r$estimate[smd_r$variable == "asa"]), 2) == 0.12,
+  round(abs(smd_r$estimate[smd_r$variable == "smoker"]), 2) == 0.15,
+  abs(smd_r$estimate[smd_r$variable == "diabetes"]) < 0.1,
+  abs(smd_r$estimate[smd_r$variable == "los_days"]) < 0.1,
+  abs(site_smd[["smoker"]] - 0.23) < 0.005, abs(site_smd[["los_days"]] - 0.225) < 0.005,
+  all(site_smd[setdiff(names(site_smd), c("smoker", "los_days"))] < 0.11),
   round(abs(smd_r$estimate[smd_r$variable == "sex"]), 2) == 0.31,
   round(abs(smd_r$estimate[smd_r$variable == "bmi"]), 2) == 0.33
 )
+```
+
+```{python}
+#| include: false
+# Prose guard (Python side): the quartile tableone displays.
+assert by_procedure.tableone.loc[("Length of stay, days, median [Q1,Q3]", ""),
+                                 ("Grouped by procedure", "THA")] == "1.0 [0.0,1.8]"
 ```
 
 ## Exercises {#exercises}
@@ -376,6 +411,7 @@ cohort |>
   tbl_summary(by = site, type = list(los_days ~ "continuous"),
               statistic = list(all_continuous() ~ "{mean} ({sd})",
                                los_days ~ "{median} ({p25}–{p75})"),
+              digits = list(all_continuous() ~ 1, los_days ~ 0),
               label = labels) |>
   add_difference(test = everything() ~ "smd")
 ```
@@ -389,7 +425,7 @@ print(by_site.smd_table)
 ```
 :::
 
-Site was assigned at random in this dataset, so every SMD should be small. If one isn't, it's chance again.
+Smoking status (0.23) and length of stay (0.22) differ most between sites, and their 95% CIs exclude zero. Yet site was assigned completely at random in this dataset, independent of everything else. With seven variables, a couple of chance imbalances above 0.1 are to be expected: judge each SMD by its size and by whether it could plausibly matter, not by whether it is "significant".
 :::
 
 **2.** A fellow is comparing patients aged 80 or older with younger patients, matched on sex, BMI and ASA class. Should the baseline table show p-values or SMDs? Why?

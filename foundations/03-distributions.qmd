@@ -11,11 +11,18 @@ execute:
 source("R/check_agree.R")
 ```
 
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
 The [decision table](../index.qmd) asks two questions: what's your **goal** (the row), and what **type of data** do you have (the column). This page is about the second question, especially the hardest part of it: is a measurement "Gaussian" (normally distributed) enough for the left-hand column?
 
 ## Why the shape of your data matters {#why}
 
-The tests in the first column (t tests, ANOVA, Pearson correlation) compare **means**, and they assume the data within each group follow a roughly bell-shaped, normal distribution. The tests in the second column (Mann-Whitney, Wilcoxon, Kruskal-Wallis, Spearman) work on **ranks**. They make no assumption about the shape.
+The tests in the first column (t tests, ANOVA, Pearson correlation) compare **means**, and they assume the data within each group follow a roughly bell-shaped, normal distribution. The tests in the second column (Mann-Whitney, Wilcoxon, Kruskal-Wallis, Spearman) work on **ranks**. They don't assume a normal distribution.
 
 ::: {.callout-note}
 ## 💡 In plain language
@@ -52,6 +59,7 @@ ggplot(shapes, aes(value)) +
 ## Python
 
 ```{python}
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -212,7 +220,7 @@ check_agree(list(age_w = unname(age_sw$statistic), age_p = age_sw$p.value,
                  ten_w = unname(ten_sw$statistic), ten_p = ten_sw$p.value), reticulate::py$chk)
 ```
 
-p = 0.17: "no evidence against normality". Ten values simply can't reveal the shape, which is exactly when the shape matters most.
+p = 0.173: "no evidence against normality". Ten values simply can't reveal the shape, which is exactly when the shape matters most.
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: don't let one p-value choose your test
@@ -221,23 +229,62 @@ Decide from the plots, from what you know about the measurement (a bounded score
 
 ## Check within groups, not the pooled data {#within-groups}
 
-The normality assumption is about the data **within each group** (or, for regression models, the **residuals**: what's left after the model's prediction). Pooling groups with different means can make normal data look non-normal.
+The normality assumption is about the data **within each group** (or, for regression models, the **residuals**: what's left after the model's prediction). Pooling groups with different centers can make perfectly normal data look non-normal.
 
-BMI is a good example: TKA patients average about 1.8 kg/m² more than THA patients.
+Here's an extreme, made-up example: two groups of 200 values, each exactly normal, 4 standard deviations apart.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+group_a <- qnorm(ppoints(200), mean = 40, sd = 5)   # 200 perfectly normal values
+group_b <- qnorm(ppoints(200), mean = 60, sd = 5)
+
+shapiro.test(group_a)$p.value                       # one group alone
+shapiro.test(c(group_a, group_b))$p.value           # both groups pooled
+```
+
+## Python
+
+```{python}
+points = (np.arange(1, 201) - 0.5) / 200            # the same probabilities as R's ppoints(200)
+group_a = stats.norm.ppf(points, loc=40, scale=5)   # 200 perfectly normal values
+group_b = stats.norm.ppf(points, loc=60, scale=5)
+
+print(stats.shapiro(group_a).pvalue)                              # one group alone
+print(stats.shapiro(np.concatenate([group_a, group_b])).pvalue)   # both groups pooled
+```
+:::
+
+```{python}
+#| include: false
+chk = {"one": float(stats.shapiro(group_a).pvalue),
+       "pooled": float(stats.shapiro(np.concatenate([group_a, group_b])).pvalue)}
+```
+
+```{r}
+#| include: false
+check_agree(list(one = shapiro.test(group_a)$p.value,
+                 pooled = shapiro.test(c(group_a, group_b))$p.value), reticulate::py$chk)
+```
+
+Each group alone passes easily (p ≈ 1). Pooled, p < 0.001: the histogram of the pooled values has two humps, which is not what a normal distribution looks like.
+
+In real data the groups are usually much closer together. BMI differs by only about a third of a standard deviation between THA and TKA patients, so pooling barely matters. What you see instead is Shapiro-Wilk's verdict bouncing around 0.05 depending on how you slice the same data:
 
 ::: {.panel-tabset group="language"}
 ## R
 
 ```{r}
 #| fig-height: 3
-shapiro.test(cohort$bmi)                         # pooled: looks borderline
+shapiro.test(cohort$bmi)$p.value                         # pooled
 
 cohort |>
   group_by(procedure) |>
-  summarise(shapiro_p = shapiro.test(bmi)$p.value)   # each group on its own
+  summarise(shapiro_p = shapiro.test(bmi)$p.value)       # each group on its own
 
-fit <- lm(bmi ~ procedure, data = cohort)        # residual = BMI minus its group's mean
-shapiro.test(residuals(fit))
+fit <- lm(bmi ~ procedure, data = cohort)                # residual = BMI minus its group's mean
+shapiro.test(residuals(fit))$p.value
 
 ggplot(tibble(residual = residuals(fit)), aes(sample = residual)) +
   geom_qq() +
@@ -247,17 +294,17 @@ ggplot(tibble(residual = residuals(fit)), aes(sample = residual)) +
 ## Python
 
 ```{python}
-print(stats.shapiro(cohort["bmi"]))              # pooled: looks borderline
+print(stats.shapiro(cohort["bmi"]).pvalue)               # pooled
 
-for procedure, group in cohort.groupby("procedure"):    # each group on its own
+for procedure, group in cohort.groupby("procedure"):     # each group on its own
     print(procedure, stats.shapiro(group["bmi"]).pvalue)
 
 # residual = BMI minus its group's mean
 residuals = cohort["bmi"] - cohort.groupby("procedure")["bmi"].transform("mean")
-print(stats.shapiro(residuals))
+print(stats.shapiro(residuals).pvalue)
 
 fig, ax = plt.subplots(figsize=(4, 3))
-stats.probplot(residuals, plot=ax)
+_ = stats.probplot(residuals, plot=ax)                   # "_ =" hides probplot's returned numbers
 plt.show()
 ```
 :::
@@ -274,7 +321,7 @@ check_agree(list(pooled = shapiro.test(cohort$bmi)$p.value,
                  residuals = shapiro.test(residuals(fit))$p.value), reticulate::py$chk)
 ```
 
-Pooled, BMI gets p = 0.04. Within each procedure, and in the residuals, it looks normal (residuals p = 0.31). The pooled test was reacting to the two groups having different centers, not to a non-normal shape.
+Pooled p = 0.044, THA alone 0.051, TKA alone 0.124, residuals 0.306: four slices of the same data, on both sides of 0.05, while the QQ plot is a near-perfect straight line. That's the lesson of the previous section again: decide from the plots and what you know about the measurement, not from one p-value.
 
 ## How much does normality matter? {#robustness}
 
@@ -283,7 +330,8 @@ Less than you might think, once groups are reasonably large. Tests on means rely
 A practical guide:
 
 - **About 30 or more per group, moderate skew, no wild outliers:** t tests and ANOVA are fine. With very skewed data, the rank test is still often the better summary.
-- **Small groups (under about 15–20), or strong skew, or outliers:** use the rank column.
+- **Strong skew or extreme outliers:** use the rank column.
+- **Small groups (under about 15 per group):** plots can't show the shape, and no test has much power. Choose from what you know about the measurement: the rank column for skewed or ordinal measures, the Gaussian column for measurements known to be roughly normal. Expect wide confidence intervals either way.
 - **Ordinal scales, or a ceiling or floor:** use the rank column whatever the sample size (below).
 
 ::: {.callout-note collapse="true"}
@@ -377,6 +425,8 @@ The decision table's rows also ask whether your groups are **independent** or **
 - **Paired:** the same patients measured twice, or natural pairs. Pre-op vs 1-year PROM in the same patients; left vs right knee in bilateral patients; two raters measuring the same X-rays.
 - **Matched:** each patient in one group has been chosen to resemble a patient in the other group (by age, sex, BMI…). Treat matched sets like pairs.
 
+**Bilateral patients need care.** In our cohort, 80 patients appear twice, once for each side, usually in the same group. Their two procedures share the same person's age, sex and health, so they are not independent. Tests that treat every row as a separate patient are then a little overconfident (p-values too small, CIs too narrow). Either analyse one procedure per patient (for example, the first), or use methods built for clustered data, such as [mixed models](../beyond/16-mixed-models.qmd). Say which you did.
+
 Pairing matters because measurements on the same patient are related. A paired analysis uses each patient as their own control, which removes the patient-to-patient variation and usually gives a more precise answer. Analyzing paired data as if unpaired is one of the most common mistakes in the literature.
 
 ## From your question to a test {#flowchart}
@@ -384,17 +434,19 @@ Pairing matters because measurements on the same patient are related. A paired a
 ```{mermaid}
 flowchart TD
   A[What is your goal?] --> B[Describe one group]
+  A --> M[Compare one group to a hypothetical value]
   A --> C[Compare groups or measurements]
   A --> D[Association or prediction]
   C --> E{Same patients or matched?}
   E -->|No| F[Unpaired rows]
   E -->|Yes| G[Paired / matched rows]
   B --> H{What type of outcome?}
+  M --> H
   F --> H
   G --> H
   D --> H
   H -->|Measurement, roughly normal within groups| I[Gaussian column]
-  H -->|Skewed, bounded, ordinal, or small groups| J[Rank column]
+  H -->|Strongly skewed, bounded, or ordinal| J[Rank column]
   H -->|Yes / no| K[Binomial column]
   H -->|Time until an event| L[Survival column]
 ```
@@ -460,7 +512,7 @@ check_agree(list(difference = difference, ci_low = ci[1], ci_high = ci[2], p = b
 
 > TKA patients had a higher BMI than THA patients (mean difference 1.8 kg/m², 95% CI 0.9 to 2.6; p < 0.001).
 
-Is a difference of 1.8 kg/m² *clinically* important? The p-value can't tell you. That depends on clinical judgment, and on the CI: the whole interval (0.9 to 2.6) is small next to a typical BMI of 30. **Statistically significant** means "unlikely to be pure chance", not "important".
+Is a difference of 1.8 kg/m² *clinically* important? The p-value can't tell you. Ask whether a difference anywhere in the CI (0.9 to 2.6 kg/m²) would change risk or management, for example complication rates. That's clinical judgment, not statistics. **Statistically significant** means only that data like these would be unusual if there were really no difference. It doesn't mean the difference is large or important.
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: two classic misreadings
@@ -473,7 +525,7 @@ Is a difference of 1.8 kg/m² *clinically* important? The p-value can't tell you
 R's `t.test(bmi ~ procedure)` subtracts in alphabetical order of the groups (THA minus TKA). `scipy`'s `ttest_ind(tka, tha)` subtracts the second argument from the first. Same answer, opposite sign. Always say which group was subtracted from which, as we did above.
 :::
 
-For PROMs, judge differences against the **minimal clinically important difference (MCID)**: the smallest change patients notice as meaningful. Published MCIDs vary with the study and the method used to derive them, so cite the one you use. A difference smaller than the MCID can be statistically significant and still clinically irrelevant.
+For PROMs, judge differences against the **minimal clinically important difference (MCID)**: the smallest change patients notice as meaningful. Published MCIDs vary with the study and the method used to derive them, so cite the one you use. Be careful how you use it: an MCID is a *within-patient* threshold for one person's change. A difference between two groups' averages that is smaller than the MCID doesn't prove no patient benefited, and a larger one doesn't mean every patient did. Comparing the proportion of patients in each group who reached the MCID is often the clearer analysis.
 
 ```{r}
 #| include: false
@@ -481,9 +533,15 @@ For PROMs, judge differences against the **minimal clinically important differen
 preop_scores <- proms$prom_score[proms$visit == "preop" & !is.na(proms$prom_score)]
 stopifnot(
   round(shapiro.test(cohort$age)$p.value, 3) == 0.001,
-  round(shapiro.test(first_ten)$p.value, 2) == 0.17,
-  round(shapiro.test(cohort$bmi)$p.value, 2) == 0.04,
-  round(shapiro.test(residuals(fit))$p.value, 2) == 0.31,
+  round(shapiro.test(first_ten)$p.value, 3) == 0.173,
+  round(shapiro.test(cohort$bmi)$p.value, 3) == 0.044,
+  round(shapiro.test(cohort$bmi[cohort$procedure == "THA"])$p.value, 3) == 0.051,
+  round(shapiro.test(cohort$bmi[cohort$procedure == "TKA"])$p.value, 3) == 0.124,
+  round(shapiro.test(residuals(fit))$p.value, 3) == 0.306,
+  shapiro.test(group_a)$p.value > 0.99,
+  shapiro.test(c(group_a, group_b))$p.value < 0.001,
+  bmi_test$p.value < 0.001,
+  sum(table(cohort$patient_id) == 2) == 80,
   round(skewness(cohort$los_days), 1) == 1.6,
   round(skewness(log1p(cohort$los_days)), 1) == 0.6,
   mean(cohort$los_days == 0) > 0.45, mean(cohort$los_days == 0) < 0.5,
@@ -515,8 +573,8 @@ skewness(preop$prom_score)
 ```{python}
 preop = proms[(proms["visit"] == "preop") & proms["prom_score"].notna()]
 fig, axes = plt.subplots(1, 2, figsize=(8, 3))
-axes[0].hist(preop["prom_score"], bins=30)
-stats.probplot(preop["prom_score"], plot=axes[1])
+_ = axes[0].hist(preop["prom_score"], bins=30)   # "_ =" hides the returned counts
+_ = stats.probplot(preop["prom_score"], plot=axes[1])
 plt.show()
 print(skewness(preop["prom_score"]))
 ```
@@ -536,7 +594,7 @@ The Gaussian column (an unpaired t test, Welch's version) is reasonable. With ab
 
 ::: {.callout-tip collapse="true"}
 ## Solution
-"The study found no clear difference in 1-year KOOS JR between implants: the estimate (2.1 points) and the whole 95% CI (−1.5 to 5.7) fall well below the MCID, so a clinically important benefit of the new implant is unlikely."
+"The study found no clear difference in 1-year KOOS JR between implants: the estimate (2.1 points) and the whole 95% CI (−1.5 to 5.7) are far smaller than the 14-point MCID, so a large average benefit of the new implant is unlikely."
 
-Note that this is stronger than "not significant". The CI rules out an important difference, which is a useful finding in itself.
+This is stronger than "not significant": the CI rules out a large average difference. Strictly, the MCID is a within-patient threshold, so the clearest follow-up analysis compares the proportion of patients in each group who improved by at least 14 points.
 :::

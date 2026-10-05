@@ -76,3 +76,29 @@ def test_foundations_pages_guard_the_numbers_in_their_prose():
         chunks = HIDDEN_CHUNK.findall(text)
         assert any(lang == "r" and "Prose guard" in code and "stopifnot(" in code
                    for lang, code in chunks), name
+
+
+def section(text, start, end):
+    """The source between two markers (tabset "## R" headers make heading-based cuts unreliable)."""
+    i = text.index(start)
+    return text[i:text.index(end, i)]
+
+
+def test_recode_cross_tabs_compare_raw_values_with_the_result():
+    text = (ROOT / "foundations" / "01-tidy-data.qmd").read_text(encoding="utf-8")
+    check = section(text, "**3. Cross-tab every recode.**", "**4. Range and logic checks.**")
+    assert "left_join(" in check and "merge(" in check
+
+
+def test_tidy_recodes_send_unexpected_codes_to_missing():
+    text = (ROOT / "foundations" / "01-tidy-data.qmd").read_text(encoding="utf-8")
+    step5 = section(text, "### Step 5: give every column its real type", "## Reshaping a survey export")
+    assert step5.count("case_when(") >= 3      # sex, procedure, side
+    assert step5.count("np.select(") >= 2      # procedure, side
+
+
+def test_quartile_guard_reads_what_the_libraries_display():
+    text = (ROOT / "foundations" / "02-demographics.qmd").read_text(encoding="utf-8")
+    chunks = HIDDEN_CHUNK.findall(text)
+    assert any(lang == "r" and "table_body" in code and "1 (0–2)" in code for lang, code in chunks)
+    assert any(lang == "python" and "1.0 [0.0,1.8]" in code for lang, code in chunks)

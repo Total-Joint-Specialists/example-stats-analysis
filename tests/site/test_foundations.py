@@ -9,6 +9,9 @@ SECTIONS = {
         "what-tidy-means", "collecting", "tidying", "reshaping", "integrity", "exercises"],
     "foundations/02-demographics.html": [
         "setup", "one-group", "which-summary", "by-group", "smd", "missing", "export", "exercises"],
+    "foundations/03-distributions.html": [
+        "why", "look", "shapiro", "within-groups", "robustness", "transform", "ordinal",
+        "paired", "flowchart", "effect-sizes", "exercises"],
 }
 
 
@@ -38,6 +41,10 @@ def test_page_runs_code_in_both_languages_and_is_frozen(site, page):
 def test_page_shows_no_warnings_or_package_messages(site, page):
     noise = [o.get_text()[:80] for o in load(page).select(".cell-output-stderr")]
     assert noise == []
+
+
+def test_distributions_page_has_the_flowchart(site):
+    assert load("foundations/03-distributions.html").select_one(".mermaid, pre.mermaid-js") is not None
 
 
 def test_tidy_page_says_to_run_the_steps_in_order(site):

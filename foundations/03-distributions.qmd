@@ -1,10 +1,542 @@
 ---
-title: "3 · Distributions & choosing a test (coming soon)"
-description: "Check whether data look normal, and use that to pick the right test."
+title: "3 · Distributions & choosing a test"
+description: "Check whether data look normal, decide which column of the decision table you're in, and understand p-values, effect sizes and confidence intervals."
+engine: knitr
+execute:
+  message: false
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+The [decision table](../index.qmd) asks two questions: what's your **goal** (the row), and what **type of data** do you have (the column). This page is about the second question, especially the hardest part of it: is a measurement "Gaussian" (normally distributed) enough for the left-hand column?
+
+## Why the shape of your data matters {#why}
+
+The tests in the first column (t tests, ANOVA, Pearson correlation) compare **means**, and they assume the data within each group follow a roughly bell-shaped, normal distribution. The tests in the second column (Mann-Whitney, Wilcoxon, Kruskal-Wallis, Spearman) work on **ranks**. They make no assumption about the shape.
+
+::: {.callout-note}
+## 💡 In plain language
+A mean is a fair summary of a bell-shaped pile of numbers. It's a poor summary of a lopsided one: a few very long hospital stays drag the mean far away from what's typical. Tests built on means inherit that problem. Rank-based tests only ask "which values are bigger?", so a few extreme values can't dominate.
 :::
 
+## Look first: histograms and QQ plots {#look}
+
+Always plot before you test. Here are three variables from the practice data: age, length of stay, and the 1-year PROM score.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3
+library(tidyverse)
+
+cohort   <- read_csv("data/cohort.csv", show_col_types = FALSE)
+proms    <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+one_year <- proms |> filter(visit == "1yr", !is.na(prom_score))
+
+shapes <- bind_rows(
+  tibble(variable = "Age, years",           value = cohort$age),
+  tibble(variable = "Length of stay, days", value = cohort$los_days),
+  tibble(variable = "1-year PROM score",    value = one_year$prom_score)
+)
+
+ggplot(shapes, aes(value)) +
+  geom_histogram(bins = 30) +
+  facet_wrap(~ variable, scales = "free")
+```
+
+## Python
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+
+cohort = pd.read_csv("data/cohort.csv")
+proms = pd.read_csv("data/proms_long.csv")
+one_year = proms[(proms["visit"] == "1yr") & proms["prom_score"].notna()]
+
+shapes = {
+    "Age, years": cohort["age"],
+    "Length of stay, days": cohort["los_days"],
+    "1-year PROM score": one_year["prom_score"],
+}
+
+fig, axes = plt.subplots(1, 3, figsize=(10, 3))
+for ax, (name, values) in zip(axes, shapes.items()):
+    ax.hist(values, bins=30)
+    ax.set_title(name)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+- **Age** is a fairly symmetric bell.
+- **Length of stay** piles up at 0 and 1 days and has a long tail to the right: **right-skewed**.
+- **1-year PROM** piles up against the top of the scale (100), with a tail to the left: a **ceiling effect**.
+
+A **QQ plot** makes the comparison with a normal distribution easier to see. If the data are normal, the points fall on the straight line.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| fig-height: 3
+ggplot(shapes, aes(sample = value)) +
+  geom_qq() +
+  geom_qq_line() +
+  facet_wrap(~ variable, scales = "free")
+```
+
+## Python
+
+```{python}
+fig, axes = plt.subplots(1, 3, figsize=(10, 3))
+for ax, (name, values) in zip(axes, shapes.items()):
+    stats.probplot(values, plot=ax)
+    ax.set_title(name)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+How to read them:
+
+- Points **on the line**: close to normal (age).
+- Points **curving up at the right end**: right skew (length of stay). The flat steps are the many ties at 0, 1 and 2 days.
+- Points **flattening at the top**: a ceiling (the PROM). Many patients share the maximum score.
+
+A number for lopsidedness is the **skewness**: 0 for a symmetric shape, positive for a tail to the right, negative for a tail to the left.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+skewness <- function(x) mean((x - mean(x))^3) / sd(x)^3
+
+c(age      = skewness(cohort$age),
+  los      = skewness(cohort$los_days),
+  prom_1yr = skewness(one_year$prom_score))
+```
+
+## Python
+
+```{python}
+def skewness(x):
+    return ((x - x.mean()) ** 3).mean() / x.std() ** 3
+
+print(pd.Series({
+    "age": skewness(cohort["age"]),
+    "los": skewness(cohort["los_days"]),
+    "prom_1yr": skewness(one_year["prom_score"]),
+}))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"age": float(skewness(cohort["age"])), "los": float(skewness(cohort["los_days"])),
+       "prom_1yr": float(skewness(one_year["prom_score"]))}
+```
+
+```{r}
+#| include: false
+check_agree(list(age = skewness(cohort$age), los = skewness(cohort$los_days),
+                 prom_1yr = skewness(one_year$prom_score)), reticulate::py$chk)
+```
+
+::: {.callout-tip}
+## 🔀 R vs Python: skewness functions
+Packages define skewness in slightly different ways (`scipy.stats.skew()` and the R package `e1071` each use their own formula), so the third decimal can differ between them. We wrote the formula out by hand in both languages so the numbers match exactly.
+:::
+
+## Formal tests: Shapiro-Wilk, and why not to trust it alone {#shapiro}
+
+The **Shapiro-Wilk test** asks: "Could these numbers plausibly come from a normal distribution?" A small p-value means "probably not". It's tempting to let it decide: p < 0.05 → rank test, otherwise → t test. That rule fails in both directions.
+
+**It's too sensitive with large samples.** Our 600 ages look like a textbook bell curve, yet:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+shapiro.test(cohort$age)
+```
+
+## Python
+
+```{python}
+print(stats.shapiro(cohort["age"]))
+```
+:::
+
+p = 0.001: "not normal". With 600 values the test can detect departures far too small to matter. A t test on these ages would be perfectly fine.
+
+**It's too weak with small samples.** Take just the first 10 patients' 1-year PROM scores, from a variable we *know* is skewed with a ceiling:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+first_ten <- head(one_year$prom_score, 10)
+first_ten
+shapiro.test(first_ten)
+```
+
+## Python
+
+```{python}
+first_ten = one_year["prom_score"].head(10)
+print(first_ten.tolist())
+print(stats.shapiro(first_ten))
+```
+:::
+
+```{python}
+#| include: false
+age_sw = stats.shapiro(cohort["age"])
+ten_sw = stats.shapiro(first_ten)
+chk = {"age_w": float(age_sw.statistic), "age_p": float(age_sw.pvalue),
+       "ten_w": float(ten_sw.statistic), "ten_p": float(ten_sw.pvalue)}
+```
+
+```{r}
+#| include: false
+age_sw <- shapiro.test(cohort$age)
+ten_sw <- shapiro.test(first_ten)
+check_agree(list(age_w = unname(age_sw$statistic), age_p = age_sw$p.value,
+                 ten_w = unname(ten_sw$statistic), ten_p = ten_sw$p.value), reticulate::py$chk)
+```
+
+p = 0.17: "no evidence against normality". Ten values simply can't reveal the shape, which is exactly when the shape matters most.
+
+::: {.callout-warning}
+## ⚠️ Watch out: don't let one p-value choose your test
+Decide from the plots, from what you know about the measurement (a bounded score, a count of days), and from the sample size. Use Shapiro-Wilk as supporting evidence, not as the judge. Then say how you decided in your Methods.
+:::
+
+## Check within groups, not the pooled data {#within-groups}
+
+The normality assumption is about the data **within each group** (or, for regression models, the **residuals**: what's left after the model's prediction). Pooling groups with different means can make normal data look non-normal.
+
+BMI is a good example: TKA patients average about 1.8 kg/m² more than THA patients.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| fig-height: 3
+shapiro.test(cohort$bmi)                         # pooled: looks borderline
+
+cohort |>
+  group_by(procedure) |>
+  summarise(shapiro_p = shapiro.test(bmi)$p.value)   # each group on its own
+
+fit <- lm(bmi ~ procedure, data = cohort)        # residual = BMI minus its group's mean
+shapiro.test(residuals(fit))
+
+ggplot(tibble(residual = residuals(fit)), aes(sample = residual)) +
+  geom_qq() +
+  geom_qq_line()
+```
+
+## Python
+
+```{python}
+print(stats.shapiro(cohort["bmi"]))              # pooled: looks borderline
+
+for procedure, group in cohort.groupby("procedure"):    # each group on its own
+    print(procedure, stats.shapiro(group["bmi"]).pvalue)
+
+# residual = BMI minus its group's mean
+residuals = cohort["bmi"] - cohort.groupby("procedure")["bmi"].transform("mean")
+print(stats.shapiro(residuals))
+
+fig, ax = plt.subplots(figsize=(4, 3))
+stats.probplot(residuals, plot=ax)
+plt.show()
+```
+:::
+
+```{python}
+#| include: false
+chk = {"pooled": float(stats.shapiro(cohort["bmi"]).pvalue),
+       "residuals": float(stats.shapiro(residuals).pvalue)}
+```
+
+```{r}
+#| include: false
+check_agree(list(pooled = shapiro.test(cohort$bmi)$p.value,
+                 residuals = shapiro.test(residuals(fit))$p.value), reticulate::py$chk)
+```
+
+Pooled, BMI gets p = 0.04. Within each procedure, and in the residuals, it looks normal (residuals p = 0.31). The pooled test was reacting to the two groups having different centers, not to a non-normal shape.
+
+## How much does normality matter? {#robustness}
+
+Less than you might think, once groups are reasonably large. Tests on means rely on the **average** being roughly normal, not on every individual value. Thanks to the *central limit theorem*, averages of about 30 or more values are close to normal even when the values themselves are skewed.
+
+A practical guide:
+
+- **About 30 or more per group, moderate skew, no wild outliers:** t tests and ANOVA are fine. With very skewed data, the rank test is still often the better summary.
+- **Small groups (under about 15–20), or strong skew, or outliers:** use the rank column.
+- **Ordinal scales, or a ceiling or floor:** use the rank column whatever the sample size (below).
+
+::: {.callout-note collapse="true"}
+## 🔍 Under the hood: the central limit theorem
+If you take many random samples of size *n* from almost any distribution and compute each sample's mean, those means form a distribution that gets closer to normal as *n* grows. Its spread shrinks in proportion to 1/√n. t tests are built on the distribution of the mean, which is why they tolerate non-normal raw data when *n* is large. "About 30" is a rule of thumb, not a law: the more skewed the data, the larger *n* needs to be.
+:::
+
+## Skew, ceilings and transformations {#transform}
+
+A common fix for right skew is to analyze the **logarithm** of the values. For length of stay we have to use log(days + 1), because log(0) doesn't exist.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+c(skew_raw      = skewness(cohort$los_days),
+  skew_log      = skewness(log1p(cohort$los_days)),   # log1p(x) = log(1 + x)
+  share_zero    = mean(cohort$los_days == 0),
+  ceiling_1yr   = mean(one_year$prom_score == 100))
+```
+
+## Python
+
+```{python}
+import numpy as np
+
+print(pd.Series({
+    "skew_raw": skewness(cohort["los_days"]),
+    "skew_log": skewness(np.log1p(cohort["los_days"])),   # log1p(x) = log(1 + x)
+    "share_zero": (cohort["los_days"] == 0).mean(),
+    "ceiling_1yr": (one_year["prom_score"] == 100).mean(),
+}))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"skew_log": float(skewness(np.log1p(cohort["los_days"]))),
+       "share_zero": float((cohort["los_days"] == 0).mean()),
+       "ceiling_1yr": float((one_year["prom_score"] == 100).mean())}
+```
+
+```{r}
+#| include: false
+check_agree(list(skew_log = skewness(log1p(cohort$los_days)),
+                 share_zero = mean(cohort$los_days == 0),
+                 ceiling_1yr = mean(one_year$prom_score == 100)), reticulate::py$chk)
+```
+
+The log helps (skewness falls from about 1.6 to 0.6), but nearly half the stays are 0 days and no transformation can spread out a pile of identical values. Results on a log scale are also harder to explain ("a 0.3 difference in log(days + 1)"). Here the rank-based tests are simpler and more honest.
+
+The same goes for the **ceiling**: 17% of patients score the maximum at 1 year, and no transformation can tell those patients apart. Compare groups with rank-based tests, or report the proportion reaching the ceiling (or a clinically important improvement) as a yes/no outcome.
+
+## Ordinal data always go in the rank column {#ordinal}
+
+**Ordinal** data have an order but no fixed spacing: satisfaction from 1 ("very dissatisfied") to 5 ("very satisfied"), ASA class, pain "none / mild / moderate / severe". The step from 4 to 5 isn't necessarily the same size as the step from 1 to 2, so averages are hard to interpret.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+count(cohort, satisfaction_1yr)
+```
+
+## Python
+
+```{python}
+print(cohort["satisfaction_1yr"].value_counts(dropna=False).sort_index())
+```
+:::
+
+```{python}
+#| include: false
+chk = {"very_satisfied": float((cohort["satisfaction_1yr"] == 5).sum()),
+       "no_answer": float(cohort["satisfaction_1yr"].isna().sum())}
+```
+
+```{r}
+#| include: false
+check_agree(list(very_satisfied = sum(cohort$satisfaction_1yr == 5, na.rm = TRUE),
+                 no_answer = sum(is.na(cohort$satisfaction_1yr))), reticulate::py$chk)
+```
+
+Report ordinal data as counts and percentages, or as a median (IQR), and compare groups with rank-based tests. Never compute a t test on Likert scores, however many patients you have.
+
+## Paired or unpaired? Matched or unmatched? {#paired}
+
+The decision table's rows also ask whether your groups are **independent** or **paired/matched**.
+
+- **Unpaired (independent):** different patients in each group. THA vs TKA; Site A vs Site B; men vs women.
+- **Paired:** the same patients measured twice, or natural pairs. Pre-op vs 1-year PROM in the same patients; left vs right knee in bilateral patients; two raters measuring the same X-rays.
+- **Matched:** each patient in one group has been chosen to resemble a patient in the other group (by age, sex, BMI…). Treat matched sets like pairs.
+
+Pairing matters because measurements on the same patient are related. A paired analysis uses each patient as their own control, which removes the patient-to-patient variation and usually gives a more precise answer. Analyzing paired data as if unpaired is one of the most common mistakes in the literature.
+
+## From your question to a test {#flowchart}
+
+```{mermaid}
+flowchart TD
+  A[What is your goal?] --> B[Describe one group]
+  A --> C[Compare groups or measurements]
+  A --> D[Association or prediction]
+  C --> E{Same patients or matched?}
+  E -->|No| F[Unpaired rows]
+  E -->|Yes| G[Paired / matched rows]
+  B --> H{What type of outcome?}
+  F --> H
+  G --> H
+  D --> H
+  H -->|Measurement, roughly normal within groups| I[Gaussian column]
+  H -->|Skewed, bounded, ordinal, or small groups| J[Rank column]
+  H -->|Yes / no| K[Binomial column]
+  H -->|Time until an event| L[Survival column]
+```
+
+Then find your row and column in the [decision table](../index.qmd). Some worked examples from TJS-style questions:
+
+| Question | Row | Column | Test |
+|------|------|------|------|
+| Do TKA patients have a higher BMI than THA patients? | Two unpaired groups | Gaussian | [Unpaired t test](../catalog/06-two-unpaired-groups.qmd#unpaired-t) |
+| Is length of stay different between Site A and Site B? | Two unpaired groups | Rank (skewed) | [Mann-Whitney test](../catalog/06-two-unpaired-groups.qmd#mann-whitney) |
+| Did KOOS JR improve from pre-op to 1 year? | Two paired groups | Rank (ceiling) | [Wilcoxon signed-rank test](../catalog/07-two-paired-groups.qmd#wilcoxon-signed-rank) |
+| Is 90-day readmission more common in men? | Two unpaired groups | Binomial | [Fisher's exact test](../catalog/06-two-unpaired-groups.qmd#fisher-chi-square) |
+| Does satisfaction differ between surgeons S1, S2 and S3? | Three or more unmatched groups | Rank (ordinal) | [Kruskal-Wallis test](../catalog/08-three-plus-unmatched.qmd#kruskal-wallis) |
+| Does implant design affect revision-free survival? | Three or more unmatched groups | Survival | [Cox regression](../catalog/08-three-plus-unmatched.qmd#cox) |
+
+## p-values, effect sizes and confidence intervals {#effect-sizes}
+
+Every test on this site reports three things. They answer different questions, and a good Results section gives all three.
+
+- The **effect size** answers *how big?* For example, the difference between two means.
+- The **95% confidence interval (CI)** answers *how sure are we about that size?* It's the range of effect sizes compatible with the data.
+- The **p-value** answers *how surprising would data like these be if there were really no difference at all?* It doesn't measure the size or importance of an effect.
+
+Here's all three for BMI in TKA vs THA, using the unpaired (Welch's) t test from [page 6](../catalog/06-two-unpaired-groups.qmd#unpaired-t):
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+bmi_test <- t.test(bmi ~ procedure, data = cohort)   # Welch's t test (R's default)
+bmi_test
+
+difference <- unname(bmi_test$estimate[2] - bmi_test$estimate[1])   # TKA minus THA
+ci <- -rev(bmi_test$conf.int)                                        # flip to TKA minus THA
+tibble(difference = difference, ci_low = ci[1], ci_high = ci[2], p = bmi_test$p.value)
+```
+
+## Python
+
+```{python}
+tka = cohort.loc[cohort["procedure"] == "TKA", "bmi"]
+tha = cohort.loc[cohort["procedure"] == "THA", "bmi"]
+
+bmi_test = stats.ttest_ind(tka, tha, equal_var=False)   # Welch's t test
+ci = bmi_test.confidence_interval()
+
+print(pd.Series({"difference": tka.mean() - tha.mean(),
+                 "ci_low": ci.low, "ci_high": ci.high, "p": bmi_test.pvalue}))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"difference": float(tka.mean() - tha.mean()), "ci_low": float(ci.low),
+       "ci_high": float(ci.high), "p": float(bmi_test.pvalue)}
+```
+
+```{r}
+#| include: false
+check_agree(list(difference = difference, ci_low = ci[1], ci_high = ci[2], p = bmi_test$p.value),
+            reticulate::py$chk)
+```
+
+> TKA patients had a higher BMI than THA patients (mean difference 1.8 kg/m², 95% CI 0.9 to 2.6; p < 0.001).
+
+Is a difference of 1.8 kg/m² *clinically* important? The p-value can't tell you. That depends on clinical judgment, and on the CI: the whole interval (0.9 to 2.6) is small next to a typical BMI of 30. **Statistically significant** means "unlikely to be pure chance", not "important".
+
+::: {.callout-warning}
+## ⚠️ Watch out: two classic misreadings
+- **"p = 0.20, so there's no difference."** No. It means the data couldn't rule out zero. Look at the CI: if it runs from "harmful" to "very helpful", the study was too small to say.
+- **"p < 0.001, so the effect is large."** No. With enough patients, tiny differences get tiny p-values. Look at the effect size and CI.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: which group comes first
+R's `t.test(bmi ~ procedure)` subtracts in alphabetical order of the groups (THA minus TKA). `scipy`'s `ttest_ind(tka, tha)` subtracts the second argument from the first. Same answer, opposite sign. Always say which group was subtracted from which, as we did above.
+:::
+
+For PROMs, judge differences against the **minimal clinically important difference (MCID)**: the smallest change patients notice as meaningful. Published MCIDs vary with the study and the method used to derive them, so cite the one you use. A difference smaller than the MCID can be statistically significant and still clinically irrelevant.
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+preop_scores <- proms$prom_score[proms$visit == "preop" & !is.na(proms$prom_score)]
+stopifnot(
+  round(shapiro.test(cohort$age)$p.value, 3) == 0.001,
+  round(shapiro.test(first_ten)$p.value, 2) == 0.17,
+  round(shapiro.test(cohort$bmi)$p.value, 2) == 0.04,
+  round(shapiro.test(residuals(fit))$p.value, 2) == 0.31,
+  round(skewness(cohort$los_days), 1) == 1.6,
+  round(skewness(log1p(cohort$los_days)), 1) == 0.6,
+  mean(cohort$los_days == 0) > 0.45, mean(cohort$los_days == 0) < 0.5,
+  round(100 * mean(one_year$prom_score == 100)) == 17,
+  round(difference, 1) == 1.8, round(ci[1], 1) == 0.9, round(ci[2], 1) == 2.6,
+  round(skewness(preop_scores), 1) == 0.1
+)
+```
+
+## Exercises {#exercises}
+
+**1.** Draw a histogram and a QQ plot of the **pre-op** PROM score. Is it closer to normal than the 1-year score? Why might that be?
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+preop <- proms |> filter(visit == "preop", !is.na(prom_score))
+ggplot(preop, aes(prom_score)) + geom_histogram(bins = 30)
+ggplot(preop, aes(sample = prom_score)) + geom_qq() + geom_qq_line()
+skewness(preop$prom_score)
+```
+
+## Python
+
+```{python}
+preop = proms[(proms["visit"] == "preop") & proms["prom_score"].notna()]
+fig, axes = plt.subplots(1, 2, figsize=(8, 3))
+axes[0].hist(preop["prom_score"], bins=30)
+stats.probplot(preop["prom_score"], plot=axes[1])
+plt.show()
+print(skewness(preop["prom_score"]))
+```
+:::
+
+Much closer to normal: skewness about 0.1 and the QQ points follow the line. Before surgery, scores sit in the middle of the scale, far from the ceiling. After a successful operation many patients hit the maximum, which creates the ceiling.
+:::
+
+**2.** A fellow wants to compare operative time between surgeons S1 and S2, about 40 cases each. The histogram is fairly symmetric, with a few long cases. Which column of the decision table would you use, and how would you justify it in the Methods?
+
+::: {.callout-tip collapse="true"}
+## Solution
+The Gaussian column (an unpaired t test, Welch's version) is reasonable. With about 40 cases per group and a roughly symmetric shape, the t test is robust. Check the QQ plot within each surgeon, and check that the few long cases aren't extreme outliers. Methods: "Operative time was approximately normally distributed within each group on visual inspection of histograms and QQ plots, and was compared with Welch's t test." If the long cases were extreme, a Mann-Whitney test would be the safer choice; say so.
+:::
+
+**3.** A study reports: "1-year KOOS JR was 2.1 points higher with the new implant (95% CI −1.5 to 5.7; p = 0.25)." Suppose the MCID for KOOS JR is 14 points. Write one sentence interpreting this result.
+
+::: {.callout-tip collapse="true"}
+## Solution
+"The study found no clear difference in 1-year KOOS JR between implants: the estimate (2.1 points) and the whole 95% CI (−1.5 to 5.7) fall well below the MCID, so a clinically important benefit of the new implant is unlikely."
+
+Note that this is stronger than "not significant". The CI rules out an important difference, which is a useful finding in itself.
+:::

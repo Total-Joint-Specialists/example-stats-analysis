@@ -82,7 +82,7 @@ print(cohort.groupby("asa")["age"].agg(["count", "mean", "std"]))
 ```
 :::
 
-Age rises steadily with ASA class. The SDs are all close to 9 years, so the spreads are similar. The groups are very different in size, though: 300 patients in ASA 2, only 18 in ASA 4.
+Age rises steadily with ASA class. The SDs are all close to 9 years, so the spreads are similar. The groups are very different in size, though: 300 procedures in ASA 2, only 18 in ASA 4.
 
 ### Run it
 
@@ -118,7 +118,7 @@ check_agree(list(f = age_table[1, "F value"], ss_between = age_table[1, "Sum Sq"
 ### Read the output
 
 - **asa row:** the variation **between** the group means. **Df = 3** (four groups minus one), **Sum Sq = 5727**.
-- **Residuals** (R) or **Within** (Python): the variation of patients **within** their groups. **Df = 596** (600 patients minus four groups).
+- **Residuals** (R) or **Within** (Python): the variation of patients **within** their groups. **Df = 596** (600 procedures minus four groups).
 - **F = 23.9:** the between-group variation divided by the within-group variation, each per degree of freedom. If the groups had the same mean, F would be close to 1.
 - **p < 0.001** (R prints `1.28e-14`): ages this different across groups would be very unlikely if every ASA class had the same mean age.
 
@@ -233,7 +233,7 @@ print(satisfied.groupby("surgeon")["satisfaction_1yr"].describe()[["count", "25%
 ```
 :::
 
-502 of the 600 patients answered. Most were satisfied (4) or very satisfied (5) with every surgeon, and the three distributions look much alike.
+Satisfaction was reported for 502 of the 600 procedures. Most were satisfied (4) or very satisfied (5) with every surgeon, and the three distributions look much alike.
 
 ### Run it
 
@@ -308,11 +308,11 @@ check_agree(list(epsilon2 = satisfaction_eps$rank_epsilon_squared), reticulate::
 
 > **Methods:** Satisfaction at 1 year (a 5-point ordinal scale) was compared across surgeons with the Kruskal-Wallis test, with epsilon squared (ε²) as the effect size.
 >
-> **Results:** Of 600 patients, 502 reported their satisfaction at 1 year. The median was 4 (IQR 4 to 5) for surgeon S1 and 5 (IQR 4 to 5) for surgeons S2 and S3, with no significant difference between surgeons (Kruskal-Wallis H = 0.68, df = 2, p = 0.713; ε² = 0.001, one-sided 95% CI 0.00 to 1.00).
+> **Results:** Of 600 procedures, 502 had a satisfaction score at 1 year. The median was 4 (IQR 4 to 5) for surgeon S1 and 5 (IQR 4 to 5) for surgeons S2 and S3, with no significant difference between surgeons (Kruskal-Wallis H = 0.68, df = 2, p = 0.713; ε² = 0.001, one-sided 95% CI 0.00 to 1.00).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: missing answers aren't random
-98 patients didn't report their satisfaction. If unhappy patients were less likely to answer, every surgeon looks better than they are, and the comparison can be biased too. Always report how many answered in each group, and consider whether non-response differs between groups.
+Satisfaction is missing for 98 procedures. If unhappy patients were less likely to answer, every surgeon looks better than they are, and the comparison can be biased too. Always report how many answered in each group, and consider whether non-response differs between groups.
 :::
 
 ::: {.callout-tip}
@@ -327,7 +327,7 @@ Both `kruskal.test()` and `stats.kruskal()` correct H for ties, so they agree ev
 ### When to use it
 
 - The outcome is **categorical** (here yes/no), compared across **three or more independent groups**: an r × c table.
-- Every **expected** count should be at least 5. If not, combine categories that make sense together, or use Fisher's exact test, which R's `fisher.test()` runs on larger tables too (scipy's only handles 2 × 2).
+- Every **expected** count should be at least 5. If not, combine categories that make sense together, or use Fisher's exact test, which R's `fisher.test()` runs exactly on larger tables too. scipy's `stats.fisher_exact()` accepts larger tables but estimates their p-value by random resampling, so it changes a little from run to run.
 - With two groups and a yes/no outcome → [Fisher's exact test](06-two-unpaired-groups.qmd#fisher-chi-square).
 
 ### Look at the data first
@@ -570,7 +570,7 @@ The **hazard ratios** with their 95% CIs are the effect sizes: implant C carried
 
 > **Methods:** Revision-free survival was compared across implants with Cox proportional hazards regression, with implant A as the reference.
 >
-> **Results:** Implant type was associated with revision (likelihood ratio test, χ² = 27.6, df = 2, p < 0.001). Compared with implant A, the hazard of revision was higher with implant C (hazard ratio 3.07, 95% CI 1.85 to 5.09) and similar with implant B (hazard ratio 0.82, 95% CI 0.45 to 1.50).
+> **Results:** Implant type was associated with revision (likelihood ratio test, χ² = 27.6, df = 2, p < 0.001). Compared with implant A, the hazard of revision was higher with implant C (hazard ratio 3.07, 95% CI 1.85 to 5.09); the estimate for implant B was imprecise (hazard ratio 0.82, 95% CI 0.45 to 1.50).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: the reference group shapes the story
@@ -604,6 +604,8 @@ age_by_asa <- cohort |> group_by(asa) |> summarise(n = n(), mean = mean(age), sd
 satisfied_n <- sum(!is.na(cohort$satisfaction_1yr))
 asa_grouped <- table(factor(ifelse(cohort$asa >= 3, "ASA 3-4", "ASA 1-2"), levels = c("ASA 3-4", "ASA 1-2")),
                      factor(cohort$complication_90d, levels = c(1, 0), labels = c("yes", "no")))
+set.seed(2026)
+los_eps <- effectsize::rank_epsilon_squared(los_days ~ surgeon, data = cohort)   # as in exercise 2's solution
 sat_quartiles <- satisfied |> group_by(surgeon) |>
   summarise(median = median(satisfaction_1yr), q1 = quantile(satisfaction_1yr, 0.25), q3 = quantile(satisfaction_1yr, 0.75))
 stopifnot(
@@ -642,10 +644,15 @@ stopifnot(
   # exercise solutions (recomputed here: the guard runs before the solution chunks)
   round(summary(aov(bmi ~ asa, data = mutate(cohort, asa = factor(asa))))[[1]][1, "F value"], 1) == 31.1,
   round(effectsize::omega_squared(aov(bmi ~ asa, data = mutate(cohort, asa = factor(asa))), partial = FALSE)$Omega2, 2) == 0.13,
-  round(tapply(cohort$bmi, cohort$asa, mean)[c(1, 4)], 1) == c(26.3, 36.2),
+  round(tapply(cohort$bmi, cohort$asa, mean)[c(1, 4)], 1) == c(26.3, 36.2), round(tapply(cohort$bmi, cohort$asa, sd)[c(1, 4)], 1) == c(4.9, 3.3),
+  summary(aov(bmi ~ asa, data = mutate(cohort, asa = factor(asa))))[[1]][, "Df"] == c(3, 596),
+  round(effectsize::omega_squared(aov(bmi ~ asa, data = mutate(cohort, asa = factor(asa))), partial = FALSE)$CI_low, 2) == 0.09,
   round(kruskal.test(los_days ~ surgeon, data = cohort)$p.value, 3) == 0.694,
+  round(unname(kruskal.test(los_days ~ surgeon, data = cohort)$statistic), 2) == 0.73,
+  round(los_eps$CI_low, 2) == 0,
   round(effectsize::rank_epsilon_squared(los_days ~ surgeon, data = cohort, ci = NULL)$rank_epsilon_squared, 3) == 0.001,
   min(chisq.test(table(cohort$asa, cohort$complication_90d))$expected) < 5,
+  asa_grouped[, "yes"] == c(30, 21), rowSums(asa_grouped) == c(264, 336),
   round(100 * prop.table(asa_grouped, 1)[, "yes"], 1) == c(11.4, 6.2), round(100 * diff(rev(prop.table(asa_grouped, 1)[, "yes"])), 1) == 5.1,
   round(sort(chisq.test(table(cohort$asa, cohort$complication_90d))$expected[, "1"])[1:2], 1) == c(1.5, 3.1),
   round(unname(fisher.test(asa_grouped)$estimate), 2) == 1.92, round(fisher.test(asa_grouped)$conf.int, 2) == c(1.03, 3.63),
@@ -685,7 +692,7 @@ print(cohort.groupby("asa")["bmi"].agg(["mean", "std"]))
 ```
 :::
 
-BMI rose with ASA class, from a mean of 26.3 kg/m² in ASA 1 to 36.2 kg/m² in ASA 4 (F(3, 596) = 31.1, p < 0.001; ω² = 0.13). That's no surprise: obesity is one of the things anesthesiologists weigh when they assign an ASA class.
+BMI rose with ASA class, from a mean of 26.3 kg/m² (SD 4.9) in ASA 1 to 36.2 kg/m² (SD 3.3) in ASA 4 (F(3, 596) = 31.1, p < 0.001; ω² = 0.13, one-sided 95% CI 0.09 to 1.00). That's no surprise: obesity is one of the things anesthesiologists weigh when they assign an ASA class.
 :::
 
 **2.** A colleague asks whether **length of stay** differs between the three surgeons. Which test would you use, and what do you find?
@@ -712,7 +719,7 @@ print(los_test, los_test.statistic / (len(cohort) - 1))
 ```
 :::
 
-No difference: p = 0.694, ε² = 0.001.
+There's no evidence that length of stay differs between the surgeons (Kruskal-Wallis H = 0.73, df = 2, p = 0.694; ε² = 0.001, one-sided 95% CI 0.00 to 1.00).
 :::
 
 **3.** Test whether 90-day complications differ across the four **ASA classes**. Check the expected counts first. What do you do, and what do you find?
@@ -758,7 +765,7 @@ print(confint_proportions_2indep(high_yes, high_yes + high_no, low_yes, low_yes 
 
 ASA 1 and ASA 4 each have an expected count of complications below 5 (3.1 and 1.5), so the chi-square test isn't reliable; R says so itself, with the warning "Chi-squared approximation may be incorrect". Combining classes into ASA 1–2 and ASA 3–4 makes clinical sense and gives a 2 × 2 table for Fisher's exact test:
 
-"Complications within 90 days followed 11.4% of procedures in ASA 3–4 patients and 6.2% in ASA 1–2 patients (risk difference 5.1 percentage points, 95% CI 0.5 to 9.7; odds ratio 1.92, 95% CI 1.03 to 3.63; p = 0.028)."
+"Complications within 90 days followed 30 of 264 procedures (11.4%) in ASA 3–4 patients and 21 of 336 (6.2%) in ASA 1–2 patients (risk difference 5.1 percentage points, 95% CI 0.5 to 9.7; odds ratio 1.92, 95% CI 1.03 to 3.63; p = 0.028)."
 
 Say in your Methods that you combined the classes, and why.
 :::

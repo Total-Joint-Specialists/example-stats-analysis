@@ -177,7 +177,7 @@ print(pcs_anova.loc[0, "np2"])    # pingouin doesn't compute a CI for it
 
 > **Methods:** VR-12 PCS across the four visits was compared with one-way repeated-measures ANOVA in patients with all four measurements. Sphericity was assessed with Mauchly's test, with the Greenhouse-Geisser correction planned if it was violated. Partial eta squared (η²~p~) is reported as the effect size.
 >
-> **Results:** Of 574 patients with a pre-op PCS, 328 had all four measurements. Their mean PCS rose from 31.2 (SD 6.1) before surgery to 34.9 (SD 6.2) at 6 weeks, 41.0 (SD 6.2) at 3 months and 44.9 (SD 6.8) at 1 year (F(3, 981) = 317.1, p < 0.001; η²~p~ = 0.49, one-sided 95% CI 0.46 to 1.00). Sphericity was not violated (Mauchly's p = 0.324).
+> **Results:** Of 574 patients with a pre-op PCS, 328 had all four measurements. Their mean PCS rose from 31.2 (SD 6.1) before surgery to 34.9 (SD 6.2) at 6 weeks, 41.0 (SD 6.2) at 3 months and 44.9 (SD 6.8) at 1 year (F(3, 981) = 317.1, p < 0.001; η²~p~ = 0.49, one-sided 95% CI 0.46 to 1.00). Mauchly's test found no evidence against sphericity (p = 0.324).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: a significant F doesn't say which visits differ
@@ -442,7 +442,7 @@ Cochran's Q has no standard single effect size. Describe the **proportion at eac
 
 ```{r}
 aid_by_visit <- aid |> group_by(visit) |> summarise(using = sum(walking_aid), patients = n())
-aid_ci <- sapply(aid_by_visit$using, function(k) prop.test(k, 328, correct = FALSE)$conf.int)
+aid_ci <- mapply(function(k, n) prop.test(k, n, correct = FALSE)$conf.int, aid_by_visit$using, aid_by_visit$patients)
 
 aid_by_visit |>
   mutate(percent = 100 * using / patients, ci_low = 100 * aid_ci[1, ], ci_high = 100 * aid_ci[2, ])
@@ -627,10 +627,13 @@ complete_cases <- function(data, value, visits) {   # long data, patients measur
 ex_mcs <- complete_cases(proms, "vr12_mcs", c("preop", "6wk", "3mo", "1yr"))
 ex_mcs_model <- aov(vr12_mcs ~ visit + Error(case_id / visit), data = ex_mcs)
 ex_mcs_aov <- summary(ex_mcs_model)[["Error: case_id:visit"]][[1]]
-ex_mcs_pes <- effectsize::eta_squared(ex_mcs_model, partial = TRUE, verbose = FALSE)$Eta2_partial
+ex_mcs_eta <- effectsize::eta_squared(ex_mcs_model, partial = TRUE, verbose = FALSE)
+ex_mcs_pes <- ex_mcs_eta$Eta2_partial
 ex_mcs_rstatix <- rstatix::anova_test(data = ex_mcs, dv = vr12_mcs, wid = case_id, within = visit)
 ex_hoos <- complete_cases(filter(proms, instrument == "HOOS JR"), "prom_score", c("6wk", "3mo", "1yr"))
 ex_after <- complete_cases(proms, "walking_aid", c("6wk", "3mo", "1yr"))
+set.seed(2026)
+ex_hoos_w <- suppressWarnings(effectsize::kendalls_w(prom_score ~ visit | case_id, data = ex_hoos))   # as in exercise 2's solution
 stopifnot(
   sum(table(distinct(proms, case_id, patient_id)$patient_id) == 2) == 80,
   sum(proms$visit == "preop" & !is.na(proms$vr12_pcs)) == 574, n_distinct(pcs$case_id) == 328,
@@ -661,10 +664,16 @@ stopifnot(
   choose(4, 2) == 6,
   # exercise solutions (recomputed here: the guard runs before the solution chunks)
   round(ex_mcs_aov["visit", "F value"], 2) == 9.33, ex_mcs_aov["visit", "Df"] == 3, ex_mcs_aov["Residuals", "Df"] == 981,
-  ex_mcs_aov["visit", "Pr(>F)"] < 0.001, round(ex_mcs_pes, 3) == 0.028,
+  ex_mcs_aov["visit", "Pr(>F)"] < 0.001, round(ex_mcs_pes, 3) == 0.028, round(ex_mcs_pes, 2) == 0.03, round(ex_mcs_eta$CI_low, 2) == 0.01,
+  round(tapply(ex_mcs$vr12_mcs, ex_mcs$visit, sd)[c("preop", "1yr")], 1) == c(9.0, 9.0),
   round(tapply(ex_mcs$vr12_mcs, ex_mcs$visit, mean)[c("preop", "1yr")], 1) == c(49.7, 53.3),
   ex_mcs_rstatix$`Mauchly's Test for Sphericity`$p == 0.814,
   n_distinct(ex_hoos$case_id) == 140, round(tapply(ex_hoos$prom_score, ex_hoos$visit, median), 1) == c(68.2, 79.8, 89.2),
+  round(tapply(ex_hoos$prom_score, ex_hoos$visit, quantile, 0.25), 1) == c(61.3, 71.6, 81.1),
+  abs(tapply(ex_hoos$prom_score, ex_hoos$visit, quantile, 0.75) - c(74.2, 90.3, 97.4)) <= 0.05 + 1e-9,   # exact 74.15 and 97.35 round up
+  abs(quantile(ex_hoos$prom_score[ex_hoos$visit == "6wk"], 0.75) - 74.15) < 1e-9,
+  signif(quantile(ex_hoos$prom_score[ex_hoos$visit == "6wk"], 0.75), 3) == 74.1,
+  round(ex_hoos_w$CI_low, 2) == 0.48,
   round(unname(friedman.test(prom_score ~ visit | case_id, data = ex_hoos)$statistic), 1) == 159.7,
   round(suppressWarnings(effectsize::kendalls_w(prom_score ~ visit | case_id, data = ex_hoos, ci = NULL))$Kendalls_W, 2) == 0.57,
   n_distinct(ex_after$case_id) == 345, tapply(ex_after$walking_aid, ex_after$visit, sum) == c(203, 87, 37),
@@ -695,6 +704,7 @@ mcs <- proms |>
   mutate(visit = factor(visit, levels = c("preop", "6wk", "3mo", "1yr")))
 
 rstatix::anova_test(data = mcs, dv = vr12_mcs, wid = case_id, within = visit, effect.size = "pes")
+effectsize::eta_squared(aov(vr12_mcs ~ visit + Error(case_id / visit), data = mcs), partial = TRUE, verbose = FALSE)
 mcs |> group_by(visit) |> summarise(mean = mean(vr12_mcs), sd = sd(vr12_mcs))
 ```
 
@@ -708,7 +718,7 @@ print(mcs.groupby("visit")["vr12_mcs"].agg(["mean", "std"]).loc[["preop", "6wk",
 ```
 :::
 
-The mental component also changed (F(3, 981) = 9.33, p < 0.001), but far less: from a mean of 49.7 before surgery to 53.3 at 1 year, with η²~p~ = 0.028, a small effect. Sphericity held (Mauchly's p = 0.814).
+The mental component also changed (F(3, 981) = 9.33, p < 0.001), but far less: from a mean of 49.7 (SD 9.0) before surgery to 53.3 (SD 9.0) at 1 year, with η²~p~ = 0.03 (one-sided 95% CI 0.01 to 1.00), a small effect. Mauchly's test found no evidence against sphericity (p = 0.814).
 :::
 
 **2.** A colleague wants to know whether **HOOS JR** (hip patients) keeps changing between 6 weeks, 3 months and 1 year. Which test would you use, and what do you find?
@@ -733,7 +743,7 @@ hoos <- proms |>
 friedman.test(prom_score ~ visit | case_id, data = hoos)
 set.seed(2026)
 effectsize::kendalls_w(prom_score ~ visit | case_id, data = hoos)
-hoos |> group_by(visit) |> summarise(median = median(prom_score))
+hoos |> group_by(visit) |> summarise(median = median(prom_score), q1 = quantile(prom_score, 0.25), q3 = quantile(prom_score, 0.75))
 ```
 
 ## Python
@@ -742,11 +752,13 @@ hoos |> group_by(visit) |> summarise(median = median(prom_score))
 hoos = proms[(proms["instrument"] == "HOOS JR") & proms["visit"].isin(["6wk", "3mo", "1yr"])][["case_id", "visit", "prom_score"]]
 hoos = hoos[hoos.groupby("case_id")["prom_score"].transform(lambda scores: scores.notna().all())]
 print(pg.friedman(data=hoos, dv="prom_score", within="visit", subject="case_id"))
-print(hoos.groupby("visit")["prom_score"].median())
+print(hoos.groupby("visit")["prom_score"].describe()[["25%", "50%", "75%"]].loc[["6wk", "3mo", "1yr"]])
 ```
 :::
 
-Among 140 hip patients with all three scores, median HOOS JR rose from 68.2 at 6 weeks to 79.8 at 3 months and 89.2 at 1 year (Friedman χ² = 159.7, df = 2, p < 0.001; Kendall's W = 0.57).
+Among 140 hip patients with all three scores, median HOOS JR rose from 68.2 (IQR 61.3 to 74.2) at 6 weeks to 79.8 (IQR 71.6 to 90.3) at 3 months and 89.2 (IQR 81.1 to 97.4) at 1 year (Friedman χ² = 159.7, df = 2, p < 0.001; Kendall's W = 0.57, one-sided 95% CI 0.48 to 1.00).
+
+R's table shows the 6-week upper quartile as 74.1. The exact value is 74.15, which the computer stores as 74.1499…, so R rounds it down; Python prints 74.150.
 :::
 
 **3.** Leaving out the pre-op visit, does walking-aid use change between 6 weeks, 3 months and 1 year? Run the test and write the Results sentence.
@@ -769,7 +781,7 @@ after_surgery <- proms |>
 DescTools::CochranQTest(walking_aid ~ visit | case_id, data = after_surgery)
 after_counts <- after_surgery |> group_by(visit) |> summarise(using = sum(walking_aid), patients = n())
 after_counts
-sapply(after_counts$using, function(k) prop.test(k, after_counts$patients[1], correct = FALSE)$conf.int)
+mapply(function(k, n) prop.test(k, n, correct = FALSE)$conf.int, after_counts$using, after_counts$patients)
 ```
 
 ## Python

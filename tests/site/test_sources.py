@@ -242,3 +242,13 @@ def test_rule_catches_an_unseeded_bootstrap_ci():
 def test_bootstrap_cis_are_seeded():
     offenders = [str(f.relative_to(ROOT)) for f in qmd_files() if unseeded_bootstrap(f.read_text(encoding="utf-8"))]
     assert offenders == [], "Call set.seed() before (or pass ci = NULL to) a bootstrap CI in: " + ", ".join(offenders)
+
+
+# ---- per-group CIs use each group's own count ------------------------------
+
+def test_looped_wilson_cis_take_each_groups_own_count():
+    """prop.test(k, n) over several groups takes n from the data, never a typed number or the first group's n."""
+    fixed_n = re.compile(r"prop\.test\(\s*[A-Za-z_][\w.]*\s*,\s*(\d|[\w.$]+\[1\])")
+    for name, text in written_pages("catalog"):
+        visible_r = "\n".join(code for lang, code in VISIBLE_CHUNK.findall(text) if lang == "r")
+        assert not fixed_n.search(visible_r), f"{name}: {fixed_n.search(visible_r).group(0)}"

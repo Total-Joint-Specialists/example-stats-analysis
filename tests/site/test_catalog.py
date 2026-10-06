@@ -7,6 +7,7 @@ from sitelib import CELL_ANCHORS, ROOT, load
 # Catalog pages written so far. Later phases add pages 8-12 here.
 WRITTEN = [
     "catalog/04-describe-one-group.html",
+    "catalog/05-one-group-vs-hypothetical.html",
 ]
 
 # Spec section 6, steps 2-7, as h3 headings in this order. Page 4 describes a

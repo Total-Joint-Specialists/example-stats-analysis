@@ -391,7 +391,7 @@ koos_pairs |> select(group1, group2, statistic, p, p.adj)
 
 koos_conover <- PMCMRplus::frdAllPairsConoverTest(y = koos$prom_score, groups = koos$visit, blocks = koos$case_id,
                                                   p.adjust.method = "holm")
-koos_conover
+signif(koos_conover$p.value, 3)          # printing koos_conover itself shows these only as "<2e-16"
 ```
 
 ## Python
@@ -415,13 +415,18 @@ print(koos_conover)
 ```{python}
 #| include: false
 chk = {"v_6wk_3mo": float(wilcoxon[("6wk", "3mo")].statistic), "v_3mo_1yr": float(wilcoxon[("3mo", "1yr")].statistic),
-       "n": float(len(koos_wide))}
+       "n": float(len(koos_wide)),
+       # p-values this small would pass any check on their own, so compare their logarithms
+       "log10_p_6wk_1yr": float(np.log10(koos_conover.loc["6wk", "1yr"])),
+       "log10_p_3mo_1yr": float(np.log10(koos_conover.loc["3mo", "1yr"]))}
 ```
 
 ```{r}
 #| include: false
 check_agree(list(v_6wk_3mo = koos_pairs$statistic[1], v_3mo_1yr = koos_pairs$statistic[3],
-                 n = n_distinct(koos$case_id)),
+                 n = n_distinct(koos$case_id),
+                 log10_p_6wk_1yr = log10(koos_conover$p.value["1yr", "6wk"]),
+                 log10_p_3mo_1yr = log10(koos_conover$p.value["1yr", "3mo"])),
             reticulate::py$chk)
 ```
 
@@ -429,7 +434,7 @@ All three pairs differ (adjusted p < 0.001 with either method): KOOS JR rose bet
 
 ::: {.callout-tip}
 ## 🔀 R vs Python: the statistic
-R's `wilcox.test()` reports V, the sum of the positive ranks; scipy reports the smaller of the two rank sums. Here both are the same number, because the later visit scores higher for most knees. Conover's test needs the PMCMRplus package in R and scikit-posthocs in Python; they give the same p-values.
+R's `wilcox.test()` reports V, the sum of the positive ranks; scipy reports the smaller of the two rank sums. Here both are the same number, because the later visit scores higher for most knees. Conover's test needs the PMCMRplus package in R and scikit-posthocs in Python; they give the same p-values. Printing PMCMRplus's result shows any p-value below 2 × 10⁻¹⁶ only as "<2e-16", so print its `$p.value` table to see them.
 :::
 
 ## After Cochran's Q: pairwise McNemar tests {#after-cochran-q}

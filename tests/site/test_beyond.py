@@ -1,6 +1,8 @@
 """Part 4 · Beyond the table: post-hoc tests, mixed models, agreement (spec section 4, pages 15-17).
 tests/site/test_free_form.py checks what every free-form page shares."""
 
+import re
+
 import pytest
 
 from sitelib import code_of, load, section, text_of
@@ -201,3 +203,12 @@ def test_agreement_reporting_gives_every_ci_and_says_whose_readings(site):
 def test_scikit_learn_kappa_ordering_trap_is_named(site):
     text = text_of(section(AGREEMENT, "kappa"))
     assert "cohen_kappa_score()" in text and "labels=" in text
+
+
+# ---- deferred Phase 5 minors ---------------------------------------------------------
+
+def test_conover_p_values_are_printed_in_full_in_both_languages(site):
+    """Printing R's test object shows every p-value as "<2e-16", so nobody could see that R and Python agree."""
+    shown = " ".join(pre.get_text() for pre in section(POST_HOC, "after-friedman").select(".cell-output pre"))
+    assert "<2e-16" not in shown
+    assert len(re.findall(r"8\.85\d*e-36", shown)) >= 3   # R's table once, Python's symmetric table twice

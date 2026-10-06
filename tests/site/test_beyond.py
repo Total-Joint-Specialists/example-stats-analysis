@@ -212,3 +212,9 @@ def test_conover_p_values_are_printed_in_full_in_both_languages(site):
     shown = " ".join(pre.get_text() for pre in section(POST_HOC, "after-friedman").select(".cell-output pre"))
     assert "<2e-16" not in shown
     assert len(re.findall(r"8\.85\d*e-36", shown)) >= 3   # R's table once, Python's symmetric table twice
+
+
+def test_false_positive_example_says_pairwise_tests_are_not_independent(site):
+    """1 − 0.95^6 = 26% is for six independent tests; six pairwise comparisons of four groups give about 20%."""
+    text = text_of(section(POST_HOC, "why-adjust"))
+    assert "aren't independent" in text and "about 20%" in text

@@ -81,7 +81,7 @@ chance <- false_positives$chance_of_a_false_positive
 check_agree(list(six = chance[tests == 6], twenty = chance[tests == 20]), reticulate::py$chk)
 ```
 
-Four groups make six pairs. Six independent tests at the 5% level give a 26% chance of at least one false alarm, even when nothing is going on; twenty tests give 64%. Comparing pairs therefore needs an **adjustment**: a stricter rule that keeps the chance of any false positive across the whole set of comparisons at 5%.
+Four groups make six pairs. Six independent tests at the 5% level give a 26% chance of at least one false alarm, even when nothing is going on; twenty tests give 64%. Pairwise comparisons aren't independent, because each group appears in three of the six pairs, so for four groups of equal size the chance is a little lower: about 20%. That's still four times the 5% you meant to allow. Comparing pairs therefore needs an **adjustment**: a stricter rule that keeps the chance of any false positive across the whole set of comparisons at 5%.
 
 ::: {.callout-note}
 ## 💡 In plain language
@@ -604,6 +604,8 @@ aid3_p <- sapply(list(c("6wk", "3mo"), c("6wk", "1yr"), c("3mo", "1yr")),
                  function(pair) mcnemar.test(table(factor(aid3[[pair[1]]], 0:1), factor(aid3[[pair[2]]], 0:1)))$p.value)
 stopifnot(
   round(1 - 0.95^c(6, 20), 2) == c(0.26, 0.64), sum(table(cohort$patient_id) == 2) == 80,
+  # six pairwise z tests among four equal groups: the chance that the largest of them passes 1.96
+  round(1 - ptukey(qnorm(0.975) * sqrt(2), nmeans = 4, df = Inf), 2) == 0.20,
   round(unadjusted[1], 3) == 0.022, round(p.adjust(unadjusted, "bonferroni")[1], 3) == 0.132,
   round(p.adjust(unadjusted, "holm")[1], 3) == 0.044, round(p.adjust(unadjusted, "BH")[1], 3) == 0.026,
   round(range(asa_sd), 1) == c(8.7, 9.3),

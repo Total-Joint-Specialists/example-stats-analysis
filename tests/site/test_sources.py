@@ -234,6 +234,7 @@ def test_beyond_prose_guards_pin_numbers_quoted_from_other_pages():
               for name, text in written_pages("beyond")}
     assert "33.5" in guards["beyond/15-post-hoc.qmd"] and "3.07" in guards["beyond/15-post-hoc.qmd"]
     assert "34.9" in guards["beyond/16-mixed-models.qmd"] and "831" in guards["beyond/16-mixed-models.qmd"]
+    assert "ptukey(" in guards["beyond/15-post-hoc.qmd"]   # the 20% for six pairwise comparisons
 
 
 def calls_of(code, function):

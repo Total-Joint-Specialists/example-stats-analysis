@@ -9,8 +9,12 @@ SECTIONS = {
     "survival/13-kaplan-meier.html": [
         "censoring", "time-zero", "kaplan-meier", "survivorship", "follow-up", "log-rank",
         "competing-risks", "exercises"],
+    "survival/14-cox-regression.html": [
+        "hazard-ratio", "choosing-covariates", "univariable-multivariable", "linearity",
+        "proportional-hazards", "remedies", "stratified-cox", "fine-gray", "reporting", "exercises"],
 }
 KM = "survival/13-kaplan-meier.html"
+COX = "survival/14-cox-regression.html"
 
 
 def code_of(found):
@@ -99,3 +103,48 @@ def test_competing_risks_compare_the_cumulative_incidence_with_one_minus_km(site
     text = text_of(section(KM, "competing-risks"))
     for phrase in ["Aalen-Johansen", "1 − Kaplan-Meier", "Gray's test", "Python has no mature implementation of Gray's test"]:
         assert phrase in text, phrase
+
+
+# ---- page 14: Cox regression ---------------------------------------------------
+
+def test_covariates_are_chosen_in_advance_with_enough_events(site):
+    text = text_of(section(COX, "choosing-covariates"))
+    assert "chosen before you look" in text and "10 events per term" in text
+
+
+def test_proportional_hazards_are_checked_on_the_built_in_violation(site):
+    found = section(COX, "proportional-hazards")
+    assert "Schoenfeld" in text_of(found) and "cox.zph(" in code_of(found)
+    plotted = [tabset for tabset in found.select("div.panel-tabset")
+               if all(pane.select("img") for pane in tabset.select("div.tab-pane"))]
+    assert plotted, "the residual plot is drawn in both languages"
+    assert "approach" in code_of(plotted[0])
+
+
+def test_remedies_cover_stratification_and_a_time_split(site):
+    code = code_of(section(COX, "remedies"))
+    for call in ["strata(approach)", 'strata=["approach"]', "survSplit(", "CoxTimeVaryingFitter("]:
+        assert call in code, call
+
+
+def test_stratified_cox_covers_matched_sets_and_bilateral_patients(site):
+    found = section(COX, "stratified-cox")
+    hrefs = [a["href"] for a in found.select("a[href]")]
+    for target in ["07-two-paired-groups.html#stratified-cox", "09-three-plus-matched.html#stratified-cox"]:
+        assert any(href.endswith(target) for href in hrefs), target
+    code = code_of(found)
+    assert "cluster = patient_id" in code and 'cluster_col="patient_id"' in code
+
+
+def test_fine_gray_is_labeled_r_only(site):
+    found = section(COX, "fine-gray")
+    assert "(R only)" in found.select_one("h2").get_text()
+    assert found.select("pre.r") and not found.select("pre.python")
+    assert "subdistribution hazard ratio" in text_of(found)
+
+
+def test_reporting_gives_univariable_and_multivariable_hazard_ratios(site):
+    found = section(COX, "reporting")
+    table = found.select_one("table")
+    assert table is not None and "Univariable" in text_of(table) and "Multivariable" in text_of(table)
+    assert "Univariable HR (95% CI)" in " ".join(out.get_text() for out in found.select(".cell-output"))

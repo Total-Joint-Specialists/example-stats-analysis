@@ -1,15 +1,532 @@
 ---
-title: "10 · Quantify association between two variables (coming soon)"
-description: "Pearson correlation, Spearman correlation, contingency coefficients."
+title: "10 · Quantify association between two variables"
+description: "Pearson correlation, Spearman correlation and contingency coefficients: how strongly two things go together."
+engine: knitr
+toc-depth: 2
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
+Two things measured on the same patients: BMI and operative time, PROM improvement and satisfaction, ASA class and hypertension. The tests on this page don't compare groups. They put **one number on how strongly the two go together**, with a 95% CI. If you want to **predict** one from the other, use regression ([page 11](11-predict-from-one.qmd)).
+
+::: {.callout-note}
+## 💡 How every section on this page works
+Each section answers one question about the practice cohort. Its first code block loads the packages and the data, so you can jump straight to the section you need. Run that section's blocks in order, top to bottom.
+
+To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them ([page 3](../foundations/03-distributions.qmd#paired)) and say what you did.
 :::
 
 ## Pearson correlation {#pearson}
 
+**The question:** How closely does operative time track BMI?
+
+### When to use it
+
+- Two **measurements** on the same patients, and you want one number for how closely they move together along a **straight line**.
+- Both are roughly normal, without extreme outliers, and the scatter plot looks like a cloud stretched along a line.
+- If either is skewed or ordinal, has outliers, or the points follow a curve → [Spearman correlation](#spearman).
+- If you want to predict one from the other, or adjust for other variables → [linear regression](11-predict-from-one.qmd#linear-regression).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3.5
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+ggplot(cohort, aes(bmi, op_time_min)) +
+  geom_point(alpha = 0.4) +   # see-through points show where they pile up
+  labs(x = "BMI, kg/m²", y = "Operative time, minutes")
+```
+
+## Python
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+
+cohort = pd.read_csv("data/cohort.csv")
+
+fig, ax = plt.subplots(figsize=(6, 3.5))
+ax.scatter(cohort["bmi"], cohort["op_time_min"], alpha=0.4)   # see-through points show where they pile up
+ax.set_xlabel("BMI, kg/m²")
+ax.set_ylabel("Operative time, minutes")
+plt.show()
+```
+:::
+
+The points drift upward from left to right, along a rough line, with no extreme outliers.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+bmi_corr <- cor.test(cohort$bmi, cohort$op_time_min)   # Pearson is the default
+bmi_corr
+```
+
+## Python
+
+```{python}
+bmi_corr = stats.pearsonr(cohort["bmi"], cohort["op_time_min"])
+print(bmi_corr)
+print(bmi_corr.confidence_interval(confidence_level=0.95))
+```
+:::
+
+```{python}
+#| include: false
+bmi_ci = bmi_corr.confidence_interval(confidence_level=0.95)
+chk = {"r": float(bmi_corr.statistic), "p": float(bmi_corr.pvalue), "low": float(bmi_ci.low), "high": float(bmi_ci.high)}
+```
+
+```{r}
+#| include: false
+check_agree(list(r = unname(bmi_corr$estimate), p = bmi_corr$p.value,
+                 low = bmi_corr$conf.int[1], high = bmi_corr$conf.int[2]), reticulate::py$chk)
+```
+
+### Read the output
+
+- **cor** (R) or **statistic** (Python): Pearson's **r = 0.45**. It runs from −1 (a perfect falling line) through 0 (no straight-line relationship) to +1 (a perfect rising line).
+- **t = 12.4, df = 598:** the test statistic, with 600 procedures minus two degrees of freedom. Python doesn't print it.
+- **p < 0.001** (R prints `< 2.2e-16`): a correlation this strong would be very unlikely if BMI and operative time were unrelated.
+- **95% CI 0.39 to 0.51.**
+
+### Effect size and 95% CI
+
+**r is the effect size**: r = 0.45 (95% CI 0.39 to 0.51). As a rough guide, 0.1 is small, 0.3 medium and 0.5 large. Squaring it gives the share of the variation in operative time that goes with BMI: r² = 0.20, about a fifth.
+
+### How to report it
+
+> **Methods:** The association between BMI and operative time was measured with Pearson's correlation coefficient (r).
+>
+> **Results:** Operative time rose with BMI (Pearson r = 0.45, 95% CI 0.39 to 0.51, p < 0.001; n = 600 procedures).
+
+::: {.callout-warning}
+## ⚠️ Watch out: r only sees straight lines, and isn't cause
+A relationship that rises and then falls can have r close to 0, and one outlier can create or hide a correlation, so always look at the scatter plot first. And a correlation doesn't say which causes which, or whether something else (procedure type, surgeon) drives both. To adjust for other variables, use [multiple regression](12-predict-from-several.qmd#multiple-linear-regression).
+:::
+
 ## Spearman correlation {#spearman}
 
+**The question:** Are patients whose HOOS JR or KOOS JR improved more from before surgery to 1 year also more satisfied?
+
+### When to use it
+
+- Two variables on the same patients, at least one of them **ordinal** (satisfaction from 1 to 5), **skewed**, or with **outliers**.
+- The relationship goes one way (always up, or always down) but needn't be a straight line. Spearman's ρ (rho) is Pearson's r calculated on the **ranks**.
+- If both are roughly normal and the relationship is a straight line → [Pearson correlation](#pearson).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+proms <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+
+change <- proms |>
+  filter(visit %in% c("preop", "1yr")) |>
+  select(case_id, visit, prom_score) |>
+  pivot_wider(names_from = visit, values_from = prom_score) |>   # one row per case: preop and 1yr side by side
+  mutate(improvement = `1yr` - preop) |>
+  inner_join(select(cohort, case_id, satisfaction_1yr), by = "case_id") |>
+  filter(!is.na(improvement), !is.na(satisfaction_1yr))          # both answers needed
+
+ggplot(change, aes(factor(satisfaction_1yr), improvement)) +
+  geom_boxplot() +
+  labs(x = "Satisfaction at 1 year (1 = very dissatisfied, 5 = very satisfied)", y = "Improvement, points")
+
+change |>
+  group_by(satisfaction_1yr) |>
+  summarise(n = n(), median_improvement = median(improvement))
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+
+cohort = pd.read_csv("data/cohort.csv")
+proms = pd.read_csv("data/proms_long.csv")
+
+wide = proms[proms["visit"].isin(["preop", "1yr"])].pivot(index="case_id", columns="visit", values="prom_score")
+wide["improvement"] = wide["1yr"] - wide["preop"]   # one row per case: preop and 1yr side by side
+change = wide.join(cohort.set_index("case_id")["satisfaction_1yr"]).dropna(subset=["improvement", "satisfaction_1yr"])
+
+levels = [1, 2, 3, 4, 5]
+fig, ax = plt.subplots(figsize=(6, 3))
+parts = ax.boxplot([change.loc[change["satisfaction_1yr"] == level, "improvement"] for level in levels], tick_labels=levels)
+ax.set_xlabel("Satisfaction at 1 year (1 = very dissatisfied, 5 = very satisfied)")
+ax.set_ylabel("Improvement, points")
+plt.show()
+
+print(change.groupby("satisfaction_1yr")["improvement"].agg(["count", "median"]))
+```
+:::
+
+404 procedures have both a pre-op and a 1-year score and a satisfaction answer. The median improvement climbs with each satisfaction level, from 25.4 points among the 14 very dissatisfied to 43.8 among the 198 very satisfied. Satisfaction has only five values, so there are many ties.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+satisfaction_corr <- cor.test(change$improvement, change$satisfaction_1yr,
+                              method = "spearman", exact = FALSE)   # ties: no exact p-value
+satisfaction_corr
+```
+
+## Python
+
+```{python}
+satisfaction_corr = stats.spearmanr(change["improvement"], change["satisfaction_1yr"])
+print(satisfaction_corr)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"rho": float(satisfaction_corr.statistic), "p": float(satisfaction_corr.pvalue)}
+```
+
+```{r}
+#| include: false
+check_agree(list(rho = unname(satisfaction_corr$estimate), p = satisfaction_corr$p.value), reticulate::py$chk)
+```
+
+### Read the output
+
+- **rho** (R) or **statistic** (Python): **ρ = 0.38**. Like r, it runs from −1 to +1; here it says patients with larger improvements tend to give higher satisfaction scores.
+- **S = 6764534** (R only): the test statistic, built from the differences between the two rankings. You don't need to report it.
+- **p < 0.001** (R prints `1.111e-15`): a correlation this strong would be very unlikely if improvement and satisfaction were unrelated.
+
+### Effect size and 95% CI
+
+**ρ is the effect size.** Neither `cor.test()` nor scipy gives its 95% CI, so R uses DescTools and Python uses the formula behind it (Fisher's z transformation).
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+DescTools::SpearmanRho(change$improvement, change$satisfaction_1yr, conf.level = 0.95)
+```
+
+## Python
+
+```{python}
+rho, n = satisfaction_corr.statistic, len(change)
+z = np.arctanh(rho)                                 # Fisher's z: makes the CI symmetric
+half_width = stats.norm.ppf(0.975) / np.sqrt(n - 3)
+print(rho, np.tanh(z - half_width), np.tanh(z + half_width))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"low": float(np.tanh(z - half_width)), "high": float(np.tanh(z + half_width))}
+```
+
+```{r}
+#| include: false
+satisfaction_rho <- DescTools::SpearmanRho(change$improvement, change$satisfaction_1yr, conf.level = 0.95)
+check_agree(list(low = satisfaction_rho[["lwr.ci"]], high = satisfaction_rho[["upr.ci"]]), reticulate::py$chk)
+```
+
+ρ = 0.38 (95% CI 0.30 to 0.46): a moderate association, using the same rough guide as for r.
+
+### How to report it
+
+> **Methods:** The association between improvement in HOOS JR or KOOS JR from before surgery to 1 year and satisfaction at 1 year was measured with Spearman's rank correlation coefficient (ρ).
+>
+> **Results:** Among 404 procedures with both scores and a satisfaction answer, greater improvement went with higher satisfaction (Spearman ρ = 0.38, 95% CI 0.30 to 0.46, p < 0.001).
+
+::: {.callout-warning}
+## ⚠️ Watch out: two instruments in one number
+Hip patients answer HOOS JR and knee patients KOOS JR. Both run from 0 to 100, but a point on one isn't guaranteed to mean the same as a point on the other. Pooling them is fine for a first look; in a paper, analyze hips and knees separately or say why you pooled them.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: ties and the CI
+- With fewer than 1290 patients, R's `cor.test()` tries an **exact** p-value. With ties it can't compute one, so it warns and falls back to the usual approximation, the one scipy always uses. `exact = FALSE` asks for the approximation directly, without the warning.
+- Neither gives a CI for ρ. DescTools' `SpearmanRho()` and the Python formula use the same method: Fisher's z with a standard error of 1/√(n − 3).
+:::
+
 ## Contingency coefficients {#contingency-coefficients}
+
+**The question:** How strongly is ASA class linked with hypertension?
+
+### When to use it
+
+- Two **categorical** variables on the same patients. The chi-square test ([page 8](08-three-plus-unmatched.qmd#chi-square)) asks whether they're linked at all; a contingency coefficient says **how strongly**.
+- **Phi (φ)** is for 2 × 2 tables. **Cramér's V** works for any table size and equals φ (without its sign) on a 2 × 2 table. Both run from 0 (no link) to 1 (each category of one predicts the other exactly).
+- **Pearson's contingency coefficient (C)** is older. Its maximum is below 1 and depends on the table's size (0.71 for a table with two columns), which makes it hard to read, so prefer V.
+- The chi-square p-value needs every **expected** count to be at least 5.
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+asa_hypertension <- table(asa = cohort$asa, hypertension = cohort$hypertension)   # 1 = hypertension
+asa_hypertension
+round(100 * prop.table(asa_hypertension, margin = 1), 1)   # row percentages
+```
+
+## Python
+
+```{python}
+import pandas as pd
+from scipy import stats
+
+cohort = pd.read_csv("data/cohort.csv")
+
+asa_hypertension = pd.crosstab(cohort["asa"], cohort["hypertension"])   # 1 = hypertension
+print(asa_hypertension)
+print((100 * pd.crosstab(cohort["asa"], cohort["hypertension"], normalize="index")).round(1))   # row percentages
+```
+:::
+
+Hypertension becomes more common with each ASA class: from 12 of 36 (33.3%) in ASA 1 to 16 of 18 (88.9%) in ASA 4.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+asa_test <- chisq.test(asa_hypertension)
+asa_test
+min(asa_test$expected)   # smallest expected count
+```
+
+## Python
+
+```{python}
+asa_test = stats.chi2_contingency(asa_hypertension)
+print(asa_test.statistic, asa_test.dof, asa_test.pvalue)
+print(asa_test.expected_freq.min())   # smallest expected count
+```
+:::
+
+```{python}
+#| include: false
+chk = {"chi2": float(asa_test.statistic), "df": float(asa_test.dof), "p": float(asa_test.pvalue)}
+```
+
+```{r}
+#| include: false
+check_agree(list(chi2 = unname(asa_test$statistic), df = unname(asa_test$parameter), p = asa_test$p.value), reticulate::py$chk)
+```
+
+### Read the output
+
+- **X-squared = 23.18:** the chi-square statistic. **df = 3:** (4 ASA classes − 1) × (2 columns − 1).
+- **p < 0.001** (R prints `3.702e-05`): a link this strong would be very unlikely if hypertension were equally common in every ASA class.
+- **Smallest expected count 7.83** (ASA 4 without hypertension): every expected count is at least 5, so the p-value is reliable.
+
+### Effect size and 95% CI
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+effectsize::cramers_v(asa_hypertension, adjust = FALSE)   # see the R vs Python box
+effectsize::pearsons_c(asa_hypertension)
+```
+
+## Python
+
+```{python}
+print(stats.contingency.association(asa_hypertension, method="cramer"))    # Cramér's V
+print(stats.contingency.association(asa_hypertension, method="pearson"))   # Pearson's C
+```
+:::
+
+```{python}
+#| include: false
+chk = {"v": float(stats.contingency.association(asa_hypertension, method="cramer")),
+       "c": float(stats.contingency.association(asa_hypertension, method="pearson"))}
+```
+
+```{r}
+#| include: false
+asa_v <- effectsize::cramers_v(asa_hypertension, adjust = FALSE)
+asa_c <- effectsize::pearsons_c(asa_hypertension)
+check_agree(list(v = asa_v$Cramers_v, c = asa_c$Pearsons_c), reticulate::py$chk)
+```
+
+**Cramér's V = 0.20**, a small-to-medium association (as a rough guide for tables with two rows or columns, 0.1 is small, 0.3 medium and 0.5 large). R also prints a one-sided 95% CI (0.12 to 1.00): V can't be negative, so only its lower bound is informative. scipy doesn't compute this CI. Pearson's C is 0.19 here, but its ceiling for this table is 0.71, not 1, so the same number means more than it seems: one more reason to report V.
+
+### How to report it
+
+> **Methods:** The association between ASA class and hypertension was tested with the chi-square test, with Cramér's V as the effect size.
+>
+> **Results:** Hypertension was more common at higher ASA classes, from 12 of 36 procedures (33.3%) in ASA 1 to 16 of 18 (88.9%) in ASA 4 (χ² = 23.2, df = 3, p < 0.001; Cramér's V = 0.20, one-sided 95% CI 0.12 to 1.00).
+
+::: {.callout-warning}
+## ⚠️ Watch out: V gives the strength, not the pattern
+Shuffling the rows of the table doesn't change V, so V can't say that hypertension rises **steadily** with ASA class. The row percentages show the pattern; put them in your Results. If the categories are ordered and you expect a trend, a test for trend can be more powerful than the plain chi-square test.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: Cramér's V has two versions
+effectsize's `cramers_v()` and `phi()` apply a small-sample bias correction by default (here V = 0.18), while scipy's `association()` doesn't. `adjust = FALSE` turns it off so the two match; whichever you use, say which in your Methods. On a 2 × 2 table, `association(method="cramer")` gives φ without its sign.
+:::
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+asa_rows <- prop.table(asa_hypertension, margin = 1)
+change_medians <- change |> group_by(satisfaction_1yr) |> summarise(n = n(), median = median(improvement))
+los_rho <- cor.test(cohort$los_days, cohort$age, method = "spearman", exact = FALSE)
+los_ci <- DescTools::SpearmanRho(cohort$los_days, cohort$age, conf.level = 0.95)
+apnea_table <- table(sex = cohort$sex, sleep_apnea = cohort$sleep_apnea)
+apnea_phi <- effectsize::phi(apnea_table, adjust = FALSE)
+stopifnot(
+  sum(table(cohort$patient_id) == 2) == 80, nrow(cohort) == 600,
+  round(unname(bmi_corr$estimate), 2) == 0.45, round(bmi_corr$conf.int, 2) == c(0.39, 0.51),
+  round(unname(bmi_corr$statistic), 1) == 12.4, unname(bmi_corr$parameter) == 598, bmi_corr$p.value < 0.001,
+  round(unname(bmi_corr$estimate)^2, 2) == 0.20,
+  nrow(change) == 404, change_medians$n[c(1, 5)] == c(14, 198), round(change_medians$median[c(1, 5)], 1) == c(25.4, 43.8),
+  all(diff(change_medians$median) > 0),
+  round(unname(satisfaction_corr$estimate), 2) == 0.38, round(unname(satisfaction_corr$statistic)) == 6764534,
+  satisfaction_corr$p.value < 0.001, signif(satisfaction_corr$p.value, 4) == 1.111e-15,
+  round(satisfaction_rho[["lwr.ci"]], 2) == 0.30, round(satisfaction_rho[["upr.ci"]], 2) == 0.46,
+  asa_hypertension[, "1"] == c(12, 155, 156, 16), rowSums(asa_hypertension) == c(36, 300, 246, 18),
+  round(100 * asa_rows[c(1, 4), "1"], 1) == c(33.3, 88.9), all(diff(asa_rows[, "1"]) > 0),
+  round(unname(asa_test$statistic), 2) == 23.18, round(unname(asa_test$statistic), 1) == 23.2,
+  unname(asa_test$parameter) == 3, asa_test$p.value < 0.001, signif(asa_test$p.value, 4) == 3.702e-05,
+  round(min(asa_test$expected), 2) == 7.83, which.min(asa_test$expected) == 4,   # row ASA 4, column 0
+  round(asa_v$Cramers_v, 2) == 0.20, round(asa_v$CI_low, 2) == 0.12, round(asa_c$Pearsons_c, 2) == 0.19,
+  round(sqrt(1 / 2), 2) == 0.71,
+  round(effectsize::cramers_v(asa_hypertension)$Cramers_v, 2) == 0.18,
+  # exercise solutions (recomputed here: the guard runs before the solution chunks)
+  round(cor(cohort$age, cohort$op_time_min), 2) == 0.14,
+  round(cor.test(cohort$age, cohort$op_time_min)$conf.int, 2) == c(0.06, 0.22),
+  cor.test(cohort$age, cohort$op_time_min)$p.value < 0.001, round(cor(cohort$age, cohort$op_time_min)^2, 2) == 0.02,
+  round(unname(los_rho$estimate), 2) == 0.15, los_rho$p.value < 0.001,
+  round(los_ci[["lwr.ci"]], 2) == 0.07, round(los_ci[["upr.ci"]], 2) == 0.22,
+  apnea_table[, "1"] == c(43, 69), rowSums(apnea_table) == c(343, 257),
+  round(100 * prop.table(apnea_table, 1)[, "1"], 1) == c(12.5, 26.8),
+  round(unname(chisq.test(apnea_table, correct = FALSE)$statistic), 1) == 19.8,
+  chisq.test(apnea_table, correct = FALSE)$p.value < 0.001,
+  round(apnea_phi$phi, 2) == 0.18, round(apnea_phi$CI_low, 2) == 0.11
+)
+```
+
+## Exercises {#exercises}
+
+The solutions use the packages and data loaded in the sections above, so run the page from the top first.
+
+**1.** How strongly is operative time linked with **age**? Report Pearson's r with its 95% CI.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+cor.test(cohort$age, cohort$op_time_min)
+```
+
+## Python
+
+```{python}
+age_corr = stats.pearsonr(cohort["age"], cohort["op_time_min"])
+print(age_corr, age_corr.confidence_interval(confidence_level=0.95))
+```
+:::
+
+Operative time rose only slightly with age (Pearson r = 0.14, 95% CI 0.06 to 0.22, p < 0.001). The association is clear but weak: age goes with about 2% of the variation in operative time (r² = 0.02), against 20% for BMI.
+:::
+
+**2.** A colleague asks whether older patients stay in hospital longer. Which correlation would you use, and what do you find?
+
+::: {.callout-tip collapse="true"}
+## Solution
+Length of stay is strongly right-skewed with many ties ([page 3](../foundations/03-distributions.qmd#transform)): **Spearman correlation**.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+cor.test(cohort$los_days, cohort$age, method = "spearman", exact = FALSE)
+DescTools::SpearmanRho(cohort$los_days, cohort$age, conf.level = 0.95)
+```
+
+## Python
+
+```{python}
+los_corr = stats.spearmanr(cohort["los_days"], cohort["age"])
+z, half_width = np.arctanh(los_corr.statistic), stats.norm.ppf(0.975) / np.sqrt(len(cohort) - 3)
+print(los_corr, np.tanh(z - half_width), np.tanh(z + half_width))
+```
+:::
+
+Older patients tended to stay slightly longer (Spearman ρ = 0.15, 95% CI 0.07 to 0.22, p < 0.001), a weak association.
+:::
+
+**3.** Is sleep apnea more common in men than in women, and how strongly is it linked with sex? Write the Results sentence with φ.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+apnea <- table(sex = cohort$sex, sleep_apnea = cohort$sleep_apnea)
+apnea
+chisq.test(apnea, correct = FALSE)   # no continuity correction, to match phi
+effectsize::phi(apnea, adjust = FALSE)
+```
+
+## Python
+
+```{python}
+apnea = pd.crosstab(cohort["sex"], cohort["sleep_apnea"])
+print(apnea)
+apnea_test = stats.chi2_contingency(apnea, correction=False)
+print(apnea_test.statistic, apnea_test.dof, apnea_test.pvalue)
+print(stats.contingency.association(apnea, method="cramer"))   # phi without its sign, on a 2 × 2 table
+```
+:::
+
+"Sleep apnea was more common in men (69 of 257, 26.8%) than in women (43 of 343, 12.5%) (χ² = 19.8, df = 1, p < 0.001; φ = 0.18, one-sided 95% CI 0.11 to 1.00)."
+:::

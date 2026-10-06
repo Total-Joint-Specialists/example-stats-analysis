@@ -14,6 +14,7 @@ WRITTEN = [
     "catalog/07-two-paired-groups.html",
     "catalog/08-three-plus-unmatched.html",
     "catalog/09-three-plus-matched.html",
+    "catalog/10-association.html",
 ]
 
 # Spec section 6, steps 2-7, as h3 headings in this order. Page 4 describes a
@@ -147,6 +148,7 @@ def test_tied_los_explanation_is_accurate(site):
 # ---- three or more groups -------------------------------------------------
 
 THREE_GROUP_PAGES = [page for page in WRITTEN if page.startswith(("catalog/08-", "catalog/09-"))]
+REPORTING_PAGES = [page for page in WRITTEN if page >= "catalog/08-"]   # pages written since the Phase 3b review
 
 
 @pytest.mark.parametrize("page", THREE_GROUP_PAGES)
@@ -162,7 +164,7 @@ def test_matched_page_warns_that_missed_visits_drop_patients(site):
     assert any(a["href"].endswith("beyond/16-mixed-models.html") for a in warnings[0].select("a[href]"))
 
 
-@pytest.mark.parametrize("page", THREE_GROUP_PAGES)
+@pytest.mark.parametrize("page", REPORTING_PAGES)
 def test_reports_never_turn_no_evidence_into_no_difference(site, page):
     """A wide CI or a non-significant check is "no evidence of a difference", never "similar" or "held"."""
     reports = [text_of(q) for q in load(page).select("blockquote")] + [text_of(section(page, "exercises"))]
@@ -184,12 +186,12 @@ def test_fisher_note_describes_scipys_larger_tables(site):
     assert "only handles 2 × 2" not in text and "random resampling" in text
 
 
-@pytest.mark.parametrize("page", THREE_GROUP_PAGES)
+@pytest.mark.parametrize("page", REPORTING_PAGES)
 def test_exercise_answers_follow_the_reporting_conventions(site, page):
     """Answers are model Results sentences: effect sizes with a CI, means with SDs, medians with IQRs."""
     for paragraph in section(page, "exercises").select("p"):
         text = text_of(paragraph)
-        if re.search(r"(ω²|ε²|η²( p)?|Kendall's W|Cramér's V) = [\d.]+", text):
+        if re.search(r"(ω²|ε²|η²( p)?|Kendall's W|Cramér's V|\br|ρ|φ) = [\d.]+|(odds|hazard) ratio [\d.]+", text):
             assert "CI" in text, text
         if re.search(r"\bmeans? of [\d.]+", text):
             assert "SD" in text, text

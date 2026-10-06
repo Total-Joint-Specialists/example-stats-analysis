@@ -3,8 +3,6 @@ title: "8 · Compare three or more unmatched groups"
 description: "One-way ANOVA, Kruskal-Wallis test, chi-square test and Cox regression: three or more groups of different patients."
 engine: knitr
 toc-depth: 2
-execute:
-  message: false
 ---
 
 ```{r}

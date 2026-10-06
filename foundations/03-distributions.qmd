@@ -2,8 +2,6 @@
 title: "3 · Distributions & choosing a test"
 description: "Check whether data look normal, decide which column of the decision table you're in, and understand p-values, effect sizes and confidence intervals."
 engine: knitr
-execute:
-  message: false
 ---
 
 ```{r}

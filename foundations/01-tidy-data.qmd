@@ -2,8 +2,6 @@
 title: "1 · Tidy data"
 description: "What tidy data is, how to collect it, how to tidy messy spreadsheets, and how to prove nothing changed."
 engine: knitr
-execute:
-  message: false
 ---
 
 ```{r}

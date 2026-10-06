@@ -2,8 +2,6 @@
 title: "2 · Demographics (Table 1)"
 description: "Build a publication-ready Table 1 for one group or several: choosing summaries, comparing groups, standardized mean differences, missing data, and exporting to Word."
 engine: knitr
-execute:
-  message: false
 ---
 
 ```{r}

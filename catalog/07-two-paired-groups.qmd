@@ -3,8 +3,6 @@ title: "7 · Compare two paired groups"
 description: "Paired t test, Wilcoxon signed-rank test, McNemar's test and stratified Cox regression: the same patients measured twice, or matched pairs."
 engine: knitr
 toc-depth: 2
-execute:
-  message: false
 ---
 
 ```{r}

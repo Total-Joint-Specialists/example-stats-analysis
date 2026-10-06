@@ -3,8 +3,6 @@ title: "6 · Compare two unpaired groups"
 description: "Unpaired (Welch's) t test, Mann-Whitney test, Fisher's exact and chi-square tests, and the log-rank test, each with an effect size and 95% CI."
 engine: knitr
 toc-depth: 2
-execute:
-  message: false
 ---
 
 ```{r}

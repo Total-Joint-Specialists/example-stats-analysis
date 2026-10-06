@@ -3,8 +3,6 @@ title: "4 · Describe one group"
 description: "Mean and SD, median and IQR, a proportion, and a Kaplan-Meier survival curve, each with a 95% confidence interval."
 engine: knitr
 toc-depth: 2
-execute:
-  message: false
 ---
 
 ```{r}

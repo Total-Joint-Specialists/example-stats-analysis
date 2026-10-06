@@ -3,8 +3,6 @@ title: "5 · Compare one group to a hypothetical value"
 description: "One-sample t test, Wilcoxon signed-rank test, chi-square goodness-of-fit test and binomial test: is our group different from a target or published value?"
 engine: knitr
 toc-depth: 2
-execute:
-  message: false
 ---
 
 ```{r}

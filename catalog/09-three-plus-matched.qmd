@@ -3,8 +3,6 @@ title: "9 · Compare three or more matched groups"
 description: "Repeated-measures ANOVA, Friedman test, Cochran's Q and stratified Cox regression: the same patients measured three or more times, or matched sets."
 engine: knitr
 toc-depth: 2
-execute:
-  message: false
 ---
 
 ```{r}

@@ -16,6 +16,12 @@ project:
 execute:
   freeze: auto
 
+# Quarto ignores `message` under `execute:` for knitr pages; knitr's own chunk
+# default hides messages on every page.
+knitr:
+  opts_chunk:
+    message: false
+
 website:
   title: "TJS Statistics Tutorials"
   description: "Tidy data, Table 1, and every common statistical test, in R and Python, for Total Joint Specialists research assistants."

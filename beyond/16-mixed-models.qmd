@@ -344,7 +344,7 @@ In this cohort the patient-level intercept comes out at almost exactly zero (lme
 
 > **Methods:** KOOS JR scores before surgery and at 6 weeks, 3 months and 1 year were analyzed with a linear mixed model, with visit as a categorical fixed effect and a random intercept for each knee, fitted by restricted maximum likelihood. All available scores were used, including those from knees that missed a visit. Differences between men and women in the pattern of recovery were tested with a visit × sex interaction (Satterthwaite degrees of freedom). The planned comparison was the change from before surgery to 1 year. Estimated marginal means are reported with 95% CIs.
 >
-> **Results:** Of 330 knees, 192 (58.2%) had all four scores; all 1146 scores were analyzed. The estimated mean KOOS JR rose from 50.0 (95% CI 48.6 to 51.3) before surgery to 83.9 (95% CI 82.5 to 85.3) at 1 year, an improvement of 33.9 points (95% CI 32.5 to 35.3). There was no clear evidence that the pattern of recovery differed between men and women (interaction F(3, 832) = 2.09, p = 0.100).
+> **Results:** Of 330 knees, 192 (58.2%) had all four scores; all 1146 scores were analyzed. The estimated mean KOOS JR rose from 50.0 (95% CI 48.6 to 51.3) before surgery to 83.9 (95% CI 82.5 to 85.3) at 1 year, an improvement of 33.9 points (95% CI 32.5 to 35.3). There was no clear evidence that the pattern of recovery differed between men and women (interaction F(3, 832) = 2.09, p = 0.100); at 1 year the estimated mean was 84.4 (95% CI 82.4 to 86.4) in men and 83.4 (95% CI 81.3 to 85.4) in women.
 
 ```{r}
 #| include: false
@@ -378,6 +378,7 @@ stopifnot(
   round(reticulate::py_eval("float(sex_wald.statistic)"), 2) == 6.26, round(reticulate::py_eval("float(sex_wald.pvalue)"), 3) == 0.099,
   round(sex_emm$emmean[c(6, 2)], 1) == c(63.9, 61.2), round(round(sex_emm$emmean[6], 1) - round(sex_emm$emmean[2], 1), 1) == 2.7,
   round(sex_emm$emmean[3] - sex_emm$emmean[7], 1) == 0.9, round(sex_emm$emmean[c(8, 4)], 1) == c(84.4, 83.4),
+  round(c(sex_emm$lower.CL[8], sex_emm$upper.CL[8], sex_emm$lower.CL[4], sex_emm$upper.CL[4]), 1) == c(82.4, 86.4, 81.3, 85.4),
   nrow(bilateral_knees) == 46,
   # exercise solutions (recomputed here: the guard runs before the solution chunks)
   n_distinct(hips$case_id) == 270, nrow(hips) == 906, sum(table(hips$case_id) == 4) == 136,

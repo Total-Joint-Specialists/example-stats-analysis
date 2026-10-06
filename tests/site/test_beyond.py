@@ -218,3 +218,9 @@ def test_false_positive_example_says_pairwise_tests_are_not_independent(site):
     """1 − 0.95^6 = 26% is for six independent tests; six pairwise comparisons of four groups give about 20%."""
     text = text_of(section(POST_HOC, "why-adjust"))
     assert "aren't independent" in text and "about 20%" in text
+
+
+def test_interaction_results_give_the_marginal_means_with_cis(site):
+    """Page 16's ⚠️ box says a non-significant interaction is reported with the EMMs and their CIs."""
+    results = next(text_of(q) for q in section(MIXED, "reporting").select("blockquote") if "Results:" in text_of(q))
+    assert "84.4 (95% CI 82.4 to 86.4) in men" in results and "83.4 (95% CI 81.3 to 85.4) in women" in results

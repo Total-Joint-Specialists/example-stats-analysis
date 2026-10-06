@@ -235,6 +235,7 @@ def test_beyond_prose_guards_pin_numbers_quoted_from_other_pages():
     assert "33.5" in guards["beyond/15-post-hoc.qmd"] and "3.07" in guards["beyond/15-post-hoc.qmd"]
     assert "34.9" in guards["beyond/16-mixed-models.qmd"] and "831" in guards["beyond/16-mixed-models.qmd"]
     assert "ptukey(" in guards["beyond/15-post-hoc.qmd"]   # the 20% for six pairwise comparisons
+    assert "82.4, 86.4" in guards["beyond/16-mixed-models.qmd"]   # the 1-year EMMs' CIs in the Results
 
 
 def calls_of(code, function):

@@ -314,7 +314,7 @@ KOOS JR rose from about 49.8 points (95% CI 48.5 to 51.2) on the day of surgery 
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: each knee appears up to four times
-Nonlinear least squares treats the 1146 scores as 1146 independent patients, but they come from 330 knees. Scores from the same knee are related, so the CIs here are too narrow. A mixed model ([page 16](../beyond/16-mixed-models.qmd)) accounts for this. And if the fit fails to converge, try starting guesses closer to what the plot shows.
+Nonlinear least squares treats the 1146 scores as 1146 independent patients, but they come from 330 knees, and scores from the same knee are related. So these CIs can't be trusted: depending on the number, they may be too narrow or too wide. A mixed model ([page 16](../beyond/16-mixed-models.qmd)) accounts for this. And if the fit fails to converge, try starting guesses closer to what the plot shows.
 :::
 
 ::: {.callout-tip}
@@ -411,9 +411,26 @@ check_agree(list(low_end = smooth$y[1], middle = smooth$y[101], high_end = smoot
 ## R
 
 ```{r}
-koos_slope <- deming::theilsen(one_year ~ preop, data = koos_wide)
-coef(koos_slope)     # intercept and slope
-koos_slope$ci[2, ]   # 95% CI for the slope
+x <- koos_wide$preop
+y <- koos_wide$one_year
+n <- length(x)
+
+pairs <- combn(n, 2)                                  # every pair of knees
+dx <- x[pairs[2, ]] - x[pairs[1, ]]
+dy <- y[pairs[2, ]] - y[pairs[1, ]]
+slopes <- sort(dy[dx != 0] / dx[dx != 0])             # pairs with the same pre-op score have no slope
+ts_slope <- median(slopes)
+ts_intercept <- median(y - ts_slope * x)
+
+# Sen's 95% CI: step in from both ends of the sorted slopes by an amount set by the
+# variance of Kendall's S, corrected for tied scores (the same method as scipy)
+tie_term <- function(v) { counts <- table(v); sum(counts * (counts - 1) * (2 * counts + 5)) }
+var_s <- (n * (n - 1) * (2 * n + 5) - tie_term(x) - tie_term(y)) / 18
+step <- qnorm(0.975) * sqrt(var_s)
+m <- length(slopes)
+ts_ci <- c(slopes[max(round((m - step) / 2), 1)], slopes[min(round((m + step) / 2) + 1, m)])
+
+c(intercept = ts_intercept, slope = ts_slope, low = ts_ci[1], high = ts_ci[2])
 ```
 
 ## Python
@@ -426,29 +443,30 @@ print(koos_slope)
 
 ```{python}
 #| include: false
-chk = {"slope": float(koos_slope.slope), "intercept": float(koos_slope.intercept)}
+chk = {"slope": float(koos_slope.slope), "intercept": float(koos_slope.intercept),
+       "low": float(koos_slope.low_slope), "high": float(koos_slope.high_slope)}
 ```
 
 ```{r}
 #| include: false
-check_agree(list(slope = coef(koos_slope)[["preop"]], intercept = coef(koos_slope)[["(Intercept)"]]), reticulate::py$chk)
+check_agree(list(slope = ts_slope, intercept = ts_intercept, low = ts_ci[1], high = ts_ci[2]), reticulate::py$chk)
 ```
 
 ### Read the output
 
-- **preop** (R) or **slope** (Python) **= 0.39:** each extra point before surgery goes with 0.39 more points at 1 year (the median of all the pairwise slopes).
-- **Intercept = 65.4:** the predicted 1-year score for a pre-op score of 0; it anchors the line.
-- **95% CI for the slope:** 0.28 to 0.51 in R, 0.27 to 0.52 in Python (`low_slope`, `high_slope`). The R vs Python box explains the difference.
+- **slope = 0.39:** each extra point before surgery goes with 0.39 more points at 1 year (the median of all the pairwise slopes).
+- **intercept = 65.4:** the predicted 1-year score for a pre-op score of 0; it anchors the line.
+- **low, high** (R) or **low_slope, high_slope** (Python): the 95% CI for the slope, 0.27 to 0.52.
 
 ### Effect size and 95% CI
 
-The **Theil-Sen slope** with its CI is the effect size: 0.39 points at 1 year per pre-op point (95% CI 0.28 to 0.51). An ordinary least-squares line gives 0.43; the two would differ more if a few unusual patients pulled the least-squares line.
+The **Theil-Sen slope** with its CI is the effect size: 0.39 points at 1 year per pre-op point (95% CI 0.27 to 0.52). An ordinary least-squares line gives 0.43; the two would differ more if a few unusual patients pulled the least-squares line.
 
 ### How to report it
 
 > **Methods:** Because 1-year KOOS JR clustered at the ceiling, its relationship with pre-op KOOS JR was described with a LOWESS smoother and summarized with the Theil-Sen slope.
 >
-> **Results:** Among 246 knees, 37 (15.0%) scored 100 at 1 year. KOOS JR at 1 year rose with KOOS JR before surgery (Theil-Sen slope 0.39 points per point, 95% CI 0.28 to 0.51).
+> **Results:** Among 246 knees, 37 (15.0%) scored 100 at 1 year. KOOS JR at 1 year rose with KOOS JR before surgery (Theil-Sen slope 0.39 points per point, 95% CI 0.27 to 0.52).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: robust isn't ceiling-proof
@@ -456,9 +474,9 @@ Theil-Sen resists outliers, but nothing can see above a ceiling: the 37 knees at
 :::
 
 ::: {.callout-tip}
-## 🔀 R vs Python: Theil-Sen intercepts and CIs, LOWESS settings
-- **Intercept:** scipy's default (`method="separate"`) computes it as median(y) − slope × median(x). deming computes median(y − slope × x), which scipy calls `method="joint"`. The slope is the same either way.
-- **CI:** both use Sen's rank method, but deming adjusts for tied values of x only, and scipy for ties in both x and y, so the limits differ a little.
+## 🔀 R vs Python: Theil-Sen in R, and LOWESS settings
+- **Theil-Sen in R:** some R packages get the CI wrong when scores are tied, as PROM scores always are (deming 1.4-1 misapplies its tie correction; mblm's CI is far too narrow). So the R code computes the slope and Sen's CI directly, the same way scipy does, and the two agree exactly.
+- **Intercept:** scipy's default (`method="separate"`) computes it as median(y) − slope × median(x). The R code computes median(y − slope × x), which scipy calls `method="joint"`. The slope is the same either way.
 - **LOWESS:** R's `lowess()` and statsmodels' `lowess()` run the same algorithm, but statsmodels' defaults differ (it sets `delta` to 0), so the Python code spells out R's settings. ggplot2's `geom_smooth()` uses a different smoother, `loess()`, which draws a similar but not identical curve.
 :::
 
@@ -719,7 +737,7 @@ The **hazard ratio per 10 years**, 1.25 (95% CI 0.98 to 1.59), is the effect siz
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: older patients die before they can be revised
-Deaths are treated as censored here. Older patients die sooner, so fewer of them live long enough to need a revision. That can hide an age effect, or create one. [Page 13](../survival/13-kaplan-meier.qmd) covers these competing risks.
+Deaths are treated as censored here, so the hazard ratio describes the revision rate among patients still alive. That's a fair answer to its own question. But older patients die sooner, so fewer of them live long enough to need a revision: an older patient's actual chance of being revised is smaller than the hazard ratio suggests. To describe that chance, use the cumulative incidence ([page 13](../survival/13-kaplan-meier.qmd)) or a Fine-Gray model ([page 14](../survival/14-cox-regression.qmd)).
 :::
 
 ```{r}
@@ -754,7 +772,7 @@ stopifnot(
   round(recovery_coef["tau", "Estimate"] + c(-1, 1) * qt(0.975, 1143) * recovery_coef["tau", "Std. Error"], 1) == c(69.9, 91.8),
   nrow(koos_wide) == 246, sum(koos_wide$one_year == 100) == 37, round(100 * mean(koos_wide$one_year == 100), 1) == 15.0,
   round(smooth$y[1]) == 70, round(smooth$y[length(smooth$y)]) == 99,
-  round(coef(koos_slope), 2) == c(65.39, 0.39), round(koos_slope$ci[2, ], 2) == c(0.28, 0.51),
+  round(c(ts_intercept, ts_slope), 2) == c(65.39, 0.39), round(ts_ci, 2) == c(0.27, 0.52),
   round(koos_ls[["preop"]], 2) == 0.43,
   round(age_coef["age_10", c("Estimate", "Std. Error", "z value")], 2) == c(0.75, 0.17, 4.42),
   round(age_coef["(Intercept)", "Estimate"], 2) == -7.49, age_coef["age_10", "Pr(>|z|)"] < 0.001,

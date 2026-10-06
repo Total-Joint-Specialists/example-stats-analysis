@@ -320,7 +320,7 @@ The recovery curve:
 
 The spline:
 
-- **F = 0.58, p = 0.562:** letting BMI's effect bend doesn't improve the fit. Keep the straight line.
+- **F = 0.58, p = 0.562:** no clear evidence that letting BMI's effect bend improves the fit, so keep the straight line.
 
 ### Effect size and 95% CI
 
@@ -351,11 +351,11 @@ The time constant was 27.5 days longer for knees (95% CI 15.9 to 40.1). Half of 
 
 > **Methods:** HOOS JR (hips) and KOOS JR (knees) were modeled against days since surgery with an exponential recovery curve whose start, plateau and time constant could differ between hips and knees, fitted by nonlinear least squares. Whether BMI's effect on operative time was linear was checked by adding a natural cubic spline (3 degrees of freedom) and comparing the models with an F test.
 >
-> **Results:** Knees recovered more slowly than hips: the time constant was 27.5 days longer (95% CI 15.9 to 40.1), so half of the eventual gain took about 56 days after knee replacement and 37 days after hip replacement. Allowing BMI's effect on operative time to bend did not improve the fit (F = 0.58, df = 2 and 593, p = 0.562).
+> **Results:** Knees recovered more slowly than hips: the time constant was 27.5 days longer (95% CI 15.9 to 40.1), so half of the eventual gain took about 56 days after knee replacement and 37 days after hip replacement. Allowing BMI's effect on operative time to bend did not clearly improve the fit (F = 0.58, df = 2 and 593, p = 0.562).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: two questionnaires, and repeated scores
-Hips answer HOOS JR and knees KOOS JR. A point on one isn't guaranteed to equal a point on the other, so the differences in start and plateau mix up the joints with the questionnaires. The time constant is measured in days, not points, so it compares cleanly. As on [page 11](11-predict-from-one.qmd#nonlinear-regression), each joint contributes up to four scores, so these CIs are too narrow; a mixed model ([page 16](../beyond/16-mixed-models.qmd)) handles that.
+Hips answer HOOS JR and knees KOOS JR. A point on one isn't guaranteed to equal a point on the other, so the differences in start and plateau mix up the joints with the questionnaires. The time constant is measured in days, not points, so it compares more fairly, as long as both questionnaires track recovery in a similar way. As on [page 11](11-predict-from-one.qmd#nonlinear-regression), each joint contributes up to four related scores, so these CIs can't be trusted: some may be too narrow and others too wide. A mixed model ([page 16](../beyond/16-mixed-models.qmd)) handles that.
 :::
 
 ::: {.callout-tip}
@@ -600,7 +600,7 @@ The **adjusted hazard ratios** with their 95% CIs are the effect sizes. The one 
 
 > **Methods:** Revision was modeled with Cox proportional hazards regression on implant (reference A), age (per 10 years), sex and BMI (per 5 kg/m²), chosen before the analysis.
 >
-> **Results:** After adjustment for age, sex and BMI, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.19, 95% CI 1.92 to 5.29, p < 0.001); the estimate for implant B was imprecise (0.83, 95% CI 0.45 to 1.52). Men had a lower hazard of revision than women (hazard ratio 0.51, 95% CI 0.32 to 0.81).
+> **Results:** After adjustment for age, sex and BMI, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.19, 95% CI 1.92 to 5.29, p < 0.001); the estimate for implant B was imprecise (0.83, 95% CI 0.45 to 1.52). In an unplanned, exploratory finding, men had a lower hazard of revision than women (hazard ratio 0.51, 95% CI 0.32 to 0.81).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: the unexpected finding
@@ -720,7 +720,7 @@ print(surgeon_table.loc[["bmi", "surgeon[T.S2]", "surgeon[T.S3]"]])
 ```
 :::
 
-Adding surgeon doesn't improve the model (F = 0.09, df = 2 and 593, p = 0.911): compared with S1, S2's operations took 0.07 minutes longer (95% CI −2.57 to 2.72) and S3's 0.60 minutes longer (95% CI −2.28 to 3.48). BMI's coefficient is unchanged at 1.27 minutes per kg/m² (95% CI 1.06 to 1.49).
+There's no clear evidence that adding surgeon improves the model (F = 0.09, df = 2 and 593, p = 0.911): compared with S1, S2's operations took 0.07 minutes longer (95% CI −2.57 to 2.72) and S3's 0.60 minutes longer (95% CI −2.28 to 3.48). BMI's coefficient is unchanged at 1.27 minutes per kg/m² (95% CI 1.06 to 1.49).
 :::
 
 **2.** A colleague wants to know which patient factors predict discharge to a facility rather than home. Only 30 patients went to a facility. Which model would you use, how many predictors can it take, and what do you find with age, sex and ASA class?

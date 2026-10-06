@@ -173,7 +173,7 @@ def test_reports_never_turn_no_evidence_into_no_difference(site, page):
     """A wide CI or a non-significant check is "no evidence of a difference", never "similar" or "held"."""
     reports = [text_of(q) for q in load(page).select("blockquote")] + [text_of(section(page, "exercises"))]
     for text in reports:
-        found = re.findall(r"\b(similar|no difference|held|not violated)\b", text, re.IGNORECASE)
+        found = re.findall(r"\b(similar|no difference|held|not violated|(?:did not|does not|doesn't) improve)\b", text, re.IGNORECASE)
         assert not found, f"{page}: {found}"
 
 
@@ -211,8 +211,23 @@ REPEATED_SCORE_SECTIONS = [cell for cell in [("catalog/11-predict-from-one.html"
 
 
 @pytest.mark.parametrize("page,anchor", REPEATED_SCORE_SECTIONS)
-def test_curve_fits_warn_that_repeated_scores_narrow_the_cis(site, page, anchor):
-    """Each joint contributes up to four scores, so least-squares CIs are too narrow; page 16 handles that."""
-    warnings = [box for box in section(page, anchor).select("div.callout-warning") if "too narrow" in text_of(box)]
-    assert warnings, f"{page}#{anchor}: no warning that the CIs are too narrow"
+def test_curve_fits_warn_that_repeated_scores_make_the_cis_unreliable(site, page, anchor):
+    """Each joint contributes up to four scores. That makes least-squares CIs untrustworthy in either
+    direction (too wide for within-joint contrasts such as tau), so the warning mustn't promise one."""
+    warnings = [box for box in section(page, anchor).select("div.callout-warning") if "can't be trusted" in text_of(box)]
+    assert warnings, f"{page}#{anchor}: no warning that the CIs can't be trusted"
+    assert "are too narrow" not in text_of(warnings[0])
     assert any(a["href"].endswith("beyond/16-mixed-models.html") for a in warnings[0].select("a[href]"))
+
+
+def test_cox_warning_describes_the_cause_specific_hazard(site):
+    """Censoring deaths gives the revision rate among patients still alive; it doesn't hide or create an age effect."""
+    warning = text_of(section("catalog/11-predict-from-one.html", "cox").select_one("div.callout-warning"))
+    assert "still alive" in warning and "hide an age effect" not in warning
+
+
+def test_unplanned_findings_are_labeled_in_the_results(site):
+    """The adjusted Cox model's sex effect wasn't the question, so the Results sentence says it's exploratory."""
+    results = " ".join(text_of(q) for q in section("catalog/12-predict-from-several.html", "cox").select("blockquote"))
+    sentence = next(s for s in results.split(". ") if "Men had" in s or "men had" in s)
+    assert "exploratory" in sentence

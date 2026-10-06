@@ -2044,23 +2044,6 @@
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
       "Repository": "CRAN"
     },
-    "deming": {
-      "Package": "deming",
-      "Version": "1.4-1",
-      "Source": "Repository",
-      "Title": "Deming, Theil-Sen, Passing-Bablock and Total Least Squares Regression",
-      "Maintainer": "Terry Therneau <therneau.terry@mayo.edu>",
-      "Description": "Generalized Deming regression, Theil-Sen regression and Passing-Bablock regression functions.",
-      "Imports": [
-        "boot"
-      ],
-      "Priority": "optional",
-      "LazyData": "Yes",
-      "Author": "Terry Therneau",
-      "License": "LGPL (>= 2)",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
     "desc": {
       "Package": "desc",
       "Version": "1.4.3",

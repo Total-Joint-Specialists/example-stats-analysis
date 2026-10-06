@@ -499,19 +499,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../beyond/15-post-hoc.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">15 · Post-hoc tests &amp; multiple comparisons (coming soon)</span></a>
+ <span class="menu-text">15 · Post-hoc tests &amp; multiple comparisons</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../beyond/16-mixed-models.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">16 · Mixed models for repeated PROMs (coming soon)</span></a>
+ <span class="menu-text">16 · Mixed models for repeated PROMs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../beyond/17-agreement.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">17 · Agreement &amp; reliability (coming soon)</span></a>
+ <span class="menu-text">17 · Agreement &amp; reliability</span></a>
   </div>
 </li>
       </ul>
@@ -774,7 +774,7 @@ asa       |   0.10 | [0.06, 1.00]
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>A significant ANOVA means at least one group mean differs from another, not that every group differs from every other. Don’t follow it with a string of unadjusted t tests: that brings back the false-positive problem the ANOVA was meant to avoid. Use a post-hoc test (<a href="../beyond/15-post-hoc.html">page 15</a>).</p>
+<p>A significant ANOVA means at least one group mean differs from another, not that every group differs from every other. Don’t follow it with a string of unadjusted t tests: that brings back the false-positive problem the ANOVA was meant to avoid. Use a post-hoc test (<a href="../beyond/15-post-hoc.html#after-anova">page 15</a>).</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -1366,17 +1366,17 @@ implant[T.C]   3.067344             1.850158             5.085296  0.000014</cod
 <tr class="odd">
 <td>One-way ANOVA</td>
 <td>Tukey’s HSD (Games-Howell if the spreads differ)</td>
-<td><a href="../beyond/15-post-hoc.html">15</a></td>
+<td><a href="../beyond/15-post-hoc.html#after-anova">15</a></td>
 </tr>
 <tr class="even">
 <td>Kruskal-Wallis</td>
 <td>Dunn’s test with Holm’s adjustment</td>
-<td><a href="../beyond/15-post-hoc.html">15</a></td>
+<td><a href="../beyond/15-post-hoc.html#after-kruskal-wallis">15</a></td>
 </tr>
 <tr class="odd">
 <td>Chi-square</td>
 <td>Pairwise Fisher or chi-square tests with Holm’s adjustment</td>
-<td><a href="../beyond/15-post-hoc.html">15</a></td>
+<td><a href="../beyond/15-post-hoc.html#after-chi-square">15</a></td>
 </tr>
 <tr class="even">
 <td>Cox regression</td>
@@ -1385,7 +1385,7 @@ implant[T.C]   3.067344             1.850158             5.085296  0.000014</cod
 </tr>
 </tbody>
 </table>
-<p>Only run post-hoc tests when the overall test is significant, or when you planned specific comparisons before seeing the data; say which in your Methods.</p>
+<p>Tukey’s HSD, Dunn’s test and Holm-adjusted pairwise tests control false positives on their own, so they don’t need a significant overall test first. Decide before you see the data which comparisons you’ll make, and say so in your Methods (<a href="../beyond/15-post-hoc.html#overall-test-first">page 15</a>).</p>
 </section>
 <section id="exercises" class="level2">
 <h2 class="anchored" data-anchor-id="exercises">Exercises</h2>

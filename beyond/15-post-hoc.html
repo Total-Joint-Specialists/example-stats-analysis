@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Which groups differ after ANOVA, Kruskal-Wallis, chi-square, or Friedman.">
+<meta name="description" content="Which groups differ after ANOVA, Kruskal-Wallis, chi-square, repeated-measures tests or a log-rank test, and how to keep false positives in check.">
 
-<title>15 · Post-hoc tests &amp; multiple comparisons (coming soon) – TJS Statistics Tutorials</title>
+<title>15 · Post-hoc tests &amp; multiple comparisons – TJS Statistics Tutorials</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -288,7 +323,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../beyond/15-post-hoc.html">Part 4 · Beyond the table</a></li><li class="breadcrumb-item"><a href="../beyond/15-post-hoc.html">15 · Post-hoc tests &amp; multiple comparisons (coming soon)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../beyond/15-post-hoc.html">Part 4 · Beyond the table</a></li><li class="breadcrumb-item"><a href="../beyond/15-post-hoc.html">15 · Post-hoc tests &amp; multiple comparisons</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -464,19 +499,19 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../beyond/15-post-hoc.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">15 · Post-hoc tests &amp; multiple comparisons (coming soon)</span></a>
+ <span class="menu-text">15 · Post-hoc tests &amp; multiple comparisons</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../beyond/16-mixed-models.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">16 · Mixed models for repeated PROMs (coming soon)</span></a>
+ <span class="menu-text">16 · Mixed models for repeated PROMs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../beyond/17-agreement.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">17 · Agreement &amp; reliability (coming soon)</span></a>
+ <span class="menu-text">17 · Agreement &amp; reliability</span></a>
   </div>
 </li>
       </ul>
@@ -503,21 +538,38 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#why-adjust" id="toc-why-adjust" class="nav-link active" data-scroll-target="#why-adjust">Why many tests mislead</a></li>
+  <li><a href="#adjusting-p-values" id="toc-adjusting-p-values" class="nav-link" data-scroll-target="#adjusting-p-values">Adjusting p-values: Bonferroni, Holm and Benjamini-Hochberg</a></li>
+  <li><a href="#after-anova" id="toc-after-anova" class="nav-link" data-scroll-target="#after-anova">After ANOVA: Tukey’s HSD and Games-Howell</a></li>
+  <li><a href="#after-kruskal-wallis" id="toc-after-kruskal-wallis" class="nav-link" data-scroll-target="#after-kruskal-wallis">After Kruskal-Wallis: Dunn’s test</a></li>
+  <li><a href="#after-chi-square" id="toc-after-chi-square" class="nav-link" data-scroll-target="#after-chi-square">After chi-square: pairwise Fisher’s exact tests</a></li>
+  <li><a href="#after-repeated-measures-anova" id="toc-after-repeated-measures-anova" class="nav-link" data-scroll-target="#after-repeated-measures-anova">After repeated-measures ANOVA: paired t tests</a></li>
+  <li><a href="#after-friedman" id="toc-after-friedman" class="nav-link" data-scroll-target="#after-friedman">After Friedman: pairwise Wilcoxon or Conover tests</a></li>
+  <li><a href="#after-cochran-q" id="toc-after-cochran-q" class="nav-link" data-scroll-target="#after-cochran-q">After Cochran’s Q: pairwise McNemar tests</a></li>
+  <li><a href="#after-log-rank" id="toc-after-log-rank" class="nav-link" data-scroll-target="#after-log-rank">After a log-rank test: pairwise survival comparisons</a></li>
+  <li><a href="#overall-test-first" id="toc-overall-test-first" class="nav-link" data-scroll-target="#overall-test-first">Do you need a significant overall test first?</a></li>
+  <li><a href="#planned-comparisons" id="toc-planned-comparisons" class="nav-link" data-scroll-target="#planned-comparisons">Planned comparisons and how to report them</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../beyond/15-post-hoc.html">Part 4 · Beyond the table</a></li><li class="breadcrumb-item"><a href="../beyond/15-post-hoc.html">15 · Post-hoc tests &amp; multiple comparisons (coming soon)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../beyond/15-post-hoc.html">Part 4 · Beyond the table</a></li><li class="breadcrumb-item"><a href="../beyond/15-post-hoc.html">15 · Post-hoc tests &amp; multiple comparisons</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">15 · Post-hoc tests &amp; multiple comparisons (coming soon)</h1>
+<h1 class="title">15 · Post-hoc tests &amp; multiple comparisons</h1>
 </div>
 
 <div>
   <div class="description">
-    Which groups differ after ANOVA, Kruskal-Wallis, chi-square, or Friedman.
+    Which groups differ after ANOVA, Kruskal-Wallis, chi-square, repeated-measures tests or a log-rank test, and how to keep false positives in check.
   </div>
 </div>
 
@@ -534,21 +586,957 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="coming-soon callout callout-style-default callout-note callout-titled">
+<!-- data-checksum: 9e548efb7ad4232927ffa99aa2cdeca7 -->
+<p>A test for three or more groups asks one question: “is there any difference among them?”. When the answer is yes, the next question is which groups differ from which. Answering it means running several tests at once, and every extra test is another chance of a false positive. This page shows how to compare groups in pairs while keeping that chance under control. Each “After …” section picks up an example from <a href="../catalog/08-three-plus-unmatched.html">page 8</a>, <a href="../catalog/09-three-plus-matched.html">page 9</a> or <a href="../survival/13-kaplan-meier.html">page 13</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming soon
+<span class="screen-reader-only">Note</span>💡 How this page works
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.</p>
+<p>Run the code blocks in order, from the top: later blocks use the packages and data loaded in the first one.</p>
+<p>As on the pages these examples come from, the code uses every case, including the 80 patients who had both sides operated on.</p>
+</div>
+</div>
+<section id="why-adjust" class="level2">
+<h2 class="anchored" data-anchor-id="why-adjust">Why many tests mislead</h2>
+<p>A test at the 5% level has a 5% chance of a false positive when there is truly no difference. Run several tests and those chances add up. The chance of <strong>at least one</strong> false positive across a set of tests is the <strong>family-wise error rate</strong>. For independent tests at the 5% level it’s 1 − 0.95<sup>k</sup>, where k is the number of tests:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>proms <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/proms_long.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>tests <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">20</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>false_positives <span class="ot">&lt;-</span> <span class="fu">tibble</span>(tests, <span class="at">chance_of_a_false_positive =</span> <span class="fu">round</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fl">0.95</span><span class="sc">^</span>tests, <span class="dv">2</span>))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>false_positives</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  tests chance_of_a_false_positive
+  &lt;dbl&gt;                      &lt;dbl&gt;
+1     1                       0.05
+2     3                       0.14
+3     6                       0.26
+4    10                       0.4 
+5    20                       0.64</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> itertools</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pingouin <span class="im">as</span> pg</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scikit_posthocs <span class="im">as</span> sp</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.stats.multitest <span class="im">import</span> multipletests</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.stats.multicomp <span class="im">import</span> pairwise_tukeyhsd</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.stats.contingency_tables <span class="im">import</span> mcnemar</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines <span class="im">import</span> CoxPHFitter</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines.statistics <span class="im">import</span> pairwise_logrank_test</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>proms <span class="op">=</span> pd.read_csv(<span class="st">"data/proms_long.csv"</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>tests <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">20</span>])</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>false_positives <span class="op">=</span> pd.DataFrame({<span class="st">"tests"</span>: tests, <span class="st">"chance_of_a_false_positive"</span>: (<span class="dv">1</span> <span class="op">-</span> <span class="fl">0.95</span><span class="op">**</span>tests).<span class="bu">round</span>(<span class="dv">2</span>)})</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(false_positives)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   tests  chance_of_a_false_positive
+0      1                        0.05
+1      3                        0.14
+2      6                        0.26
+3     10                        0.40
+4     20                        0.64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Four groups make six pairs. Six independent tests at the 5% level give a 26% chance of at least one false alarm, even when nothing is going on; twenty tests give 64%. Comparing pairs therefore needs an <strong>adjustment</strong>: a stricter rule that keeps the chance of any false positive across the whole set of comparisons at 5%.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>💡 In plain language
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Buy one lottery ticket and you’ll almost certainly lose. Buy twenty and your chance of winning something goes up. Each p-value below 0.05 is a small “win”, and with enough tests one will turn up by luck alone. Adjusting the p-values makes each win harder to get, so the overall chance stays where you set it.</p>
+</div>
+</div>
+</section>
+<section id="adjusting-p-values" class="level2">
+<h2 class="anchored" data-anchor-id="adjusting-p-values">Adjusting p-values: Bonferroni, Holm and Benjamini-Hochberg</h2>
+<p><a href="../catalog/08-three-plus-unmatched.html#one-way-anova">Page 8</a> found that age differs across the four ASA classes. Here are the six pairwise comparisons, each a Welch t test, with the p-values left as they are (<strong>unadjusted</strong>) and then adjusted three ways:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>age_pairs <span class="ot">&lt;-</span> <span class="fu">pairwise.t.test</span>(cohort<span class="sc">$</span>age, cohort<span class="sc">$</span>asa, <span class="at">pool.sd =</span> <span class="cn">FALSE</span>,      <span class="co"># Welch t tests</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">p.adjust.method =</span> <span class="st">"none"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>unadjusted <span class="ot">&lt;-</span> age_pairs<span class="sc">$</span>p.value[<span class="fu">lower.tri</span>(age_pairs<span class="sc">$</span>p.value, <span class="at">diag =</span> <span class="cn">TRUE</span>)]  <span class="co"># the six p-values, in pair order</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>adjusted <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">pair =</span> <span class="fu">c</span>(<span class="st">"1 vs 2"</span>, <span class="st">"1 vs 3"</span>, <span class="st">"1 vs 4"</span>, <span class="st">"2 vs 3"</span>, <span class="st">"2 vs 4"</span>, <span class="st">"3 vs 4"</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                   unadjusted,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">bonferroni =</span> <span class="fu">p.adjust</span>(unadjusted, <span class="at">method =</span> <span class="st">"bonferroni"</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">holm =</span> <span class="fu">p.adjust</span>(unadjusted, <span class="at">method =</span> <span class="st">"holm"</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">bh =</span> <span class="fu">p.adjust</span>(unadjusted, <span class="at">method =</span> <span class="st">"BH"</span>))</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>adjusted <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="sc">-</span>pair, \(p) <span class="fu">round</span>(p, <span class="dv">4</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  pair   unadjusted bonferroni   holm     bh
+  &lt;chr&gt;       &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+1 1 vs 2     0.022      0.132  0.0439 0.0263
+2 1 vs 3     0          0      0      0     
+3 1 vs 4     0          0      0      0     
+4 2 vs 3     0          0      0      0     
+5 2 vs 4     0.0002     0.0013 0.0007 0.0003
+6 3 vs 4     0.0298     0.179  0.0439 0.0298</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>asa_pairs <span class="op">=</span> <span class="bu">list</span>(itertools.combinations([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>], <span class="dv">2</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>unadjusted <span class="op">=</span> [stats.ttest_ind(cohort.loc[cohort[<span class="st">"asa"</span>] <span class="op">==</span> a, <span class="st">"age"</span>], cohort.loc[cohort[<span class="st">"asa"</span>] <span class="op">==</span> b, <span class="st">"age"</span>],</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                              equal_var<span class="op">=</span><span class="va">False</span>).pvalue                    <span class="co"># Welch t tests</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>              <span class="cf">for</span> a, b <span class="kw">in</span> asa_pairs]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>adjusted <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"pair"</span>: [<span class="ss">f"</span><span class="sc">{</span>a<span class="sc">}</span><span class="ss"> vs </span><span class="sc">{</span>b<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> a, b <span class="kw">in</span> asa_pairs],</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unadjusted"</span>: unadjusted,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bonferroni"</span>: multipletests(unadjusted, method<span class="op">=</span><span class="st">"bonferroni"</span>)[<span class="dv">1</span>],</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"holm"</span>: multipletests(unadjusted, method<span class="op">=</span><span class="st">"holm"</span>)[<span class="dv">1</span>],</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bh"</span>: multipletests(unadjusted, method<span class="op">=</span><span class="st">"fdr_bh"</span>)[<span class="dv">1</span>],</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(adjusted.<span class="bu">round</span>(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     pair  unadjusted  bonferroni    holm      bh
+0  1 vs 2      0.0220      0.1317  0.0439  0.0263
+1  1 vs 3      0.0000      0.0000  0.0000  0.0000
+2  1 vs 4      0.0000      0.0000  0.0000  0.0000
+3  2 vs 3      0.0000      0.0000  0.0000  0.0000
+4  2 vs 4      0.0002      0.0013  0.0007  0.0003
+5  3 vs 4      0.0298      0.1790  0.0439  0.0298</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Follow the ASA 1 vs ASA 2 comparison across the row: - <strong>Unadjusted, p = 0.022:</strong> “significant” on its own, but it’s one of six tests. - <strong>Bonferroni, p = 0.132:</strong> multiplies every p-value by the number of tests (here 6). Simple, but the strictest: it often throws away real differences. - <strong>Holm, p = 0.044:</strong> a step-down version of Bonferroni. It multiplies the smallest p-value by 6, the next smallest by 5, and so on, but an adjusted p-value can’t be smaller than the one before it in that order. ASA 3 vs 4 has the largest unadjusted p-value (0.030), so it’s multiplied by 1, but it takes 0.044 from ASA 1 vs 2, the one before it. It controls the family-wise error rate just as well as Bonferroni and is never less powerful, so <strong>use Holm rather than Bonferroni</strong>. - <strong>Benjamini-Hochberg (BH), p = 0.026:</strong> controls something different, the <strong>false discovery rate</strong>: the expected share of false positives among the results you call significant. It’s the most lenient of the three. It suits screening many outcomes for leads, not confirming a claim.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: decide the adjustment before you see the p-values
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Picking whichever adjustment keeps your favourite result significant is p-hacking. Choose in advance: Holm (or a method built for the test, like Tukey’s below) for comparisons you’ll report as findings, Benjamini-Hochberg only for exploratory screening. Say in the Methods which you used and how many comparisons it covered.</p>
+</div>
+</div>
+</section>
+<section id="after-anova" class="level2">
+<h2 class="anchored" data-anchor-id="after-anova">After ANOVA: Tukey’s HSD and Games-Howell</h2>
+<p>After a one-way ANOVA, <strong>Tukey’s honestly significant difference</strong> (HSD) compares every pair of group means. It adjusts for all the pairs at once, and gives each difference a CI that’s adjusted too. It assumes the groups have similar spreads, like the ANOVA. When they don’t (the largest SD is more than about twice the smallest), use <strong>Games-Howell</strong>, the Welch version of Tukey’s test.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>age_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(age <span class="sc">~</span> <span class="fu">factor</span>(asa), <span class="at">data =</span> cohort)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>age_tukey <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(age_anova)                          <span class="co"># diff, adjusted 95% CI, adjusted p</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>age_tukey</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = age ~ factor(asa), data = cohort)
+
+$`factor(asa)`
+         diff       lwr       upr     p adj
+2-1  3.646667 -0.414298  7.707631 0.0960950
+3-1  8.607724  4.499281 12.716166 0.0000006
+4-1 13.916667  7.270353 20.562980 0.0000006
+3-2  4.961057  2.980718  6.941396 0.0000000
+4-2 10.270000  4.682878 15.857122 0.0000162
+4-3  5.308943 -0.312782 10.930668 0.0720848</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>games_howell <span class="ot">&lt;-</span> rstatix<span class="sc">::</span><span class="fu">games_howell_test</span>(cohort <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">asa =</span> <span class="fu">factor</span>(asa)), age <span class="sc">~</span> asa)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>games_howell <span class="sc">|&gt;</span> <span class="fu">select</span>(group1, group2, estimate, conf.low, conf.high, p.adj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  group1 group2 estimate conf.low conf.high         p.adj
+  &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+1 1      2          3.65   -0.452      7.75 0.0970       
+2 1      3          8.61    4.48      12.7  0.00000764   
+3 1      4         13.9     6.80      21.0  0.0000473    
+4 2      3          4.96    2.99       6.94 0.00000000162
+5 2      4         10.3     3.93      16.6  0.00114      
+6 3      4          5.31   -1.05      11.7  0.122        </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>age_tukey <span class="op">=</span> pairwise_tukeyhsd(cohort[<span class="st">"age"</span>], cohort[<span class="st">"asa"</span>])</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(age_tukey.summary())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Multiple Comparison of Means - Tukey HSD, FWER=0.05 
+====================================================
+group1 group2 meandiff p-adj   lower   upper  reject
+----------------------------------------------------
+     1      2   3.6467 0.0961 -0.4143  7.7076  False
+     1      3   8.6077    0.0  4.4993 12.7162   True
+     1      4  13.9167    0.0  7.2704  20.563   True
+     2      3   4.9611    0.0  2.9807  6.9414   True
+     2      4    10.27    0.0  4.6829 15.8571   True
+     3      4   5.3089 0.0721 -0.3128 10.9307  False
+----------------------------------------------------</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>games_howell <span class="op">=</span> pg.pairwise_gameshowell(data<span class="op">=</span>cohort, dv<span class="op">=</span><span class="st">"age"</span>, between<span class="op">=</span><span class="st">"asa"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(games_howell[[<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"diff"</span>, <span class="st">"se"</span>, <span class="st">"pval"</span>]].<span class="bu">round</span>(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   A  B     diff      se    pval
+0  1  2  -3.6467  1.5361  0.0970
+1  1  3  -8.6077  1.5483  0.0000
+2  1  4 -13.9167  2.6259  0.0000
+3  2  3  -4.9611  0.7665  0.0000
+4  2  4 -10.2700  2.2551  0.0011
+5  3  4  -5.3089  2.2634  0.1222</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>diff / meandiff:</strong> the difference in mean age between two ASA classes, in years.</li>
+<li><strong>lwr, upr / lower, upper:</strong> the 95% CI of that difference, adjusted for all six comparisons.</li>
+<li><strong>p adj / p-adj:</strong> the adjusted p-value.</li>
+</ul>
+<p>Four of the six pairs differ clearly (p &lt; 0.001 or, for ASA 2 vs 4 in the Games-Howell test, p = 0.001). Two don’t: ASA 2 patients were 3.6 years older than ASA 1 patients (95% CI −0.4 to 7.7, p = 0.096), and ASA 4 patients 5.3 years older than ASA 3 patients (95% CI −0.3 to 10.9, p = 0.072). Both CIs include 0, and both comparisons involve one of the two small classes. The SDs are similar (8.7 to 9.3 years), so Games-Howell reaches the same conclusions.</p>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Age was compared across ASA classes with one-way ANOVA, followed by Tukey’s honestly significant difference test for pairwise comparisons.</p>
+<p><strong>Results:</strong> Mean age differed across ASA classes (F(3, 596) = 23.9, p &lt; 0.001). In pairwise comparisons, ASA 3 patients were 5.0 years older than ASA 2 patients (95% CI 3.0 to 6.9, p &lt; 0.001); the differences between ASA 1 and 2 (3.6 years, 95% CI −0.4 to 7.7, p = 0.096) and between ASA 3 and 4 (5.3 years, 95% CI −0.3 to 10.9, p = 0.072) were imprecise. Table 2 gives all six pairwise comparisons.</p>
+</blockquote>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: Tukey and Games-Howell
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’s <code>TukeyHSD()</code> and statsmodels’ <code>pairwise_tukeyhsd()</code> give identical results; R writes the pairs as “2-1” (second group minus first), statsmodels as group1, group2 with meandiff = group2 − group1. For Games-Howell, R needs the rstatix package; in Python, pingouin’s <code>pairwise_gameshowell()</code> reports <code>diff</code> as A − B, so its signs are the reverse of R’s estimates. The p-values agree.</p>
+</div>
+</div>
+</section>
+<section id="after-kruskal-wallis" class="level2">
+<h2 class="anchored" data-anchor-id="after-kruskal-wallis">After Kruskal-Wallis: Dunn’s test</h2>
+<p><strong>Dunn’s test</strong> follows a Kruskal-Wallis test. It compares the groups’ mean ranks from the Kruskal-Wallis ranking, so it measures every pair on the same scale. Use it with Holm’s adjustment. Running separate Mann-Whitney tests instead re-ranks the data for each pair and needs an adjustment of its own.</p>
+<p>Length of stay (LOS) is skewed (most patients go home on day 0 or 1), so it belongs in the rank column. Does it differ across ASA classes?</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>cohort <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(asa) <span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">median =</span> <span class="fu">median</span>(los_days),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">q1 =</span> <span class="fu">quantile</span>(los_days, <span class="fl">0.25</span>), <span class="at">q3 =</span> <span class="fu">quantile</span>(los_days, <span class="fl">0.75</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 5
+    asa     n median    q1    q3
+  &lt;dbl&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1     1    36      0  0      0  
+2     2   300      0  0      1  
+3     3   246      1  0      2  
+4     4    18      1  0.25   3.5</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>los_kw <span class="ot">&lt;-</span> <span class="fu">kruskal.test</span>(los_days <span class="sc">~</span> <span class="fu">factor</span>(asa), <span class="at">data =</span> cohort)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>los_kw</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Kruskal-Wallis rank sum test
+
+data:  los_days by factor(asa)
+Kruskal-Wallis chi-squared = 24.286, df = 3, p-value = 2.177e-05</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>dunn <span class="ot">&lt;-</span> rstatix<span class="sc">::</span><span class="fu">dunn_test</span>(cohort, los_days <span class="sc">~</span> asa, <span class="at">p.adjust.method =</span> <span class="st">"holm"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>dunn <span class="sc">|&gt;</span> <span class="fu">select</span>(group1, group2, statistic, p, p.adj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  group1 group2 statistic         p    p.adj
+  &lt;chr&gt;  &lt;chr&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 1      2           2.99 0.00277   0.0111  
+2 1      3           4.05 0.0000510 0.000261
+3 1      4           4.09 0.0000435 0.000261
+4 2      3           2.27 0.0233    0.0467  
+5 2      4           2.69 0.00718   0.0216  
+6 3      4           1.87 0.0611    0.0611  </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cohort.groupby(<span class="st">"asa"</span>)[<span class="st">"los_days"</span>].describe()[[<span class="st">"count"</span>, <span class="st">"25%"</span>, <span class="st">"50%"</span>, <span class="st">"75%"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     count   25%  50%  75%
+asa                       
+1     36.0  0.00  0.0  0.0
+2    300.0  0.00  0.0  1.0
+3    246.0  0.00  1.0  2.0
+4     18.0  0.25  1.0  3.5</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>los_kw <span class="op">=</span> stats.kruskal(<span class="op">*</span>[group[<span class="st">"los_days"</span>] <span class="cf">for</span> _, group <span class="kw">in</span> cohort.groupby(<span class="st">"asa"</span>)])</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(los_kw.statistic, los_kw.pvalue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>24.285994027836807 2.1770634905599066e-05</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>dunn <span class="op">=</span> sp.posthoc_dunn(cohort, val_col<span class="op">=</span><span class="st">"los_days"</span>, group_col<span class="op">=</span><span class="st">"asa"</span>, p_adjust<span class="op">=</span><span class="st">"holm"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(dunn.<span class="bu">round</span>(<span class="dv">4</span>))                                           <span class="co"># adjusted p-values</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        1       2       3       4
+1  1.0000  0.0111  0.0003  0.0003
+2  0.0111  1.0000  0.0467  0.0216
+3  0.0003  0.0467  1.0000  0.0611
+4  0.0003  0.0216  0.0611  1.0000</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>Kruskal-Wallis H = 24.3, df = 3, p &lt; 0.001:</strong> LOS differs somewhere across the classes.</li>
+<li><strong>Dunn’s test:</strong> ASA 1 differs from every other class (adjusted p = 0.011 against ASA 2, p &lt; 0.001 against ASAs 3 and 4), and ASA 2 differs from ASAs 3 (p = 0.047) and 4 (p = 0.022). There was no clear evidence of a difference between ASA 3 and 4 (p = 0.061).</li>
+<li><strong>The statistic</strong> in R’s output is a z score: positive means the second group’s ranks are higher (longer stays).</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> Length of stay rose with ASA class, from a median of 0 days (IQR 0 to 0) in ASA 1 to 1 day (IQR 0.25 to 3.5) in ASA 4 (Kruskal-Wallis H = 24.3, df = 3, p &lt; 0.001). In Dunn’s tests with Holm’s adjustment, ASA 1 differed from every other class (p ≤ 0.011); the difference between ASA 3 and 4 was imprecise (p = 0.061).</p>
+</blockquote>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: Dunn’s test
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Both correct the z scores for tied ranks, which matter here because many patients share a LOS of 0 or 1 day, and both give the same adjusted p-values. R’s rstatix returns one row per pair; scikit-posthocs’ <code>posthoc_dunn()</code> returns a square table of p-values with the groups on both sides.</p>
+</div>
+</div>
+</section>
+<section id="after-chi-square" class="level2">
+<h2 class="anchored" data-anchor-id="after-chi-square">After chi-square: pairwise Fisher’s exact tests</h2>
+<p>After a chi-square (or Fisher) test on a table with three or more groups, compare the groups two at a time with <strong>Fisher’s exact test</strong>, then adjust with Holm. <a href="../catalog/08-three-plus-unmatched.html#exercises">Page 8’s exercise 3</a> found that 90-day complications differ across ASA classes:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>complications <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">asa =</span> cohort<span class="sc">$</span>asa, <span class="at">complication =</span> cohort<span class="sc">$</span>complication_90d)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>complications</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   complication
+asa   0   1
+  1  36   0
+  2 279  21
+  3 220  26
+  4  14   4</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>fisher_overall <span class="ot">&lt;-</span> <span class="fu">fisher.test</span>(complications)      <span class="co"># overall: expected counts are too small for chi-square</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>fisher_overall</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Fisher's Exact Test for Count Data
+
+data:  complications
+p-value = 0.01587
+alternative hypothesis: two.sided</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>pairwise_fisher <span class="ot">&lt;-</span> rstatix<span class="sc">::</span><span class="fu">pairwise_fisher_test</span>(complications, <span class="at">p.adjust.method =</span> <span class="st">"holm"</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>pairwise_fisher</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  group1 group2     n       p  p.adj p.adj.signif
+* &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;       
+1 1      2        336 0.146   0.399  ns          
+2 1      3        282 0.0566  0.226  ns          
+3 1      4         54 0.00968 0.0581 ns          
+4 2      3        546 0.168   0.399  ns          
+5 2      4        318 0.0429  0.214  ns          
+6 3      4        264 0.133   0.399  ns          </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>complications <span class="op">=</span> pd.crosstab(cohort[<span class="st">"asa"</span>], cohort[<span class="st">"complication_90d"</span>])</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(complications)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>complication_90d    0   1
+asa                      
+1                  36   0
+2                 279  21
+3                 220  26
+4                  14   4</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>fisher_p <span class="op">=</span> []</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> a, b <span class="kw">in</span> asa_pairs:</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    two_classes <span class="op">=</span> complications.loc[[a, b]]                     <span class="co"># a 2 x 2 table for this pair</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    fisher_p.append(stats.fisher_exact(two_classes).pvalue)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>fisher_holm <span class="op">=</span> multipletests(fisher_p, method<span class="op">=</span><span class="st">"holm"</span>)[<span class="dv">1</span>]</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame({<span class="st">"pair"</span>: [<span class="ss">f"</span><span class="sc">{</span>a<span class="sc">}</span><span class="ss"> vs </span><span class="sc">{</span>b<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> a, b <span class="kw">in</span> asa_pairs], <span class="st">"p"</span>: fisher_p, <span class="st">"p_holm"</span>: fisher_holm}).<span class="bu">round</span>(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     pair       p  p_holm
+0  1 vs 2  0.1460  0.3987
+1  1 vs 3  0.0566  0.2265
+2  1 vs 4  0.0097  0.0581
+3  2 vs 3  0.1675  0.3987
+4  2 vs 4  0.0429  0.2143
+5  3 vs 4  0.1329  0.3987</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The overall Fisher test says the complication rate differs across ASA classes (p = 0.016). But no single pair differs clearly after Holm’s adjustment: the closest is ASA 1 vs ASA 4 (0 of 36 vs 4 of 18 patients; p = 0.010 unadjusted, 0.058 adjusted). <a href="#overall-test-first">A later section</a> explains why that can happen.</p>
+</section>
+<section id="after-repeated-measures-anova" class="level2">
+<h2 class="anchored" data-anchor-id="after-repeated-measures-anova">After repeated-measures ANOVA: paired t tests</h2>
+<p><a href="../catalog/09-three-plus-matched.html#repeated-measures-anova">Page 9</a> found that the VR-12 physical component score (PCS) changed over the first year, in 328 patients measured at all four visits. To say <em>when</em> it changed, compare every pair of visits with a <strong>paired t test</strong> and adjust with Holm:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>pcs <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, vr12_pcs) <span class="sc">|&gt;</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(case_id) <span class="sc">|&gt;</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(vr12_pcs))) <span class="sc">|&gt;</span>                  <span class="co"># patients measured at all four visits</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">visit =</span> <span class="fu">factor</span>(visit, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(case_id, visit)                           <span class="co"># paired tests match rows by position</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>pcs_pairs <span class="ot">&lt;-</span> rstatix<span class="sc">::</span><span class="fu">pairwise_t_test</span>(pcs, vr12_pcs <span class="sc">~</span> visit, <span class="at">paired =</span> <span class="cn">TRUE</span>, <span class="at">p.adjust.method =</span> <span class="st">"holm"</span>)</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>pcs_pairs <span class="sc">|&gt;</span> <span class="fu">select</span>(group1, group2, n1, statistic, df, p.adj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  group1 group2    n1 statistic    df    p.adj
+  &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt;     &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+1 preop  6wk      328     -7.99   327 4.60e-14
+2 preop  3mo      328    -20.8    327 4.34e-61
+3 preop  1yr      328    -27.6    327 9.57e-87
+4 6wk    3mo      328    -12.8    327 3.51e-30
+5 6wk    1yr      328    -20.3    327 3.05e-59
+6 3mo    1yr      328     -7.55   327 4.30e-13</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>pcs <span class="op">=</span> proms[[<span class="st">"case_id"</span>, <span class="st">"visit"</span>, <span class="st">"vr12_pcs"</span>]]</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>pcs <span class="op">=</span> pcs[pcs.groupby(<span class="st">"case_id"</span>)[<span class="st">"vr12_pcs"</span>].transform(<span class="kw">lambda</span> scores: scores.notna().<span class="bu">all</span>())]</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>pcs_pairs <span class="op">=</span> pg.pairwise_tests(data<span class="op">=</span>pcs, dv<span class="op">=</span><span class="st">"vr12_pcs"</span>, within<span class="op">=</span><span class="st">"visit"</span>, subject<span class="op">=</span><span class="st">"case_id"</span>, padjust<span class="op">=</span><span class="st">"holm"</span>)</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pcs_pairs[[<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"T"</span>, <span class="st">"dof"</span>, <span class="st">"p_corr"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     A      B          T    dof        p_corr
+0  1yr    3mo   7.552682  327.0  4.301383e-13
+1  1yr    6wk  20.295973  327.0  3.051381e-59
+2  1yr  preop  27.630125  327.0  9.573204e-87
+3  3mo    6wk  12.792308  327.0  3.512779e-30
+4  3mo  preop  20.793837  327.0  4.342607e-61
+5  6wk  preop   7.992004  327.0  4.603569e-14</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Every pair of visits differs (all adjusted p &lt; 0.001): PCS improved between each visit and the next, from pre-op to 6 weeks (t = 8.0) through to 3 months and 1 year (t = 7.6 for the last step). With 328 patients and changes this large, the adjustment changes nothing. It matters most when results sit near p = 0.05.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: which way round
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>pingouin sorts the visits alphabetically and subtracts the second from the first, so its t statistics are negative where R’s are positive, or the other way round. Compare their sizes. rstatix needs the rows in the same patient order within every visit, so sort by patient first.</p>
+</div>
+</div>
+</section>
+<section id="after-friedman" class="level2">
+<h2 class="anchored" data-anchor-id="after-friedman">After Friedman: pairwise Wilcoxon or Conover tests</h2>
+<p>After a Friedman test, compare pairs of visits with <strong>Wilcoxon signed-rank tests</strong> and Holm’s adjustment, or with <strong>Conover’s test</strong>, which reuses the Friedman ranks (as Dunn’s test does after Kruskal-Wallis) and is often more powerful. <a href="../catalog/09-three-plus-matched.html#friedman">Page 9</a> found that KOOS JR changed between 6 weeks, 3 months and 1 year in 205 knees:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>koos <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(instrument <span class="sc">==</span> <span class="st">"KOOS JR"</span>, visit <span class="sc">!=</span> <span class="st">"preop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, prom_score) <span class="sc">|&gt;</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(case_id) <span class="sc">|&gt;</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">==</span> <span class="dv">3</span>, <span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(prom_score))) <span class="sc">|&gt;</span>         <span class="co"># knees scored at all three visits</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">visit =</span> <span class="fu">factor</span>(visit, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(case_id, visit)</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>koos_pairs <span class="ot">&lt;-</span> rstatix<span class="sc">::</span><span class="fu">pairwise_wilcox_test</span>(koos, prom_score <span class="sc">~</span> visit, <span class="at">paired =</span> <span class="cn">TRUE</span>, <span class="at">exact =</span> <span class="cn">FALSE</span>, <span class="at">correct =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">p.adjust.method =</span> <span class="st">"holm"</span>)</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>koos_pairs <span class="sc">|&gt;</span> <span class="fu">select</span>(group1, group2, statistic, p, p.adj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+  group1 group2 statistic        p    p.adj
+  &lt;chr&gt;  &lt;chr&gt;      &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+1 6wk    3mo        1698. 2.06e-25 4.13e-25
+2 6wk    1yr         130  1.45e-34 4.36e-34
+3 3mo    1yr        2611  4.12e-20 4.12e-20</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>koos_conover <span class="ot">&lt;-</span> PMCMRplus<span class="sc">::</span><span class="fu">frdAllPairsConoverTest</span>(<span class="at">y =</span> koos<span class="sc">$</span>prom_score, <span class="at">groups =</span> koos<span class="sc">$</span>visit, <span class="at">blocks =</span> koos<span class="sc">$</span>case_id,</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">p.adjust.method =</span> <span class="st">"holm"</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>koos_conover</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    6wk    3mo   
+3mo &lt;2e-16 -     
+1yr &lt;2e-16 &lt;2e-16</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>koos <span class="op">=</span> proms[(proms[<span class="st">"instrument"</span>] <span class="op">==</span> <span class="st">"KOOS JR"</span>) <span class="op">&amp;</span> (proms[<span class="st">"visit"</span>] <span class="op">!=</span> <span class="st">"preop"</span>)]</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>koos_wide <span class="op">=</span> koos.pivot(index<span class="op">=</span><span class="st">"case_id"</span>, columns<span class="op">=</span><span class="st">"visit"</span>, values<span class="op">=</span><span class="st">"prom_score"</span>)[[<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]].dropna()</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(koos_wide))                                    <span class="co"># knees scored at all three visits</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>205</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>wilcoxon <span class="op">=</span> {}</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> a, b <span class="kw">in</span> [(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>), (<span class="st">"6wk"</span>, <span class="st">"1yr"</span>), (<span class="st">"3mo"</span>, <span class="st">"1yr"</span>)]:</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    wilcoxon[(a, b)] <span class="op">=</span> stats.wilcoxon(koos_wide[a], koos_wide[b], method<span class="op">=</span><span class="st">"approx"</span>, correction<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(a, b, wilcoxon[(a, b)].statistic)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>6wk 3mo 1698.5
+6wk 1yr 130.0
+3mo 1yr 2611.0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(multipletests([test.pvalue <span class="cf">for</span> test <span class="kw">in</span> wilcoxon.values()], method<span class="op">=</span><span class="st">"holm"</span>)[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[4.12877449e-25 4.35503019e-34 4.11590264e-20]</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>koos_conover <span class="op">=</span> sp.posthoc_conover_friedman(koos_wide, p_adjust<span class="op">=</span><span class="st">"holm"</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(koos_conover)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              6wk           3mo           1yr
+6wk  1.000000e+00  8.852642e-36  8.540342e-87
+3mo  8.852642e-36  1.000000e+00  6.005858e-28
+1yr  8.540342e-87  6.005858e-28  1.000000e+00</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>All three pairs differ (adjusted p &lt; 0.001 with either method): KOOS JR rose between 6 weeks and 3 months and again between 3 months and 1 year.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: the statistic
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’s <code>wilcox.test()</code> reports V, the sum of the positive ranks; scipy reports the smaller of the two rank sums. Here both are the same number, because the later visit scores higher for most knees. Conover’s test needs the PMCMRplus package in R and scikit-posthocs in Python; they give the same p-values.</p>
+</div>
+</div>
+</section>
+<section id="after-cochran-q" class="level2">
+<h2 class="anchored" data-anchor-id="after-cochran-q">After Cochran’s Q: pairwise McNemar tests</h2>
+<p>After Cochran’s Q, compare pairs of visits with <strong>McNemar’s test</strong> and adjust with Holm. <a href="../catalog/09-three-plus-matched.html#cochran-q">Page 9</a> found that walking-aid use changed over the year in 328 patients assessed at all four visits:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>aid <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, walking_aid) <span class="sc">|&gt;</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(case_id) <span class="sc">|&gt;</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(walking_aid))) <span class="sc">|&gt;</span>               <span class="co"># patients assessed at all four visits</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> visit, <span class="at">values_from =</span> walking_aid)</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>visit_pairs <span class="ot">&lt;-</span> <span class="fu">combn</span>(<span class="fu">c</span>(<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>), <span class="dv">2</span>)    <span class="co"># six pairs, one per column</span></span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>mcnemar_p <span class="ot">&lt;-</span> <span class="fu">apply</span>(visit_pairs, <span class="dv">2</span>, <span class="cf">function</span>(pair) {</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcnemar.test</span>(<span class="fu">table</span>(<span class="fu">factor</span>(aid[[pair[<span class="dv">1</span>]]], <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>), <span class="fu">factor</span>(aid[[pair[<span class="dv">2</span>]]], <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)))<span class="sc">$</span>p.value</span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>mcnemar_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">first =</span> visit_pairs[<span class="dv">1</span>, ], <span class="at">second =</span> visit_pairs[<span class="dv">2</span>, ],</span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>                          <span class="at">p =</span> mcnemar_p, <span class="at">p_holm =</span> <span class="fu">p.adjust</span>(mcnemar_p, <span class="at">method =</span> <span class="st">"holm"</span>))</span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>mcnemar_results</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  first second        p   p_holm
+  &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 preop 6wk    2.60e- 9 7.81e- 9
+2 preop 3mo    4.66e- 3 4.66e- 3
+3 preop 1yr    8.53e-13 3.41e-12
+4 6wk   3mo    6.80e-19 3.40e-18
+5 6wk   1yr    4.30e-31 2.58e-30
+6 3mo   1yr    3.46e- 6 6.92e- 6</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>aid <span class="op">=</span> proms.pivot(index<span class="op">=</span><span class="st">"case_id"</span>, columns<span class="op">=</span><span class="st">"visit"</span>, values<span class="op">=</span><span class="st">"walking_aid"</span>).dropna()   <span class="co"># assessed at all four visits</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>mcnemar_p <span class="op">=</span> []</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>visit_pairs <span class="op">=</span> <span class="bu">list</span>(itertools.combinations([<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>], <span class="dv">2</span>))</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> first, second <span class="kw">in</span> visit_pairs:</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>    pair_table <span class="op">=</span> pd.crosstab(aid[first], aid[second]).reindex(index<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], columns<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], fill_value<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>    mcnemar_p.append(mcnemar(pair_table, exact<span class="op">=</span><span class="va">False</span>, correction<span class="op">=</span><span class="va">True</span>).pvalue)   <span class="co"># as R's mcnemar.test()</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>mcnemar_holm <span class="op">=</span> multipletests(mcnemar_p, method<span class="op">=</span><span class="st">"holm"</span>)[<span class="dv">1</span>]</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame({<span class="st">"pair"</span>: visit_pairs, <span class="st">"p"</span>: mcnemar_p, <span class="st">"p_holm"</span>: mcnemar_holm}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           pair             p        p_holm
+0  (preop, 6wk)  2.603120e-09  7.809359e-09
+1  (preop, 3mo)  4.658779e-03  4.658779e-03
+2  (preop, 1yr)  8.532093e-13  3.412837e-12
+3    (6wk, 3mo)  6.800079e-19  3.400039e-18
+4    (6wk, 1yr)  4.304488e-31  2.582693e-30
+5    (3mo, 1yr)  3.460638e-06  6.921277e-06</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Every pair of visits differs after adjustment. Use rose from pre-op to 6 weeks and fell at each visit after that; by 3 months it was already below its pre-op level (adjusted p = 0.005), and by 1 year lower still.</p>
+</section>
+<section id="after-log-rank" class="level2">
+<h2 class="anchored" data-anchor-id="after-log-rank">After a log-rank test: pairwise survival comparisons</h2>
+<p><a href="../survival/13-kaplan-meier.html#log-rank">Page 13</a> found that revision-free survival differs across implants A, B and C. To say which implants differ, run the <strong>log-rank test for each pair</strong> and adjust with Holm. A Cox model gives the matching effect sizes: refit it with a different reference group to get the hazard ratio for any pair.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>implant_pairs <span class="ot">&lt;-</span> <span class="fu">combn</span>(<span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>), <span class="dv">2</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>logrank <span class="ot">&lt;-</span> <span class="fu">apply</span>(implant_pairs, <span class="dv">2</span>, <span class="cf">function</span>(pair) {</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  two_implants <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span> <span class="fu">filter</span>(implant <span class="sc">%in%</span> pair)</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  test <span class="ot">&lt;-</span> <span class="fu">survdiff</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant, <span class="at">data =</span> two_implants)</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">chisq =</span> test<span class="sc">$</span>chisq, <span class="at">p =</span> test<span class="sc">$</span>pvalue)</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>logrank_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">first =</span> implant_pairs[<span class="dv">1</span>, ], <span class="at">second =</span> implant_pairs[<span class="dv">2</span>, ], <span class="at">chisq =</span> logrank[<span class="st">"chisq"</span>, ],</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>                          <span class="at">p =</span> logrank[<span class="st">"p"</span>, ], <span class="at">p_holm =</span> <span class="fu">p.adjust</span>(logrank[<span class="st">"p"</span>, ], <span class="at">method =</span> <span class="st">"holm"</span>))</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>logrank_results</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+  first second  chisq           p     p_holm
+  &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;
+1 A     B       0.414 0.520       0.520     
+2 A     C      20.5   0.00000586  0.0000117 
+3 B     C      24.7   0.000000659 0.00000198</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># hazard ratios against implant B instead of A</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">implant_vs_b =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(implant), <span class="at">ref =</span> <span class="st">"B"</span>))</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>implant_vs_b_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant_vs_b, <span class="at">data =</span> cohort)</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(implant_vs_b_model)<span class="sc">$</span>conf.int</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              exp(coef) exp(-coef) lower .95 upper .95
+implant_vs_bA  1.223854  0.8170908 0.6676703  2.243351
+implant_vs_bC  3.753982  0.2663838 2.1413307  6.581132</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>pairwise_logrank <span class="op">=</span> pairwise_logrank_test(cohort[<span class="st">"followup_years"</span>], cohort[<span class="st">"implant"</span>], cohort[<span class="st">"revised"</span>])</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>logrank_p <span class="op">=</span> pairwise_logrank.summary[<span class="st">"p"</span>]</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>logrank_holm <span class="op">=</span> multipletests(logrank_p, method<span class="op">=</span><span class="st">"holm"</span>)[<span class="dv">1</span>]</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame({<span class="st">"chisq"</span>: pairwise_logrank.summary[<span class="st">"test_statistic"</span>], <span class="st">"p"</span>: logrank_p, <span class="st">"p_holm"</span>: logrank_holm}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         chisq             p    p_holm
+A B   0.414318  5.197859e-01  0.519786
+  C  20.534618  5.856248e-06  0.000012
+B C  24.730823  6.592144e-07  0.000002</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># hazard ratios against implant B instead of A: the first category is the reference</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>cohort[<span class="st">"implant_vs_b"</span>] <span class="op">=</span> pd.Categorical(cohort[<span class="st">"implant"</span>], categories<span class="op">=</span>[<span class="st">"B"</span>, <span class="st">"A"</span>, <span class="st">"C"</span>])</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>implant_vs_b <span class="op">=</span> CoxPHFitter().fit(cohort[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, <span class="st">"implant_vs_b"</span>]],</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>                                 duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>, formula<span class="op">=</span><span class="st">"implant_vs_b"</span>,</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>                                 fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>})</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(implant_vs_b.summary[[<span class="st">"exp(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>, <span class="st">"exp(coef) upper 95%"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   exp(coef)  exp(coef) lower 95%  exp(coef) upper 95%
+covariate                                                             
+implant_vs_b[T.A]   1.223854             0.667670             2.243351
+implant_vs_b[T.C]   3.753982             2.141331             6.581132</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Implant C differs from both A and B (adjusted p &lt; 0.001 for each). There was no clear evidence of a difference between A and B (p = 0.520). Against implant B, implant C’s hazard ratio was 3.75 (95% CI 2.14 to 6.58); against implant A it was 3.07 (95% CI 1.85 to 5.09; <a href="../catalog/08-three-plus-unmatched.html#cox">page 8</a>).</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> Revision-free survival differed across implants (log-rank χ² = 33.5, df = 2, p &lt; 0.001). In pairwise log-rank tests with Holm’s adjustment, implant C differed from implant A and from implant B (both p &lt; 0.001), with no clear evidence of a difference between A and B (p = 0.520).</p>
+</blockquote>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: pairwise log-rank tests
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>lifelines has <code>pairwise_logrank_test()</code>, which runs every pair at once and leaves the adjustment to you. R’s survival package has no pairwise function, so the R code loops over the pairs; the survminer package’s <code>pairwise_survdiff()</code> does the same in one call. To change the reference group, R uses <code>relevel()</code>; lifelines uses the first category of a pandas <code>Categorical</code>.</p>
+</div>
+</div>
+</section>
+<section id="overall-test-first" class="level2">
+<h2 class="anchored" data-anchor-id="overall-test-first">Do you need a significant overall test first?</h2>
+<p>A common rule says: only run post-hoc tests if the overall test (the ANOVA, Kruskal-Wallis or chi-square) is significant. It comes from <strong>Fisher’s least significant difference</strong> method, which runs unadjusted pairwise tests and relies on the overall test as a gate. That gate only fully protects you with three groups.</p>
+<p>The tests on this page don’t need the gate. Tukey’s HSD, Games-Howell, Dunn’s test and any Holm-adjusted set of pairwise tests control the family-wise error rate on their own. Requiring a significant overall test first just makes them stricter than they need to be.</p>
+<p>The two kinds of test can also disagree, and that’s not a contradiction: - <strong>A significant overall test with no significant pair</strong>, as with complications by ASA class above (overall p = 0.016; no pair below 0.05 after adjustment). The overall test pools the evidence from all four classes, while each pair uses only two of them, and the ASA 1 and ASA 4 groups are small. Report it as it is: complication rates differed across ASA classes overall, but no single pair of classes differed clearly. - <strong>A significant pair with no significant overall test.</strong> This can happen when one pair differs and the others don’t, diluting the overall test.</p>
+<p>What to do: 1. <strong>Decide before you look at the data</strong> which comparisons you’ll make: every pair, or a few planned ones. 2. <strong>If your question is about pairs, go straight to an adjusted pairwise method.</strong> The overall test is optional; report it if your readers expect it. 3. <strong>Never run unadjusted pairwise tests you didn’t plan</strong>, whatever the overall test says. 4. <strong>Say what you did</strong> in the Methods.</p>
+</section>
+<section id="planned-comparisons" class="level2">
+<h2 class="anchored" data-anchor-id="planned-comparisons">Planned comparisons and how to report them</h2>
+<p>Not every comparison is a fishing trip. A study comparing a new implant with the standard one has one <strong>pre-specified</strong> comparison, named in the protocol before any data were collected. It needs no adjustment, because it isn’t one of many. If you planned three comparisons, adjust for three, not for every possible pair.</p>
+<p>Everything else is <strong>exploratory</strong>: comparisons chosen after seeing the data, or a scan across many outcomes. Adjust for every comparison you looked at, not only the ones you report, and label the results exploratory: they suggest questions for the next study, not conclusions.</p>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Pairwise comparisons after the omnibus tests used Tukey’s honestly significant difference test (after ANOVA), Dunn’s test (after Kruskal-Wallis) and Fisher’s exact tests (after chi-square), with Holm’s adjustment for multiple comparisons where the method did not adjust itself. All pairwise comparisons were exploratory.</p>
+<p><strong>Results:</strong> Mean age differed across ASA classes (F(3, 596) = 23.9, p &lt; 0.001); ASA 3 patients were 5.0 years older than ASA 2 patients (95% CI 3.0 to 6.9, p &lt; 0.001). Table 2 gives all six pairwise comparisons.</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: report every comparison you ran
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Running ten comparisons and reporting the two significant ones hides how many chances you had. Give the number of comparisons and the adjustment in the Methods, and put the full set of pairwise results in a table or supplement.</p>
+</div>
+</div>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The solutions use the packages and data loaded in the sections above, so run the page from the top first.</p>
+<p><strong>1.</strong> <a href="../catalog/08-three-plus-unmatched.html#exercises">Page 8’s exercise 1</a> found that BMI differs across ASA classes. Which pairs of classes differ? Use Tukey’s HSD.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(<span class="fu">aov</span>(bmi <span class="sc">~</span> <span class="fu">factor</span>(asa), <span class="at">data =</span> cohort))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = bmi ~ factor(asa), data = cohort)
+
+$`factor(asa)`
+        diff       lwr       upr     p adj
+2-1 2.874778 0.5750771  5.174478 0.0073588
+3-1 5.824526 3.4979388  8.151113 0.0000000
+4-1 9.877778 6.1140091 13.641546 0.0000000
+3-2 2.949748 1.8282934  4.071203 0.0000000
+4-2 7.003000 3.8390455 10.166954 0.0000001
+4-3 4.053252 0.8697018  7.236802 0.0060316</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pairwise_tukeyhsd(cohort[<span class="st">"bmi"</span>], cohort[<span class="st">"asa"</span>]).summary())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Multiple Comparison of Means - Tukey HSD, FWER=0.05
+===================================================
+group1 group2 meandiff p-adj  lower   upper  reject
+---------------------------------------------------
+     1      2   2.8748 0.0074 0.5751  5.1745   True
+     1      3   5.8245    0.0 3.4979  8.1511   True
+     1      4   9.8778    0.0  6.114 13.6415   True
+     2      3   2.9497    0.0 1.8283  4.0712   True
+     2      4    7.003    0.0  3.839  10.167   True
+     3      4   4.0533  0.006 0.8697  7.2368   True
+---------------------------------------------------</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Every pair differs (all adjusted p &lt; 0.01): mean BMI rises with each step in ASA class. The least certain differences involve the two small classes: ASA 2 vs 1 (2.9 kg/m², 95% CI 0.6 to 5.2, p = 0.007) and ASA 4 vs 3 (4.1 kg/m², 95% CI 0.9 to 7.2, p = 0.006).</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> A colleague compares men and women on six yes/no characteristics (diabetes, hypertension, sleep apnea, readmission, complications and discharge to a facility) with Fisher’s exact test. Which adjustment fits, and which differences survive it?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>This is a screen across several outcomes with no single planned comparison, so the results are exploratory. Holm’s adjustment keeps the chance of any false positive at 5%; Benjamini-Hochberg is acceptable for a screen, as long as the results are labeled exploratory.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>yes_no <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">facility =</span> <span class="fu">as.integer</span>(discharge <span class="sc">==</span> <span class="st">"facility"</span>))</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>characteristics <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"diabetes"</span>, <span class="st">"hypertension"</span>, <span class="st">"sleep_apnea"</span>, <span class="st">"readmit_90d"</span>, <span class="st">"complication_90d"</span>, <span class="st">"facility"</span>)</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>by_sex_p <span class="ot">&lt;-</span> <span class="fu">sapply</span>(characteristics, <span class="cf">function</span>(v) <span class="fu">fisher.test</span>(<span class="fu">table</span>(yes_no<span class="sc">$</span>sex, yes_no[[v]]))<span class="sc">$</span>p.value)</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cbind</span>(<span class="at">unadjusted =</span> by_sex_p, <span class="at">holm =</span> <span class="fu">p.adjust</span>(by_sex_p, <span class="st">"holm"</span>), <span class="at">bh =</span> <span class="fu">p.adjust</span>(by_sex_p, <span class="st">"BH"</span>)), <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 unadjusted   holm     bh
+diabetes             0.3209 1.0000 0.6418
+hypertension         0.1346 0.6729 0.4038
+sleep_apnea          0.0000 0.0001 0.0001
+readmit_90d          1.0000 1.0000 1.0000
+complication_90d     0.6582 1.0000 0.8487
+facility             0.7072 1.0000 0.8487</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>cohort[<span class="st">"facility"</span>] <span class="op">=</span> (cohort[<span class="st">"discharge"</span>] <span class="op">==</span> <span class="st">"facility"</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>characteristics <span class="op">=</span> [<span class="st">"diabetes"</span>, <span class="st">"hypertension"</span>, <span class="st">"sleep_apnea"</span>, <span class="st">"readmit_90d"</span>, <span class="st">"complication_90d"</span>, <span class="st">"facility"</span>]</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>by_sex_p <span class="op">=</span> [stats.fisher_exact(pd.crosstab(cohort[<span class="st">"sex"</span>], cohort[v])).pvalue <span class="cf">for</span> v <span class="kw">in</span> characteristics]</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame({<span class="st">"unadjusted"</span>: by_sex_p, <span class="st">"holm"</span>: multipletests(by_sex_p, method<span class="op">=</span><span class="st">"holm"</span>)[<span class="dv">1</span>],</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"bh"</span>: multipletests(by_sex_p, method<span class="op">=</span><span class="st">"fdr_bh"</span>)[<span class="dv">1</span>]}, index<span class="op">=</span>characteristics).<span class="bu">round</span>(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  unadjusted    holm      bh
+diabetes              0.3209  1.0000  0.6418
+hypertension          0.1346  0.6729  0.4038
+sleep_apnea           0.0000  0.0001  0.0001
+readmit_90d           1.0000  1.0000  1.0000
+complication_90d      0.6582  1.0000  0.8487
+facility              0.7072  1.0000  0.8487</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Only sleep apnea differs between men and women after either adjustment (adjusted p &lt; 0.001). Hypertension’s unadjusted p = 0.135 was never close, and every other characteristic’s Benjamini-Hochberg p-value is above 0.4.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> Leaving out the pre-op visit, which pairs of visits differ in walking-aid use (6 weeks, 3 months, 1 year)? Write the Results sentence.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>later <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(visit <span class="sc">!=</span> <span class="st">"preop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, walking_aid) <span class="sc">|&gt;</span></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(case_id) <span class="sc">|&gt;</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(walking_aid))) <span class="sc">|&gt;</span></span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> visit, <span class="at">values_from =</span> walking_aid)</span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(later)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 345</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(later[, <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      6wk       3mo       1yr 
+0.5884058 0.2521739 0.1072464 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>later_pairs <span class="ot">&lt;-</span> <span class="fu">combn</span>(<span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>), <span class="dv">2</span>)</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>later_p <span class="ot">&lt;-</span> <span class="fu">apply</span>(later_pairs, <span class="dv">2</span>, <span class="cf">function</span>(pair) {</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcnemar.test</span>(<span class="fu">table</span>(<span class="fu">factor</span>(later[[pair[<span class="dv">1</span>]]], <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>), <span class="fu">factor</span>(later[[pair[<span class="dv">2</span>]]], <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)))<span class="sc">$</span>p.value</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a><span class="fu">p.adjust</span>(later_p, <span class="at">method =</span> <span class="st">"holm"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.287205e-18 1.387448e-31 1.223935e-06</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>later <span class="op">=</span> proms[proms[<span class="st">"visit"</span>] <span class="op">!=</span> <span class="st">"preop"</span>].pivot(index<span class="op">=</span><span class="st">"case_id"</span>, columns<span class="op">=</span><span class="st">"visit"</span>, values<span class="op">=</span><span class="st">"walking_aid"</span>).dropna()</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(later), later[[<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]].mean().<span class="bu">round</span>(<span class="dv">3</span>).to_list())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>345 [0.588, 0.252, 0.107]</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>later_p <span class="op">=</span> []</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> first, second <span class="kw">in</span> itertools.combinations([<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>], <span class="dv">2</span>):</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>    pair_table <span class="op">=</span> pd.crosstab(later[first], later[second]).reindex(index<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], columns<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], fill_value<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>    later_p.append(mcnemar(pair_table, exact<span class="op">=</span><span class="va">False</span>, correction<span class="op">=</span><span class="va">True</span>).pvalue)</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(multipletests(later_p, method<span class="op">=</span><span class="st">"holm"</span>)[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[2.28720462e-18 1.38744786e-31 1.22393512e-06]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Among 345 patients assessed at all three visits, walking-aid use fell from 58.8% at 6 weeks to 25.2% at 3 months and 10.7% at 1 year; every pair of visits differed in McNemar tests with Holm’s adjustment (all p &lt; 0.001).</p>
+</div>
 </div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -971,8 +1959,8 @@ ul.task-list li input[type="checkbox"] {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../beyond/16-mixed-models.html" class="pagination-link" aria-label="16 · Mixed models for repeated PROMs (coming soon)">
-        <span class="nav-page-text">16 · Mixed models for repeated PROMs (coming soon)</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../beyond/16-mixed-models.html" class="pagination-link" aria-label="16 · Mixed models for repeated PROMs">
+        <span class="nav-page-text">16 · Mixed models for repeated PROMs</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -984,7 +1972,7 @@ ul.task-list li input[type="checkbox"] {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>Text CC BY 4.0 · Code MIT</p>
 </div>

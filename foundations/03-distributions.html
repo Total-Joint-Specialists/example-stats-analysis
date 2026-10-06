@@ -502,19 +502,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../beyond/15-post-hoc.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">15 · Post-hoc tests &amp; multiple comparisons (coming soon)</span></a>
+ <span class="menu-text">15 · Post-hoc tests &amp; multiple comparisons</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../beyond/16-mixed-models.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">16 · Mixed models for repeated PROMs (coming soon)</span></a>
+ <span class="menu-text">16 · Mixed models for repeated PROMs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../beyond/17-agreement.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">17 · Agreement &amp; reliability (coming soon)</span></a>
+ <span class="menu-text">17 · Agreement &amp; reliability</span></a>
   </div>
 </li>
       </ul>
@@ -1084,7 +1084,7 @@ Name: count, dtype: int64</code></pre>
 <li><strong>Paired:</strong> the same patients measured twice, or natural pairs. Pre-op vs 1-year PROM in the same patients; left vs right knee in bilateral patients; two raters measuring the same X-rays.</li>
 <li><strong>Matched:</strong> each patient in one group has been chosen to resemble a patient in the other group (by age, sex, BMI…). Treat matched sets like pairs.</li>
 </ul>
-<p><strong>Bilateral patients need care.</strong> In our cohort, 80 patients appear twice, once for each side, usually in the same group. Their two procedures share the same person’s age, sex and health, so they are not independent. Tests that treat every row as a separate patient are then a little overconfident (p-values too small, CIs too narrow). Either analyse one procedure per patient (for example, the first), or use methods built for clustered data, such as <a href="../beyond/16-mixed-models.html">mixed models</a>. Say which you did.</p>
+<p><strong>Bilateral patients need care.</strong> In our cohort, 80 patients appear twice, once for each side, usually in the same group. Their two procedures share the same person’s age, sex and health, so they are not independent. Tests that treat every row as a separate patient are then a little overconfident (p-values too small, CIs too narrow). Either analyse one procedure per patient (for example, the first), or use methods built for clustered data, such as <a href="../beyond/16-mixed-models.html#bilateral">mixed models</a>. Say which you did.</p>
 <p>Pairing matters because measurements on the same patient are related. A paired analysis uses each patient as their own control, which removes the patient-to-patient variation and usually gives a more precise answer. Analyzing paired data as if unpaired is one of the most common mistakes in the literature.</p>
 </section>
 <section id="flowchart" class="level2">

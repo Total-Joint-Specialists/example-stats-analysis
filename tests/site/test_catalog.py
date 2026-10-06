@@ -11,6 +11,7 @@ WRITTEN = [
     "catalog/06-two-unpaired-groups.html",
     "catalog/07-two-paired-groups.html",
     "catalog/08-three-plus-unmatched.html",
+    "catalog/09-three-plus-matched.html",
 ]
 
 # Spec section 6, steps 2-7, as h3 headings in this order. Page 4 describes a
@@ -150,3 +151,10 @@ THREE_GROUP_PAGES = [page for page in WRITTEN if page.startswith(("catalog/08-",
 def test_three_group_pages_end_with_which_groups_differ(site, page):
     hrefs = [a["href"] for a in section(page, "which-groups-differ").select("a[href]")]
     assert any(href.endswith("beyond/15-post-hoc.html") for href in hrefs)
+
+
+def test_matched_page_warns_that_missed_visits_drop_patients(site):
+    soup = load("catalog/09-three-plus-matched.html")
+    warnings = [box for box in soup.select("div.callout-warning") if "missed visit" in text_of(box)]
+    assert warnings, "no warning about missed visits"
+    assert any(a["href"].endswith("beyond/16-mixed-models.html") for a in warnings[0].select("a[href]"))

@@ -10,6 +10,7 @@ WRITTEN = [
     "catalog/05-one-group-vs-hypothetical.html",
     "catalog/06-two-unpaired-groups.html",
     "catalog/07-two-paired-groups.html",
+    "catalog/08-three-plus-unmatched.html",
 ]
 
 # Spec section 6, steps 2-7, as h3 headings in this order. Page 4 describes a
@@ -26,6 +27,8 @@ SURVIVAL_LINKS = {cell: target for cell, target in {
     ("catalog/04-describe-one-group.html", "kaplan-meier"): "survival/13-kaplan-meier.html",
     ("catalog/06-two-unpaired-groups.html", "log-rank"): "survival/14-cox-regression.html",
     ("catalog/07-two-paired-groups.html", "stratified-cox"): "survival/14-cox-regression.html",
+    ("catalog/08-three-plus-unmatched.html", "cox"): "survival/14-cox-regression.html",
+    ("catalog/09-three-plus-matched.html", "stratified-cox"): "survival/14-cox-regression.html",
 }.items() if cell[0] in WRITTEN}
 
 
@@ -136,3 +139,14 @@ def test_tied_los_explanation_is_accurate(site):
     text = text_of(section("catalog/06-two-unpaired-groups.html", "exercises"))
     assert "most of the Site A − Site B differences are exactly 0" not in text
     assert "a third of the Site A − Site B differences are exactly 0 days" in text
+
+
+# ---- three or more groups -------------------------------------------------
+
+THREE_GROUP_PAGES = [page for page in WRITTEN if page.startswith(("catalog/08-", "catalog/09-"))]
+
+
+@pytest.mark.parametrize("page", THREE_GROUP_PAGES)
+def test_three_group_pages_end_with_which_groups_differ(site, page):
+    hrefs = [a["href"] for a in section(page, "which-groups-differ").select("a[href]")]
+    assert any(href.endswith("beyond/15-post-hoc.html") for href in hrefs)

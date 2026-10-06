@@ -98,13 +98,13 @@ def written_pages(*dirs):
 
 def test_exercise_solutions_are_executed():
     """Solutions run on every render, so a typo in one can't ship unnoticed."""
-    for name, text in written_pages("foundations", "catalog"):
+    for name, text in written_pages("foundations", "catalog", "survival"):
         exercises = text[text.index("## Exercises {#exercises}"):]
         assert "```r\n" not in exercises and "```python\n" not in exercises, name
 
 
 def test_pages_guard_the_numbers_in_their_prose():
-    for name, text in written_pages("foundations", "catalog"):
+    for name, text in written_pages("foundations", "catalog", "survival"):
         chunks = hidden_chunks(text)
         assert any(lang == "r" and "Prose guard" in code and "stopifnot(" in code
                    for lang, code in chunks), name
@@ -210,6 +210,15 @@ def test_every_catalog_section_checks_r_against_python():
         r_checks = sum(lang == "r" and "check_agree(" in code for lang, code in hidden)
         py_values = sum(lang == "python" and "chk = " in code for lang, code in hidden)
         assert r_checks >= 1 and r_checks == py_values, f"{name}#{anchor}: {r_checks} R checks, {py_values} Python chk"
+
+
+def test_survival_pages_check_r_against_python():
+    """Free-form pages have no cell sections, so count the whole page's checks."""
+    for name, text in written_pages("survival"):
+        hidden = hidden_chunks(text)
+        r_checks = sum(lang == "r" and "check_agree(" in code for lang, code in hidden)
+        py_values = sum(lang == "python" and "chk = " in code for lang, code in hidden)
+        assert r_checks >= 5 and r_checks == py_values, f"{name}: {r_checks} R checks, {py_values} Python chk"
 
 
 # ---- each section's Python runs on its own -------------------------------

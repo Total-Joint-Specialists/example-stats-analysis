@@ -1,5 +1,6 @@
 """Shared constants and helpers for the built-site tests."""
 
+import re
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -61,3 +62,35 @@ def load(page: str) -> BeautifulSoup:
 
 def strip_dot(href: str) -> str:
     return href.removeprefix("./")
+
+
+def text_of(element):
+    """Text with smart quotes straightened and runs of whitespace collapsed."""
+    return " ".join(element.get_text(" ").replace("’", "'").split())
+
+
+def section(page, anchor):
+    found = load(page).select_one(f"section#{anchor}")
+    assert found is not None, f"{page} has no section #{anchor}"
+    return found
+
+
+# ---- reporting conventions (spec section 4, page 0.2) ------------------------
+
+# A wide CI or a non-significant check is "no clear evidence of a difference", never "similar" or "held".
+NO_EVIDENCE_AS_NO_DIFFERENCE = re.compile(
+    r"\b(similar|no difference|held|not violated|(?:did not|does not|doesn't) improve)\b", re.IGNORECASE)
+EFFECT_SIZE = re.compile(r"(ω²|ε²|η²( p)?|Kendall's W|Cramér's V|\br|ρ|φ) = [\d.]+|(odds|hazard) ratio [\d.]+")
+
+
+def unreported(text):
+    """The conventions a model Results sentence breaks: an effect size needs its CI,
+    a mean its SD and a median its IQR."""
+    problems = []
+    if EFFECT_SIZE.search(text) and "CI" not in text:
+        problems.append("effect size without a CI")
+    if re.search(r"\bmeans? of [\d.]+", text) and "SD" not in text:
+        problems.append("mean without an SD")
+    if re.search(r"\bmedian\b[^.]*\d", text) and "IQR" not in text:
+        problems.append("median without an IQR")
+    return problems

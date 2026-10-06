@@ -1,10 +1,828 @@
 ---
-title: "13 · Kaplan-Meier & the log-rank test (coming soon)"
-description: "Censoring, KM curves with numbers at risk, survivorship, log-rank, competing risks."
+title: "13 · Kaplan-Meier & the log-rank test"
+description: "Censoring, time zero, Kaplan-Meier curves with numbers at risk, survivorship at 2, 5 and 10 years, median follow-up, the log-rank test, and competing risks."
+engine: knitr
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
+"How long do the implants last?" is the central question of arthroplasty research, and it needs its own methods. Patients join the study over several years and are followed for different lengths of time, and most of them are never revised. **Survival analysis** uses every patient's follow-up for as long as it lasts.
+
+Pages [4](../catalog/04-describe-one-group.qmd#kaplan-meier), [6](../catalog/06-two-unpaired-groups.qmd#log-rank) and [8](../catalog/08-three-plus-unmatched.qmd#cox) each showed one survival method in a few steps. This page covers the whole method:
+- what censoring is
+- how to set up the data
+- how to read and report a Kaplan-Meier curve
+- how long the patients were followed
+- how to compare groups
+- what to do when patients die before they can be revised
+
+[Page 14](14-cox-regression.qmd) covers Cox regression.
+
+::: {.callout-note}
+## 💡 How this page works
+Run the code blocks in order, from the top: later blocks use the packages and data loaded earlier.
+
+To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them ([page 14](14-cox-regression.qmd#stratified-cox)) and say what you did.
 :::
 
+## What censoring means {#censoring}
+
+Picture six patients, each followed from surgery until either a revision or the end of their follow-up:
+
+| Patient | Years followed | Revised? |
+|---|---|---|
+| A | 1 | yes |
+| B | 2 | no: the study closed |
+| C | 3 | yes |
+| D | 4 | no: moved away |
+| E | 5 | yes |
+| F | 6 | no: the study closed |
+
+Patients B, D and F are **censored**. We know they went *at least* that long without a revision, but not what happened afterwards. Censoring isn't missing data: it's partial information, and survival methods use all of it.
+
+Two simple summaries both get this wrong:
+- **"3 of 6 (50%) were revised"** ignores time. Patient B was followed for only 2 years, so B's implant never had the chance to fail at 4 or 5 years.
+- **Dropping the censored patients** ("3 of 3 were revised") throws away the years B, D and F spent without a revision.
+
+The **Kaplan-Meier** method gets it right. It moves through time and recalculates at each revision, using only the patients still being followed (**at risk**) at that moment:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+library(survival)
+library(ggsurvfit)
+
+toy <- tibble(
+  patient = c("A", "B", "C", "D", "E", "F"),
+  years   = c(1, 2, 3, 4, 5, 6),
+  revised = c(1, 0, 1, 0, 1, 0)        # 1 = revised, 0 = censored
+)
+
+toy_km <- survfit(Surv(years, revised) ~ 1, data = toy)
+summary(toy_km)
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from lifelines import KaplanMeierFitter
+
+toy = pd.DataFrame({
+    "patient": ["A", "B", "C", "D", "E", "F"],
+    "years":   [1, 2, 3, 4, 5, 6],
+    "revised": [1, 0, 1, 0, 1, 0],     # 1 = revised, 0 = censored
+})
+
+toy_km = KaplanMeierFitter().fit(toy["years"], event_observed=toy["revised"])
+print(toy_km.event_table[["at_risk", "observed", "censored"]])   # observed = revisions
+print(toy_km.survival_function_)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"surv_1": float(toy_km.survival_function_at_times(1).iloc[0]),
+       "surv_3": float(toy_km.survival_function_at_times(3).iloc[0]),
+       "surv_5": float(toy_km.survival_function_at_times(5).iloc[0])}
+```
+
+```{r}
+#| include: false
+toy_summary <- summary(toy_km, times = c(1, 3, 5))
+check_agree(list(surv_1 = toy_summary$surv[1], surv_3 = toy_summary$surv[2], surv_5 = toy_summary$surv[3]),
+            reticulate::py$chk)
+```
+
+Reading the output, one revision at a time:
+- **Year 1:** 6 patients at risk, 1 revised. Survival = 5/6 = 0.833.
+- **Year 2:** B is censored. Nothing happens to the curve, but the at-risk group shrinks to 4.
+- **Year 3:** 4 at risk, 1 revised. Survival = 0.833 × 3/4 = 0.625.
+- **Year 5:** 2 at risk (D was censored at year 4), 1 revised. Survival = 0.625 × 1/2 = 0.3125.
+
+So the estimated chance of a revision by 5 years is 1 − 0.3125 = 69%, not 50%. Each censored patient counts fully while they're followed and then leaves the at-risk group.
+
+::: {.callout-note collapse="true"}
+## 🔍 Under the hood: the product-limit formula
+At each time $t_i$ when at least one revision happens, with $n_i$ patients at risk and $d_i$ revisions, the chance of getting past $t_i$ unrevised is $1 - d_i/n_i$. Kaplan-Meier survival at time $t$ multiplies these together for every revision time up to $t$:
+
+$$\hat S(t) = \prod_{t_i \le t} \left(1 - \frac{d_i}{n_i}\right)$$
+
+This is why the method is also called the **product-limit** estimator. Censored patients appear only in the $n_i$ of the revision times before they leave.
+:::
+
+::: {.callout-warning}
+## ⚠️ Watch out: censoring must be unrelated to the outcome
+Kaplan-Meier assumes a censored patient has the same future risk as the patients still being followed. That's reasonable when follow-up ends because the study closed. It isn't when patients stop coming back *because* their hip hurts, or stay away because it's perfect. If many patients are lost to follow-up, say how many and why.
+:::
+
+## Time zero and the event {#time-zero}
+
+Every survival analysis needs two definitions, fixed before you look at the results:
+
+- **Time zero**, when the clock starts. For implant survival it's the **date of surgery**: every patient starts at the same clinical moment. Starting at the first clinic visit instead would ignore revisions that happened before that visit.
+- **The event**, what stops the clock. Here it's **revision for any reason**: any reoperation that removes or exchanges a component. Other studies use aseptic revision, or any reoperation. Choose one in advance and define it in the Methods.
+
+Real data rarely arrive as "years followed" and "revised: yes/no". You build those columns from dates. The practice cohort already has them: `followup_years` and `event_status`, where 0 means censored, 1 means revised and 2 means died without a revision. Here's how to make them from a table of dates, for four made-up patients:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+dates <- tibble(
+  patient       = c("P1", "P2", "P3", "P4"),
+  surgery_date  = as.Date(c("2016-03-14", "2018-11-05", "2020-06-30", "2017-01-09")),
+  revision_date = as.Date(c("2019-07-02", NA, NA, "2017-04-18")),
+  death_date    = as.Date(c("2023-02-11", "2022-01-20", NA, NA)),
+  last_seen     = as.Date(c("2022-10-03", "2021-12-02", "2025-11-17", "2024-08-15"))
+)
+
+follow_up <- dates |>
+  mutate(
+    # the first event wins: a revision, else a death, else censored at the last visit
+    event_status = case_when(!is.na(revision_date) ~ 1,
+                             !is.na(death_date)    ~ 2,
+                             .default = 0),
+    end_date = case_when(event_status == 1 ~ revision_date,
+                         event_status == 2 ~ death_date,
+                         .default = last_seen),
+    followup_years = as.numeric(end_date - surgery_date) / 365.25
+  )
+
+follow_up |> select(patient, event_status, end_date, followup_years)
+```
+
+## Python
+
+```{python}
+dates = pd.DataFrame({
+    "patient":       ["P1", "P2", "P3", "P4"],
+    "surgery_date":  ["2016-03-14", "2018-11-05", "2020-06-30", "2017-01-09"],
+    "revision_date": ["2019-07-02", None, None, "2017-04-18"],
+    "death_date":    ["2023-02-11", "2022-01-20", None, None],
+    "last_seen":     ["2022-10-03", "2021-12-02", "2025-11-17", "2024-08-15"],
+})
+for column in ["surgery_date", "revision_date", "death_date", "last_seen"]:
+    dates[column] = pd.to_datetime(dates[column])
+
+# the first event wins: a revision, else a death, else censored at the last visit
+dates["event_status"] = np.select([dates["revision_date"].notna(), dates["death_date"].notna()],
+                                  [1, 2], default=0)
+dates["end_date"] = dates["revision_date"].fillna(dates["death_date"]).fillna(dates["last_seen"])
+dates["followup_years"] = (dates["end_date"] - dates["surgery_date"]).dt.days / 365.25
+
+print(dates[["patient", "event_status", "end_date", "followup_years"]])
+```
+:::
+
+```{python}
+#| include: false
+chk = {"years_p1": float(dates["followup_years"].iloc[0]), "years_p2": float(dates["followup_years"].iloc[1]),
+       "years_p3": float(dates["followup_years"].iloc[2]), "years_p4": float(dates["followup_years"].iloc[3]),
+       "status_sum": float(dates["event_status"].sum())}
+```
+
+```{r}
+#| include: false
+check_agree(list(years_p1 = follow_up$followup_years[1], years_p2 = follow_up$followup_years[2],
+                 years_p3 = follow_up$followup_years[3], years_p4 = follow_up$followup_years[4],
+                 status_sum = sum(follow_up$event_status)),
+            reticulate::py$chk)
+```
+
+- **P1** was revised in 2019 and died in 2023. The revision came first, so P1's follow-up ends at the revision, 3.30 years after surgery.
+- **P2** died 3.21 years after surgery without a revision. Death ends the follow-up: P2 can never be revised. (The section on [competing risks](#competing-risks) explains why that matters.)
+- **P3** was alive and unrevised at the last visit: censored at 5.38 years.
+- **P4** was revised 99 days after surgery, at 0.27 years.
+
+::: {.callout-warning}
+## ⚠️ Watch out: follow-up ends at the last visit, not today
+Don't set every unrevised patient's end date to the date you pulled the data. A patient last seen in 2021 might have been revised elsewhere since. Censor at the last date you *know* the implant was in place. And check that no event date comes before the surgery date: it's always a data-entry error.
+:::
+
+## The Kaplan-Meier curve {#kaplan-meier}
+
+Now the practice cohort: 600 procedures, each followed from surgery to revision, death or the last visit.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| fig-height: 4.5
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+km <- survfit2(Surv(followup_years, revised) ~ 1, data = cohort,
+               conf.type = "log-log")              # the CI method lifelines uses
+
+km |>
+  ggsurvfit() +
+  add_confidence_interval() +
+  add_censor_mark(size = 1, alpha = 0.4) +         # a tick for each censored patient
+  add_risktable(times = c(0, 2, 4, 6, 8, 10)) +
+  scale_ggsurvfit(x_scales = list(breaks = c(0, 2, 4, 6, 8, 10))) +
+  labs(x = "Years since surgery", y = "Revision-free survival")
+```
+
+## Python
+
+```{python}
+from lifelines.plotting import add_at_risk_counts
+
+cohort = pd.read_csv("data/cohort.csv")
+
+km = KaplanMeierFitter(label="All procedures").fit(cohort["followup_years"], event_observed=cohort["revised"])
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+km.plot_survival_function(ax=ax, show_censors=True,                # a tick for each censored patient
+                          censor_styles={"ms": 3, "alpha": 0.4}, legend=False)
+ax.set_xlabel("Years since surgery")
+ax.set_ylabel("Revision-free survival")
+add_at_risk_counts(km, ax=ax, xticks=[0, 2, 4, 6, 8, 10], rows_to_show=["At risk", "Events"])
+plt.tight_layout()
+plt.show()
+```
+:::
+
+```{python}
+#| include: false
+chk = {"at_risk_4": float((cohort["followup_years"] >= 4).sum()),
+       "at_risk_8": float((cohort["followup_years"] >= 8).sum()),
+       "surv_4": float(km.survival_function_at_times(4).iloc[0]),
+       "surv_8": float(km.survival_function_at_times(8).iloc[0])}
+```
+
+```{r}
+#| include: false
+km_4_8 <- summary(km, times = c(4, 8))
+check_agree(list(at_risk_4 = km_4_8$n.risk[1], at_risk_8 = km_4_8$n.risk[2],
+                 surv_4 = km_4_8$surv[1], surv_8 = km_4_8$surv[2]),
+            reticulate::py$chk)
+```
+
+How to read it:
+- **The steps:** the curve starts at 100% and drops at each revision. The drops get bigger later on, because each revision is then a bigger share of the fewer patients still at risk.
+- **The ticks** mark censored patients. They don't move the curve; they leave the at-risk group.
+- **The shaded band** is the 95% CI. It widens as patients leave.
+- **The table below the plot** gives the number of patients still being followed (**at risk**) at each time, 600 at surgery, 332 at 4 years and 84 at 8 years, and the revisions so far. Always publish the numbers at risk with the curve: they tell the reader how much to trust each part of it.
+
+::: {.callout-warning}
+## ⚠️ Watch out: the tail of the curve
+By 10 years only 21 procedures are still followed, so each late revision moves the curve a lot. Don't draw conclusions from the far right-hand end. A common rule of thumb is to stop drawing the curve once fewer than about 10% of patients (here, 60) remain at risk.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: the confidence band
+R's `survfit()` uses a "log" CI by default; lifelines uses "log-log". We set `conf.type = "log-log"` in R so the two match, as on [page 4](../catalog/04-describe-one-group.qmd#kaplan-meier). The numbers at risk can differ by one or two: R counts the patients followed for *at least* 4 years, lifelines those followed for *more than* 4 years, so a patient censored at exactly 4.00 years is in R's count only. lifelines' `add_at_risk_counts()` also adds a row of censored patients unless you choose rows with `rows_to_show`.
+:::
+
+## Survivorship at 2, 5 and 10 years {#survivorship}
+
+Papers report the curve at fixed times: the **survivorship**, the percentage of implants still unrevised.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+summary(km, times = c(2, 5, 10))
+```
+
+## Python
+
+```{python}
+for years in [2, 5, 10]:
+    estimate = km.survival_function_at_times(years).iloc[0]
+    ci = km.confidence_interval_survival_function_.loc[:years].iloc[-1]   # last step at or before that time
+    at_risk = (cohort["followup_years"] >= years).sum()
+    print(years, round(estimate, 3), ci.round(3).to_list(), at_risk)
+```
+:::
+
+```{python}
+#| include: false
+chk = {}
+for years in [2, 5, 10]:
+    ci = km.confidence_interval_survival_function_.loc[:years].iloc[-1]
+    chk[f"surv_{years}"] = float(km.survival_function_at_times(years).iloc[0])
+    chk[f"low_{years}"] = float(ci.iloc[0])
+    chk[f"high_{years}"] = float(ci.iloc[1])
+```
+
+```{r}
+#| include: false
+km_2_5_10 <- summary(km, times = c(2, 5, 10))
+check_agree(list(surv_2 = km_2_5_10$surv[1], low_2 = km_2_5_10$lower[1], high_2 = km_2_5_10$upper[1],
+                 surv_5 = km_2_5_10$surv[2], low_5 = km_2_5_10$lower[2], high_5 = km_2_5_10$upper[2],
+                 surv_10 = km_2_5_10$surv[3], low_10 = km_2_5_10$lower[3], high_10 = km_2_5_10$upper[3]),
+            reticulate::py$chk)
+```
+
+- **survival:** 0.939 at 2 years, 0.863 at 5 years and 0.780 at 10 years.
+- **lower 95% CI / upper 95% CI:** the CI around each one. The 10-year CI (0.725 to 0.826) is the widest.
+- **n.risk:** 496 procedures still followed at 2 years, 263 at 5 years and only 21 at 10 years.
+- **n.event:** the revisions *since the previous time shown*, not the running total.
+
+> **Methods:** Implant survivorship was estimated with the Kaplan-Meier method, with revision for any reason as the end point and the date of surgery as time zero. Patients were censored at death or at their last follow-up. Confidence intervals used the log-log transformation.
+>
+> **Results:** Survivorship free of revision was 93.9% (95% CI 91.6% to 95.6%) at 2 years, 86.3% (95% CI 82.8% to 89.2%) at 5 years and 78.0% (95% CI 72.5% to 82.6%) at 10 years, when 21 procedures remained at risk.
+
+::: {.callout-warning}
+## ⚠️ Watch out: "86% survival" needs its time point, CI and numbers at risk
+A survivorship figure means nothing without the time it refers to. Give the 95% CI, and the number still at risk at the time you quote, so readers can see how much data the estimate rests on.
+:::
+
+## How long were patients followed? {#follow-up}
+
+Every survival paper reports the **median follow-up**. The obvious way to calculate it is wrong:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+median(cohort$followup_years)        # misleading: revisions and deaths cut follow-up short
+
+# reverse Kaplan-Meier: treat "still followed at the end" as the event
+reverse_km <- survfit(Surv(followup_years, event_status == 0) ~ 1, data = cohort)
+quantile(reverse_km, probs = c(0.25, 0.5, 0.75), conf.int = FALSE)
+```
+
+## Python
+
+```{python}
+from lifelines.utils import qth_survival_times
+
+print(cohort["followup_years"].median())   # misleading: revisions and deaths cut follow-up short
+
+# reverse Kaplan-Meier: treat "still followed at the end" as the event
+reverse_km = KaplanMeierFitter().fit(cohort["followup_years"],
+                                     event_observed=(cohort["event_status"] == 0))
+print(qth_survival_times([0.75, 0.5, 0.25], reverse_km.survival_function_))   # 25th, 50th, 75th percentiles
+```
+:::
+
+```{python}
+#| include: false
+follow_up_quartiles = qth_survival_times([0.75, 0.5, 0.25], reverse_km.survival_function_).iloc[:, 0]
+chk = {"crude": float(cohort["followup_years"].median()), "q1": float(follow_up_quartiles.iloc[0]),
+       "median": float(follow_up_quartiles.iloc[1]), "q3": float(follow_up_quartiles.iloc[2])}
+```
+
+```{r}
+#| include: false
+follow_up_quartiles <- quantile(reverse_km, probs = c(0.25, 0.5, 0.75), conf.int = FALSE)
+check_agree(list(crude = median(cohort$followup_years), q1 = follow_up_quartiles[[1]],
+                 median = follow_up_quartiles[[2]], q3 = follow_up_quartiles[[3]]),
+            reticulate::py$chk)
+```
+
+The plain median, 4.4 years, mixes two things: how long the study watched patients, and how soon they were revised or died. A patient revised at 1 year wasn't "followed for 1 year" in the sense readers care about. The study would have kept watching them.
+
+The **reverse Kaplan-Meier** method answers the real question: how long would patients have been followed if nothing had happened to them? It swaps the roles: being censored at the end of follow-up becomes the "event", and revisions and deaths become the censored observations. The median follow-up is **5.62 years** (IQR 3.52 to 7.93).
+
+> **Methods:** Median follow-up was estimated with the reverse Kaplan-Meier method.
+>
+> **Results:** The median follow-up was 5.62 years (IQR 3.52 to 7.93).
+
+## Comparing groups: the log-rank test {#log-rank}
+
+The **log-rank test** asks whether two or more survival curves differ. At every revision time it compares each group's observed revisions with the number expected if all groups had the same risk, then adds up the differences across the whole follow-up. It's the same test as the **Mantel-Haenszel** (or Mantel-Cox) test in the decision table.
+
+**Two groups.** In total hips, does the surgical approach (anterior or posterior) affect revision?
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| fig-height: 4.5
+tha <- cohort |> filter(procedure == "THA")        # approach applies to hips only
+
+survfit2(Surv(followup_years, revised) ~ approach, data = tha, conf.type = "log-log") |>
+  ggsurvfit() +
+  add_confidence_interval() +
+  add_risktable() +
+  scale_ggsurvfit() +
+  labs(x = "Years since surgery", y = "Revision-free survival")
+
+approach_logrank <- survdiff(Surv(followup_years, revised) ~ approach, data = tha)
+approach_logrank
+```
+
+## Python
+
+```{python}
+from lifelines.statistics import logrank_test
+
+tha = cohort[cohort["procedure"] == "THA"]                # approach applies to hips only
+anterior = tha[tha["approach"] == "anterior"]
+posterior = tha[tha["approach"] == "posterior"]
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+km_anterior = KaplanMeierFitter(label="anterior").fit(anterior["followup_years"], anterior["revised"])
+km_posterior = KaplanMeierFitter(label="posterior").fit(posterior["followup_years"], posterior["revised"])
+km_anterior.plot_survival_function(ax=ax)
+km_posterior.plot_survival_function(ax=ax)
+ax.set_xlabel("Years since surgery")
+ax.set_ylabel("Revision-free survival")
+add_at_risk_counts(km_anterior, km_posterior, ax=ax, rows_to_show=["At risk", "Events"])
+plt.tight_layout()
+plt.show()
+
+approach_logrank = logrank_test(anterior["followup_years"], posterior["followup_years"],
+                                event_observed_A=anterior["revised"], event_observed_B=posterior["revised"])
+print(approach_logrank.test_statistic, approach_logrank.p_value)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"chisq": float(approach_logrank.test_statistic), "p": float(approach_logrank.p_value)}
+```
+
+```{r}
+#| include: false
+check_agree(list(chisq = approach_logrank$chisq, p = approach_logrank$pvalue), reticulate::py$chk)
+```
+
+- **Observed / Expected:** the posterior hips had 19 revisions where 16.1 were expected; the anterior hips had 18 where 20.9 were expected.
+- **Chisq = 0.9 on 1 degree of freedom, p = 0.340:** no clear evidence that the curves differ over the whole follow-up.
+
+But look at the plot. The posterior curve drops sharply in the first months, then the two curves come together and cross. The early revisions are real: by 6 months, survivorship was 88.7% after the posterior approach and 98.6% after the anterior approach.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+summary(survfit(Surv(followup_years, revised) ~ approach, data = tha, conf.type = "log-log"), times = 0.5)
+```
+
+## Python
+
+```{python}
+for curve in [km_anterior, km_posterior]:
+    ci = curve.confidence_interval_survival_function_.loc[:0.5].iloc[-1]
+    print(curve.label, round(curve.survival_function_at_times(0.5).iloc[0], 3), ci.round(3).to_list())
+```
+:::
+
+```{python}
+#| include: false
+ci_anterior = km_anterior.confidence_interval_survival_function_.loc[:0.5].iloc[-1]
+ci_posterior = km_posterior.confidence_interval_survival_function_.loc[:0.5].iloc[-1]
+chk = {"surv_anterior": float(km_anterior.survival_function_at_times(0.5).iloc[0]),
+       "low_anterior": float(ci_anterior.iloc[0]), "high_anterior": float(ci_anterior.iloc[1]),
+       "surv_posterior": float(km_posterior.survival_function_at_times(0.5).iloc[0]),
+       "low_posterior": float(ci_posterior.iloc[0]), "high_posterior": float(ci_posterior.iloc[1])}
+```
+
+```{r}
+#| include: false
+approach_6m <- summary(survfit(Surv(followup_years, revised) ~ approach, data = tha, conf.type = "log-log"), times = 0.5)
+check_agree(list(surv_anterior = approach_6m$surv[1], low_anterior = approach_6m$lower[1],
+                 high_anterior = approach_6m$upper[1], surv_posterior = approach_6m$surv[2],
+                 low_posterior = approach_6m$lower[2], high_posterior = approach_6m$upper[2]),
+            reticulate::py$chk)
+```
+
+The log-rank test adds up the differences over the whole follow-up. When one group does worse early and better later, the two parts cancel out, and the test misses a real difference. [Page 14](14-cox-regression.qmd#proportional-hazards) shows how to detect this and how to model it.
+
+**Three or more groups.** The same test compares any number of groups. Does revision differ between implants A, B and C?
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+implant_logrank <- survdiff(Surv(followup_years, revised) ~ implant, data = cohort)
+implant_logrank
+```
+
+## Python
+
+```{python}
+from lifelines.statistics import multivariate_logrank_test
+
+implant_logrank = multivariate_logrank_test(cohort["followup_years"], cohort["implant"], cohort["revised"])
+print(implant_logrank.test_statistic, implant_logrank.degrees_of_freedom, implant_logrank.p_value)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"chisq": float(implant_logrank.test_statistic), "p": float(implant_logrank.p_value)}
+```
+
+```{r}
+#| include: false
+check_agree(list(chisq = implant_logrank$chisq, p = implant_logrank$pvalue), reticulate::py$chk)
+```
+
+- **Observed / Expected:** implant C had 38 revisions where 16.9 were expected. Implants A (25 vs 34.0) and B (18 vs 30.0) had fewer than expected.
+- **Chisq = 33.5 on 2 degrees of freedom, p < 0.001:** at least one implant's curve differs from the others. The test doesn't say which; [page 15](../beyond/15-post-hoc.qmd) covers comparing pairs of groups. [Page 8](../catalog/08-three-plus-unmatched.qmd#cox) gives each implant's hazard ratio.
+
+> **Methods:** Revision-free survival was compared between groups with the log-rank test.
+>
+> **Results:** Revision-free survival differed between implants (log-rank χ² = 33.5, df = 2, p < 0.001). Over the whole follow-up there was no clear evidence of a difference between surgical approaches in total hip arthroplasty (log-rank χ² = 0.9, df = 1, p = 0.340), but the curves crossed: survivorship at 6 months was 88.7% (95% CI 81.7% to 93.2%) after the posterior approach and 98.6% (95% CI 94.5% to 99.6%) after the anterior approach.
+
+::: {.callout-warning}
+## ⚠️ Watch out: always plot the curves before you trust the test
+The log-rank test is most powerful when one group's risk is a steady multiple of the other's over time. When the curves cross, as with the surgical approach here, a non-significant test can hide a real difference. And don't compare groups at one hand-picked time point to get a significant result: decide your time points before you look.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: one function or two
+R's `survdiff()` takes a formula and handles two groups or more. lifelines has `logrank_test()` for two groups, which takes each group's data separately, and `multivariate_logrank_test()` for any number, which takes a grouping column. They give identical results.
+:::
+
+## Competing risks: when patients die first {#competing-risks}
+
+So far, patients who died were treated as censored. That assumes they would have gone on to be revised at the same rate as everyone else. They can't: a patient who has died can never be revised. Death is a **competing risk**.
+
+With death treated as censored, 1 − Kaplan-Meier estimates the risk of revision in an imaginary world where nobody dies. In an older population, where many patients die during follow-up, it **overstates** the real proportion who will be revised. The **cumulative incidence function** (CIF), estimated with the **Aalen-Johansen** method, gives the real proportion: the chance of being revised by a given time, allowing for the chance of dying first.
+
+The data need one status column with three values. In the cohort, `event_status` is 0 for censored, 1 for revised and 2 for died.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| fig-height: 4.5
+cohort <- cohort |>
+  mutate(status = factor(event_status, levels = c(0, 1, 2),
+                         labels = c("censored", "revision", "death")))   # censored must come first
+
+# with a three-level status, survfit() estimates the cumulative incidences (Aalen-Johansen)
+cif <- survfit2(Surv(followup_years, status) ~ 1, data = cohort, conf.type = "log-log")
+
+cif |>
+  ggcuminc(outcome = c("revision", "death")) +
+  add_confidence_interval() +
+  scale_ggsurvfit() +
+  labs(x = "Years since surgery", y = "Cumulative incidence")
+
+tidy_survfit(cif, times = c(2, 5, 10)) |>
+  select(outcome, time, estimate, conf.low, conf.high)
+
+1 - summary(km, times = c(2, 5, 10))$surv    # 1 − Kaplan-Meier, for comparison
+```
+
+## Python
+
+```{python}
+from scipy.stats import norm
+from statsmodels.duration.survfunc import CumIncidenceRight
+
+# event_status: 0 = censored, 1 = revision, 2 = death
+cif = CumIncidenceRight(cohort["followup_years"], cohort["event_status"])
+revision = pd.DataFrame({"cif": cif.cinc[0], "se": cif.cinc_se[0]}, index=cif.times)   # event type 1
+death = pd.DataFrame({"cif": cif.cinc[1], "se": cif.cinc_se[1]}, index=cif.times)      # event type 2
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+ax.step(revision.index, revision["cif"], where="post", label="revision")
+ax.step(death.index, death["cif"], where="post", label="death")
+ax.set_xlabel("Years since surgery")
+ax.set_ylabel("Cumulative incidence")
+legend = ax.legend()
+plt.tight_layout()
+plt.show()
+
+z = norm.ppf(0.975)
+for years in [2, 5, 10]:
+    row = revision.loc[:years].iloc[-1]                                  # last step at or before that time
+    spread = np.exp(z * row["se"] / (row["cif"] * np.log(row["cif"])))   # the log-log CI, as in R
+    print(years, round(row["cif"], 3), round(row["cif"] ** (1 / spread), 3), round(row["cif"] ** spread, 3),
+          round(1 - km.survival_function_at_times(years).iloc[0], 3))
+```
+:::
+
+```{python}
+#| include: false
+chk = {}
+for years in [2, 5, 10]:
+    chk[f"cif_{years}"] = float(revision.loc[:years].iloc[-1]["cif"])
+    chk[f"death_{years}"] = float(death.loc[:years].iloc[-1]["cif"])
+row_10 = revision.loc[:10].iloc[-1]
+spread_10 = np.exp(z * row_10["se"] / (row_10["cif"] * np.log(row_10["cif"])))
+chk["low_10"] = float(row_10["cif"] ** (1 / spread_10))
+chk["high_10"] = float(row_10["cif"] ** spread_10)
+```
+
+```{r}
+#| include: false
+cif_table <- tidy_survfit(cif, times = c(2, 5, 10))
+revision_rows <- cif_table |> filter(outcome == "revision")
+death_rows <- cif_table |> filter(outcome == "death")
+check_agree(list(cif_2 = revision_rows$estimate[1], cif_5 = revision_rows$estimate[2], cif_10 = revision_rows$estimate[3],
+                 death_2 = death_rows$estimate[1], death_5 = death_rows$estimate[2], death_10 = death_rows$estimate[3],
+                 low_10 = revision_rows$conf.low[3], high_10 = revision_rows$conf.high[3]),
+            reticulate::py$chk)
+```
+
+Reading it:
+- **The revision curve** is the cumulative incidence of revision: 5.9% at 2 years, 12.8% at 5 years and 19.3% at 10 years.
+- **The death curve** rises faster: 24.0% of patients had died without a revision by 10 years.
+- **1 − Kaplan-Meier** says 22.0% by 10 years. It overstates the real proportion revised by 2.7 percentage points, because it pretends the patients who died could still have been revised.
+
+The gap grows with the number of deaths. It's small at 2 years, when few patients have died, and largest in older patients (see exercise 2).
+
+**Comparing groups: Gray's test (R only).** Gray's test is the competing-risks counterpart of the log-rank test: it compares cumulative incidence curves between groups. The tidycmprsk package runs it:
+
+```{r}
+#| warning: false
+library(tidycmprsk)
+
+cif_by_implant <- cuminc(Surv(followup_years, status) ~ implant, data = cohort)
+glance(cif_by_implant) |>
+  select(outcome_1, statistic_1, p.value_1, outcome_2, statistic_2, p.value_2)
+```
+
+The cumulative incidence of revision differed between implants (Gray's test χ² = 31.5, df = 2, p < 0.001); there was no clear evidence that the cumulative incidence of death differed (χ² = 0.97, p = 0.616).
+
+> **Methods:** The cumulative incidence of revision was estimated with the Aalen-Johansen method, treating death as a competing risk, and compared between implants with Gray's test.
+>
+> **Results:** The cumulative incidence of revision was 12.8% (95% CI 10.0% to 15.9%) at 5 years and 19.3% (95% CI 15.3% to 23.7%) at 10 years, when the cumulative incidence of death was 24.0%. It differed between implants (Gray's test χ² = 31.5, df = 2, p < 0.001).
+
+::: {.callout-warning}
+## ⚠️ Watch out: which number answers your question?
+Both estimates are useful, but they answer different questions:
+- **1 − Kaplan-Meier** answers "how well does the implant perform while patients are alive?" It's the usual measure for comparing implants, and registries report it.
+- **The cumulative incidence** answers "what proportion of patients will actually be revised?" Use it to counsel patients or plan services, especially for older patients.
+
+Say which one you report. Never call 1 − Kaplan-Meier "the proportion of patients revised" when many patients died.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: which tools
+- **The cumulative incidence:** R's `survfit()` estimates it whenever the status has more than two levels. In Python, use statsmodels' `CumIncidenceRight()`: it gives the estimates and their standard errors but no CI, so the code builds the same log-log CI as R. lifelines also has an `AalenJohansenFitter`, but it moves tied follow-up times by a small random amount, which can shift an estimate read at exactly 5 or 10 years, so we don't use it.
+- **Gray's test:** Python has no mature implementation of Gray's test. Plot the curves in Python, but run the test in R. tidycmprsk's `cuminc()` also gives the cumulative incidences, with a slightly different CI method.
+- **Fine-Gray regression** models the cumulative incidence with several predictors at once; it's R only too ([page 14](14-cox-regression.qmd#fine-gray)).
+:::
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+km_toy <- summary(toy_km, times = c(1, 3, 5))
+approach_6m <- summary(survfit(Surv(followup_years, revised) ~ approach, data = tha, conf.type = "log-log"), times = 0.5)
+one_minus_km <- 1 - summary(km, times = 10)$surv
+gray <- glance(cif_by_implant)
+old <- cohort |> filter(age >= 75)
+old_cif <- tidy_survfit(survfit2(Surv(followup_years, status) ~ 1, data = old, conf.type = "log-log"), times = 5) |>
+  filter(outcome == "revision")
+procedure_5 <- summary(survfit(Surv(followup_years, revised) ~ procedure, data = cohort, conf.type = "log-log"), times = 5)
+procedure_logrank <- survdiff(Surv(followup_years, revised) ~ procedure, data = cohort)
+implant_cif_5 <- tidy_survfit(survfit2(Surv(followup_years, status) ~ implant, data = cohort, conf.type = "log-log"), times = 5) |>
+  filter(outcome == "revision")
+stopifnot(
+  round(km_toy$surv, 4) == c(0.8333, 0.6250, 0.3125), round(100 * (1 - km_toy$surv[3])) == 69,
+  sum(table(cohort$patient_id) == 2) == 80, nrow(cohort) == 600,
+  round(follow_up$followup_years, 2) == c(3.30, 3.21, 5.38, 0.27),
+  as.numeric(follow_up$end_date[4] - follow_up$surgery_date[4]) == 99,
+  summary(km, times = c(0, 4, 8, 10))$n.risk == c(600, 332, 84, 21), 21 < 60,
+  round(km_2_5_10$surv, 3) == c(0.939, 0.863, 0.780),
+  round(km_2_5_10$lower[3], 3) == 0.725, round(km_2_5_10$upper[3], 3) == 0.826,
+  km_2_5_10$n.risk == c(496, 263, 21),
+  round(100 * km_2_5_10$lower, 1) == c(91.6, 82.8, 72.5), round(100 * km_2_5_10$upper, 1) == c(95.6, 89.2, 82.6),
+  round(median(cohort$followup_years), 3) == 4.365,
+  round(unname(follow_up_quartiles), 2) == c(3.52, 5.62, 7.93),
+  approach_logrank$obs == c(18, 19), round(approach_logrank$exp, 1) == c(20.9, 16.1),
+  round(approach_logrank$chisq, 1) == 0.9, round(approach_logrank$pvalue, 3) == 0.340,
+  round(100 * approach_6m$surv, 1) == c(98.6, 88.7),
+  round(100 * approach_6m$lower, 1) == c(94.5, 81.7), round(100 * approach_6m$upper, 1) == c(99.6, 93.2),
+  implant_logrank$obs == c(25, 18, 38), round(implant_logrank$exp, 1) == c(34.0, 30.0, 16.9),
+  round(implant_logrank$chisq, 1) == 33.5, implant_logrank$pvalue < 0.001,
+  round(100 * revision_rows$estimate, 1) == c(5.9, 12.8, 19.3),
+  round(100 * revision_rows$conf.low[2:3], 1) == c(10.0, 15.3), round(100 * revision_rows$conf.high[2:3], 1) == c(15.9, 23.7),
+  round(100 * death_rows$estimate[3], 1) == 24.0,
+  round(100 * one_minus_km, 1) == 22.0, round(100 * (one_minus_km - revision_rows$estimate[3]), 1) == 2.7,
+  gray$outcome_1 == "revision", round(gray$statistic_1, 1) == 31.5, gray$df_1 == 2, gray$p.value_1 < 0.001,
+  gray$outcome_2 == "death", round(gray$statistic_2, 2) == 0.97, round(gray$p.value_2, 3) == 0.616,
+  # exercise solutions (recomputed here: the guard runs before the solution chunks)
+  round(100 * procedure_5$surv, 1) == c(86.9, 85.9),
+  round(100 * procedure_5$lower, 1) == c(81.4, 80.9), round(100 * procedure_5$upper, 1) == c(90.8, 89.6),
+  round(procedure_logrank$chisq, 2) == 0.01, round(procedure_logrank$pvalue, 3) == 0.937,
+  nrow(old) == 100, sum(old$event_status == 1) == 13, sum(old$event_status == 2) == 41,
+  round(100 * (1 - summary(survfit(Surv(followup_years, revised) ~ 1, data = old), times = 5)$surv), 1) == 16.5,
+  round(100 * old_cif$estimate, 1) == 13.9, round(100 * old_cif$conf.low, 1) == 7.8, round(100 * old_cif$conf.high, 1) == 21.8,
+  round(100 * implant_cif_5$estimate, 1) == c(9.7, 6.8, 27.3),
+  round(100 * implant_cif_5$conf.low, 1) == c(6.2, 3.7, 19.5), round(100 * implant_cif_5$conf.high, 1) == c(14.1, 11.2, 35.6)
+)
+```
+
+## Exercises {#exercises}
+
+The solutions use the packages and data loaded in the sections above, so run the page from the top first.
+
+**1.** Compare revision-free survival between total hips (THA) and total knees (TKA). Give each procedure's survivorship at 5 years with its 95% CI, and the log-rank test.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+summary(survfit(Surv(followup_years, revised) ~ procedure, data = cohort, conf.type = "log-log"), times = 5)
+survdiff(Surv(followup_years, revised) ~ procedure, data = cohort)
+```
+
+## Python
+
+```{python}
+for procedure, group in cohort.groupby("procedure"):
+    curve = KaplanMeierFitter().fit(group["followup_years"], group["revised"])
+    ci = curve.confidence_interval_survival_function_.loc[:5].iloc[-1]
+    print(procedure, round(curve.survival_function_at_times(5).iloc[0], 3), ci.round(3).to_list())
+
+hips = cohort[cohort["procedure"] == "THA"]
+knees = cohort[cohort["procedure"] == "TKA"]
+procedure_logrank = logrank_test(hips["followup_years"], knees["followup_years"],
+                                 event_observed_A=hips["revised"], event_observed_B=knees["revised"])
+print(procedure_logrank.test_statistic, procedure_logrank.p_value)
+```
+:::
+
+Survivorship free of revision at 5 years was 86.9% (95% CI 81.4% to 90.8%) after THA and 85.9% (95% CI 80.9% to 89.6%) after TKA. There was no clear evidence of a difference between the procedures (log-rank χ² = 0.01, df = 1, p = 0.937).
+:::
+
+**2.** A surgeon asks: "Of my patients aged 75 and over, what proportion will need a revision within 5 years?" Which estimate answers that question? Calculate it, and compare it with 1 − Kaplan-Meier.
+
+::: {.callout-tip collapse="true"}
+## Solution
+The surgeon wants the real proportion of patients revised, and many patients over 75 die during follow-up. That's the **cumulative incidence**, with death as a competing risk.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+old <- cohort |> filter(age >= 75)
+count(old, status)
+
+survfit2(Surv(followup_years, status) ~ 1, data = old, conf.type = "log-log") |>
+  tidy_survfit(times = 5) |>
+  select(outcome, estimate, conf.low, conf.high)
+1 - summary(survfit(Surv(followup_years, revised) ~ 1, data = old), times = 5)$surv
+```
+
+## Python
+
+```{python}
+old = cohort[cohort["age"] >= 75]
+print(old["event_status"].value_counts().sort_index())
+
+old_cif = CumIncidenceRight(old["followup_years"], old["event_status"])
+old_revision = pd.DataFrame({"cif": old_cif.cinc[0], "se": old_cif.cinc_se[0]}, index=old_cif.times)
+row = old_revision.loc[:5].iloc[-1]
+spread = np.exp(z * row["se"] / (row["cif"] * np.log(row["cif"])))
+print(round(row["cif"], 3), round(row["cif"] ** (1 / spread), 3), round(row["cif"] ** spread, 3))
+
+old_km = KaplanMeierFitter().fit(old["followup_years"], old["revised"])
+print(1 - old_km.survival_function_at_times(5).iloc[0])
+```
+:::
+
+Of the 100 procedures in patients aged 75 and over, 41 ended in death and only 13 in revision. The cumulative incidence of revision at 5 years was 13.9% (95% CI 7.8% to 21.8%). 1 − Kaplan-Meier gives 16.5%, overstating it by about a fifth.
+:::
+
+**3.** Estimate the cumulative incidence of revision at 5 years for each implant, with death as a competing risk, and write the Results sentence, including Gray's test.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+survfit2(Surv(followup_years, status) ~ implant, data = cohort, conf.type = "log-log") |>
+  tidy_survfit(times = 5) |>
+  filter(outcome == "revision") |>
+  select(strata, estimate, conf.low, conf.high)
+```
+
+## Python
+
+```{python}
+for implant, group in cohort.groupby("implant"):
+    implant_cif = CumIncidenceRight(group["followup_years"], group["event_status"])
+    implant_revision = pd.DataFrame({"cif": implant_cif.cinc[0], "se": implant_cif.cinc_se[0]}, index=implant_cif.times)
+    row = implant_revision.loc[:5].iloc[-1]
+    spread = np.exp(z * row["se"] / (row["cif"] * np.log(row["cif"])))
+    print(implant, round(row["cif"], 3), round(row["cif"] ** (1 / spread), 3), round(row["cif"] ** spread, 3))
+```
+
+Python has no Gray's test; take it from R.
+:::
+
+The cumulative incidence of revision at 5 years, with death as a competing risk, was 9.7% (95% CI 6.2% to 14.1%) with implant A, 6.8% (95% CI 3.7% to 11.2%) with implant B and 27.3% (95% CI 19.5% to 35.6%) with implant C (Gray's test χ² = 31.5, df = 2, p < 0.001).
+:::

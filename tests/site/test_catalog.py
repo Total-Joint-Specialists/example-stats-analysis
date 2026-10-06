@@ -4,7 +4,7 @@ import re
 
 import pytest
 
-from sitelib import CELL_ANCHORS, ROOT, load
+from sitelib import CELL_ANCHORS, NO_EVIDENCE_AS_NO_DIFFERENCE, ROOT, load, section, text_of, unreported
 
 # Catalog pages written so far. Later phases add pages 8-12 here.
 WRITTEN = [
@@ -38,17 +38,6 @@ SURVIVAL_LINKS = {cell: target for cell, target in {
     ("catalog/11-predict-from-one.html", "cox"): "survival/14-cox-regression.html",
     ("catalog/12-predict-from-several.html", "cox"): "survival/14-cox-regression.html",
 }.items() if cell[0] in WRITTEN}
-
-
-def text_of(element):
-    """Text with smart quotes straightened and runs of whitespace collapsed."""
-    return " ".join(element.get_text(" ").replace("’", "'").split())
-
-
-def section(page, anchor):
-    found = load(page).select_one(f"section#{anchor}")
-    assert found is not None, f"{page} has no section #{anchor}"
-    return found
 
 
 @pytest.mark.parametrize("page", WRITTEN)
@@ -173,7 +162,7 @@ def test_reports_never_turn_no_evidence_into_no_difference(site, page):
     """A wide CI or a non-significant check is "no evidence of a difference", never "similar" or "held"."""
     reports = [text_of(q) for q in load(page).select("blockquote")] + [text_of(section(page, "exercises"))]
     for text in reports:
-        found = re.findall(r"\b(similar|no difference|held|not violated|(?:did not|does not|doesn't) improve)\b", text, re.IGNORECASE)
+        found = NO_EVIDENCE_AS_NO_DIFFERENCE.findall(text)
         assert not found, f"{page}: {found}"
 
 
@@ -195,12 +184,7 @@ def test_exercise_answers_follow_the_reporting_conventions(site, page):
     """Answers are model Results sentences: effect sizes with a CI, means with SDs, medians with IQRs."""
     for paragraph in section(page, "exercises").select("p"):
         text = text_of(paragraph)
-        if re.search(r"(ω²|ε²|η²( p)?|Kendall's W|Cramér's V|\br|ρ|φ) = [\d.]+|(odds|hazard) ratio [\d.]+", text):
-            assert "CI" in text, text
-        if re.search(r"\bmeans? of [\d.]+", text):
-            assert "SD" in text, text
-        if re.search(r"\bmedian\b[^.]*\d", text):
-            assert "IQR" in text, text
+        assert unreported(text) == [], text
 
 
 # ---- curve fits on repeated scores -------------------------------------------

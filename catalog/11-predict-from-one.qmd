@@ -1,19 +1,877 @@
 ---
-title: "11 · Predict a value from another variable (coming soon)"
-description: "Simple linear and nonlinear regression, nonparametric regression, simple logistic regression, Cox regression."
+title: "11 · Predict a value from another variable"
+description: "Simple linear and nonlinear regression, nonparametric regression, simple logistic regression and Cox regression: how an outcome changes with one predictor."
+engine: knitr
+toc-depth: 2
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
+A correlation ([page 10](10-association.qmd)) says how strongly two things go together. **Regression** says **how much the outcome changes for each unit of the predictor**, and lets you predict the outcome for a new patient. Which regression depends on the outcome: a measurement on a straight line or a curve, a measurement that isn't normal, a yes/no outcome, or time until an event. With several predictors at once, see [page 12](12-predict-from-several.qmd).
+
+::: {.callout-note}
+## 💡 How every section on this page works
+Each section answers one question about the practice cohort. Its first code block loads the packages and the data, so you can jump straight to the section you need. Run that section's blocks in order, top to bottom.
+
+To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them ([page 3](../foundations/03-distributions.qmd#paired)) and say what you did.
 :::
 
 ## Simple linear regression {#linear-regression}
 
+**The question:** How much longer does the operation take for each extra point of BMI?
+
+### When to use it
+
+- The outcome is a **measurement**, and you want to know how much it changes **per unit of one predictor**, or to predict it.
+- The relationship is roughly a **straight line**, and each patient's outcome is independent of the others'.
+- The **residuals** (each patient's distance from the line) are roughly normal, with a similar spread all along the line. Check them after fitting.
+- If the relationship curves → [nonlinear regression](#nonlinear-regression). If the outcome is skewed or has a ceiling → [nonparametric regression](#nonparametric-regression). If it's yes/no → [logistic regression](#logistic-regression).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3.5
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+ggplot(cohort, aes(bmi, op_time_min)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE) +   # the least-squares line
+  labs(x = "BMI, kg/m²", y = "Operative time, minutes")
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+
+cohort = pd.read_csv("data/cohort.csv")
+
+fig, ax = plt.subplots(figsize=(6, 3.5))
+ax.scatter(cohort["bmi"], cohort["op_time_min"], alpha=0.4)
+slope, intercept = np.polyfit(cohort["bmi"], cohort["op_time_min"], deg=1)   # the least-squares line
+bmi_range = np.array([cohort["bmi"].min(), cohort["bmi"].max()])
+ax.plot(bmi_range, intercept + slope * bmi_range)
+ax.set_xlabel("BMI, kg/m²")
+ax.set_ylabel("Operative time, minutes")
+plt.show()
+```
+:::
+
+The points scatter around a rising straight line, with no curve and no extreme outliers.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+bmi_model <- lm(op_time_min ~ bmi, data = cohort)   # outcome ~ predictor
+summary(bmi_model)
+confint(bmi_model)
+```
+
+## Python
+
+```{python}
+bmi_model = smf.ols("op_time_min ~ bmi", data=cohort).fit()   # outcome ~ predictor
+print(bmi_model.summary())
+```
+:::
+
+```{python}
+#| include: false
+chk = {"intercept": float(bmi_model.params["Intercept"]), "slope": float(bmi_model.params["bmi"]),
+       "se": float(bmi_model.bse["bmi"]), "low": float(bmi_model.conf_int().loc["bmi", 0]),
+       "high": float(bmi_model.conf_int().loc["bmi", 1]), "r2": float(bmi_model.rsquared), "f": float(bmi_model.fvalue)}
+```
+
+```{r}
+#| include: false
+bmi_fit <- summary(bmi_model)
+check_agree(list(intercept = coef(bmi_model)[["(Intercept)"]], slope = coef(bmi_model)[["bmi"]],
+                 se = bmi_fit$coefficients["bmi", "Std. Error"], low = confint(bmi_model)["bmi", 1],
+                 high = confint(bmi_model)["bmi", 2], r2 = bmi_fit$r.squared, f = unname(bmi_fit$fstatistic["value"])),
+            reticulate::py$chk)
+```
+
+### Read the output
+
+- **Intercept = 42.8:** the predicted operative time at a BMI of 0. That's impossible, so on its own it means nothing; it anchors the line.
+- **bmi = 1.37:** the **slope**. Each extra kg/m² of BMI goes with 1.37 more minutes of operative time, on average.
+- **Std. Error 0.11, t = 12.4, p < 0.001:** the slope's uncertainty, and the test of whether it's zero (no relationship).
+- **95% CI 1.15 to 1.58** (R's `confint()`; Python's `[0.025 0.975]` columns).
+- **R-squared = 0.20:** BMI accounts for a fifth of the variation in operative time, the same as r² on [page 10](10-association.qmd#pearson).
+- **Residual standard error 14.7** (R only): the typical distance of a patient's operative time from the line, in minutes.
+
+Before trusting the line, plot the residuals against the fitted values: they should form a band of even width around 0, with no curve.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| fig-height: 3
+tibble(fitted = fitted(bmi_model), residual = resid(bmi_model)) |>
+  ggplot(aes(fitted, residual)) +
+  geom_point(alpha = 0.4) +
+  geom_hline(yintercept = 0) +
+  labs(x = "Fitted operative time, minutes", y = "Residual, minutes")
+```
+
+## Python
+
+```{python}
+fig, ax = plt.subplots(figsize=(6, 3))
+ax.scatter(bmi_model.fittedvalues, bmi_model.resid, alpha=0.4)
+ax.axhline(0, color="black")
+ax.set_xlabel("Fitted operative time, minutes")
+ax.set_ylabel("Residual, minutes")
+plt.show()
+```
+:::
+
+They do here: an even band, with no curve and no funnel shape.
+
+### Effect size and 95% CI
+
+The **slope** with its 95% CI is the effect size: 1.37 minutes per kg/m² (95% CI 1.15 to 1.58). Scale it to a difference that matters clinically: 5 kg/m² of BMI goes with 6.8 more minutes (95% CI 5.8 to 7.9). **R² = 0.20** says how much of the variation the line explains.
+
+### How to report it
+
+> **Methods:** Operative time was modeled on BMI with simple linear regression.
+>
+> **Results:** Operative time rose by 1.37 minutes for each 1 kg/m² of BMI (95% CI 1.15 to 1.58, p < 0.001; R² = 0.20), or 6.8 minutes (95% CI 5.8 to 7.9) per 5 kg/m².
+
+::: {.callout-warning}
+## ⚠️ Watch out: the line is an average, and only inside your data
+The line predicts the **average** operative time at each BMI. Individual patients scatter around it by about 15 minutes either way (the residual standard error), so it's a poor tool for scheduling one patient's case. And BMI here runs from 18.0 to 44.5: don't use the line to predict outside that range.
+:::
+
 ## Nonlinear regression {#nonlinear-regression}
+
+**The question:** How quickly does KOOS JR recover after knee replacement, and where does it level off?
+
+### When to use it
+
+- The outcome follows a **curve whose shape you know in advance**, and the curve's numbers mean something: here a starting score, a plateau and a recovery rate.
+- You supply the formula and rough starting guesses, and the program finds the values that fit best (nonlinear least squares).
+- If you don't know the shape → [splines](12-predict-from-several.qmd#multiple-nonlinear-regression) or [LOWESS](#nonparametric-regression). If it's a straight line → [linear regression](#linear-regression).
+
+The recovery curve used here:
+
+$$\text{score} = \text{plateau} - (\text{plateau} - \text{start}) \times e^{-\text{days}/\tau}$$
+
+- **start:** the score on the day of surgery.
+- **plateau:** the level the score settles at.
+- **τ (tau):** the time constant. After τ days patients have made 63% of their eventual gain, and half of it after τ × ln 2 ≈ 0.69 τ days.
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3.5
+library(tidyverse)
+
+proms <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+
+koos <- proms |>
+  filter(instrument == "KOOS JR", !is.na(prom_score)) |>
+  mutate(days = pmax(visit_days, 0))   # pre-op visits (1-27 days before surgery) count as day 0
+
+ggplot(koos, aes(days, prom_score)) +
+  geom_point(alpha = 0.2) +
+  labs(x = "Days since surgery", y = "KOOS JR")
+
+nrow(koos)                # scores
+n_distinct(koos$case_id)  # knees
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+from scipy.optimize import curve_fit
+
+proms = pd.read_csv("data/proms_long.csv")
+
+koos = proms[proms["instrument"] == "KOOS JR"].dropna(subset=["prom_score"]).copy()
+koos["days"] = koos["visit_days"].clip(lower=0)   # pre-op visits (1-27 days before surgery) count as day 0
+
+fig, ax = plt.subplots(figsize=(6, 3.5))
+ax.scatter(koos["days"], koos["prom_score"], alpha=0.2)
+ax.set_xlabel("Days since surgery")
+ax.set_ylabel("KOOS JR")
+plt.show()
+
+print(len(koos), koos["case_id"].nunique())   # scores, knees
+```
+:::
+
+1146 scores from 330 knees. The scores climb steeply over the first 3 months, then more slowly toward 1 year: a curve that levels off, not a straight line.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+recovery <- nls(prom_score ~ plateau - (plateau - start) * exp(-days / tau),
+                data = koos,
+                start = list(plateau = 85, start = 50, tau = 100))   # rough guesses read off the plot
+summary(recovery)
+```
+
+## Python
+
+```{python}
+def recovery_curve(days, plateau, start, tau):
+    return plateau - (plateau - start) * np.exp(-days / tau)
+
+estimates, covariance = curve_fit(recovery_curve, koos["days"], koos["prom_score"],
+                                  p0=[85, 50, 100])   # rough guesses read off the plot
+standard_errors = np.sqrt(np.diag(covariance))
+print(pd.DataFrame({"estimate": estimates, "std_error": standard_errors}, index=["plateau", "start", "tau"]))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"plateau": float(estimates[0]), "start": float(estimates[1]), "tau": float(estimates[2]),
+       "se_plateau": float(standard_errors[0]), "se_tau": float(standard_errors[2])}
+```
+
+```{r}
+#| include: false
+recovery_coef <- summary(recovery)$coefficients
+check_agree(list(plateau = recovery_coef["plateau", "Estimate"], start = recovery_coef["start", "Estimate"],
+                 tau = recovery_coef["tau", "Estimate"], se_plateau = recovery_coef["plateau", "Std. Error"],
+                 se_tau = recovery_coef["tau", "Std. Error"]),
+            reticulate::py$chk, tol = 1e-4)   # both approximate the curve's derivatives numerically, so they agree to ~5 digits
+```
+
+### Read the output
+
+- **plateau = 84.2:** KOOS JR levels off at about 84 points.
+- **start = 49.8:** the estimated score on the day of surgery.
+- **tau = 80.9:** the time constant in days.
+- **Std. Error:** each estimate's uncertainty. The t values and p-values test whether each number is zero, which nobody doubts here; ignore them.
+- **Residual standard error 12.33 on 1143 degrees of freedom** (R only): individual scores scatter about 12 points around the curve.
+
+### Effect size and 95% CI
+
+The curve's numbers, with their 95% CIs, are the effect sizes. Half of the eventual gain comes after τ × ln 2 days.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+confint(recovery)                       # profile CIs; see the R vs Python box
+log(2) * coef(recovery)[["tau"]]        # days to half of the eventual gain
+log(2) * confint(recovery)["tau", ]
+```
+
+## Python
+
+```{python}
+t_crit = stats.t.ppf(0.975, df=len(koos) - 3)   # 3 parameters
+print(pd.DataFrame({"low": estimates - t_crit * standard_errors, "high": estimates + t_crit * standard_errors},
+                   index=["plateau", "start", "tau"]))
+print(np.log(2) * estimates[2])                  # days to half of the eventual gain
+```
+:::
+
+KOOS JR rose from about 49.8 points (95% CI 48.5 to 51.2) on the day of surgery toward a plateau of 84.2 (95% CI 82.6 to 85.9). Half of the gain came by about 56 days, 8 weeks (95% CI 49 to 64).
+
+### How to report it
+
+> **Methods:** KOOS JR was modeled against days since surgery with an exponential recovery curve fitted by nonlinear least squares, counting the pre-op score as the score on the day of surgery.
+>
+> **Results:** In 330 knees (1146 scores), KOOS JR rose from an estimated 49.8 points (95% CI 48.5 to 51.2) at surgery toward a plateau of 84.2 points (95% CI 82.6 to 85.9), with half of the gain reached by about 56 days (95% CI 49 to 64).
+
+::: {.callout-warning}
+## ⚠️ Watch out: each knee appears up to four times
+Nonlinear least squares treats the 1146 scores as 1146 independent patients, but they come from 330 knees. Scores from the same knee are related, so the CIs here are too narrow. A mixed model ([page 16](../beyond/16-mixed-models.qmd)) accounts for this. And if the fit fails to converge, try starting guesses closer to what the plot shows.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: two kinds of CI
+- R's `nls()` and scipy's `curve_fit()` use different fitting algorithms but find the same estimates and standard errors.
+- R's `confint()` **profiles** the fit: it moves each number away from its estimate until the fit gets significantly worse. scipy gives only the standard errors, so the Python code uses estimate ± t × standard error. The two CIs differ slightly; here τ's CI runs from 71.0 to 92.5 days in R and 69.9 to 91.8 in Python. Either is fine; say which you used.
+:::
 
 ## Nonparametric regression {#nonparametric-regression}
 
+**The question:** How does KOOS JR at 1 year depend on KOOS JR before surgery, when many patients reach the ceiling of 100?
+
+### When to use it
+
+- The outcome is a measurement that **isn't normal**: it has a ceiling, a skew or outliers, so the residuals of a straight line won't be normal.
+- **LOWESS** (locally weighted smoothing) draws the shape without a formula: it fits many small lines, each to the points near it, and joins them into a smooth curve. It gives a picture, not a p-value.
+- The **Theil-Sen slope** is the median of the slopes between every pair of patients. A few extreme patients barely move it, and its CI comes from ranks, not from normal residuals.
+- If the residuals are roughly normal → [linear regression](#linear-regression).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3.5
+library(tidyverse)
+
+proms <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+
+koos_wide <- proms |>
+  filter(instrument == "KOOS JR", visit %in% c("preop", "1yr")) |>
+  select(case_id, visit, prom_score) |>
+  pivot_wider(names_from = visit, values_from = prom_score) |>   # one row per knee
+  rename(one_year = `1yr`) |>
+  filter(!is.na(preop), !is.na(one_year))
+
+smooth <- lowess(koos_wide$preop, koos_wide$one_year)   # LOWESS curve, R's defaults
+
+ggplot(koos_wide, aes(preop, one_year)) +
+  geom_point(alpha = 0.4) +
+  geom_line(data = tibble(preop = smooth$x, one_year = smooth$y), linewidth = 1) +
+  labs(x = "KOOS JR before surgery", y = "KOOS JR at 1 year")
+
+nrow(koos_wide)
+sum(koos_wide$one_year == 100)   # at the ceiling
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+from statsmodels.nonparametric.smoothers_lowess import lowess
+
+proms = pd.read_csv("data/proms_long.csv")
+
+koos_wide = (proms[(proms["instrument"] == "KOOS JR") & proms["visit"].isin(["preop", "1yr"])]
+             .pivot(index="case_id", columns="visit", values="prom_score")   # one row per knee
+             .dropna(subset=["preop", "1yr"]))
+
+smooth = lowess(koos_wide["1yr"], koos_wide["preop"], frac=2/3, it=3,
+                delta=0.01 * np.ptp(koos_wide["preop"]))   # R's lowess() defaults
+
+fig, ax = plt.subplots(figsize=(6, 3.5))
+ax.scatter(koos_wide["preop"], koos_wide["1yr"], alpha=0.4)
+ax.plot(smooth[:, 0], smooth[:, 1], linewidth=2)
+ax.set_xlabel("KOOS JR before surgery")
+ax.set_ylabel("KOOS JR at 1 year")
+plt.show()
+
+print(len(koos_wide), (koos_wide["1yr"] == 100).sum())   # knees, at the ceiling
+```
+:::
+
+```{python}
+#| include: false
+chk = {"low_end": float(smooth[0, 1]), "middle": float(smooth[100, 1]), "high_end": float(smooth[-1, 1])}
+```
+
+```{r}
+#| include: false
+check_agree(list(low_end = smooth$y[1], middle = smooth$y[101], high_end = smooth$y[length(smooth$y)]), reticulate::py$chk)
+```
+
+246 knees have both scores, and 37 of them (15.0%) score the maximum of 100 at 1 year. The LOWESS curve rises steadily from about 70 to about 99 across the range of pre-op scores.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+koos_slope <- deming::theilsen(one_year ~ preop, data = koos_wide)
+coef(koos_slope)     # intercept and slope
+koos_slope$ci[2, ]   # 95% CI for the slope
+```
+
+## Python
+
+```{python}
+koos_slope = stats.theilslopes(koos_wide["1yr"], koos_wide["preop"], method="joint")   # see the R vs Python box
+print(koos_slope)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"slope": float(koos_slope.slope), "intercept": float(koos_slope.intercept)}
+```
+
+```{r}
+#| include: false
+check_agree(list(slope = coef(koos_slope)[["preop"]], intercept = coef(koos_slope)[["(Intercept)"]]), reticulate::py$chk)
+```
+
+### Read the output
+
+- **preop** (R) or **slope** (Python) **= 0.39:** each extra point before surgery goes with 0.39 more points at 1 year (the median of all the pairwise slopes).
+- **Intercept = 65.4:** the predicted 1-year score for a pre-op score of 0; it anchors the line.
+- **95% CI for the slope:** 0.28 to 0.51 in R, 0.27 to 0.52 in Python (`low_slope`, `high_slope`). The R vs Python box explains the difference.
+
+### Effect size and 95% CI
+
+The **Theil-Sen slope** with its CI is the effect size: 0.39 points at 1 year per pre-op point (95% CI 0.28 to 0.51). An ordinary least-squares line gives 0.43; the two would differ more if a few unusual patients pulled the least-squares line.
+
+### How to report it
+
+> **Methods:** Because 1-year KOOS JR clustered at the ceiling, its relationship with pre-op KOOS JR was described with a LOWESS smoother and summarized with the Theil-Sen slope.
+>
+> **Results:** Among 246 knees, 37 (15.0%) scored 100 at 1 year. KOOS JR at 1 year rose with KOOS JR before surgery (Theil-Sen slope 0.39 points per point, 95% CI 0.28 to 0.51).
+
+::: {.callout-warning}
+## ⚠️ Watch out: robust isn't ceiling-proof
+Theil-Sen resists outliers, but nothing can see above a ceiling: the 37 knees at 100 might have scored higher on a longer scale, so the true slope at the top of the range is unknown. And a LOWESS curve is least reliable at its two ends, where it rests on few patients.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: Theil-Sen intercepts and CIs, LOWESS settings
+- **Intercept:** scipy's default (`method="separate"`) computes it as median(y) − slope × median(x). deming computes median(y − slope × x), which scipy calls `method="joint"`. The slope is the same either way.
+- **CI:** both use Sen's rank method, but deming adjusts for tied values of x only, and scipy for ties in both x and y, so the limits differ a little.
+- **LOWESS:** R's `lowess()` and statsmodels' `lowess()` run the same algorithm, but statsmodels' defaults differ (it sets `delta` to 0), so the Python code spells out R's settings. ggplot2's `geom_smooth()` uses a different smoother, `loess()`, which draws a similar but not identical curve.
+:::
+
 ## Simple logistic regression {#logistic-regression}
 
+**The question:** Does the risk of a complication within 90 days rise with age?
+
+### When to use it
+
+- The outcome is **yes/no** (complication or not), and you want the **odds ratio** per unit of one predictor.
+- It assumes the log odds change in a straight line with the predictor: each extra decade multiplies the odds by the same amount.
+- You need enough patients with the outcome: a common rule of thumb is at least 10 per predictor.
+- If the outcome is time until an event → [Cox regression](#cox).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE) |>
+  mutate(age_10 = age / 10)   # age in decades, so the odds ratio is per 10 years
+
+by_age <- cohort |>
+  mutate(age_band = cut(age, breaks = c(-Inf, 59, 69, 79, Inf), labels = c("under 60", "60-69", "70-79", "80+"))) |>
+  group_by(age_band) |>
+  summarise(n = n(), complications = sum(complication_90d), percent = 100 * mean(complication_90d))
+by_age
+
+ggplot(by_age, aes(age_band, percent)) +
+  geom_col() +
+  labs(x = "Age at surgery", y = "Complications within 90 days, %")
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+
+cohort = pd.read_csv("data/cohort.csv")
+cohort["age_10"] = cohort["age"] / 10   # age in decades, so the odds ratio is per 10 years
+
+bands = pd.cut(cohort["age"], bins=[-np.inf, 59, 69, 79, np.inf], labels=["under 60", "60-69", "70-79", "80+"])
+by_age = cohort.groupby(bands, observed=True)["complication_90d"].agg(n="count", complications="sum", percent="mean")
+by_age["percent"] = 100 * by_age["percent"]
+print(by_age)
+
+fig, ax = plt.subplots(figsize=(6, 3))
+bars = ax.bar(by_age.index.astype(str), by_age["percent"])
+ax.set_xlabel("Age at surgery")
+ax.set_ylabel("Complications within 90 days, %")
+plt.show()
+```
+:::
+
+Complications followed 5 of 151 procedures (3.3%) in patients under 60 and 14 of 53 (26.4%) in patients aged 80 or more; 51 of 600 overall.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+age_model <- glm(complication_90d ~ age_10, family = binomial, data = cohort)   # binomial = yes/no outcome
+summary(age_model)
+```
+
+## Python
+
+```{python}
+age_model = smf.logit("complication_90d ~ age_10", data=cohort).fit(disp=False)   # disp=False: no fitting messages
+print(age_model.summary())
+```
+:::
+
+```{python}
+#| include: false
+wald = age_model.conf_int()
+chk = {"coef": float(age_model.params["age_10"]), "se": float(age_model.bse["age_10"]),
+       "p": float(age_model.pvalues["age_10"]), "low": float(wald.loc["age_10", 0]), "high": float(wald.loc["age_10", 1])}
+```
+
+```{r}
+#| include: false
+age_coef <- summary(age_model)$coefficients
+check_agree(list(coef = age_coef["age_10", "Estimate"], se = age_coef["age_10", "Std. Error"], p = age_coef["age_10", "Pr(>|z|)"],
+                 low = confint.default(age_model)["age_10", 1], high = confint.default(age_model)["age_10", 2]),
+            reticulate::py$chk, tol = 1e-4)   # glm() stops once the deviance settles, a step before statsmodels does
+```
+
+### Read the output
+
+- **age_10 = 0.75:** the change in the **log odds** of a complication per 10 years of age. Log odds are hard to read, so turn the coefficient into an odds ratio (next step).
+- **Std. Error 0.17, z = 4.42, p < 0.001:** the test of whether age matters at all.
+- **Intercept = −7.49:** the log odds at age 0, which only anchors the line.
+- **Null and residual deviance** (R) or **LLR p-value** (Python): how much better the model fits with age than without it.
+
+### Effect size and 95% CI
+
+The **odds ratio** is e raised to the coefficient.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+exp(cbind(odds_ratio = coef(age_model), confint(age_model)))   # profile CIs; see the R vs Python box
+```
+
+## Python
+
+```{python}
+odds_ratios = np.exp(pd.concat([age_model.params, age_model.conf_int()], axis=1))   # Wald CIs
+odds_ratios.columns = ["odds_ratio", "low", "high"]
+print(odds_ratios)
+```
+:::
+
+Each 10 years of age multiplied the odds of a complication by 2.12 (95% CI 1.53 to 2.98).
+
+### How to report it
+
+> **Methods:** The association between age and complications within 90 days was estimated with logistic regression, with age in 10-year units.
+>
+> **Results:** Complications followed 51 of 600 procedures (8.5%). Each 10 years of age was associated with higher odds of a complication (odds ratio 2.12, 95% CI 1.53 to 2.98, p < 0.001).
+
+::: {.callout-warning}
+## ⚠️ Watch out: a straight line on the log-odds scale is an assumption
+The model says each decade multiplies the odds by the same 2.12. The table above suggests otherwise: the rate barely changes between the 60s and the 70s, then jumps after 80. Check the shape before trusting a single odds ratio; [splines](12-predict-from-several.qmd#multiple-nonlinear-regression) let the effect bend. And an odds ratio isn't a risk ratio: the two are close only when the outcome is rare, as it is here (8.5%).
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: profile and Wald CIs
+R's `confint()` on a `glm()` **profiles** the likelihood, which is more accurate in small samples. statsmodels' `conf_int()` uses the simpler **Wald** method (estimate ± 1.96 standard errors), which gives 1.52 to 2.95 here; R's `confint.default()` does the same. Say which you used.
+:::
+
 ## Cox regression {#cox}
+
+**The question:** Does the hazard of revision rise with age at surgery?
+
+### When to use it
+
+- The outcome is **time until an event** (revision), and the predictor is a **measurement** (age).
+- Cox regression gives a **hazard ratio per unit** of the predictor. Choose a unit that means something: per 10 years, not per year.
+- It assumes the hazard ratio stays the same over time (**proportional hazards**) and that the log hazard changes in a straight line with age. [Page 14](../survival/14-cox-regression.qmd) shows how to check both and covers Cox regression in full.
+
+### Look at the data first
+
+Splitting age in two is only for the picture; the model uses age as a number.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 4.5
+library(tidyverse)
+library(survival)
+library(ggsurvfit)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE) |>
+  mutate(age_10 = age / 10,                                                  # age in decades
+         age_group = if_else(age >= 70, "70 or older", "under 70"))          # for the plot only
+
+survfit2(Surv(followup_years, revised) ~ age_group, data = cohort, conf.type = "log-log") |>
+  ggsurvfit() +
+  add_risktable() +
+  scale_ggsurvfit() +
+  labs(x = "Years since surgery", y = "Revision-free survival")
+```
+
+## Python
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+from lifelines import KaplanMeierFitter, CoxPHFitter
+from lifelines.plotting import add_at_risk_counts
+
+cohort = pd.read_csv("data/cohort.csv")
+cohort["age_10"] = cohort["age"] / 10                                         # age in decades
+cohort["age_group"] = cohort["age"].map(lambda age: "70 or older" if age >= 70 else "under 70")   # for the plot only
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+curves = []
+for group_name, group in cohort.groupby("age_group"):
+    km = KaplanMeierFitter(label=group_name).fit(group["followup_years"], group["revised"])
+    km.plot_survival_function(ax=ax, ci_show=False)
+    curves.append(km)
+ax.set_xlabel("Years since surgery")
+ax.set_ylabel("Revision-free survival")
+add_at_risk_counts(*curves, ax=ax)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+29 of 200 procedures in patients aged 70 or older were revised, against 52 of 400 in younger patients. The curves separate a little, with wide overlap.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+age_cox <- coxph(Surv(followup_years, revised) ~ age_10, data = cohort)
+summary(age_cox)
+```
+
+## Python
+
+```{python}
+age_cox = CoxPHFitter().fit(cohort[["followup_years", "revised", "age_10"]],
+                            duration_col="followup_years", event_col="revised")
+print(age_cox.summary[["exp(coef)", "exp(coef) lower 95%", "exp(coef) upper 95%", "p"]])
+print(age_cox.log_likelihood_ratio_test().test_statistic)   # overall likelihood ratio test
+```
+:::
+
+```{python}
+#| include: false
+row = age_cox.summary.loc["age_10"]
+chk = {"hr": float(row["exp(coef)"]), "low": float(row["exp(coef) lower 95%"]), "high": float(row["exp(coef) upper 95%"]),
+       "p": float(row["p"]), "lr": float(age_cox.log_likelihood_ratio_test().test_statistic)}
+```
+
+```{r}
+#| include: false
+age_hr <- summary(age_cox)$conf.int
+check_agree(list(hr = age_hr["age_10", "exp(coef)"], low = age_hr["age_10", "lower .95"], high = age_hr["age_10", "upper .95"],
+                 p = summary(age_cox)$coefficients["age_10", "Pr(>|z|)"], lr = unname(summary(age_cox)$logtest["test"])),
+            reticulate::py$chk)
+```
+
+### Read the output
+
+- **exp(coef) = 1.25:** the hazard ratio per 10 years of age: the hazard of revision is 1.25 times higher for a patient 10 years older.
+- **lower .95 / upper .95 = 0.98 to 1.59:** the 95% CI, which includes 1 (no difference).
+- **Pr(>|z|) = 0.073:** the p-value for age.
+- **Likelihood ratio test = 3.23 on 1 df, p = 0.07:** the overall test; with one predictor it says the same as the p-value for age.
+- **Concordance = 0.56** (R only): how often the model ranks two patients' revision times correctly. 0.5 is a coin toss, so age alone predicts revision poorly.
+
+### Effect size and 95% CI
+
+The **hazard ratio per 10 years**, 1.25 (95% CI 0.98 to 1.59), is the effect size. The CI is wide: the data fit a small decrease in hazard with age as well as a 59% increase per decade.
+
+### How to report it
+
+> **Methods:** The association between age at surgery and revision was estimated with Cox proportional hazards regression, with age in 10-year units.
+>
+> **Results:** The hazard of revision was 1.25 times higher per 10 years of age, but the estimate was imprecise (95% CI 0.98 to 1.59, p = 0.073).
+
+::: {.callout-warning}
+## ⚠️ Watch out: older patients die before they can be revised
+Deaths are treated as censored here. Older patients die sooner, so fewer of them live long enough to need a revision. That can hide an age effect, or create one. [Page 13](../survival/13-kaplan-meier.qmd) covers these competing risks.
+:::
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+bmi_ci <- confint(bmi_model)
+recovery_ci <- confint(recovery)
+age_ci <- exp(confint(age_model))
+age_wald <- exp(confint.default(age_model))
+koos_ls <- coef(lm(one_year ~ preop, data = koos_wide))
+ex_age <- lm(op_time_min ~ age, data = cohort)
+ex_facility <- glm(I(discharge == "facility") ~ age_10, family = binomial, data = cohort)
+ex_hoos <- proms |> filter(instrument == "HOOS JR", !is.na(prom_score)) |> mutate(days = pmax(visit_days, 0))
+ex_hoos_fit <- nls(prom_score ~ plateau - (plateau - start) * exp(-days / tau), data = ex_hoos,
+                   start = list(plateau = 85, start = 50, tau = 100))
+ex_hoos_ci <- confint(ex_hoos_fit)
+stopifnot(
+  sum(table(cohort$patient_id) == 2) == 80, nrow(cohort) == 600,
+  round(coef(bmi_model), 2) == c(42.83, 1.37), round(bmi_fit$coefficients["bmi", "Std. Error"], 2) == 0.11,
+  round(bmi_fit$coefficients["bmi", "t value"], 1) == 12.4, bmi_fit$coefficients["bmi", "Pr(>|t|)"] < 0.001,
+  round(bmi_ci["bmi", ], 2) == c(1.15, 1.58), round(bmi_fit$r.squared, 2) == 0.20, round(bmi_fit$sigma, 1) == 14.7,
+  round(5 * coef(bmi_model)[["bmi"]], 1) == 6.8, round(5 * bmi_ci["bmi", ], 1) == c(5.8, 7.9),
+  range(cohort$bmi) == c(18.0, 44.5),
+  range(proms$visit_days[proms$visit == "preop"], na.rm = TRUE) == c(-27, -1),
+  nrow(koos) == 1146, n_distinct(koos$case_id) == 330,
+  round(recovery_coef[, "Estimate"], 1) == c(84.2, 49.8, 80.9), round(summary(recovery)$sigma, 2) == 12.33,
+  df.residual(recovery) == 1143,
+  round(recovery_ci["plateau", ], 1) == c(82.6, 85.9), round(recovery_ci["start", ], 1) == c(48.5, 51.2),
+  round(recovery_ci["tau", ], 1) == c(71.0, 92.5),
+  round(log(2) * coef(recovery)[["tau"]]) == 56, round(log(2) * recovery_ci["tau", ]) == c(49, 64),
+  round(log(2) * coef(recovery)[["tau"]] / 7) == 8, round(1 - exp(-1), 2) == 0.63, round(log(2), 2) == 0.69,
+  round(recovery_coef["tau", "Estimate"] + c(-1, 1) * qt(0.975, 1143) * recovery_coef["tau", "Std. Error"], 1) == c(69.9, 91.8),
+  nrow(koos_wide) == 246, sum(koos_wide$one_year == 100) == 37, round(100 * mean(koos_wide$one_year == 100), 1) == 15.0,
+  round(smooth$y[1]) == 70, round(smooth$y[length(smooth$y)]) == 99,
+  round(coef(koos_slope), 2) == c(65.39, 0.39), round(koos_slope$ci[2, ], 2) == c(0.28, 0.51),
+  round(koos_ls[["preop"]], 2) == 0.43,
+  round(age_coef["age_10", c("Estimate", "Std. Error", "z value")], 2) == c(0.75, 0.17, 4.42),
+  round(age_coef["(Intercept)", "Estimate"], 2) == -7.49, age_coef["age_10", "Pr(>|z|)"] < 0.001,
+  round(exp(coef(age_model))[["age_10"]], 2) == 2.12, round(age_ci["age_10", ], 2) == c(1.53, 2.98),
+  round(age_wald["age_10", ], 2) == c(1.52, 2.95),
+  by_age$n == c(151, 249, 147, 53), by_age$complications[c(1, 4)] == c(5, 14),
+  round(by_age$percent[c(1, 4)], 1) == c(3.3, 26.4), sum(cohort$complication_90d) == 51,
+  round(100 * mean(cohort$complication_90d), 1) == 8.5,
+  sum(cohort$age >= 70) == 200, sum(cohort$revised[cohort$age >= 70]) == 29, sum(cohort$revised[cohort$age < 70]) == 52,
+  round(age_hr["age_10", c("exp(coef)", "lower .95", "upper .95")], 2) == c(1.25, 0.98, 1.59),
+  round(summary(age_cox)$coefficients["age_10", "Pr(>|z|)"], 3) == 0.073,
+  round(unname(summary(age_cox)$logtest["test"]), 2) == 3.23, round(unname(summary(age_cox)$logtest["pvalue"]), 2) == 0.07,
+  round(unname(summary(age_cox)$concordance[1]), 2) == 0.56,
+  # exercise solutions (recomputed here: the guard runs before the solution chunks)
+  round(coef(ex_age)[["age"]], 2) == 0.24, round(confint(ex_age)["age", ], 2) == c(0.11, 0.38),
+  summary(ex_age)$coefficients["age", "Pr(>|t|)"] < 0.001, round(summary(ex_age)$r.squared, 2) == 0.02,
+  sum(cohort$discharge == "facility") == 30,
+  round(exp(coef(ex_facility))[["age_10"]], 2) == 2.06, round(exp(confint(ex_facility))["age_10", ], 2) == c(1.37, 3.17),
+  summary(ex_facility)$coefficients["age_10", "Pr(>|z|)"] < 0.001,
+  nrow(ex_hoos) == 906, n_distinct(ex_hoos$case_id) == 270,
+  round(coef(ex_hoos_fit), 1) == c(87.9, 45.6, 53.4),
+  round(ex_hoos_ci["plateau", ], 1) == c(86.3, 89.4), round(ex_hoos_ci["start", ], 1) == c(44.2, 46.9),
+  round(log(2) * coef(ex_hoos_fit)[["tau"]]) == 37, round(log(2) * ex_hoos_ci["tau", ]) == c(33, 41)
+)
+```
+
+## Exercises {#exercises}
+
+The solutions use the packages and data loaded in the sections above, so run the page from the top first.
+
+**1.** How much does operative time change with **age**? Fit a simple linear regression and report the slope with its 95% CI.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+age_time <- lm(op_time_min ~ age, data = cohort)
+summary(age_time)$coefficients
+confint(age_time)
+summary(age_time)$r.squared
+```
+
+## Python
+
+```{python}
+age_time = smf.ols("op_time_min ~ age", data=cohort).fit()
+print(age_time.params, age_time.conf_int(), age_time.rsquared, sep="\n")
+```
+:::
+
+Operative time rose by 0.24 minutes per year of age (95% CI 0.11 to 0.38, p < 0.001), or about 2.4 minutes per decade. Age explains only 2% of the variation (R² = 0.02), against 20% for BMI.
+:::
+
+**2.** A colleague asks whether older patients are more likely to be discharged to a facility rather than home. Which regression would you use, and what do you find?
+
+::: {.callout-tip collapse="true"}
+## Solution
+The outcome is yes/no (facility or home) and the predictor is a measurement: **simple logistic regression**. Only 30 patients went to a facility, enough for one predictor.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+facility_model <- glm(I(discharge == "facility") ~ age_10, family = binomial, data = cohort)
+exp(cbind(odds_ratio = coef(facility_model), confint(facility_model)))
+summary(facility_model)$coefficients
+```
+
+## Python
+
+```{python}
+cohort["facility"] = (cohort["discharge"] == "facility").astype(int)
+facility_model = smf.logit("facility ~ age_10", data=cohort).fit(disp=False)
+facility_ors = np.exp(pd.concat([facility_model.params, facility_model.conf_int()], axis=1))
+facility_ors.columns = ["odds_ratio", "low", "high"]
+print(facility_ors, facility_model.pvalues, sep="\n")
+```
+:::
+
+Each 10 years of age was associated with higher odds of discharge to a facility (odds ratio 2.06, 95% CI 1.37 to 3.17, p < 0.001; R's profile CI).
+:::
+
+**3.** Fit the recovery curve to **HOOS JR** (hip replacements) and write the Results sentence.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+hoos <- proms |>
+  filter(instrument == "HOOS JR", !is.na(prom_score)) |>
+  mutate(days = pmax(visit_days, 0))
+hip_recovery <- nls(prom_score ~ plateau - (plateau - start) * exp(-days / tau),
+                    data = hoos, start = list(plateau = 85, start = 50, tau = 100))
+coef(hip_recovery)
+confint(hip_recovery)
+log(2) * confint(hip_recovery)["tau", ]
+c(scores = nrow(hoos), hips = n_distinct(hoos$case_id))
+```
+
+## Python
+
+```{python}
+hoos = proms[proms["instrument"] == "HOOS JR"].dropna(subset=["prom_score"]).copy()
+hoos["days"] = hoos["visit_days"].clip(lower=0)
+hip_estimates, hip_covariance = curve_fit(recovery_curve, hoos["days"], hoos["prom_score"], p0=[85, 50, 100])
+print(hip_estimates, np.sqrt(np.diag(hip_covariance)), np.log(2) * hip_estimates[2])
+print(len(hoos), hoos["case_id"].nunique())
+```
+:::
+
+"In 270 hips (906 scores), HOOS JR rose from an estimated 45.6 points (95% CI 44.2 to 46.9) at surgery toward a plateau of 87.9 points (95% CI 86.3 to 89.4), with half of the gain reached by about 37 days (95% CI 33 to 41)."
+
+Hips seem to recover faster than knees (half the gain by about 5 weeks, against 8). To test that difference, fit both in one model ([page 12](12-predict-from-several.qmd#multiple-nonlinear-regression)).
+:::

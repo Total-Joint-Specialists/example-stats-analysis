@@ -15,6 +15,7 @@ WRITTEN = [
     "catalog/08-three-plus-unmatched.html",
     "catalog/09-three-plus-matched.html",
     "catalog/10-association.html",
+    "catalog/11-predict-from-one.html",
 ]
 
 # Spec section 6, steps 2-7, as h3 headings in this order. Page 4 describes a
@@ -33,6 +34,8 @@ SURVIVAL_LINKS = {cell: target for cell, target in {
     ("catalog/07-two-paired-groups.html", "stratified-cox"): "survival/14-cox-regression.html",
     ("catalog/08-three-plus-unmatched.html", "cox"): "survival/14-cox-regression.html",
     ("catalog/09-three-plus-matched.html", "stratified-cox"): "survival/14-cox-regression.html",
+    ("catalog/11-predict-from-one.html", "cox"): "survival/14-cox-regression.html",
+    ("catalog/12-predict-from-several.html", "cox"): "survival/14-cox-regression.html",
 }.items() if cell[0] in WRITTEN}
 
 
@@ -197,3 +200,18 @@ def test_exercise_answers_follow_the_reporting_conventions(site, page):
             assert "SD" in text, text
         if re.search(r"\bmedian\b[^.]*\d", text):
             assert "IQR" in text, text
+
+
+# ---- curve fits on repeated scores -------------------------------------------
+
+REPEATED_SCORE_SECTIONS = [cell for cell in [("catalog/11-predict-from-one.html", "nonlinear-regression"),
+                                             ("catalog/12-predict-from-several.html", "multiple-nonlinear-regression")]
+                           if cell[0] in WRITTEN]
+
+
+@pytest.mark.parametrize("page,anchor", REPEATED_SCORE_SECTIONS)
+def test_curve_fits_warn_that_repeated_scores_narrow_the_cis(site, page, anchor):
+    """Each joint contributes up to four scores, so least-squares CIs are too narrow; page 16 handles that."""
+    warnings = [box for box in section(page, anchor).select("div.callout-warning") if "too narrow" in text_of(box)]
+    assert warnings, f"{page}#{anchor}: no warning that the CIs are too narrow"
+    assert any(a["href"].endswith("beyond/16-mixed-models.html") for a in warnings[0].select("a[href]"))

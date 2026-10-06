@@ -152,3 +152,52 @@ def test_post_hoc_tests_are_no_longer_gated_on_the_overall_test(site):
     found = section("catalog/08-three-plus-unmatched.html", "which-groups-differ")
     assert "Only run post-hoc tests when the overall test is significant" not in text_of(found)
     assert any(a["href"].endswith("beyond/15-post-hoc.html#overall-test-first") for a in found.select("a[href]"))
+
+
+# ---- final review fixes ----------------------------------------------------------------
+
+def test_page_16_names_its_planned_comparison_instead_of_leaving_three_unadjusted(site):
+    found = section(MIXED, "estimated-marginal-means")
+    assert 'adjust = "none"' not in code_of(found) and '"1yr - preop" = c(-1, 0, 0, 1)' in code_of(found)
+    methods = next(text_of(q) for q in section(MIXED, "reporting").select("blockquote") if "Methods:" in text_of(q))
+    assert "The planned comparison was the change from before surgery to 1 year" in methods
+    assert "you didn't plan" in text_of(section(POST_HOC, "overall-test-first"))
+
+
+def test_holm_description_reproduces_the_table_above_it(site):
+    text = text_of(section(POST_HOC, "adjusting-p-values"))
+    assert "can't be smaller than the one before it" in text and "takes 0.044" in text
+
+
+def test_bmi_exercise_answer_names_the_least_certain_pairs(site):
+    text = text_of(section(POST_HOC, "exercises"))
+    assert "The smallest steps" not in text and "least certain" in text
+    assert "protects against any false positive" not in text
+
+
+def test_post_hoc_results_say_where_the_other_pairs_are(site):
+    for anchor in ["after-anova", "planned-comparisons"]:
+        results = " ".join(text_of(q) for q in section(POST_HOC, anchor).select("blockquote"))
+        assert "Table 2 gives all six pairwise comparisons" in results, anchor
+    assert "3.07 (95% CI 1.85 to 5.09" in text_of(section(POST_HOC, "after-log-rank"))
+
+
+def test_mixed_model_page_states_its_arithmetic_and_missingness_correctly(site):
+    text = text_of(load(MIXED))
+    assert "8.8² = 78.1" not in text and "8.84² = 78.1" in text
+    assert "Men were 2.7 points ahead" in text
+    assert "missed completely at random" not in text and "almost entirely at random" in text
+    assert "as long as the model describes how a knee's scores are related" in text
+
+
+def test_agreement_reporting_gives_every_ci_and_says_whose_readings(site):
+    found = section(AGREEMENT, "reporting")
+    quotes = " ".join(text_of(q) for q in found.select("blockquote"))
+    assert "(95% CI −3.48° to −2.00°)" in quotes and "(95% CI 3.00° to 4.48°)" in quotes
+    assert "rater 1's intra-rater reliability" in quotes and "each rater's first reading" in quotes
+    assert "moderate to substantial (κ = 0.58" in quotes and "moderate to almost perfect (weighted κ = 0.73" in quotes
+
+
+def test_scikit_learn_kappa_ordering_trap_is_named(site):
+    text = text_of(section(AGREEMENT, "kappa"))
+    assert "cohen_kappa_score()" in text and "labels=" in text

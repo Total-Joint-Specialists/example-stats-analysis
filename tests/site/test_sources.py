@@ -221,6 +221,21 @@ def test_free_form_pages_check_r_against_python():
         assert r_checks >= 5 and r_checks == py_values, f"{name}: {r_checks} R checks, {py_values} Python chk"
 
 
+def test_beyond_hidden_checks_reuse_the_printed_results():
+    """A hidden check that recomputes its own value can't notice a change in the visible code (Phase 5 review)."""
+    for name, text in written_pages("beyond"):
+        hidden = "\n".join(code for lang, code in hidden_chunks(text) if "Prose guard" not in code)
+        for fresh_call in ["t.test(", "marginal_means(", "1 - 0.95"]:
+            assert fresh_call not in hidden, f"{name}: hidden check calls {fresh_call}"
+
+
+def test_beyond_prose_guards_pin_numbers_quoted_from_other_pages():
+    guards = {name: next(code for lang, code in hidden_chunks(text) if "Prose guard" in code)
+              for name, text in written_pages("beyond")}
+    assert "33.5" in guards["beyond/15-post-hoc.qmd"] and "3.07" in guards["beyond/15-post-hoc.qmd"]
+    assert "34.9" in guards["beyond/16-mixed-models.qmd"] and "831" in guards["beyond/16-mixed-models.qmd"]
+
+
 # ---- each section's Python runs on its own -------------------------------
 
 def undefined_names(code):

@@ -91,7 +91,7 @@ All 330 knees have at least one score, 1146 scores in all, but only 192 knees ha
 
 Dropping patients isn't only wasteful. It can bias the result, and that depends on why scores are missing:
 - **Missing completely at random:** a missed visit has nothing to do with the patient's recovery (the clinic rescheduled, the patient moved). Both methods are unbiased; the mixed model is more precise because it uses more data.
-- **Missing at random:** missing depends on things you measured, such as an earlier score. A patient who scored badly at 6 weeks is less likely to return at 3 months. Repeated-measures ANOVA is then biased, because the patients it keeps recovered better; a mixed model is still unbiased, because it uses the earlier scores to fill the picture in.
+- **Missing at random:** missing depends on things you measured, such as an earlier score. A patient who scored badly at 6 weeks is less likely to return at 3 months. Repeated-measures ANOVA is then biased, because the patients it keeps recovered better; a mixed model is still unbiased, as long as the model describes how a knee's scores are related, because it uses the earlier scores to fill the picture in.
 - **Missing not at random:** missing depends on the score that wasn't collected (patients stay away *because* their knee is worse that week). Nothing fixes this from the data alone. Say so as a limitation.
 
 ## A random intercept for each knee {#random-intercept}
@@ -136,7 +136,7 @@ check_agree(list(intercept = fixef(knee_model)[["(Intercept)"]], visit_6wk = fix
 
 Reading the output:
 - **Fixed effects:** the average KOOS JR was 50.0 before surgery (the intercept), and higher by 12.5 points at 6 weeks, 24.2 at 3 months and 33.9 at 1 year. Each visit's coefficient is its difference from pre-op.
-- **Random effects:** knees' own baseline levels vary around the average with an SD of 8.8 points (R's "case_id (Intercept)" row; Python's "case_id Var" row gives the variance, 8.8² = 78.1). The scores also vary from visit to visit within a knee with a residual SD of 8.6 points.
+- **Random effects:** knees' own baseline levels vary around the average with an SD of 8.8 points (R's "case_id (Intercept)" row; Python's "case_id Var" row gives the variance, 8.84² = 78.1). The scores also vary from visit to visit within a knee with a residual SD of 8.6 points.
 - **How much of the variation is between knees:** 78.1 / (78.1 + 73.5) = 0.52, the intraclass correlation ([page 17](17-agreement.qmd#icc) uses the same idea for raters). About half of the spread in scores comes from knees differing from each other; that's why the scores can't be treated as independent.
 - **REML:** both programs fit the model by restricted maximum likelihood, the standard choice for estimating it.
 
@@ -155,8 +155,8 @@ Report the model's estimate at each visit, with its 95% CI. These are the **esti
 ```{r}
 knee_means <- emmeans(knee_model, ~ visit, lmer.df = "satterthwaite")
 knee_means
-# each visit minus pre-op; adjust = "none" because these are the planned comparisons (page 15)
-confint(contrast(knee_means, method = "trt.vs.ctrl", adjust = "none"))
+# the planned comparison: 1 year minus pre-op (one comparison, so no adjustment; page 15)
+confint(contrast(knee_means, method = list("1yr - preop" = c(-1, 0, 0, 1))))
 ```
 
 ## Python
@@ -175,14 +175,15 @@ def marginal_means(model, grid):
     return means
 
 visit_grid = pd.DataFrame({"visit": pd.Categorical(visits, categories=visits)})
-print(marginal_means(knee_model, visit_grid).round(2))
-print(knee_model.conf_int().loc[["visit[T.6wk]", "visit[T.3mo]", "visit[T.1yr]"]])   # each visit minus pre-op
+knee_means = marginal_means(knee_model, visit_grid)
+print(knee_means.round(2))
+# the planned comparison: 1 year minus pre-op
+print(knee_model.fe_params["visit[T.1yr]"], knee_model.conf_int().loc["visit[T.1yr]"].to_list())
 ```
 :::
 
 ```{python}
 #| include: false
-knee_means = marginal_means(knee_model, visit_grid)
 chk = {"emm_pre": float(knee_means["emmean"].iloc[0]), "emm_1yr": float(knee_means["emmean"].iloc[3]),
        "se_pre": float(knee_means["se"].iloc[0]), "se_1yr": float(knee_means["se"].iloc[3])}
 ```
@@ -196,9 +197,9 @@ check_agree(list(emm_pre = knee_emm$emmean[1], emm_1yr = knee_emm$emmean[4], se_
 ```
 
 - **emmean, lower.CL / upper.CL:** KOOS JR averaged 50.0 (95% CI 48.6 to 51.3) before surgery, 62.5 at 6 weeks, 74.2 at 3 months and 83.9 (95% CI 82.5 to 85.3) at 1 year.
-- **The contrasts:** the improvement from pre-op, with its CI: 33.9 points by 1 year (95% CI 32.5 to 35.3).
+- **The contrast:** the planned comparison, the improvement from pre-op to 1 year: 33.9 points (95% CI 32.5 to 35.3). Choose such comparisons in advance; comparing every pair of visits would need an adjustment ([page 15](15-post-hoc.qmd#planned-comparisons)).
 
-The 192 knees with all four scores average 49.2 before surgery and 84.0 at 1 year. That's close to the mixed model, as expected here: in this synthetic cohort, visits were missed completely at random. With real patients you can't count on that, and the mixed model's answer, which uses all 330 knees, is the one to report.
+The 192 knees with all four scores average 49.2 before surgery and 84.0 at 1 year. That's close to the mixed model, as expected here: in this synthetic cohort, visits were missed almost entirely at random: by chance, or because follow-up had ended. With real patients you can't count on that, and the mixed model's answer, which uses all 330 knees, is the one to report.
 
 ## Time: categories or a curve? {#time}
 
@@ -238,7 +239,7 @@ print(on_days.round(2))
 curve = pd.DataFrame({"visit_days": np.arange(-27, 396)})
 fig, ax = plt.subplots(figsize=(7, 3.5))
 ax.plot(curve["visit_days"], curve_model.predict(curve))
-ax.scatter(days["visit_days"], marginal_means(knee_model, visit_grid)["emmean"])
+ax.scatter(days["visit_days"], knee_means["emmean"])
 ax.set_xlabel("Days since surgery")
 ax.set_ylabel("KOOS JR")
 plt.tight_layout()
@@ -325,7 +326,7 @@ check_agree(list(wald_per_df = sex_anova["visit:sex", "F value"], emm_male_6wk =
 ```
 
 - **visit:sex, F = 2.09 on 3 and 832 df, p = 0.100:** no clear evidence that recovery differs between men and women. Python's Wald test gives the undivided statistic, 6.26 on 3 degrees of freedom, with a chi-square p-value of 0.099.
-- **The EMMs** show why: the two patterns cross back and forth by a point or two. Men were 2.8 points ahead at 6 weeks (63.9 vs 61.2), women 0.9 points ahead at 3 months, and they were within about a point of each other at 1 year (84.4 vs 83.4).
+- **The EMMs** show why: the two patterns cross back and forth by a point or two. Men were 2.7 points ahead at 6 weeks (63.9 vs 61.2), women 0.9 points ahead at 3 months, and they were within about a point of each other at 1 year (84.4 vs 83.4).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: a non-significant interaction isn't "the same recovery"
@@ -340,7 +341,7 @@ In this cohort the patient-level intercept comes out at almost exactly zero (lme
 
 ## How to report it {#reporting}
 
-> **Methods:** KOOS JR scores before surgery and at 6 weeks, 3 months and 1 year were analyzed with a linear mixed model, with visit as a categorical fixed effect and a random intercept for each knee, fitted by restricted maximum likelihood. All available scores were used, including those from knees that missed a visit. Differences between men and women in the pattern of recovery were tested with a visit × sex interaction (Satterthwaite degrees of freedom). Estimated marginal means are reported with 95% CIs.
+> **Methods:** KOOS JR scores before surgery and at 6 weeks, 3 months and 1 year were analyzed with a linear mixed model, with visit as a categorical fixed effect and a random intercept for each knee, fitted by restricted maximum likelihood. All available scores were used, including those from knees that missed a visit. Differences between men and women in the pattern of recovery were tested with a visit × sex interaction (Satterthwaite degrees of freedom). The planned comparison was the change from before surgery to 1 year. Estimated marginal means are reported with 95% CIs.
 >
 > **Results:** Of 330 knees, 192 (58.2%) had all four scores; all 1146 scores were analyzed. The estimated mean KOOS JR rose from 50.0 (95% CI 48.6 to 51.3) before surgery to 83.9 (95% CI 82.5 to 85.3) at 1 year, an improvement of 33.9 points (95% CI 32.5 to 35.3). There was no clear evidence that the pattern of recovery differed between men and women (interaction F(3, 832) = 2.09, p = 0.100).
 
@@ -348,7 +349,9 @@ In this cohort the patient-level intercept comes out at almost exactly zero (lme
 #| include: false
 # Prose guard: numbers quoted in the text above. If the data change, update the text.
 knee_vc <- as.data.frame(VarCorr(knee_model))
-knee_change <- summary(confint(contrast(knee_means, method = "trt.vs.ctrl", adjust = "none")))
+knee_change <- summary(confint(contrast(knee_means, method = list("1yr - preop" = c(-1, 0, 0, 1)))))
+complete_pcs <- proms |> select(case_id, visit, vr12_pcs) |> group_by(case_id) |> filter(all(!is.na(vr12_pcs))) |> ungroup() |>
+  mutate(visit = factor(visit, levels = c("preop", "6wk", "3mo", "1yr"))) |> group_by(visit) |> summarise(mean = mean(vr12_pcs))
 complete_means <- knees |> group_by(case_id) |> filter(n() == 4) |> ungroup() |> group_by(visit) |> summarise(mean = mean(prom_score))
 bilateral_knees <- knees |> distinct(patient_id, case_id) |> count(patient_id) |> filter(n == 2)
 hips <- proms |> filter(instrument == "HOOS JR", !is.na(prom_score)) |> mutate(visit = factor(visit, levels = c("preop", "6wk", "3mo", "1yr")))
@@ -365,14 +368,14 @@ stopifnot(
   round(knee_vc$vcov[1] / sum(knee_vc$vcov), 2) == 0.52,
   round(knee_emm$emmean, 1) == c(50.0, 62.5, 74.2, 83.9),
   round(c(knee_emm$lower.CL[1], knee_emm$upper.CL[1], knee_emm$lower.CL[4], knee_emm$upper.CL[4]), 1) == c(48.6, 51.3, 82.5, 85.3),
-  round(c(knee_change$estimate[3], knee_change$lower.CL[3], knee_change$upper.CL[3]), 1) == c(33.9, 32.5, 35.3),
+  round(c(knee_change$estimate, knee_change$lower.CL, knee_change$upper.CL), 1) == c(33.9, 32.5, 35.3),
   round(complete_means$mean[c(1, 4)], 1) == c(49.2, 84.0),
   round(on_days[c(2, 4)], 1) == c(62.7, 84.1),
   round(max(curve$prom_score)) == 89, curve$visit_days[which.max(curve$prom_score)] %/% 30 == 8,
   round(sex_anova["visit:sex", "F value"], 2) == 2.09, round(sex_anova["visit:sex", "DenDF"]) == 832,
   round(sex_anova["visit:sex", "Pr(>F)"], 3) == 0.100,
   round(reticulate::py_eval("float(sex_wald.statistic)"), 2) == 6.26, round(reticulate::py_eval("float(sex_wald.pvalue)"), 3) == 0.099,
-  round(sex_emm$emmean[c(6, 2)], 1) == c(63.9, 61.2), round(sex_emm$emmean[6] - sex_emm$emmean[2], 1) == 2.8,
+  round(sex_emm$emmean[c(6, 2)], 1) == c(63.9, 61.2), round(round(sex_emm$emmean[6], 1) - round(sex_emm$emmean[2], 1), 1) == 2.7,
   round(sex_emm$emmean[3] - sex_emm$emmean[7], 1) == 0.9, round(sex_emm$emmean[c(8, 4)], 1) == c(84.4, 83.4),
   nrow(bilateral_knees) == 46,
   # exercise solutions (recomputed here: the guard runs before the solution chunks)
@@ -382,7 +385,8 @@ stopifnot(
   n_distinct(pcs_all$case_id) == 600, nrow(pcs_all) == 2052,
   round(pcs_emm$emmean, 1) == c(31.2, 35.3, 41.0, 44.9),
   round(age_anova["visit:age_group", "F value"], 2) == 1.00, round(age_anova["visit:age_group", "Pr(>F)"], 3) == 0.422,
-  round(age_anova["visit:age_group", "NumDF"]) == 6
+  round(age_anova["visit:age_group", "NumDF"]) == 6, round(age_anova["visit:age_group", "DenDF"]) == 831,
+  round(complete_pcs$mean, 1) == c(31.2, 34.9, 41.0, 44.9)
 )
 ```
 
@@ -453,7 +457,7 @@ print(marginal_means(pcs_model, visit_grid).round(2))
 ```
 :::
 
-The mixed model uses all 600 patients (2052 scores) instead of 328. Its visit means, 31.2, 35.3, 41.0 and 44.9, are almost the same as page 9's complete-patient means (31.2, 34.9, 41.0 and 44.9): in this synthetic cohort visits were missed completely at random, so dropping patients cost precision rather than accuracy.
+The mixed model uses all 600 patients (2052 scores) instead of 328. Its visit means, 31.2, 35.3, 41.0 and 44.9, are almost the same as page 9's complete-patient means (31.2, 34.9, 41.0 and 44.9): in this synthetic cohort visits were missed almost entirely at random, so dropping patients cost precision rather than accuracy.
 :::
 
 **3.** Does knee recovery differ by age group (under 65, 65 to 74, 75 and over)? Fit the visit × age group model and write the Results sentence.

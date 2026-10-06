@@ -191,7 +191,8 @@ se_limit <- sqrt(3 * sd_diff^2 / n_knees)                      # Bland and Altma
 limit_cis <- rbind(lower = limits[1] + c(-1, 1) * qt(0.975, n_knees - 1) * se_limit,
                    upper = limits[2] + c(-1, 1) * qt(0.975, n_knees - 1) * se_limit)
 
-c(bias = bias, bias_ci = t.test(inter_hka$difference)$conf.int, sd = sd_diff, limits = limits)
+bias_ci <- t.test(inter_hka$difference)$conf.int                # the CI of the mean difference
+c(bias = bias, bias_ci = bias_ci, sd = sd_diff, limits = limits)
 limit_cis
 
 ggplot(inter_hka, aes(mean, difference)) +
@@ -238,7 +239,7 @@ chk = {"bias": float(bias), "bias_low": float(bias_ci.low), "sd": float(sd_diff)
 
 ```{r}
 #| include: false
-check_agree(list(bias = bias, bias_low = t.test(inter_hka$difference)$conf.int[1], sd = sd_diff, limit_low = limits[1],
+check_agree(list(bias = bias, bias_low = bias_ci[1], sd = sd_diff, limit_low = limits[1],
                  limit_high = limits[2], limit_high_ci_high = limit_cis["upper", 2]),
             reticulate::py$chk)
 ```
@@ -297,7 +298,7 @@ check_agree(list(agreement = mean(cpak$R1 == cpak$R2), kappa = cpak_kappa[["kapp
             reticulate::py$chk)
 ```
 
-The raters gave the same CPAK class to 40 of the 60 knees (66.7%), but some of that would happen by chance. Kappa = 0.58 (95% CI 0.44 to 0.73): moderate agreement on Landis and Koch's scale (0.41 to 0.60 moderate, 0.61 to 0.80 substantial, above 0.80 almost perfect).
+The raters gave the same CPAK class to 40 of the 60 knees (66.7%), but some of that would happen by chance. Kappa = 0.58 (95% CI 0.44 to 0.73): moderate agreement at its point estimate on Landis and Koch's scale (0.41 to 0.60 moderate, 0.61 to 0.80 substantial, above 0.80 almost perfect). As with the ICC, judge it by the CI: moderate to substantial.
 
 **Weighted kappa for ordered categories.** Plain kappa treats every disagreement as equally bad. When the categories have an order, a near miss should count less than a big miss. CPAK class has no single order (it's a 3 × 3 grid of two angles), but each axis does. The arithmetic HKA group goes varus, neutral, valgus. A **weighted kappa** gives a disagreement between varus and neutral half the penalty of one between varus and valgus (linear weights):
 
@@ -345,7 +346,7 @@ check_agree(list(unweighted = unweighted_kappa[["kappa"]], weighted = weighted_k
             reticulate::py$chk)
 ```
 
-The raters agreed on the HKA group for 48 of 60 knees, and every disagreement was a near miss: no knee was called varus by one rater and valgus by the other. Unweighted kappa is 0.68; the weighted kappa, which gives near misses partial credit, is 0.73 (95% CI 0.58 to 0.87), substantial agreement.
+The raters agreed on the HKA group for 48 of 60 knees, and every disagreement was a near miss: no knee was called varus by one rater and valgus by the other. Unweighted kappa is 0.68; the weighted kappa, which gives near misses partial credit, is 0.73 (95% CI 0.58 to 0.87): substantial at its point estimate, moderate to almost perfect across its CI.
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: weighted kappa needs the categories in order
@@ -354,14 +355,14 @@ The weights depend on the order of the categories. Put them in their real order 
 
 ::: {.callout-tip}
 ## 🔀 R vs Python: kappa and its CI
-DescTools' `CohenKappa()` and statsmodels' `cohens_kappa()` give the same kappa and the same CI. DescTools calls linear weights "Equal-Spacing" and quadratic weights "Fleiss-Cohen"; statsmodels uses `wt="linear"` and `wt="quadratic"`. scikit-learn's `cohen_kappa_score()` gives the kappa but no CI.
+DescTools' `CohenKappa()` and statsmodels' `cohens_kappa()` give the same kappa and the same CI. DescTools calls linear weights "Equal-Spacing" and quadratic weights "Fleiss-Cohen"; statsmodels uses `wt="linear"` and `wt="quadratic"`. scikit-learn's `cohen_kappa_score()` gives the kappa but no CI, and for weighted kappa it sorts the categories alphabetically unless you pass them in order with `labels=`.
 :::
 
 ## How to report it {#reporting}
 
-> **Methods:** Two raters measured the hip-knee-ankle angle, MPTA and LDFA on 60 long-leg radiographs, twice, at least 2 weeks apart. Inter- and intra-rater reliability were assessed with two-way random-effects, absolute-agreement, single-rater intraclass correlation coefficients (ICC(A,1)) and interpreted according to Koo and Li. Agreement was assessed with Bland-Altman 95% limits of agreement. Agreement on CPAK class was assessed with Cohen's kappa, and on the ordered arithmetic HKA group with linearly weighted kappa.
+> **Methods:** Two raters measured the hip-knee-ankle angle, MPTA and LDFA on 60 long-leg radiographs, twice, at least 2 weeks apart. Inter- and intra-rater reliability were assessed with two-way random-effects, absolute-agreement, single-rater intraclass correlation coefficients (ICC(A,1)) and interpreted according to Koo and Li. Inter-rater reliability used each rater's first reading; intra-rater reliability compared rater 1's two readings. Agreement was assessed with Bland-Altman 95% limits of agreement. Agreement on CPAK class was assessed with Cohen's kappa, and on the ordered arithmetic HKA group with linearly weighted kappa.
 >
-> **Results:** Inter-rater reliability of the hip-knee-ankle angle was good to excellent (ICC 0.89, 95% CI 0.82 to 0.93), and intra-rater reliability excellent at its point estimate (ICC 0.91, 95% CI 0.86 to 0.95). Rater 2 measured 0.50° higher than rater 1 on average (95% CI 0.08° to 0.93°), with 95% limits of agreement from −2.74° to 3.74°. Agreement on CPAK class was moderate (κ = 0.58, 95% CI 0.44 to 0.73), and on the arithmetic HKA group substantial (weighted κ = 0.73, 95% CI 0.58 to 0.87).
+> **Results:** Inter-rater reliability of the hip-knee-ankle angle was good to excellent (ICC 0.89, 95% CI 0.82 to 0.93), and rater 1's intra-rater reliability excellent at its point estimate (ICC 0.91, 95% CI 0.86 to 0.95). Rater 2 measured 0.50° higher than rater 1 on average (95% CI 0.08° to 0.93°), with 95% limits of agreement from −2.74° (95% CI −3.48° to −2.00°) to 3.74° (95% CI 3.00° to 4.48°). Agreement on CPAK class was moderate to substantial (κ = 0.58, 95% CI 0.44 to 0.73), and on the arithmetic HKA group moderate to almost perfect (weighted κ = 0.73, 95% CI 0.58 to 0.87).
 
 ```{r}
 #| include: false

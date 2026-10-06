@@ -27,7 +27,7 @@ def test_r_check_covers_the_packages_the_pages_call():
     script = (ROOT / "getting-started" / "check_setup.R").read_text(encoding="utf-8")
     for pkg in ["tidyverse", "readxl", "tidyxl", "janitor", "gtsummary", "flextable", "smd",
                 "effectsize", "DescTools", "survival", "ggsurvfit", "rstatix", "tidycmprsk",
-                "broom.helpers", "lme4", "lmerTest", "emmeans", "PMCMRplus"]:
+                "broom.helpers", "lme4", "lmerTest", "emmeans", "PMCMRplus", "irr"]:
         assert f'"{pkg}"' in script, pkg
 
 

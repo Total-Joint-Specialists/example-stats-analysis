@@ -1,5 +1,5 @@
-"""Free-form pages (spec section 6): the survival and "beyond the table" pages, which have no fixed
-section anatomy. Every page in FREE_FORM_SECTIONS gets these checks."""
+"""Free-form pages (spec section 6): the survival, "beyond the table" and example-report pages, which
+have no fixed section anatomy. Every page in FREE_FORM_SECTIONS gets these checks."""
 
 import pytest
 
@@ -51,12 +51,14 @@ def test_conventions_rule_catches_kappa_and_icc_without_a_ci():
 
 @pytest.mark.parametrize("page", FREE_FORM_SECTIONS)
 def test_reports_follow_the_reporting_conventions(site, page):
-    """Methods and Results blockquotes and exercise answers: CIs with effect sizes, and no
-    "similar" or "held" where the data only fail to show a difference."""
-    quotes = [text_of(q) for q in load(page).select("blockquote")]
-    assert any("Methods:" in q and "Results:" in q for q in quotes), f"{page}: no Methods and Results"
+    """Methods and Results (blockquotes, or page 18's manuscript sections) and exercise answers: CIs
+    with effect sizes, and no "similar" or "held" where the data only fail to show a difference."""
+    soup = load(page)
+    quotes = [text_of(q) for q in soup.select("blockquote")]
+    manuscript = [text_of(p) for anchor in ["methods", "results"] for p in soup.select(f"section#{anchor} p")]
+    assert any("Methods:" in q and "Results:" in q for q in quotes) or manuscript, f"{page}: no Methods and Results"
     answers = [text_of(p) for p in section(page, "exercises").select("p")]
-    for text in quotes + answers:
+    for text in quotes + manuscript + answers:
         assert unreported(text) == [], text
         assert not NO_EVIDENCE_AS_NO_DIFFERENCE.findall(text), text
 

@@ -1,6 +1,8 @@
 """Shared constants and helpers for the built-site tests."""
 
+import html
 import re
+import zipfile
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -75,6 +77,9 @@ FREE_FORM_SECTIONS = {
     "beyond/17-agreement.html": [
         "reliability-vs-agreement", "icc", "inter-intra-rater", "bland-altman", "kappa", "reporting",
         "exercises"],
+    "report/18-example-report.html": [
+        "question", "tidy", "integrity", "table-1", "distributions", "primary-analysis", "survival",
+        "manuscript", "aim", "methods", "results", "exercises"],
 }
 
 
@@ -100,6 +105,20 @@ def section(page, anchor):
 def code_of(found):
     """The code shown in a page element, as one string."""
     return " ".join(pre.get_text() for pre in found.select("pre"))
+
+
+def docx_xml(path) -> str:
+    """The body of a Word file. A .docx is a zip of XML files, so the site tests need no Word package."""
+    with zipfile.ZipFile(path) as docx:
+        return docx.read("word/document.xml").decode("utf-8")
+
+
+def docx_text(path) -> str:
+    """The text of a Word file, one paragraph per line (including the paragraphs in table cells),
+    with smart quotes straightened and non-breaking spaces ("Table 1") made plain."""
+    paragraphs = re.findall(r"<w:p[ >].*?</w:p>", docx_xml(path), re.DOTALL)
+    text = "\n".join("".join(re.findall(r"<w:t(?: [^>]*)?>([^<]*)</w:t>", p)) for p in paragraphs)
+    return html.unescape(text).replace("’", "'").replace("\xa0", " ")
 
 
 # ---- reporting conventions (spec section 4, page 0.2) ------------------------

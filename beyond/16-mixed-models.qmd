@@ -117,21 +117,23 @@ print(knee_model.summary())
 ```{python}
 #| include: false
 fixed = knee_model.fe_params
-chk = {"intercept": float(fixed["Intercept"]), "visit_6wk": float(fixed["visit[T.6wk]"]), "visit_1yr": float(fixed["visit[T.1yr]"]),
-       "se_1yr": float(knee_model.bse_fe["visit[T.1yr]"]), "sd_knee": float(np.sqrt(knee_model.cov_re.iloc[0, 0])),
-       "sd_residual": float(np.sqrt(knee_model.scale))}
+chk = {"intercept": float(fixed["Intercept"]), "visit_6wk": float(fixed["visit[T.6wk]"]), "visit_1yr": float(fixed["visit[T.1yr]"])}
+chk_sd = {"sd_knee": float(np.sqrt(knee_model.cov_re.iloc[0, 0])), "sd_residual": float(np.sqrt(knee_model.scale))}
+chk_se = {"se_1yr": float(knee_model.bse_fe["visit[T.1yr]"])}
 ```
 
 ```{r}
 #| include: false
 knee_sd <- as.data.frame(VarCorr(knee_model))$sdcor
-# The estimates agree to about 1e-6. The standard errors differ in the fourth significant figure:
-# lme4 computes them with the variances held fixed, statsmodels from the whole likelihood's
-# Hessian (checked by hand while writing this page). See the R vs Python box.
 check_agree(list(intercept = fixef(knee_model)[["(Intercept)"]], visit_6wk = fixef(knee_model)[["visit6wk"]],
-                 visit_1yr = fixef(knee_model)[["visit1yr"]], se_1yr = sqrt(diag(vcov(knee_model)))[4],
-                 sd_knee = knee_sd[1], sd_residual = knee_sd[2]),
-            reticulate::py$chk, tol = 1e-3)
+                 visit_1yr = fixef(knee_model)[["visit1yr"]]),
+            reticulate::py$chk)
+# The two optimizers stop at slightly different variances: the SDs agree to about 1e-6.
+check_agree(list(sd_knee = knee_sd[1], sd_residual = knee_sd[2]), reticulate::py$chk_sd, tol = 1e-5)
+# The standard errors differ in the fourth significant figure: lme4 computes them with the variances
+# held fixed, statsmodels from the whole likelihood's Hessian (checked by hand while writing this
+# page). See the R vs Python box.
+check_agree(list(se_1yr = sqrt(diag(vcov(knee_model)))[4]), reticulate::py$chk_se, tol = 1e-3)
 ```
 
 Reading the output:
@@ -184,16 +186,16 @@ print(knee_model.fe_params["visit[T.1yr]"], knee_model.conf_int().loc["visit[T.1
 
 ```{python}
 #| include: false
-chk = {"emm_pre": float(knee_means["emmean"].iloc[0]), "emm_1yr": float(knee_means["emmean"].iloc[3]),
-       "se_pre": float(knee_means["se"].iloc[0]), "se_1yr": float(knee_means["se"].iloc[3])}
+chk = {"emm_pre": float(knee_means["emmean"].iloc[0]), "emm_1yr": float(knee_means["emmean"].iloc[3])}
+chk_se = {"se_pre": float(knee_means["se"].iloc[0]), "se_1yr": float(knee_means["se"].iloc[3])}
 ```
 
 ```{r}
 #| include: false
 knee_emm <- summary(knee_means)
-# standard errors computed two ways, as in the check above
-check_agree(list(emm_pre = knee_emm$emmean[1], emm_1yr = knee_emm$emmean[4], se_pre = knee_emm$SE[1], se_1yr = knee_emm$SE[4]),
-            reticulate::py$chk, tol = 1e-3)
+check_agree(list(emm_pre = knee_emm$emmean[1], emm_1yr = knee_emm$emmean[4]), reticulate::py$chk)
+# standard errors computed two ways, as in the check after the first model
+check_agree(list(se_pre = knee_emm$SE[1], se_1yr = knee_emm$SE[4]), reticulate::py$chk_se, tol = 1e-3)
 ```
 
 - **emmean, lower.CL / upper.CL:** KOOS JR averaged 50.0 (95% CI 48.6 to 51.3) before surgery, 62.5 at 6 weeks, 74.2 at 3 months and 83.9 (95% CI 82.5 to 85.3) at 1 year.
@@ -311,18 +313,17 @@ plt.show()
 
 ```{python}
 #| include: false
-chk = {"wald_per_df": float(sex_wald.statistic) / 3, "emm_male_6wk": float(sex_means["emmean"].iloc[5]),
-       "emm_female_1yr": float(sex_means["emmean"].iloc[3])}
+chk = {"emm_male_6wk": float(sex_means["emmean"].iloc[5]), "emm_female_1yr": float(sex_means["emmean"].iloc[3])}
+chk_se = {"wald_per_df": float(sex_wald.statistic) / 3}
 ```
 
 ```{r}
 #| include: false
 sex_emm <- summary(sex_means)
+check_agree(list(emm_male_6wk = sex_emm$emmean[6], emm_female_1yr = sex_emm$emmean[4]), reticulate::py$chk)
 # R's F is the same Wald statistic divided by its 3 degrees of freedom; it inherits the
 # standard-error difference explained in the check after the first model
-check_agree(list(wald_per_df = sex_anova["visit:sex", "F value"], emm_male_6wk = sex_emm$emmean[6],
-                 emm_female_1yr = sex_emm$emmean[4]),
-            reticulate::py$chk, tol = 1e-3)
+check_agree(list(wald_per_df = sex_anova["visit:sex", "F value"]), reticulate::py$chk_se, tol = 1e-3)
 ```
 
 - **visit:sex, F = 2.09 on 3 and 832 df, p = 0.100:** no clear evidence that recovery differs between men and women. Python's Wald test gives the undivided statistic, 6.26 on 3 degrees of freedom, with a chi-square p-value of 0.099.

@@ -236,6 +236,72 @@ def test_beyond_prose_guards_pin_numbers_quoted_from_other_pages():
     assert "34.9" in guards["beyond/16-mixed-models.qmd"] and "831" in guards["beyond/16-mixed-models.qmd"]
 
 
+def calls_of(code, function):
+    """The arguments of each call to function(...) in code, up to its matching parenthesis."""
+    found = []
+    for match in re.finditer(r"(?<![\w.])" + re.escape(function) + r"\(", code):
+        depth, quote, i = 1, None, match.end()
+        while depth:
+            ch = code[i]
+            if quote:
+                quote = None if ch == quote else quote
+            elif ch in "\"'":
+                quote = ch
+            elif ch in "([":
+                depth += 1
+            elif ch in ")]":
+                depth -= 1
+            i += 1
+        found.append(code[match.end():i - 1])
+    return found
+
+
+def top_level(args):
+    """args split at the commas that aren't inside brackets or strings."""
+    parts, depth, quote, start = [], 0, None, 0
+    for i, ch in enumerate(args):
+        if quote:
+            quote = None if ch == quote else quote
+        elif ch in "\"'":
+            quote = ch
+        elif ch in "([":
+            depth += 1
+        elif ch in ")]":
+            depth -= 1
+        elif ch == "," and depth == 0:
+            parts.append(args[start:i].strip())
+            start = i + 1
+    return parts + [args[start:].strip()]
+
+
+def agreement_checks(text):
+    """(names, tol) for each check_agree() call in a page's hidden R chunks; tol is None for the default."""
+    checks = []
+    for lang, code in hidden_chunks(text):
+        for call in calls_of(code, "check_agree") if lang == "r" else []:
+            parts = top_level(call)
+            names = [part.split("=")[0].strip() for part in top_level(calls_of(parts[0], "list")[0])]
+            tol = next((part.split("=")[1].strip() for part in parts[1:] if part.startswith("tol")), None)
+            checks.append((names, tol))
+    return checks
+
+
+def test_rule_reads_names_and_tolerance_from_each_check():
+    text = ('```{r}\n#| include: false\ncheck_agree(list(a = f(x, y)[["(b)"]], se_a = 2), reticulate::py$chk, tol = 1e-3)\n'
+            'check_agree(list(c = 3), reticulate::py$chk_c)\n```')
+    assert agreement_checks(text) == [(["a", "se_a"], "1e-3"), (["c"], None)]
+
+
+def test_mixed_model_checks_loosen_the_tolerance_only_where_the_two_methods_differ():
+    """lme4 and statsmodels agree on fixed effects and marginal means to about 1e-9, on the random-effect
+    SDs to about 1e-6, and on standard errors only to about 1e-4 (Phase 5 review)."""
+    checks = agreement_checks(dict(written_pages("beyond"))["beyond/16-mixed-models.qmd"])
+    by_tol = {tol: {name for names, t in checks if t == tol for name in names} for tol in [None, "1e-5", "1e-3"]}
+    assert by_tol["1e-3"] and all(name.startswith(("se_", "wald")) for name in by_tol["1e-3"]), by_tol["1e-3"]
+    assert by_tol["1e-5"] == {"sd_knee", "sd_residual"}
+    assert {"intercept", "visit_1yr", "emm_pre", "emm_1yr", "emm_male_6wk", "emm_female_1yr"} <= by_tol[None]
+
+
 # ---- each section's Python runs on its own -------------------------------
 
 def undefined_names(code):

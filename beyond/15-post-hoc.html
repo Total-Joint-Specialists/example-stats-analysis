@@ -528,7 +528,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../report/18-example-report.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">18 · Example study report (coming soon)</span></a>
+ <span class="menu-text">18 · Example study report</span></a>
   </div>
 </li>
       </ul>
@@ -663,7 +663,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Four groups make six pairs. Six independent tests at the 5% level give a 26% chance of at least one false alarm, even when nothing is going on; twenty tests give 64%. Comparing pairs therefore needs an <strong>adjustment</strong>: a stricter rule that keeps the chance of any false positive across the whole set of comparisons at 5%.</p>
+<p>Four groups make six pairs. Six independent tests at the 5% level give a 26% chance of at least one false alarm, even when nothing is going on; twenty tests give 64%. Pairwise comparisons aren’t independent, because each group appears in three of the six pairs, so for four groups of equal size the chance is a little lower: about 20%. That’s still four times the 5% you meant to allow. Comparing pairs therefore needs an <strong>adjustment</strong>: a stricter rule that keeps the chance of any false positive across the whole set of comparisons at 5%.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1118,11 +1118,11 @@ asa
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>koos_conover <span class="ot">&lt;-</span> PMCMRplus<span class="sc">::</span><span class="fu">frdAllPairsConoverTest</span>(<span class="at">y =</span> koos<span class="sc">$</span>prom_score, <span class="at">groups =</span> koos<span class="sc">$</span>visit, <span class="at">blocks =</span> koos<span class="sc">$</span>case_id,</span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">p.adjust.method =</span> <span class="st">"holm"</span>)</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>koos_conover</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="fu">signif</span>(koos_conover<span class="sc">$</span>p.value, <span class="dv">3</span>)          <span class="co"># printing koos_conover itself shows these only as "&lt;2e-16"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>    6wk    3mo   
-3mo &lt;2e-16 -     
-1yr &lt;2e-16 &lt;2e-16</code></pre>
+<pre><code>         6wk      3mo
+3mo 8.85e-36       NA
+1yr 8.54e-87 6.01e-28</code></pre>
 </div>
 </div>
 </div>
@@ -1170,7 +1170,7 @@ asa
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>R’s <code>wilcox.test()</code> reports V, the sum of the positive ranks; scipy reports the smaller of the two rank sums. Here both are the same number, because the later visit scores higher for most knees. Conover’s test needs the PMCMRplus package in R and scikit-posthocs in Python; they give the same p-values.</p>
+<p>R’s <code>wilcox.test()</code> reports V, the sum of the positive ranks; scipy reports the smaller of the two rank sums. Here both are the same number, because the later visit scores higher for most knees. Conover’s test needs the PMCMRplus package in R and scikit-posthocs in Python; they give the same p-values. Printing PMCMRplus’s result shows any p-value below 2 × 10⁻¹⁶ only as “&lt;2e-16”, so print its <code>$p.value</code> table to see them.</p>
 </div>
 </div>
 </section>
@@ -1313,14 +1313,14 @@ implant_vs_b[T.C]   3.753982             2.141331             6.581132</code></p
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>lifelines has <code>pairwise_logrank_test()</code>, which runs every pair at once and leaves the adjustment to you. R’s survival package has no pairwise function, so the R code loops over the pairs; the survminer package’s <code>pairwise_survdiff()</code> does the same in one call. To change the reference group, R uses <code>relevel()</code>; lifelines uses the first category of a pandas <code>Categorical</code>.</p>
+<p>lifelines has <code>pairwise_logrank_test()</code>, which runs every pair at once and leaves the adjustment to you. lifelines’ Cox model stops iterating slightly early by default, so, as on <a href="../survival/14-cox-regression.html">page 14</a>, the Python Cox fit passes <code>fit_options={"precision": 1e-12}</code> to match R’s hazard ratios. R’s survival package has no pairwise function, so the R code loops over the pairs; the survminer package’s <code>pairwise_survdiff()</code> does the same in one call. To change the reference group, R uses <code>relevel()</code>; lifelines uses the first category of a pandas <code>Categorical</code>.</p>
 </div>
 </div>
 </section>
 <section id="overall-test-first" class="level2">
 <h2 class="anchored" data-anchor-id="overall-test-first">Do you need a significant overall test first?</h2>
 <p>A common rule says: only run post-hoc tests if the overall test (the ANOVA, Kruskal-Wallis or chi-square) is significant. It comes from <strong>Fisher’s least significant difference</strong> method, which runs unadjusted pairwise tests and relies on the overall test as a gate. That gate only fully protects you with three groups.</p>
-<p>The tests on this page don’t need the gate. Tukey’s HSD, Games-Howell, Dunn’s test and any Holm-adjusted set of pairwise tests control the family-wise error rate on their own. Requiring a significant overall test first just makes them stricter than they need to be.</p>
+<p>The tests on this page don’t need the gate. Tukey’s HSD and Games-Howell control the family-wise error rate on their own, and so do Dunn’s test and any other set of pairwise tests once Holm’s adjustment is applied. Requiring a significant overall test first just makes them stricter than they need to be.</p>
 <p>The two kinds of test can also disagree, and that’s not a contradiction: - <strong>A significant overall test with no significant pair</strong>, as with complications by ASA class above (overall p = 0.016; no pair below 0.05 after adjustment). The overall test pools the evidence from all four classes, while each pair uses only two of them, and the ASA 1 and ASA 4 groups are small. Report it as it is: complication rates differed across ASA classes overall, but no single pair of classes differed clearly. - <strong>A significant pair with no significant overall test.</strong> This can happen when one pair differs and the others don’t, diluting the overall test.</p>
 <p>What to do: 1. <strong>Decide before you look at the data</strong> which comparisons you’ll make: every pair, or a few planned ones. 2. <strong>If your question is about pairs, go straight to an adjusted pairwise method.</strong> The overall test is optional; report it if your readers expect it. 3. <strong>Never run unadjusted pairwise tests you didn’t plan</strong>, whatever the overall test says. 4. <strong>Say what you did</strong> in the Methods.</p>
 </section>
@@ -1496,16 +1496,21 @@ facility              0.7072  1.0000  0.8487</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 345</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colMeans</span>(later[, <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(later[, <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)])                     <span class="co"># walking-aid users at each visit</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      6wk       3mo       1yr 
-0.5884058 0.2521739 0.1072464 </code></pre>
+<pre><code>6wk 3mo 1yr 
+203  87  37 </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>later_pairs <span class="ot">&lt;-</span> <span class="fu">combn</span>(<span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>), <span class="dv">2</span>)</span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>later_p <span class="ot">&lt;-</span> <span class="fu">apply</span>(later_pairs, <span class="dv">2</span>, <span class="cf">function</span>(pair) {</span>
-<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcnemar.test</span>(<span class="fu">table</span>(<span class="fu">factor</span>(later[[pair[<span class="dv">1</span>]]], <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>), <span class="fu">factor</span>(later[[pair[<span class="dv">2</span>]]], <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)))<span class="sc">$</span>p.value</span>
-<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a><span class="fu">p.adjust</span>(later_p, <span class="at">method =</span> <span class="st">"holm"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">colMeans</span>(later[, <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)]), <span class="dv">1</span>)    <span class="co"># the same, as percentages</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> 6wk  3mo  1yr 
+58.8 25.2 10.7 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>later_pairs <span class="ot">&lt;-</span> <span class="fu">combn</span>(<span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>), <span class="dv">2</span>)</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>later_p <span class="ot">&lt;-</span> <span class="fu">apply</span>(later_pairs, <span class="dv">2</span>, <span class="cf">function</span>(pair) {</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcnemar.test</span>(<span class="fu">table</span>(<span class="fu">factor</span>(later[[pair[<span class="dv">1</span>]]], <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>), <span class="fu">factor</span>(later[[pair[<span class="dv">2</span>]]], <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)))<span class="sc">$</span>p.value</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a><span class="fu">p.adjust</span>(later_p, <span class="at">method =</span> <span class="st">"holm"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2.287205e-18 1.387448e-31 1.223935e-06</code></pre>
 </div>
@@ -1513,16 +1518,20 @@ facility              0.7072  1.0000  0.8487</code></pre>
 </div>
 <div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>later <span class="op">=</span> proms[proms[<span class="st">"visit"</span>] <span class="op">!=</span> <span class="st">"preop"</span>].pivot(index<span class="op">=</span><span class="st">"case_id"</span>, columns<span class="op">=</span><span class="st">"visit"</span>, values<span class="op">=</span><span class="st">"walking_aid"</span>).dropna()</span>
-<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(later), later[[<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]].mean().<span class="bu">round</span>(<span class="dv">3</span>).to_list())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>later <span class="op">=</span> proms[proms[<span class="st">"visit"</span>] <span class="op">!=</span> <span class="st">"preop"</span>].pivot(index<span class="op">=</span><span class="st">"case_id"</span>, columns<span class="op">=</span><span class="st">"visit"</span>, values<span class="op">=</span><span class="st">"walking_aid"</span>).dropna()</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(later), later[[<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]].<span class="bu">sum</span>().astype(<span class="bu">int</span>).to_list())    <span class="co"># walking-aid users at each visit</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>345 [0.588, 0.252, 0.107]</code></pre>
+<pre><code>345 [203, 87, 37]</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>later_p <span class="op">=</span> []</span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> first, second <span class="kw">in</span> itertools.combinations([<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>], <span class="dv">2</span>):</span>
-<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>    pair_table <span class="op">=</span> pd.crosstab(later[first], later[second]).reindex(index<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], columns<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], fill_value<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>    later_p.append(mcnemar(pair_table, exact<span class="op">=</span><span class="va">False</span>, correction<span class="op">=</span><span class="va">True</span>).pvalue)</span>
-<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(multipletests(later_p, method<span class="op">=</span><span class="st">"holm"</span>)[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb85"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((<span class="dv">100</span> <span class="op">*</span> later[[<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]].mean()).<span class="bu">round</span>(<span class="dv">1</span>).to_list())             <span class="co"># the same, as percentages</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[58.8, 25.2, 10.7]</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb87"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>later_p <span class="op">=</span> []</span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> first, second <span class="kw">in</span> itertools.combinations([<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>], <span class="dv">2</span>):</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>    pair_table <span class="op">=</span> pd.crosstab(later[first], later[second]).reindex(index<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], columns<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], fill_value<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>    later_p.append(mcnemar(pair_table, exact<span class="op">=</span><span class="va">False</span>, correction<span class="op">=</span><span class="va">True</span>).pvalue)</span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(multipletests(later_p, method<span class="op">=</span><span class="st">"holm"</span>)[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[2.28720462e-18 1.38744786e-31 1.22393512e-06]</code></pre>
 </div>
@@ -1530,7 +1539,7 @@ facility              0.7072  1.0000  0.8487</code></pre>
 </div>
 </div>
 </div>
-<p>Among 345 patients assessed at all three visits, walking-aid use fell from 58.8% at 6 weeks to 25.2% at 3 months and 10.7% at 1 year; every pair of visits differed in McNemar tests with Holm’s adjustment (all p &lt; 0.001).</p>
+<p>Among 345 patients assessed at all three visits, walking-aid use fell from 203 (58.8%) at 6 weeks to 87 (25.2%) at 3 months and 37 (10.7%) at 1 year; every pair of visits differed in McNemar tests with Holm’s adjustment (all p &lt; 0.001).</p>
 </div>
 </div>
 </div>

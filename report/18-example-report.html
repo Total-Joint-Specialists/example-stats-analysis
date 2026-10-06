@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="A complete mini-study from raw workbook to manuscript-style Results.">
+<meta name="description" content="A complete mini-study, from the raw abstraction workbook to a manuscript’s Methods and Results, with a Word version to download.">
 
-<title>18 · Example study report (coming soon) – TJS Statistics Tutorials</title>
+<title>18 · Example study report – TJS Statistics Tutorials</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -76,6 +111,8 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<link href="../site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="../site_libs/tabwid-1.1.3/tabwid.js"></script>
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -287,7 +324,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../report/18-example-report.html">Part 5 · Putting it together</a></li><li class="breadcrumb-item"><a href="../report/18-example-report.html">18 · Example study report (coming soon)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../report/18-example-report.html">Part 5 · Putting it together</a></li><li class="breadcrumb-item"><a href="../report/18-example-report.html">18 · Example study report</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -492,7 +529,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../report/18-example-report.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">18 · Example study report (coming soon)</span></a>
+ <span class="menu-text">18 · Example study report</span></a>
   </div>
 </li>
       </ul>
@@ -502,21 +539,38 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#question" id="toc-question" class="nav-link active" data-scroll-target="#question">1 · The research question</a></li>
+  <li><a href="#tidy" id="toc-tidy" class="nav-link" data-scroll-target="#tidy">2 · Tidy the raw workbook</a></li>
+  <li><a href="#integrity" id="toc-integrity" class="nav-link" data-scroll-target="#integrity">3 · Check the tidying</a></li>
+  <li><a href="#table-1" id="toc-table-1" class="nav-link" data-scroll-target="#table-1">4 · Table 1</a></li>
+  <li><a href="#distributions" id="toc-distributions" class="nav-link" data-scroll-target="#distributions">5 · Check the distributions</a></li>
+  <li><a href="#primary-analysis" id="toc-primary-analysis" class="nav-link" data-scroll-target="#primary-analysis">6 · The primary analysis</a></li>
+  <li><a href="#survival" id="toc-survival" class="nav-link" data-scroll-target="#survival">7 · Revision: a survival analysis</a></li>
+  <li><a href="#manuscript" id="toc-manuscript" class="nav-link" data-scroll-target="#manuscript">8 · The manuscript</a></li>
+  <li><a href="#aim" id="toc-aim" class="nav-link" data-scroll-target="#aim">Aim</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="18-example-report.docx"><i class="bi bi-file-word"></i>MS Word</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../report/18-example-report.html">Part 5 · Putting it together</a></li><li class="breadcrumb-item"><a href="../report/18-example-report.html">18 · Example study report (coming soon)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../report/18-example-report.html">Part 5 · Putting it together</a></li><li class="breadcrumb-item"><a href="../report/18-example-report.html">18 · Example study report</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">18 · Example study report (coming soon)</h1>
+<h1 class="title">18 · Example study report</h1>
 </div>
 
 <div>
   <div class="description">
-    A complete mini-study from raw workbook to manuscript-style Results.
+    A complete mini-study, from the raw abstraction workbook to a manuscript’s Methods and Results, with a Word version to download.
   </div>
 </div>
 
@@ -533,21 +587,1587 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="coming-soon callout callout-style-default callout-note callout-titled">
+<!-- data-checksum: 9e548efb7ad4232927ffa99aa2cdeca7 -->
+<p>This page puts the whole site together in one small study, from the messy abstraction workbook to the Methods and Results of a manuscript. Steps 1 to 7 do the work, in R and Python. Step 8 is the manuscript itself, and it’s also a Word document: <strong>MS Word</strong>, under “Other Formats” in the right margin. The Word file contains only the manuscript, built from the same code every time the site is rendered.</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming soon
+<span class="screen-reader-only">Note</span>💡 How this page works
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.</p>
+<p>Run the code blocks in order, from the top: later blocks use the packages and data loaded in the first one. Each step links to the page that explains its method.</p>
+</div>
+</div>
+<section id="question" class="level2">
+<h2 class="anchored" data-anchor-id="question">1 · The research question</h2>
+<p>Write the question down before you look at the outcome data, together with the primary outcome and the analysis that will answer it. Deciding these after seeing the results makes any p-value meaningless (<a href="../beyond/15-post-hoc.html#planned-comparisons">page 15</a>). For this study:</p>
+<ul>
+<li><strong>Question:</strong> do patients improve as much in the first year after a total knee replacement (TKA) as after a total hip replacement (THA)?</li>
+<li><strong>Primary outcome:</strong> the change in the joint-specific score from before surgery to 1 year: HOOS JR after THA, KOOS JR after TKA, each scored 0 to 100, higher is better.</li>
+<li><strong>Primary analysis:</strong> the difference in mean change between THA and TKA, with its 95% CI, from Welch’s t test (<a href="../catalog/06-two-unpaired-groups.html#unpaired-t">page 6</a>), if the changes look roughly symmetric within each group (<a href="../foundations/03-distributions.html">page 3</a>). Otherwise the Mann-Whitney test.</li>
+<li><strong>Secondary outcome:</strong> revision of any component, as a cumulative incidence with death as a competing risk (<a href="../survival/13-kaplan-meier.html#competing-risks">page 13</a>).</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: two questionnaires
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>HOOS JR and KOOS JR are different questionnaires. Both run from 0 to 100, but a 10-point gain on one isn’t guaranteed to mean the same as a 10-point gain on the other. The comparison is still common in the literature, but say plainly in the Methods that it compares points on each joint’s own scale. A stronger design uses a score every patient completes, such as the VR-12 physical component score.</p>
+</div>
+</div>
+</section>
+<section id="tidy" class="level2">
+<h2 class="anchored" data-anchor-id="tidy">2 · Tidy the raw workbook</h2>
+<p>The data come from the abstraction workbook that <a href="../foundations/01-tidy-data.html#tidying">page 1</a> tidies step by step: 60 cases from each site, with banner rows, merged headers, mixed dates, five spellings of “missing” and revisions marked only by a red fill. The code below is page 1’s five steps in one block; open it to see the code, and go back to page 1 for why each step is there.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyxl)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggsurvfit)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">"data/messy_abstraction_workbook.xlsx"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>The tidying code from page 1</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: read both tabs as text; the group header says pre-op first, then 1 year</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>read_site <span class="ot">&lt;-</span> <span class="cf">function</span>(sheet) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  raw <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(path, <span class="at">sheet =</span> sheet, <span class="at">skip =</span> <span class="dv">3</span>, <span class="at">col_types =</span> <span class="st">"text"</span>, <span class="at">.name_repair =</span> <span class="st">"minimal"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(raw) <span class="ot">&lt;-</span> <span class="fu">str_trim</span>(<span class="fu">names</span>(raw))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(raw)[<span class="fu">names</span>(raw) <span class="sc">==</span> <span class="st">"Date"</span>]  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"prom_preop_date"</span>, <span class="st">"prom_1yr_date"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(raw)[<span class="fu">names</span>(raw) <span class="sc">==</span> <span class="st">"Score"</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"prom_preop"</span>, <span class="st">"prom_1yr"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  raw <span class="sc">|&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">site =</span> sheet)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>raw <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">read_site</span>(<span class="st">"Site A"</span>), <span class="fu">read_site</span>(<span class="st">"Site B"</span>))   <span class="co"># stack the tabs by column name</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Steps 2 and 3: drop the totals rows, duplicates and identifiers; one way to say "missing"</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>missing_codes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"N/A"</span>, <span class="st">"unk"</span>, <span class="st">"-"</span>, <span class="st">"999"</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>step3 <span class="ot">&lt;-</span> raw <span class="sc">|&gt;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(pt_name) <span class="sc">|</span> pt_name <span class="sc">!=</span> <span class="st">"TOTAL"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>pt_name, <span class="sc">-</span>mrn, <span class="sc">-</span>mua) <span class="sc">|&gt;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), \(x) <span class="fu">if_else</span>(x <span class="sc">%in%</span> missing_codes, <span class="cn">NA</span>, x)))</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: revisions are marked only by a red fill on the Study ID cell</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>cells <span class="ot">&lt;-</span> <span class="fu">xlsx_cells</span>(path)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>fills <span class="ot">&lt;-</span> <span class="fu">xlsx_formats</span>(path)<span class="sc">$</span>local<span class="sc">$</span>fill<span class="sc">$</span>patternFill<span class="sc">$</span>fgColor<span class="sc">$</span>rgb</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>revised_ids <span class="ot">&lt;-</span> cells <span class="sc">|&gt;</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fills[local_format_id] <span class="sc">%in%</span> <span class="st">"FFFF9999"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(character) <span class="sc">|&gt;</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_trim</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>()</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 5: give every column its real type</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>parse_messy_date <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">orders =</span> <span class="fu">c</span>(<span class="st">"mdy"</span>, <span class="st">"ymd"</span>)) {</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  serial <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.na</span>(x) <span class="sc">&amp;</span> <span class="fu">str_detect</span>(x, <span class="st">"^</span><span class="sc">\\</span><span class="st">d{5}$"</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">length</span>(x)))</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  out[serial]  <span class="ot">&lt;-</span> janitor<span class="sc">::</span><span class="fu">excel_numeric_to_date</span>(<span class="fu">as.numeric</span>(x[serial]))</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  out[<span class="sc">!</span>serial] <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">parse_date_time</span>(x[<span class="sc">!</span>serial], <span class="at">orders =</span> orders, <span class="at">quiet =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  out</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>tidy <span class="ot">&lt;-</span> step3 <span class="sc">|&gt;</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">procedure_text =</span> procedure) <span class="sc">|&gt;</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">case_id      =</span> <span class="fu">str_trim</span>(study_id),</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    site,</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">surgery_date =</span> <span class="fu">parse_messy_date</span>(dos),</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">age          =</span> <span class="fu">parse_number</span>(age),</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex          =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(sex, <span class="fu">regex</span>(<span class="st">"^f"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Female"</span>,</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">str_detect</span>(sex, <span class="fu">regex</span>(<span class="st">"^m"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Male"</span>),</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi          =</span> <span class="fu">parse_number</span>(bmi),</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">asa          =</span> <span class="fu">as.integer</span>(<span class="fu">as.roman</span>(<span class="fu">str_remove</span>(asa, <span class="st">"^ASA "</span>))),</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">diabetes     =</span> <span class="fu">as.integer</span>(<span class="fu">str_detect</span>(comorbidities, <span class="fu">regex</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">bDM</span><span class="sc">\\</span><span class="st">b"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">hypertension =</span> <span class="fu">as.integer</span>(<span class="fu">str_detect</span>(comorbidities, <span class="fu">regex</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">bHTN</span><span class="sc">\\</span><span class="st">b"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">sleep_apnea  =</span> <span class="fu">as.integer</span>(<span class="fu">str_detect</span>(comorbidities, <span class="fu">regex</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">bOSA</span><span class="sc">\\</span><span class="st">b"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))),</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">procedure    =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(procedure_text, <span class="fu">regex</span>(<span class="st">"TKA|knee"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"TKA"</span>,</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">str_detect</span>(procedure_text, <span class="fu">regex</span>(<span class="st">"THA|hip"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"THA"</span>),</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">side         =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(procedure_text, <span class="st">"</span><span class="sc">\\</span><span class="st">b(L|Left)</span><span class="sc">\\</span><span class="st">b"</span>) <span class="sc">~</span> <span class="st">"L"</span>,</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">str_detect</span>(procedure_text, <span class="st">"</span><span class="sc">\\</span><span class="st">b(R|Right)</span><span class="sc">\\</span><span class="st">b"</span>) <span class="sc">~</span> <span class="st">"R"</span>),</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">los_days     =</span> <span class="fu">parse_number</span>(los),</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">revised      =</span> <span class="fu">as.integer</span>(case_id <span class="sc">%in%</span> revised_ids),</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">prom_preop_date =</span> <span class="fu">parse_messy_date</span>(prom_preop_date),</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">prom_preop      =</span> <span class="fu">parse_number</span>(prom_preop),</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">prom_1yr_date   =</span> <span class="fu">parse_messy_date</span>(prom_1yr_date),</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">prom_1yr        =</span> <span class="fu">parse_number</span>(prom_1yr)</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(site, case_id)</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(tidy)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 120  18</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> openpyxl</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pingouin <span class="im">as</span> pg</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tableone <span class="im">import</span> TableOne</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines <span class="im">import</span> KaplanMeierFitter</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines.utils <span class="im">import</span> qth_survival_times</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.duration.survfunc <span class="im">import</span> CumIncidenceRight</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> <span class="st">"data/messy_abstraction_workbook.xlsx"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>The tidying code from page 1</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: read both tabs as text; pandas names the repeated headers "Date.1" and "Score.1"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_site(sheet):</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    raw <span class="op">=</span> pd.read_excel(path, sheet_name<span class="op">=</span>sheet, header<span class="op">=</span><span class="dv">3</span>, dtype<span class="op">=</span><span class="bu">str</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    names <span class="op">=</span> [<span class="bu">str</span>(c).strip() <span class="cf">for</span> c <span class="kw">in</span> raw.columns]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    pairs <span class="op">=</span> {<span class="st">"Date"</span>: <span class="st">"prom_preop_date"</span>, <span class="st">"Score"</span>: <span class="st">"prom_preop"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Date.1"</span>: <span class="st">"prom_1yr_date"</span>, <span class="st">"Score.1"</span>: <span class="st">"prom_1yr"</span>}</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    names <span class="op">=</span> [pairs.get(n, n) <span class="cf">for</span> n <span class="kw">in</span> names]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    raw.columns <span class="op">=</span> [re.sub(<span class="vs">r"</span><span class="pp">[^0-9a-z]</span><span class="op">+</span><span class="vs">"</span>, <span class="st">"_"</span>, n.lower()).strip(<span class="st">"_"</span>) <span class="cf">for</span> n <span class="kw">in</span> names]</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> raw.assign(site<span class="op">=</span>sheet)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> pd.concat([read_site(<span class="st">"Site A"</span>), read_site(<span class="st">"Site B"</span>)], ignore_index<span class="op">=</span><span class="va">True</span>)   <span class="co"># stack by column name</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Steps 2 and 3: drop the totals rows, duplicates and identifiers; one way to say "missing"</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>step3 <span class="op">=</span> (raw[raw[<span class="st">"pt_name"</span>] <span class="op">!=</span> <span class="st">"TOTAL"</span>]</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>         .drop_duplicates()</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>         .drop(columns<span class="op">=</span>[<span class="st">"pt_name"</span>, <span class="st">"mrn"</span>, <span class="st">"mua"</span>])</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>         .replace([<span class="st">"N/A"</span>, <span class="st">"unk"</span>, <span class="st">"-"</span>, <span class="st">"999"</span>], pd.NA))</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: revisions are marked only by a red fill on the Study ID cell</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>revised_ids <span class="op">=</span> <span class="bu">set</span>()</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> sheet <span class="kw">in</span> openpyxl.load_workbook(path).worksheets:</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> sheet.iter_rows(min_row<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> cell <span class="kw">in</span> row:</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> cell.fill.fgColor.rgb <span class="op">==</span> <span class="st">"FFFF9999"</span>:</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>                revised_ids.add(<span class="bu">str</span>(cell.value).strip())</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 5: give every column its real type</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> number(text):</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.to_numeric(text.<span class="bu">str</span>.extract(<span class="vs">r"</span><span class="kw">(</span><span class="dv">\d</span><span class="op">+</span><span class="ch">\.</span><span class="op">?</span><span class="dv">\d</span><span class="op">*</span><span class="kw">)</span><span class="vs">"</span>)[<span class="dv">0</span>])</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>asa_roman <span class="op">=</span> {<span class="st">"I"</span>: <span class="st">"1"</span>, <span class="st">"II"</span>: <span class="st">"2"</span>, <span class="st">"III"</span>: <span class="st">"3"</span>, <span class="st">"IV"</span>: <span class="st">"4"</span>}</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>procedure_text <span class="op">=</span> step3[<span class="st">"procedure"</span>]</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>tidy <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    <span class="st">"case_id"</span>:      step3[<span class="st">"study_id"</span>].<span class="bu">str</span>.strip(),</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"site"</span>:         step3[<span class="st">"site"</span>],</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surgery_date"</span>: pd.to_datetime(step3[<span class="st">"dos"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"mixed"</span>),</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"age"</span>:          number(step3[<span class="st">"age"</span>]),</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sex"</span>:          step3[<span class="st">"sex"</span>].<span class="bu">str</span>[<span class="dv">0</span>].<span class="bu">str</span>.lower().<span class="bu">map</span>({<span class="st">"f"</span>: <span class="st">"Female"</span>, <span class="st">"m"</span>: <span class="st">"Male"</span>}),</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bmi"</span>:          number(step3[<span class="st">"bmi"</span>]),</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">"asa"</span>:          pd.to_numeric(step3[<span class="st">"asa"</span>].<span class="bu">str</span>.replace(<span class="st">"ASA "</span>, <span class="st">""</span>).replace(asa_roman)),</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">"diabetes"</span>:     step3[<span class="st">"comorbidities"</span>].<span class="bu">str</span>.contains(<span class="vs">r"</span><span class="dv">\b</span><span class="vs">DM</span><span class="dv">\b</span><span class="vs">"</span>, case<span class="op">=</span><span class="va">False</span>).astype(<span class="bu">int</span>),</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hypertension"</span>: step3[<span class="st">"comorbidities"</span>].<span class="bu">str</span>.contains(<span class="vs">r"</span><span class="dv">\b</span><span class="vs">HTN</span><span class="dv">\b</span><span class="vs">"</span>, case<span class="op">=</span><span class="va">False</span>).astype(<span class="bu">int</span>),</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sleep_apnea"</span>:  step3[<span class="st">"comorbidities"</span>].<span class="bu">str</span>.contains(<span class="vs">r"</span><span class="dv">\b</span><span class="vs">OSA</span><span class="dv">\b</span><span class="vs">"</span>, case<span class="op">=</span><span class="va">False</span>).astype(<span class="bu">int</span>),</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">"procedure"</span>:    np.select([procedure_text.<span class="bu">str</span>.contains(<span class="vs">r"TKA</span><span class="cf">|</span><span class="vs">knee"</span>, case<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>                               procedure_text.<span class="bu">str</span>.contains(<span class="vs">r"THA</span><span class="cf">|</span><span class="vs">hip"</span>, case<span class="op">=</span><span class="va">False</span>)],</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>                              [<span class="st">"TKA"</span>, <span class="st">"THA"</span>], default<span class="op">=</span><span class="va">None</span>),</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">"side"</span>:         np.select([procedure_text.<span class="bu">str</span>.contains(<span class="vs">r"</span><span class="dv">\b</span>(?:<span class="vs">L</span><span class="cf">|</span><span class="vs">Left</span>)<span class="dv">\b</span><span class="vs">"</span>),</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>                               procedure_text.<span class="bu">str</span>.contains(<span class="vs">r"</span><span class="dv">\b</span>(?:<span class="vs">R</span><span class="cf">|</span><span class="vs">Right</span>)<span class="dv">\b</span><span class="vs">"</span>)],</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>                              [<span class="st">"L"</span>, <span class="st">"R"</span>], default<span class="op">=</span><span class="va">None</span>),</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>    <span class="st">"los_days"</span>:     number(step3[<span class="st">"los"</span>]),</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>    <span class="st">"revised"</span>:      step3[<span class="st">"study_id"</span>].<span class="bu">str</span>.strip().isin(revised_ids).astype(<span class="bu">int</span>),</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prom_preop_date"</span>: pd.to_datetime(step3[<span class="st">"prom_preop_date"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"mixed"</span>),</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prom_preop"</span>:      number(step3[<span class="st">"prom_preop"</span>]),</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prom_1yr_date"</span>:   pd.to_datetime(step3[<span class="st">"prom_1yr_date"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"mixed"</span>),</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>    <span class="st">"prom_1yr"</span>:        number(step3[<span class="st">"prom_1yr"</span>]),</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>}).sort_values([<span class="st">"site"</span>, <span class="st">"case_id"</span>]).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tidy.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(120, 18)</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>120 cases, 18 columns. The workbook has no follow-up: it records whether a hip or knee was revised, but not when, and not whether the patient died. Follow-up comes from the joint registry, linked by study ID. In the practice data, <code>data/cohort.csv</code> plays the registry. Take only the columns you need from it:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>registry <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, patient_id, followup_years, event_status, <span class="at">revised_registry =</span> revised,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">surgery_date_registry =</span> surgery_date, <span class="at">procedure_registry =</span> procedure)   <span class="co"># these three, to check the link</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>study <span class="ot">&lt;-</span> <span class="fu">left_join</span>(tidy, registry, <span class="at">by =</span> <span class="st">"case_id"</span>)   <span class="co"># keeps every workbook case</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(study)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 120</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(study, procedure)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  procedure     n
+  &lt;chr&gt;     &lt;int&gt;
+1 THA          53
+2 TKA          67</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>registry <span class="op">=</span> (pd.read_csv(<span class="st">"data/cohort.csv"</span>, parse_dates<span class="op">=</span>[<span class="st">"surgery_date"</span>])</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>            [[<span class="st">"case_id"</span>, <span class="st">"patient_id"</span>, <span class="st">"followup_years"</span>, <span class="st">"event_status"</span>, <span class="st">"revised"</span>, <span class="st">"surgery_date"</span>, <span class="st">"procedure"</span>]]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>            .rename(columns<span class="op">=</span>{<span class="st">"revised"</span>: <span class="st">"revised_registry"</span>, <span class="st">"surgery_date"</span>: <span class="st">"surgery_date_registry"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"procedure"</span>: <span class="st">"procedure_registry"</span>}))   <span class="co"># these three, to check the link</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>study <span class="op">=</span> tidy.merge(registry, on<span class="op">=</span><span class="st">"case_id"</span>, how<span class="op">=</span><span class="st">"left"</span>)   <span class="co"># keeps every workbook case</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(study))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>120</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(study[<span class="st">"procedure"</span>].value_counts().sort_index().to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>procedure
+THA    53
+TKA    67</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>53 THAs and 67 TKAs. A left join keeps every workbook case even if the registry has no record of it; the next step checks that none is missing.</p>
+</section>
+<section id="integrity" class="level2">
+<h2 class="anchored" data-anchor-id="integrity">3 · Check the tidying</h2>
+<p>Before any analysis, check the tidy data against what you know must be true (<a href="../foundations/01-tidy-data.html#integrity">page 1</a>). Write each check so that it <strong>stops the script</strong> when it fails: a check that only prints something is easy to scroll past.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># One row per case, and the 60 cases per site in the abstraction log</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">n_distinct</span>(study<span class="sc">$</span>case_id) <span class="sc">==</span> <span class="fu">nrow</span>(study), <span class="fu">all</span>(<span class="fu">count</span>(study, site)<span class="sc">$</span>n <span class="sc">==</span> <span class="dv">60</span>))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Every value inside the range in the data dictionary (data/codebooks/abstraction_workbook_tidy.csv)</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>in_range <span class="ot">&lt;-</span> <span class="cf">function</span>(x, low, high) <span class="fu">all</span>(<span class="fu">is.na</span>(x) <span class="sc">|</span> (x <span class="sc">&gt;=</span> low <span class="sc">&amp;</span> x <span class="sc">&lt;=</span> high))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">in_range</span>(study<span class="sc">$</span>age, <span class="dv">40</span>, <span class="dv">89</span>), <span class="fu">in_range</span>(study<span class="sc">$</span>bmi, <span class="dv">18</span>, <span class="dv">55</span>), <span class="fu">in_range</span>(study<span class="sc">$</span>asa, <span class="dv">1</span>, <span class="dv">4</span>),</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>          <span class="fu">in_range</span>(study<span class="sc">$</span>los_days, <span class="dv">0</span>, <span class="dv">30</span>), <span class="fu">in_range</span>(study<span class="sc">$</span>prom_preop, <span class="dv">0</span>, <span class="dv">100</span>), <span class="fu">in_range</span>(study<span class="sc">$</span>prom_1yr, <span class="dv">0</span>, <span class="dv">100</span>))</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># PROM dates inside the protocol's windows: pre-op within 30 days before surgery, 1 year at 10 to 14 months</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">in_range</span>(<span class="fu">as.numeric</span>(study<span class="sc">$</span>surgery_date <span class="sc">-</span> study<span class="sc">$</span>prom_preop_date), <span class="dv">0</span>, <span class="dv">30</span>),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>          <span class="fu">in_range</span>(<span class="fu">as.numeric</span>(study<span class="sc">$</span>prom_1yr_date <span class="sc">-</span> study<span class="sc">$</span>surgery_date), <span class="dv">300</span>, <span class="dv">425</span>))</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Every case found in the registry, and the workbook agrees with it on the surgery date,</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co"># the procedure and the revisions (the red fills)</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="sc">!</span><span class="fu">anyNA</span>(study<span class="sc">$</span>followup_years), <span class="fu">all</span>(study<span class="sc">$</span>surgery_date <span class="sc">==</span> study<span class="sc">$</span>surgery_date_registry),</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>          <span class="fu">all</span>(study<span class="sc">$</span>procedure <span class="sc">==</span> study<span class="sc">$</span>procedure_registry), <span class="fu">all</span>(study<span class="sc">$</span>revised <span class="sc">==</span> study<span class="sc">$</span>revised_registry))</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co"># One row per patient: nobody in this sample had both hips or both knees replaced</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">n_distinct</span>(study<span class="sc">$</span>patient_id) <span class="sc">==</span> <span class="fu">nrow</span>(study))</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co"># What's missing: count it now, report it later</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>n_missing <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(study))</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>n_missing[n_missing <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            bmi             asa        los_days prom_preop_date      prom_preop 
+              8               3               3               5               5 
+  prom_1yr_date        prom_1yr 
+             22              22 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># One row per case, and the 60 cases per site in the abstraction log</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> study[<span class="st">"case_id"</span>].is_unique <span class="kw">and</span> (study[<span class="st">"site"</span>].value_counts() <span class="op">==</span> <span class="dv">60</span>).<span class="bu">all</span>()</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Every value inside the range in the data dictionary (data/codebooks/abstraction_workbook_tidy.csv)</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> in_range(values, low, high):</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">bool</span>(values.dropna().between(low, high).<span class="bu">all</span>())</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> in_range(study[<span class="st">"age"</span>], <span class="dv">40</span>, <span class="dv">89</span>) <span class="kw">and</span> in_range(study[<span class="st">"bmi"</span>], <span class="dv">18</span>, <span class="dv">55</span>) <span class="kw">and</span> in_range(study[<span class="st">"asa"</span>], <span class="dv">1</span>, <span class="dv">4</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> in_range(study[<span class="st">"los_days"</span>], <span class="dv">0</span>, <span class="dv">30</span>) <span class="kw">and</span> in_range(study[<span class="st">"prom_preop"</span>], <span class="dv">0</span>, <span class="dv">100</span>) <span class="kw">and</span> in_range(study[<span class="st">"prom_1yr"</span>], <span class="dv">0</span>, <span class="dv">100</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co"># PROM dates inside the protocol's windows: pre-op within 30 days before surgery, 1 year at 10 to 14 months</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> in_range((study[<span class="st">"surgery_date"</span>] <span class="op">-</span> study[<span class="st">"prom_preop_date"</span>]).dt.days, <span class="dv">0</span>, <span class="dv">30</span>)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> in_range((study[<span class="st">"prom_1yr_date"</span>] <span class="op">-</span> study[<span class="st">"surgery_date"</span>]).dt.days, <span class="dv">300</span>, <span class="dv">425</span>)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Every case found in the registry, and the workbook agrees with it on the surgery date,</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="co"># the procedure and the revisions (the red fills)</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> study[<span class="st">"followup_years"</span>].notna().<span class="bu">all</span>() <span class="kw">and</span> (study[<span class="st">"surgery_date"</span>] <span class="op">==</span> study[<span class="st">"surgery_date_registry"</span>]).<span class="bu">all</span>()</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (study[<span class="st">"procedure"</span>] <span class="op">==</span> study[<span class="st">"procedure_registry"</span>]).<span class="bu">all</span>() <span class="kw">and</span> (study[<span class="st">"revised"</span>] <span class="op">==</span> study[<span class="st">"revised_registry"</span>]).<span class="bu">all</span>()</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="co"># One row per patient: nobody in this sample had both hips or both knees replaced</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> study[<span class="st">"patient_id"</span>].nunique() <span class="op">==</span> <span class="bu">len</span>(study)</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="co"># What's missing: count it now, report it later</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>n_missing <span class="op">=</span> study.isna().<span class="bu">sum</span>()</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(n_missing[n_missing <span class="op">&gt;</span> <span class="dv">0</span>].to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>bmi                 8
+asa                 3
+los_days            3
+prom_preop_date     5
+prom_preop          5
+prom_1yr_date      22
+prom_1yr           22</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Every check passed, so the code ran on. The workbook agrees with the registry on the surgery date, the procedure and the revisions for all 120 cases. Checking one source against another catches what neither can alone: a red fill the abstractor forgot, or a study ID linked to the wrong registry record. The registry also shows that the 120 cases are 120 different patients, so each row is one patient. The missing values are what the abstractor couldn’t find: 8 BMIs, 3 ASA classes, 3 lengths of stay, 5 pre-op scores and 22 one-year scores. The analysis has to say how it handles them.</p>
+</section>
+<section id="table-1" class="level2">
+<h2 class="anchored" data-anchor-id="table-1">4 · Table 1</h2>
+<p>Table 1 describes the patients before surgery, by procedure (<a href="../foundations/02-demographics.html#by-group">page 2</a>). In an observational study, show <strong>standardized mean differences</strong> (SMDs) instead of p-values (<a href="../foundations/02-demographics.html#smd">page 2</a>): the question is how different the groups are, not whether the difference is “significant”. Keep a Missing row for every variable that has missing values.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>study <span class="ot">&lt;-</span> study <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">asa =</span> <span class="fu">factor</span>(asa))   <span class="co"># ASA class is a category</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>table_one <span class="ot">&lt;-</span> study <span class="sc">|&gt;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(procedure, age, sex, bmi, asa, diabetes, hypertension, sleep_apnea, site, prom_preop) <span class="sc">|&gt;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tbl_summary</span>(</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">by           =</span> procedure,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">statistic    =</span> <span class="fu">all_continuous</span>() <span class="sc">~</span> <span class="st">"{mean} ({sd})"</span>,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits       =</span> <span class="fu">all_continuous</span>() <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">label        =</span> <span class="fu">list</span>(age <span class="sc">~</span> <span class="st">"Age, years"</span>, sex <span class="sc">~</span> <span class="st">"Sex"</span>, bmi <span class="sc">~</span> <span class="st">"BMI, kg/m²"</span>, asa <span class="sc">~</span> <span class="st">"ASA class"</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>                        diabetes <span class="sc">~</span> <span class="st">"Diabetes"</span>, hypertension <span class="sc">~</span> <span class="st">"Hypertension"</span>, sleep_apnea <span class="sc">~</span> <span class="st">"Sleep apnea"</span>,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>                        site <span class="sc">~</span> <span class="st">"Site"</span>, prom_preop <span class="sc">~</span> <span class="st">"Pre-op score (HOOS JR or KOOS JR), points"</span>),</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">missing_text =</span> <span class="st">"Missing"</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span>                                                          <span class="co"># no Overall column: see below</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_difference</span>(<span class="at">test =</span> <span class="fu">everything</span>() <span class="sc">~</span> <span class="st">"smd"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">modify_table_body</span>(<span class="sc">~</span> <span class="fu">mutate</span>(.x, <span class="at">estimate =</span> <span class="fu">abs</span>(estimate))) <span class="sc">|&gt;</span>  <span class="co"># absolute SMDs (page 2)</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">modify_column_hide</span>(<span class="at">columns =</span> conf.low) <span class="sc">|&gt;</span>                     <span class="co"># and not the SMDs' CIs</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">remove_abbreviation</span>(<span class="st">"CI = Confidence Interval"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">modify_header</span>(<span class="at">estimate =</span> <span class="st">"**SMD**"</span>)</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>table_one</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="frjrsjnmgb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#frjrsjnmgb table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#frjrsjnmgb thead, #frjrsjnmgb tbody, #frjrsjnmgb tfoot, #frjrsjnmgb tr, #frjrsjnmgb td, #frjrsjnmgb th {
+  border-style: none;
+}
+
+#frjrsjnmgb p {
+  margin: 0;
+  padding: 0;
+}
+
+#frjrsjnmgb .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#frjrsjnmgb .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#frjrsjnmgb .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#frjrsjnmgb .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#frjrsjnmgb .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#frjrsjnmgb .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#frjrsjnmgb .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#frjrsjnmgb .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#frjrsjnmgb .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#frjrsjnmgb .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#frjrsjnmgb .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#frjrsjnmgb .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#frjrsjnmgb .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#frjrsjnmgb .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#frjrsjnmgb .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#frjrsjnmgb .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#frjrsjnmgb .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#frjrsjnmgb .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#frjrsjnmgb .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#frjrsjnmgb .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#frjrsjnmgb .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#frjrsjnmgb .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#frjrsjnmgb .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#frjrsjnmgb .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#frjrsjnmgb .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#frjrsjnmgb .gt_left {
+  text-align: left;
+}
+
+#frjrsjnmgb .gt_center {
+  text-align: center;
+}
+
+#frjrsjnmgb .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#frjrsjnmgb .gt_font_normal {
+  font-weight: normal;
+}
+
+#frjrsjnmgb .gt_font_bold {
+  font-weight: bold;
+}
+
+#frjrsjnmgb .gt_font_italic {
+  font-style: italic;
+}
+
+#frjrsjnmgb .gt_super {
+  font-size: 65%;
+}
+
+#frjrsjnmgb .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#frjrsjnmgb .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#frjrsjnmgb .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#frjrsjnmgb .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#frjrsjnmgb .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#frjrsjnmgb .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#frjrsjnmgb .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#frjrsjnmgb .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#frjrsjnmgb div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="gt_col_headings header">
+<th id="label" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="stat_1" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>THA</strong><br>
+N = 53<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th id="stat_2" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>TKA</strong><br>
+N = 67<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th id="estimate" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>SMD</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">Age, years</td>
+<td class="gt_row gt_center" headers="stat_1">64.4 (9.5)</td>
+<td class="gt_row gt_center" headers="stat_2">64.9 (8.0)</td>
+<td class="gt_row gt_center" headers="estimate">0.05</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Sex</td>
+<td class="gt_row gt_center" headers="stat_1"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_2"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate">0.47</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
+<td class="gt_row gt_center" headers="stat_1">38 (72%)</td>
+<td class="gt_row gt_center" headers="stat_2">33 (49%)</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
+<td class="gt_row gt_center" headers="stat_1">15 (28%)</td>
+<td class="gt_row gt_center" headers="stat_2">34 (51%)</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">BMI, kg/m²</td>
+<td class="gt_row gt_center" headers="stat_1">29.6 (5.6)</td>
+<td class="gt_row gt_center" headers="stat_2">29.6 (5.0)</td>
+<td class="gt_row gt_center" headers="estimate">0.00</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Missing</td>
+<td class="gt_row gt_center" headers="stat_1">4</td>
+<td class="gt_row gt_center" headers="stat_2">4</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">ASA class</td>
+<td class="gt_row gt_center" headers="stat_1"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_2"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate">0.29</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;1</td>
+<td class="gt_row gt_center" headers="stat_1">7 (13%)</td>
+<td class="gt_row gt_center" headers="stat_2">5 (7.7%)</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;2</td>
+<td class="gt_row gt_center" headers="stat_1">29 (56%)</td>
+<td class="gt_row gt_center" headers="stat_2">32 (49%)</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;3</td>
+<td class="gt_row gt_center" headers="stat_1">16 (31%)</td>
+<td class="gt_row gt_center" headers="stat_2">28 (43%)</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Missing</td>
+<td class="gt_row gt_center" headers="stat_1">1</td>
+<td class="gt_row gt_center" headers="stat_2">2</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Diabetes</td>
+<td class="gt_row gt_center" headers="stat_1">3 (5.7%)</td>
+<td class="gt_row gt_center" headers="stat_2">5 (7.5%)</td>
+<td class="gt_row gt_center" headers="estimate">0.07</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">Hypertension</td>
+<td class="gt_row gt_center" headers="stat_1">30 (57%)</td>
+<td class="gt_row gt_center" headers="stat_2">34 (51%)</td>
+<td class="gt_row gt_center" headers="estimate">0.12</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Sleep apnea</td>
+<td class="gt_row gt_center" headers="stat_1">7 (13%)</td>
+<td class="gt_row gt_center" headers="stat_2">17 (25%)</td>
+<td class="gt_row gt_center" headers="estimate">0.31</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">Site</td>
+<td class="gt_row gt_center" headers="stat_1"><br>
+</td>
+<td class="gt_row gt_center" headers="stat_2"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate">0.03</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Site A</td>
+<td class="gt_row gt_center" headers="stat_1">27 (51%)</td>
+<td class="gt_row gt_center" headers="stat_2">33 (49%)</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Site B</td>
+<td class="gt_row gt_center" headers="stat_1">26 (49%)</td>
+<td class="gt_row gt_center" headers="stat_2">34 (51%)</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Pre-op score (HOOS JR or KOOS JR), points</td>
+<td class="gt_row gt_center" headers="stat_1">48.1 (11.5)</td>
+<td class="gt_row gt_center" headers="stat_2">51.0 (11.8)</td>
+<td class="gt_row gt_center" headers="estimate">0.26</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Missing</td>
+<td class="gt_row gt_center" headers="stat_1">0</td>
+<td class="gt_row gt_center" headers="stat_2">5</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+</tr>
+</tbody><tfoot>
+<tr class="gt_footnotes odd">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> Mean (SD); n (%)</td>
+</tr>
+<tr class="gt_footnotes even">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span> Standardized Mean Difference</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>study[<span class="st">"asa"</span>] <span class="op">=</span> study[<span class="st">"asa"</span>].astype(<span class="st">"Int64"</span>).astype(<span class="st">"string"</span>)   <span class="co"># a category; blanks stay missing</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> {<span class="st">"age"</span>: <span class="st">"Age, years"</span>, <span class="st">"sex"</span>: <span class="st">"Sex"</span>, <span class="st">"bmi"</span>: <span class="st">"BMI, kg/m²"</span>, <span class="st">"asa"</span>: <span class="st">"ASA class"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>          <span class="st">"diabetes"</span>: <span class="st">"Diabetes"</span>, <span class="st">"hypertension"</span>: <span class="st">"Hypertension"</span>, <span class="st">"sleep_apnea"</span>: <span class="st">"Sleep apnea"</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>          <span class="st">"site"</span>: <span class="st">"Site"</span>, <span class="st">"prom_preop"</span>: <span class="st">"Pre-op score (HOOS JR or KOOS JR), points"</span>}</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>table_one <span class="op">=</span> TableOne(study, columns<span class="op">=</span><span class="bu">list</span>(labels), groupby<span class="op">=</span><span class="st">"procedure"</span>, overall<span class="op">=</span><span class="va">False</span>,   <span class="co"># no Overall column: see below</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                     categorical<span class="op">=</span>[<span class="st">"sex"</span>, <span class="st">"asa"</span>, <span class="st">"diabetes"</span>, <span class="st">"hypertension"</span>, <span class="st">"sleep_apnea"</span>, <span class="st">"site"</span>],</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>                     smd<span class="op">=</span><span class="va">True</span>, missing<span class="op">=</span><span class="va">True</span>, include_null<span class="op">=</span><span class="va">False</span>, rename<span class="op">=</span>labels)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(table_one.tabulate(tablefmt<span class="op">=</span><span class="st">"github"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>|                                                      |        |   Missing |   SMD (THA,TKA) | THA         | TKA         |
+|------------------------------------------------------|--------|-----------|-----------------|-------------|-------------|
+| n                                                    |        |           |                 | 53          | 67          |
+| Age, years, mean (SD)                                |        |         0 |           0.051 | 64.4 (9.5)  | 64.9 (8.0)  |
+| Sex, n (%)                                           | Female |         0 |           0.472 | 38 (71.7)   | 33 (49.3)   |
+|                                                      | Male   |           |                 | 15 (28.3)   | 34 (50.7)   |
+| BMI, kg/m², mean (SD)                                |        |         8 |          -0.004 | 29.6 (5.6)  | 29.6 (5.0)  |
+| ASA class, n (%)                                     | 1      |         3 |           0.287 | 7 (13.5)    | 5 (7.7)     |
+|                                                      | 2      |           |                 | 29 (55.8)   | 32 (49.2)   |
+|                                                      | 3      |           |                 | 16 (30.8)   | 28 (43.1)   |
+| Diabetes, n (%)                                      | 0      |         0 |           0.073 | 50 (94.3)   | 62 (92.5)   |
+|                                                      | 1      |           |                 | 3 (5.7)     | 5 (7.5)     |
+| Hypertension, n (%)                                  | 0      |         0 |           0.118 | 23 (43.4)   | 33 (49.3)   |
+|                                                      | 1      |           |                 | 30 (56.6)   | 34 (50.7)   |
+| Sleep apnea, n (%)                                   | 0      |         0 |           0.312 | 46 (86.8)   | 50 (74.6)   |
+|                                                      | 1      |           |                 | 7 (13.2)    | 17 (25.4)   |
+| Site, n (%)                                          | Site A |         0 |           0.034 | 27 (50.9)   | 33 (49.3)   |
+|                                                      | Site B |           |                 | 26 (49.1)   | 34 (50.7)   |
+| Pre-op score (HOOS JR or KOOS JR), points, mean (SD) |        |         5 |           0.255 | 48.1 (11.5) | 51.0 (11.8) |</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The groups differ most in sex: 72% of the THA patients were women against 49% of the TKA patients (SMD 0.47). Sleep apnea (0.31), ASA class (0.29) and the pre-op score (0.26) differ less; an SMD below 0.1 is usually read as a negligible difference. TKA patients started 2.9 points higher on average, which matters for an outcome measured as a change: a group that starts higher has less room to improve.</p>
+<p>There’s no Overall column. For most rows it would be harmless, but for the pre-op score it would average HOOS JR and KOOS JR scores together, which is the comparison Step 1 warned about.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: SMDs
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The SMDs agree to two decimals. R’s smd package divides the variances by <em>n</em>, tableone by <em>n</em> − 1, so continuous SMDs can differ in the third decimal (<a href="../foundations/02-demographics.html#smd">page 2</a>). The hidden check allows for it. The two packages also subtract the groups in opposite orders, so their signs differ: the R table shows absolute values, as page 2 advises, and tableone’s keep their signs.</p>
+</div>
+</div>
+</section>
+<section id="distributions" class="level2">
+<h2 class="anchored" data-anchor-id="distributions">5 · Check the distributions</h2>
+<p>The primary outcome is the change from the pre-op score to the 1-year score, so it exists only for patients with both. Look at its shape within each group before choosing the test (<a href="../foundations/03-distributions.html">page 3</a>), and count the patients at the top of the scale.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>analysed <span class="ot">&lt;-</span> study <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">change =</span> prom_1yr <span class="sc">-</span> prom_preop) <span class="sc">|&gt;</span>   <span class="co"># the primary outcome</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(change))                      <span class="co"># patients with both scores</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(analysed, <span class="fu">aes</span>(change)) <span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">5</span>, <span class="at">boundary =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> procedure, <span class="at">ncol =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Change in score, pre-op to 1 year (points)"</span>, <span class="at">y =</span> <span class="st">"Patients"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="18-example-report_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>change_summary <span class="ot">&lt;-</span> analysed <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(procedure) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean =</span> <span class="fu">mean</span>(change), <span class="at">sd =</span> <span class="fu">sd</span>(change), <span class="at">at_ceiling =</span> <span class="fu">sum</span>(prom_1yr <span class="sc">==</span> <span class="dv">100</span>))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>change_summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  procedure     n  mean    sd at_ceiling
+  &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;int&gt;
+1 THA          46  42.4  13.0         15
+2 TKA          47  33.4  13.9          7</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>analysed <span class="op">=</span> study.assign(change<span class="op">=</span>study[<span class="st">"prom_1yr"</span>] <span class="op">-</span> study[<span class="st">"prom_preop"</span>])   <span class="co"># the primary outcome</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>analysed <span class="op">=</span> analysed[analysed[<span class="st">"change"</span>].notna()]                           <span class="co"># patients with both scores</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">4.5</span>), sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (procedure, rows) <span class="kw">in</span> <span class="bu">zip</span>(axes, analysed.groupby(<span class="st">"procedure"</span>)):</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    ax.hist(rows[<span class="st">"change"</span>], bins<span class="op">=</span><span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">80</span>, <span class="dv">5</span>))</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    ax.set_title(procedure)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">"Patients"</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">"Change in score, pre-op to 1 year (points)"</span>)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="18-example-report_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> analysed.groupby(<span class="st">"procedure"</span>).agg(n<span class="op">=</span>(<span class="st">"change"</span>, <span class="st">"size"</span>), mean<span class="op">=</span>(<span class="st">"change"</span>, <span class="st">"mean"</span>),</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                                            sd<span class="op">=</span>(<span class="st">"change"</span>, <span class="st">"std"</span>), at_ceiling<span class="op">=</span>(<span class="st">"prom_1yr"</span>, <span class="kw">lambda</span> s: <span class="bu">int</span>((s <span class="op">==</span> <span class="dv">100</span>).<span class="bu">sum</span>())))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(summary.<span class="bu">round</span>(<span class="dv">1</span>).to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            n  mean    sd  at_ceiling
+procedure                            
+THA        46  42.4  13.0          15
+TKA        47  33.4  13.9           7</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>93 of the 120 patients have both scores: 46 THA and 47 TKA. Within each group the changes are roughly symmetric, with no long tail, and each group has more than 30 patients, so Welch’s t test fits (<a href="../foundations/03-distributions.html">page 3</a>).</p>
+<p>One thing to note for the Discussion: 15 of the 46 THA patients (32.6%) scored the maximum, 100, at 1 year, against 7 of the 47 TKA patients (14.9%). A patient at the ceiling might have improved more if the scale allowed it, so the THA improvement, and the difference between the groups, may be underestimated. Exercise 1 checks the result with a rank-based test.</p>
+</section>
+<section id="primary-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="primary-analysis">6 · The primary analysis</h2>
+<p>The pre-specified analysis: Welch’s t test on the change, with the mean difference, its 95% CI and Hedges’ g (<a href="../catalog/06-two-unpaired-groups.html#unpaired-t">page 6</a>).</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>primary <span class="ot">&lt;-</span> <span class="fu">t.test</span>(change <span class="sc">~</span> procedure, <span class="at">data =</span> analysed)   <span class="co"># Welch's t test is R's default</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>primary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  change by procedure
+t = 3.2351, df = 90.8, p-value = 0.001697
+alternative hypothesis: true difference in means between group THA and group TKA is not equal to 0
+95 percent confidence interval:
+  3.480506 14.554461
+sample estimates:
+mean in group THA mean in group TKA 
+         42.42174          33.40426 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>primary_g <span class="ot">&lt;-</span> effectsize<span class="sc">::</span><span class="fu">hedges_g</span>(change <span class="sc">~</span> procedure, <span class="at">data =</span> analysed)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>primary_g</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Hedges' g |       95% CI
+------------------------
+0.66      | [0.25, 1.08]
+
+- Estimated using pooled SD.</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>tha <span class="op">=</span> analysed.loc[analysed[<span class="st">"procedure"</span>] <span class="op">==</span> <span class="st">"THA"</span>, <span class="st">"change"</span>]</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>tka <span class="op">=</span> analysed.loc[analysed[<span class="st">"procedure"</span>] <span class="op">==</span> <span class="st">"TKA"</span>, <span class="st">"change"</span>]</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>primary <span class="op">=</span> stats.ttest_ind(tha, tka, equal_var<span class="op">=</span><span class="va">False</span>)   <span class="co"># equal_var=False: Welch's t test</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>primary_ci <span class="op">=</span> primary.confidence_interval()</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"t ="</span>, primary.statistic, <span class="st">" df ="</span>, primary.df, <span class="st">" p ="</span>, primary.pvalue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>t = 3.2350964802445796  df = 90.79965900912056  p = 0.0016969642562152817</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"difference ="</span>, tha.mean() <span class="op">-</span> tka.mean(), <span class="st">" 95% CI"</span>, primary_ci.low, <span class="st">"to"</span>, primary_ci.high)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>difference = 9.017483811285857  95% CI 3.480506352222995 to 14.554461270348718</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>g <span class="op">=</span> pg.compute_effsize(tha, tka, eftype<span class="op">=</span><span class="st">"hedges"</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>g_ci <span class="op">=</span> pg.compute_esci(stat<span class="op">=</span>g, nx<span class="op">=</span><span class="bu">len</span>(tha), ny<span class="op">=</span><span class="bu">len</span>(tka), eftype<span class="op">=</span><span class="st">"hedges"</span>)   <span class="co"># its 95% CI, to 2 decimals</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Hedges' g ="</span>, g, <span class="st">" 95% CI"</span>, g_ci[<span class="dv">0</span>], <span class="st">"to"</span>, g_ci[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Hedges' g = 0.6649248297548472  95% CI 0.24 to 1.09</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Reading it: - <strong>The difference:</strong> THA patients improved by 42.4 points on average and TKA patients by 33.4, a difference of 9.0 points (95% CI 3.5 to 14.6). R puts THA first because it comes first alphabetically; the Python code subtracts in the same order. - <strong>p = 0.002:</strong> if the procedures truly made no difference, a gap this large would be rare. - <strong>Hedges’ g = 0.66</strong> (95% CI 0.25 to 1.08): the difference in standard deviations. It’s medium-to-large at the point estimate, but the CI runs from a small difference to a large one.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: Hedges’ g
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Hedges’ g is Cohen’s d shrunk slightly to correct for small samples. effectsize uses the exact correction, pingouin a close approximation, so with 93 patients they differ in the sixth decimal. For the CI, pingouin’s <code>compute_esci()</code> uses an approximate formula and rounds to 2 decimals, so its CI, 0.24 to 1.09, is slightly wider than effectsize’s 0.25 to 1.08, which comes from the noncentral t distribution. Say which you used; the manuscript quotes R’s.</p>
+</div>
+</div>
+</section>
+<section id="survival" class="level2">
+<h2 class="anchored" data-anchor-id="survival">7 · Revision: a survival analysis</h2>
+<p>The secondary outcome is revision. First, how long were patients followed? Then, what proportion were revised over time? 18 patients died during follow-up without a revision, so death is a competing risk: the cumulative incidence gives the real proportion revised, where 1 − Kaplan-Meier would overstate it (<a href="../survival/13-kaplan-meier.html#competing-risks">page 13</a>).</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>study <span class="ot">&lt;-</span> study <span class="sc">|&gt;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">status =</span> <span class="fu">factor</span>(event_status, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"censored"</span>, <span class="st">"revision"</span>, <span class="st">"death"</span>)))   <span class="co"># censored must come first</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(study<span class="sc">$</span>status)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+censored revision    death 
+      84       18       18 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># median follow-up and IQR: the reverse Kaplan-Meier method</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>reverse_km <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(followup_years, event_status <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> study)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>follow_up <span class="ot">&lt;-</span> <span class="fu">quantile</span>(reverse_km, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>), <span class="at">conf.int =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>follow_up</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  25   50   75 
+4.16 6.05 8.27 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the cumulative incidence of revision, with death as a competing risk</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>cif <span class="ot">&lt;-</span> <span class="fu">survfit2</span>(<span class="fu">Surv</span>(followup_years, status) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> study, <span class="at">conf.type =</span> <span class="st">"log-log"</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>revision_rows <span class="ot">&lt;-</span> <span class="fu">tidy_survfit</span>(cif, <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outcome <span class="sc">==</span> <span class="st">"revision"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(time, estimate, conf.low, conf.high)</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>revision_rows</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 4
+   time estimate conf.low conf.high
+  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1     2   0.0339   0.0111    0.0784
+2     5   0.126    0.0703    0.198 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>revision_plot <span class="ot">&lt;-</span> cif <span class="sc">|&gt;</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggcuminc</span>(<span class="at">outcome =</span> <span class="st">"revision"</span>) <span class="sc">+</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_confidence_interval</span>() <span class="sc">+</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_risktable</span>(<span class="at">risktable_stats =</span> <span class="st">"n.risk"</span>) <span class="sc">+</span>                <span class="co"># the numbers at risk, under the curve</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_ggsurvfit</span>(<span class="at">x_scales =</span> <span class="fu">list</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="at">by =</span> <span class="dv">2</span>))) <span class="sc">+</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Years since surgery"</span>, <span class="at">y =</span> <span class="st">"Cumulative incidence of revision"</span>)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>revision_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="18-example-report_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(study[<span class="st">"event_status"</span>].value_counts().sort_index().to_string())   <span class="co"># 0 = censored, 1 = revision, 2 = death</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>event_status
+0    84
+1    18
+2    18</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># median follow-up and IQR: the reverse Kaplan-Meier method</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>reverse_km <span class="op">=</span> KaplanMeierFitter().fit(study[<span class="st">"followup_years"</span>], event_observed<span class="op">=</span>(study[<span class="st">"event_status"</span>] <span class="op">==</span> <span class="dv">0</span>))</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>follow_up <span class="op">=</span> qth_survival_times([<span class="fl">0.75</span>, <span class="fl">0.5</span>, <span class="fl">0.25</span>], reverse_km.survival_function_).iloc[:, <span class="dv">0</span>]   <span class="co"># 25th, 50th, 75th percentiles</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(follow_up.to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.75    4.16
+0.50    6.05
+0.25    8.27</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the cumulative incidence of revision, with death as a competing risk</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>cif <span class="op">=</span> CumIncidenceRight(study[<span class="st">"followup_years"</span>], study[<span class="st">"event_status"</span>])</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>revision <span class="op">=</span> pd.DataFrame({<span class="st">"cif"</span>: cif.cinc[<span class="dv">0</span>], <span class="st">"se"</span>: cif.cinc_se[<span class="dv">0</span>]}, index<span class="op">=</span>cif.times)   <span class="co"># event type 1</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> norm.ppf(<span class="fl">0.975</span>)</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>revision_rows <span class="op">=</span> revision.loc[[revision.index[revision.index <span class="op">&lt;=</span> years][<span class="op">-</span><span class="dv">1</span>] <span class="cf">for</span> years <span class="kw">in</span> [<span class="dv">2</span>, <span class="dv">5</span>]]]   <span class="co"># last step before each time</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>spread <span class="op">=</span> np.exp(z <span class="op">*</span> revision_rows[<span class="st">"se"</span>] <span class="op">/</span> (revision_rows[<span class="st">"cif"</span>] <span class="op">*</span> np.log(revision_rows[<span class="st">"cif"</span>])))  <span class="co"># the log-log CI, as in R</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>revision_rows <span class="op">=</span> revision_rows.assign(time<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">5</span>], low<span class="op">=</span>revision_rows[<span class="st">"cif"</span>] <span class="op">**</span> (<span class="dv">1</span> <span class="op">/</span> spread),</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>                                     high<span class="op">=</span>revision_rows[<span class="st">"cif"</span>] <span class="op">**</span> spread)</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(revision_rows[[<span class="st">"time"</span>, <span class="st">"cif"</span>, <span class="st">"low"</span>, <span class="st">"high"</span>]].<span class="bu">round</span>(<span class="dv">3</span>).to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> time   cif   low  high
+    2 0.034 0.011 0.078
+    5 0.126 0.070 0.198</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">4</span>))</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>ax.step(revision.index, revision[<span class="st">"cif"</span>], where<span class="op">=</span><span class="st">"post"</span>)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Years since surgery"</span>)</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Cumulative incidence of revision"</span>)</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="18-example-report_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The median follow-up was 6.05 years (IQR 4.16 to 8.27). 18 patients were revised and 18 died without a revision. The cumulative incidence of revision was 3.4% (95% CI 1.1% to 7.8%) at 2 years and 12.6% (95% CI 7.0% to 19.8%) at 5 years. With 18 revisions, the CIs are wide: this cohort can describe revision, not compare it between procedures. The numbers at risk under the R plot show how quickly the data thin out: 17 patients were still followed at 8 years and 5 at 10, so the end of the curve rests on very few patients. Publish them with the curve (<a href="../survival/13-kaplan-meier.html#kaplan-meier">page 13</a>).</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: the cumulative incidence
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’s <code>survfit()</code> estimates it whenever the status has three levels. statsmodels’ <code>CumIncidenceRight()</code> gives the same estimates and their standard errors, but no CI, so the Python code builds R’s log-log CI by hand (<a href="../survival/13-kaplan-meier.html#competing-risks">page 13</a>).</p>
+</div>
+</div>
+</section>
+<section id="manuscript" class="level2">
+<h2 class="anchored" data-anchor-id="manuscript">8 · The manuscript</h2>
+<p>Everything from here to the exercises is the manuscript, and it’s what the Word version contains. Every number in it comes from the code above, and a hidden check stops the render if the text and the code ever disagree.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>💡 What “done” looks like
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>The question, outcome and analysis were written down before the analysis ran.</li>
+<li>The tidying is checked, and a failed check stops the script.</li>
+<li>Missing data are counted and reported, not dropped silently.</li>
+<li>Every estimate has a 95% CI, and the Methods name every test.</li>
+<li>The manuscript is rendered from the same file as the analysis. If the data change, Table 1 and Figure 1 update themselves, and the hidden check stops the render until every number in the text is updated by hand.</li>
+</ul>
+</div>
+</div>
+<p>The manuscript stops at the Results. The Discussion is the author’s to write; for this study it would need to cover the ceiling effect at 1 year, the patients missing from the analysis, the two questionnaires, and whether a 9-point difference matters to patients.</p>
+</section>
+<section id="aim" class="level2">
+<h2 class="anchored" data-anchor-id="aim">Aim</h2>
+<p>To compare the improvement in joint-specific patient-reported scores from before surgery to 1 year after primary total hip arthroplasty (THA) and total knee arthroplasty (TKA), and to describe the cumulative incidence of revision.</p>
+</section>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
+<p><strong>Patients and data.</strong> We studied 120 primary THAs and TKAs performed at two sites (60 at each) between January 2015 and November 2024. Patients’ characteristics, the procedure and patient-reported scores were abstracted from the medical record into a standard sheet. Follow-up for revision and death came from the joint registry, linked by study ID.</p>
+<p><strong>Outcomes.</strong> The primary outcome was the change in the joint-specific score from before surgery to 1 year: the HOOS JR after THA and the KOOS JR after TKA, each scored from 0 to 100 (higher is better). Because the two are different instruments, the comparison is of points on each joint’s own scale. The secondary outcome was revision of any component.</p>
+<p><strong>Statistical analysis.</strong> Continuous variables are reported as mean (SD) and categorical variables as n (%); differences between procedures at baseline are described with standardized mean differences. The change in score was compared between procedures with Welch’s t test in patients with both scores, and summarized as the mean difference with its 95% CI and Hedges’ g. For revision, time was measured from the date of surgery to revision, death without revision (a competing event) or the end of registry follow-up (censored). Median follow-up was estimated with the reverse Kaplan-Meier method. The cumulative incidence of revision was estimated with the Aalen-Johansen method, treating death as a competing risk. Tests were two-sided. Analyses used R 4.6 and Python 3.13.</p>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<p>Of the 120 patients, 53 (44.2%) had a THA and 67 (55.8%) a TKA (<a href="#tbl-baseline" class="quarto-xref">Table&nbsp;1</a>). THA patients were more often women (38 of 53, 71.7%, against 33 of 67, 49.3%; SMD 0.47), and TKA patients started with a pre-op score 2.9 points higher (51.0 against 48.1 points; SMD 0.26).</p>
+<p>Both scores were available for 93 patients (77.5%): 46 of 53 after THA (86.8%) and 47 of 67 after TKA (70.1%). The score improved by a mean of 42.4 points (SD 13.0) after THA and 33.4 points (SD 13.9) after TKA, a difference of 9.0 points (95% CI 3.5 to 14.6; Hedges’ g 0.66, 95% CI 0.25 to 1.08; p = 0.002). At 1 year, 15 of 46 THA patients (32.6%) and 7 of 47 TKA patients (14.9%) had the maximum score.</p>
+<p>Over a median follow-up of 6.05 years (IQR 4.16 to 8.27), 18 patients had a revision and 18 died without one. The cumulative incidence of revision was 3.4% (95% CI 1.1% to 7.8%) at 2 years and 12.6% (95% CI 7.0% to 19.8%) at 5 years (<a href="#fig-revision" class="quarto-xref">Figure&nbsp;1</a>).</p>
+<div class="cell">
+<div id="tbl-baseline" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-baseline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Patients’ characteristics before surgery, by procedure. Mean (SD) or n (%); SMD, absolute standardized mean difference.
+</figcaption>
+<div aria-describedby="tbl-baseline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-d8bad469{}.cl-7facc2d9{font-family:'Helvetica';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-21b8b309{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-548ec9e6{font-family:'Helvetica';font-size:6.6pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;vertical-align:super;}.cl-f4afa9ce{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:2pt;padding-top:2pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-df282d82{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:2pt;padding-top:2pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-c6655fef{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-03fa5271{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-d04581b7{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:15pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-6477613b{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-b5e78e1a{width:3.367in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(0, 0, 0, 1.00);border-top: 1pt solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-1ea5cab1{width:1.024in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(0, 0, 0, 1.00);border-top: 1pt solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cb1a803{width:0.625in;background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(0, 0, 0, 1.00);border-top: 1pt solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a97b4627{width:3.367in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-77e47a65{width:1.024in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-2858adbc{width:0.625in;background-color:transparent;vertical-align: top;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-2df4e74c{width:3.367in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9d47b378{width:1.024in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-542b8429{width:0.625in;background-color:transparent;vertical-align: top;border-bottom: 1pt solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a38182b0{width:3.367in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-7cbc3658{width:1.024in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-23b67d24{width:0.625in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-d8bad469"><thead><tr style="overflow-wrap:break-word;"><th class="cl-b5e78e1a"><p class="cl-f4afa9ce"><span class="cl-7facc2d9">Characteristic</span></p></th><th class="cl-1ea5cab1"><p class="cl-df282d82"><span class="cl-7facc2d9">THA</span><span class="cl-21b8b309">  </span><br><span class="cl-21b8b309">N = 53</span><span class="cl-548ec9e6">1</span></p></th><th class="cl-1ea5cab1"><p class="cl-df282d82"><span class="cl-7facc2d9">TKA</span><span class="cl-21b8b309">  </span><br><span class="cl-21b8b309">N = 67</span><span class="cl-548ec9e6">1</span></p></th><th class="cl-7cb1a803"><p class="cl-df282d82"><span class="cl-7facc2d9">SMD</span><span class="cl-548ec9e6">2</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-c6655fef"><span class="cl-21b8b309">Age, years</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">64.4 (9.5)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">64.9 (8.0)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309">0.05</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-c6655fef"><span class="cl-21b8b309">Sex</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309">0.47</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-d04581b7"><span class="cl-21b8b309">Female</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">38 (72%)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">33 (49%)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-d04581b7"><span class="cl-21b8b309">Male</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">15 (28%)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">34 (51%)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-c6655fef"><span class="cl-21b8b309">BMI, kg/m²</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">29.6 (5.6)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">29.6 (5.0)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309">0.00</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-d04581b7"><span class="cl-21b8b309">Missing</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">4</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">4</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-c6655fef"><span class="cl-21b8b309">ASA class</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309">0.29</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-d04581b7"><span class="cl-21b8b309">1</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">7 (13%)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">5 (7.7%)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-d04581b7"><span class="cl-21b8b309">2</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">29 (56%)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">32 (49%)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-d04581b7"><span class="cl-21b8b309">3</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">16 (31%)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">28 (43%)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-d04581b7"><span class="cl-21b8b309">Missing</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">1</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">2</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-c6655fef"><span class="cl-21b8b309">Diabetes</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">3 (5.7%)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">5 (7.5%)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309">0.07</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-c6655fef"><span class="cl-21b8b309">Hypertension</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">30 (57%)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">34 (51%)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309">0.12</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-c6655fef"><span class="cl-21b8b309">Sleep apnea</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">7 (13%)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">17 (25%)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309">0.31</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-c6655fef"><span class="cl-21b8b309">Site</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309">0.03</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-d04581b7"><span class="cl-21b8b309">Site A</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">27 (51%)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">33 (49%)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-d04581b7"><span class="cl-21b8b309">Site B</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">26 (49%)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">34 (51%)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a97b4627"><p class="cl-c6655fef"><span class="cl-21b8b309">Pre-op score (HOOS JR or KOOS JR), points</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">48.1 (11.5)</span></p></td><td class="cl-77e47a65"><p class="cl-03fa5271"><span class="cl-21b8b309">51.0 (11.8)</span></p></td><td class="cl-2858adbc"><p class="cl-03fa5271"><span class="cl-21b8b309">0.26</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-2df4e74c"><p class="cl-d04581b7"><span class="cl-21b8b309">Missing</span></p></td><td class="cl-9d47b378"><p class="cl-03fa5271"><span class="cl-21b8b309">0</span></p></td><td class="cl-9d47b378"><p class="cl-03fa5271"><span class="cl-21b8b309">5</span></p></td><td class="cl-542b8429"><p class="cl-03fa5271"><span class="cl-21b8b309"></span></p></td></tr></tbody><tfoot><tr style="overflow-wrap:break-word;"><td colspan="4" class="cl-a38182b0"><p class="cl-6477613b"><span class="cl-548ec9e6">1</span><span class="cl-21b8b309">Mean (SD); n (%)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td colspan="4" class="cl-a38182b0"><p class="cl-6477613b"><span class="cl-548ec9e6">2</span><span class="cl-21b8b309">Standardized Mean Difference</span></p></td></tr></tfoot></table></div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-revision" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-revision-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="18-example-report_files/figure-html/fig-revision-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-revision-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Cumulative incidence of revision, with death as a competing risk. The shaded band is the 95% CI.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The solutions use the packages, data and objects made in the steps above, so run the page from the top first.</p>
+<p><strong>1.</strong> Fifteen THA patients scored the maximum at 1 year. Check the primary result with a test that uses ranks instead of means: the Mann-Whitney test and the Hodges-Lehmann difference (<a href="../catalog/06-two-unpaired-groups.html#mann-whitney">page 6</a>). Does the conclusion change?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(change <span class="sc">~</span> procedure, <span class="at">data =</span> analysed, <span class="at">exact =</span> <span class="cn">FALSE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Wilcoxon rank sum test with continuity correction
+
+data:  change by procedure
+W = 1461.5, p-value = 0.0035
+alternative hypothesis: true location shift is not equal to 0
+95 percent confidence interval:
+  3.600064 15.199914
+sample estimates:
+difference in location 
+              9.499948 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>rank_check <span class="op">=</span> stats.mannwhitneyu(tha, tka, alternative<span class="op">=</span><span class="st">"two-sided"</span>, method<span class="op">=</span><span class="st">"asymptotic"</span>, use_continuity<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(rank_check.statistic, rank_check.pvalue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1461.5 0.0034996103353091236</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.median(np.subtract.outer(tha.to_numpy(), tka.to_numpy())))   <span class="co"># the Hodges-Lehmann difference</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>9.5</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>No: the Hodges-Lehmann difference is 9.5 points (95% CI 3.6 to 15.2), p = 0.003, close to the 9.0 points from the t test. Python gives the same estimate and p-value; its CI needs a bootstrap (<a href="../catalog/06-two-unpaired-groups.html#mann-whitney">page 6</a>).</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> A reviewer writes: “TKA patients started with higher scores, so they had less room to improve. Adjust for the pre-op score.” Which analysis answers this, and what does it show?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Regress the 1-year score on the procedure and the pre-op score (<a href="../catalog/12-predict-from-several.html#multiple-linear-regression">page 12</a>). The procedure’s coefficient is the difference at 1 year between patients who started with the same score.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>adjusted <span class="ot">&lt;-</span> <span class="fu">lm</span>(prom_1yr <span class="sc">~</span> prom_preop <span class="sc">+</span> procedure, <span class="at">data =</span> analysed)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adjusted)<span class="sc">$</span>coefficients</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               Estimate Std. Error   t value     Pr(&gt;|t|)
+(Intercept)  76.2167482  5.0932211 14.964351 3.788075e-26
+prom_preop    0.2983207  0.1003603  2.972496 3.789278e-03
+procedureTKA -7.3642535  2.2703235 -3.243702 1.656337e-03</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(adjusted)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                    2.5 %     97.5 %
+(Intercept)   66.09817558 86.3353208
+prom_preop     0.09893741  0.4977041
+procedureTKA -11.87464731 -2.8538596</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>adjusted <span class="op">=</span> smf.ols(<span class="st">"prom_1yr ~ prom_preop + procedure"</span>, data<span class="op">=</span>analysed).fit()</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(adjusted.params.<span class="bu">round</span>(<span class="dv">3</span>).to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Intercept           76.217
+procedure[T.TKA]    -7.364
+prom_preop           0.298</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(adjusted.conf_int().<span class="bu">round</span>(<span class="dv">3</span>).to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       0       1
+Intercept         66.098  86.335
+procedure[T.TKA] -11.875  -2.854
+prom_preop         0.099   0.498</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(adjusted.pvalues.<span class="bu">round</span>(<span class="dv">3</span>).to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Intercept           0.000
+procedure[T.TKA]    0.002
+prom_preop          0.004</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>For the same pre-op score, TKA patients scored 7.4 points lower at 1 year than THA patients (95% CI 2.9 to 11.9; p = 0.002). The difference shrinks a little from the unadjusted 9.0 points but doesn’t go away, so the higher starting point explains only part of it.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> 27 patients have no change score, so the primary analysis leaves them out. Were they left out more often after one procedure, and which score was missing? Test it and write the Results sentence.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>no_change_score <span class="ot">&lt;-</span> <span class="fu">is.na</span>(study<span class="sc">$</span>prom_1yr <span class="sc">-</span> study<span class="sc">$</span>prom_preop)</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(study<span class="sc">$</span>procedure, no_change_score)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     no_change_score
+      FALSE TRUE
+  THA    46    7
+  TKA    47   20</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(<span class="fu">table</span>(study<span class="sc">$</span>procedure, no_change_score))<span class="sc">$</span>p.value</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.04638888</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># which score was missing?</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>study <span class="sc">|&gt;</span></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(procedure) <span class="sc">|&gt;</span></span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">no_preop =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(prom_preop)), <span class="at">no_1yr =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(prom_1yr)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  procedure no_preop no_1yr
+  &lt;chr&gt;        &lt;int&gt;  &lt;int&gt;
+1 THA              0      7
+2 TKA              5     15</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(<span class="fu">table</span>(study<span class="sc">$</span>procedure, <span class="fu">is.na</span>(study<span class="sc">$</span>prom_1yr)))<span class="sc">$</span>p.value   <span class="co"># the 1-year score alone</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2393494</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>no_change_score <span class="op">=</span> (study[<span class="st">"prom_1yr"</span>] <span class="op">-</span> study[<span class="st">"prom_preop"</span>]).isna().rename(<span class="st">"no_change_score"</span>)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>missing_table <span class="op">=</span> pd.crosstab(study[<span class="st">"procedure"</span>], no_change_score)</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(missing_table.to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>no_change_score  False  True 
+procedure                    
+THA                 46      7
+TKA                 47     20</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb78"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.fisher_exact(missing_table).pvalue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.046388878013810156</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co"># which score was missing?</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(study[[<span class="st">"prom_preop"</span>, <span class="st">"prom_1yr"</span>]].isna().groupby(study[<span class="st">"procedure"</span>]).<span class="bu">sum</span>().to_string())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           prom_preop  prom_1yr
+procedure                      
+THA                 0         7
+TKA                 5        15</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.fisher_exact(pd.crosstab(study[<span class="st">"procedure"</span>], study[<span class="st">"prom_1yr"</span>].isna())).pvalue)   <span class="co"># the 1-year score alone</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.23934944030992605</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The change score was missing for 7 of 53 THA patients (13.2%) and 20 of 67 TKA patients (29.9%; Fisher’s exact test p = 0.046). The reasons differ: all 7 THA patients and 15 TKA patients had no 1-year score, and the other 5 TKA patients had no pre-op score. On the 1-year score alone, the difference is smaller and less certain (13.2% against 22.4%, p = 0.239). If the patients left out fared differently from those analysed, the comparison is biased; the Discussion should say so.</p>
+</div>
 </div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -980,7 +2600,7 @@ ul.task-list li input[type="checkbox"] {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>Text CC BY 4.0 · Code MIT</p>
 </div>

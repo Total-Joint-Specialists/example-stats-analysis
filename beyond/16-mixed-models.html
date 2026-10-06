@@ -528,7 +528,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../report/18-example-report.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">18 · Example study report (coming soon)</span></a>
+ <span class="menu-text">18 · Example study report</span></a>
   </div>
 </li>
       </ul>
@@ -1021,7 +1021,7 @@ Confidence level used: 0.95 </code></pre>
 <h2 class="anchored" data-anchor-id="reporting">How to report it</h2>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> KOOS JR scores before surgery and at 6 weeks, 3 months and 1 year were analyzed with a linear mixed model, with visit as a categorical fixed effect and a random intercept for each knee, fitted by restricted maximum likelihood. All available scores were used, including those from knees that missed a visit. Differences between men and women in the pattern of recovery were tested with a visit × sex interaction (Satterthwaite degrees of freedom). The planned comparison was the change from before surgery to 1 year. Estimated marginal means are reported with 95% CIs.</p>
-<p><strong>Results:</strong> Of 330 knees, 192 (58.2%) had all four scores; all 1146 scores were analyzed. The estimated mean KOOS JR rose from 50.0 (95% CI 48.6 to 51.3) before surgery to 83.9 (95% CI 82.5 to 85.3) at 1 year, an improvement of 33.9 points (95% CI 32.5 to 35.3). There was no clear evidence that the pattern of recovery differed between men and women (interaction F(3, 832) = 2.09, p = 0.100).</p>
+<p><strong>Results:</strong> Of 330 knees, 192 (58.2%) had all four scores; all 1146 scores were analyzed. The estimated mean KOOS JR rose from 50.0 (95% CI 48.6 to 51.3) before surgery to 83.9 (95% CI 82.5 to 85.3) at 1 year, an improvement of 33.9 points (95% CI 32.5 to 35.3). There was no clear evidence that the pattern of recovery differed between men and women (interaction F(3, 832) = 2.09, p = 0.100); at 1 year the estimated mean was 84.4 (95% CI 82.4 to 86.4) in men and 83.4 (95% CI 81.3 to 85.4) in women.</p>
 </blockquote>
 </section>
 <section id="exercises" class="level2">
@@ -1092,7 +1092,7 @@ Confidence level used: 0.95 </code></pre>
 </div>
 </div>
 </div>
-<p><strong>2.</strong> <a href="../catalog/09-three-plus-matched.html#repeated-measures-anova">Page 9</a> analyzed the VR-12 physical component score (PCS) with repeated-measures ANOVA in the 328 patients measured at all four visits. Fit a mixed model with every PCS score instead. How many patients does it use, and do the visit means change?</p>
+<p><strong>2.</strong> <a href="../catalog/09-three-plus-matched.html#repeated-measures-anova">Page 9</a> analyzed the VR-12 physical component score (PCS) with repeated-measures ANOVA in the 328 joint replacements measured at all four visits. Fit a mixed model with every PCS score instead. How many joint replacements does it use, and do the visit means change?</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -1113,10 +1113,10 @@ Confidence level used: 0.95 </code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>pcs_all <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(vr12_pcs)) <span class="sc">|&gt;</span></span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">visit =</span> <span class="fu">factor</span>(visit, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)))</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">patients =</span> <span class="fu">n_distinct</span>(pcs_all<span class="sc">$</span>case_id), <span class="at">scores =</span> <span class="fu">nrow</span>(pcs_all))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">joint_replacements =</span> <span class="fu">n_distinct</span>(pcs_all<span class="sc">$</span>case_id), <span class="at">scores =</span> <span class="fu">nrow</span>(pcs_all))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>patients   scores 
-     600     2052 </code></pre>
+<pre><code>joint_replacements             scores 
+               600               2052 </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>pcs_model <span class="ot">&lt;-</span> <span class="fu">lmer</span>(vr12_pcs <span class="sc">~</span> visit <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> case_id), <span class="at">data =</span> pcs_all)</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">emmeans</span>(pcs_model, <span class="sc">~</span> visit, <span class="at">lmer.df =</span> <span class="st">"satterthwaite"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1153,7 +1153,7 @@ Confidence level used: 0.95 </code></pre>
 </div>
 </div>
 </div>
-<p>The mixed model uses all 600 patients (2052 scores) instead of 328. Its visit means, 31.2, 35.3, 41.0 and 44.9, are almost the same as page 9’s complete-patient means (31.2, 34.9, 41.0 and 44.9): in this synthetic cohort visits were missed almost entirely at random, so dropping patients cost precision rather than accuracy.</p>
+<p>The mixed model uses all 600 joint replacements (2052 scores) instead of the 328 with all four scores. Its visit means, 31.2, 35.3, 41.0 and 44.9, are almost the same as page 9’s means for those 328 (31.2, 34.9, 41.0 and 44.9): in this synthetic cohort visits were missed almost entirely at random, so dropping incomplete cases cost precision rather than accuracy.</p>
 </div>
 </div>
 </div>

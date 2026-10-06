@@ -89,7 +89,7 @@ def test_outputs_are_short_and_never_dump_objects(site, page):
 @pytest.mark.parametrize("cell,target", SURVIVAL_LINKS.items())
 def test_survival_sections_point_to_the_full_treatment(site, cell, target):
     page, anchor = cell
-    hrefs = [a["href"] for a in section(page, anchor).select("a[href]")]
+    hrefs = [a["href"].split("#")[0] for a in section(page, anchor).select("a[href]")]
     assert any(href.endswith(target) for href in hrefs)
 
 
@@ -215,3 +215,26 @@ def test_unplanned_findings_are_labeled_in_the_results(site):
     results = " ".join(text_of(q) for q in section("catalog/12-predict-from-several.html", "cox").select("blockquote"))
     sentence = next(s for s in results.split(". ") if "Men had" in s or "men had" in s)
     assert "exploratory" in sentence
+
+
+# ---- links into the survival pages ----------------------------------------------
+
+# Where a sentence promises one topic ("page 13 covers competing risks"), its link
+# lands on that section of pages 13-14, not the top of the page.
+SECTION_LINKS = {
+    "catalog/04-describe-one-group.html": ["survival/13-kaplan-meier.html#competing-risks"],
+    "catalog/06-two-unpaired-groups.html": ["survival/14-cox-regression.html#proportional-hazards",
+                                            "survival/13-kaplan-meier.html#competing-risks"],
+    "catalog/08-three-plus-unmatched.html": ["survival/14-cox-regression.html#proportional-hazards",
+                                             "survival/13-kaplan-meier.html#competing-risks"],
+    "catalog/09-three-plus-matched.html": ["survival/14-cox-regression.html#choosing-covariates"],
+    "catalog/11-predict-from-one.html": ["survival/13-kaplan-meier.html#competing-risks",
+                                         "survival/14-cox-regression.html#fine-gray"],
+    "catalog/12-predict-from-several.html": ["survival/14-cox-regression.html#proportional-hazards"],
+}
+
+
+@pytest.mark.parametrize("page,targets", SECTION_LINKS.items())
+def test_links_into_the_survival_pages_land_on_the_section_they_promise(site, page, targets):
+    hrefs = {a["href"].removeprefix("../") for a in load(page).select("main a[href]")}
+    assert [target for target in targets if target not in hrefs] == []

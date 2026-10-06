@@ -737,7 +737,7 @@ The **hazard ratio per 10 years**, 1.25 (95% CI 0.98 to 1.59), is the effect siz
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: older patients die before they can be revised
-Deaths are treated as censored here, so the hazard ratio describes the revision rate among patients still alive. That's a fair answer to its own question. But older patients die sooner, so fewer of them live long enough to need a revision: an older patient's actual chance of being revised is smaller than the hazard ratio suggests. To describe that chance, use the cumulative incidence ([page 13](../survival/13-kaplan-meier.qmd)) or a Fine-Gray model ([page 14](../survival/14-cox-regression.qmd)).
+Deaths are treated as censored here, so the hazard ratio describes the revision rate among patients still alive. That's a fair answer to its own question. But older patients die sooner, so fewer of them live long enough to need a revision: an older patient's actual chance of being revised is smaller than the hazard ratio suggests. To describe that chance, use the cumulative incidence ([page 13](../survival/13-kaplan-meier.qmd#competing-risks)) or a Fine-Gray model ([page 14](../survival/14-cox-regression.qmd#fine-gray)).
 :::
 
 ```{r}

@@ -483,7 +483,7 @@ check_agree(list(surv_5 = km_5$surv, ci_low = km_5$lower, ci_high = km_5$upper),
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: death isn't just "lost to follow-up"
-Treating deaths as censored, as here, assumes the patients who died would have gone on to be revised at the same rate as everyone else. They can't be: a patient who has died can never be revised. When many patients die during follow-up, 1 minus the Kaplan-Meier estimate **overstates** the risk of revision. [Page 13](../survival/13-kaplan-meier.qmd) shows the competing-risks method that fixes this.
+Treating deaths as censored, as here, assumes the patients who died would have gone on to be revised at the same rate as everyone else. They can't be: a patient who has died can never be revised. When many patients die during follow-up, 1 minus the Kaplan-Meier estimate **overstates** the risk of revision. [Page 13](../survival/13-kaplan-meier.qmd#competing-risks) shows the competing-risks method that fixes this.
 :::
 
 ::: {.callout-tip}

@@ -457,7 +457,7 @@ effectsize's `cramers_v()` applies a small-sample **bias correction** by default
 
 - The outcome is **time until an event** (revision), compared across **three or more independent groups**.
 - The **log-rank test** extends to three or more groups and answers "do the curves differ?". **Cox regression** also gives a hazard ratio for each group against a reference group, and can adjust for other variables.
-- It assumes each group's risk is a steady multiple of the reference group's over time (**proportional hazards**). [Page 14](../survival/14-cox-regression.qmd) shows how to check that and covers Cox regression in full.
+- It assumes each group's risk is a steady multiple of the reference group's over time (**proportional hazards**). [Page 14](../survival/14-cox-regression.qmd#proportional-hazards) shows how to check that and covers Cox regression in full.
 
 ### Look at the data first
 
@@ -572,7 +572,7 @@ The **hazard ratios** with their 95% CIs are the effect sizes: implant C carried
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: the reference group shapes the story
-Every hazard ratio here is relative to implant A, so the output doesn't compare B with C directly. Choose the reference group on purpose (the standard implant, the largest group) and say which it is. And as on [page 4](04-describe-one-group.qmd#kaplan-meier), deaths here are treated as censored; [page 13](../survival/13-kaplan-meier.qmd) covers competing risks.
+Every hazard ratio here is relative to implant A, so the output doesn't compare B with C directly. Choose the reference group on purpose (the standard implant, the largest group) and say which it is. And as on [page 4](04-describe-one-group.qmd#kaplan-meier), deaths here are treated as censored; [page 13](../survival/13-kaplan-meier.qmd#competing-risks) covers competing risks.
 :::
 
 ::: {.callout-tip}

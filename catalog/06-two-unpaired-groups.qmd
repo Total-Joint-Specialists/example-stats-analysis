@@ -528,7 +528,7 @@ scipy's `fisher_exact()` reports the simple **sample** odds ratio (a × d) / (b 
 - The outcome is **time until an event** (revision), patients were followed for different lengths of time, and you're comparing **two independent groups**.
 - It compares the whole survival curves, not the survival at one time point.
 - The **Mantel-Haenszel test** (or Mantel-Cox test) in the decision table is the same test under another name.
-- It's most powerful when one group's risk is a steady multiple of the other's over time (proportional hazards). If the curves cross, see [page 14](../survival/14-cox-regression.qmd).
+- It's most powerful when one group's risk is a steady multiple of the other's over time (proportional hazards). If the curves cross, see [page 14](../survival/14-cox-regression.qmd#proportional-hazards).
 - To compare three or more groups, or to adjust for other variables → [Cox regression](08-three-plus-unmatched.qmd#cox).
 
 ### Look at the data first
@@ -699,7 +699,7 @@ check_agree(list(surv_a = survival_5$surv[1], low_a = survival_5$lower[1], high_
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: overlapping CIs aren't a test
-Comparing the two curves' CIs at one time point ("the 5-year CIs overlap, so there's no difference") isn't a valid test, and neither is comparing the crude percentages revised. Use the log-rank test on the whole curves. And as on [page 4](04-describe-one-group.qmd#kaplan-meier), deaths here are treated as censored; [page 13](../survival/13-kaplan-meier.qmd) covers competing risks.
+Comparing the two curves' CIs at one time point ("the 5-year CIs overlap, so there's no difference") isn't a valid test, and neither is comparing the crude percentages revised. Use the log-rank test on the whole curves. And as on [page 4](04-describe-one-group.qmd#kaplan-meier), deaths here are treated as censored; [page 13](../survival/13-kaplan-meier.qmd#competing-risks) covers competing risks.
 :::
 
 ::: {.callout-tip}

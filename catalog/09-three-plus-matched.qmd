@@ -590,7 +590,7 @@ The **hazard ratios** with their 95% CIs: within matched sets, implant C carried
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: only 24 events
-A Cox model needs events, not just patients. With 24 revisions across three implants, the CIs are wide and the model can't support adjustment for anything else. [Page 14](../survival/14-cox-regression.qmd) covers how many events a model needs.
+A Cox model needs events, not just patients. With 24 revisions across three implants, the CIs are wide and the model can't support adjustment for anything else. [Page 14](../survival/14-cox-regression.qmd#choosing-covariates) covers how many events a model needs.
 :::
 
 ::: {.callout-tip}

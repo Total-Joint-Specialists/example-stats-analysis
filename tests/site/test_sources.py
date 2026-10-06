@@ -102,3 +102,35 @@ def test_quartile_guard_reads_what_the_libraries_display():
     chunks = HIDDEN_CHUNK.findall(text)
     assert any(lang == "r" and "table_body" in code and "1 (0–2)" in code for lang, code in chunks)
     assert any(lang == "python" and "1.0 [0.0,1.8]" in code for lang, code in chunks)
+
+
+# ---- reticulate: never assign to _ ---------------------------------------
+# reticulate decides whether to print a statement's value by looking at Python's
+# last value, `_`. Code that assigns `_` itself (`_ = ax.hist(...)`) hides
+# reticulate's placeholder, and once `_` holds a plot object every later Python
+# output on the page is silently dropped. Name the result instead.
+
+PYTHON_CHUNK = re.compile(r"```\{python[^}]*\}\n(.*?)\n```", re.DOTALL)
+ASSIGNMENT_TARGET = re.compile(r"^([^=#\n]*?)(?<![=!<>])=(?!=)", re.MULTILINE)
+UNDERSCORE_NAME = re.compile(r"(?<![\w.])_(?!\w)")
+
+
+def assigns_underscore(text):
+    return any(UNDERSCORE_NAME.search(target)
+               for code in PYTHON_CHUNK.findall(text)
+               for target in ASSIGNMENT_TARGET.findall(code))
+
+
+def test_rule_catches_underscore_assignments():
+    assert assigns_underscore("```{python}\n_ = ax.hist(x)\nplt.show()\n```")
+    assert assigns_underscore("```{python}\nstat, _ = f(x)\n```")
+
+
+def test_rule_allows_named_results_and_keyword_arguments():
+    assert not assigns_underscore("```{python}\nqq = stats.probplot(x, plot=ax)\nmax_iter = 5\n```")
+    assert not assigns_underscore("```{python}\nax.hist(x, bins=30)\n```")
+
+
+def test_no_python_chunk_assigns_to_underscore():
+    offenders = [str(f.relative_to(ROOT)) for f in qmd_files() if assigns_underscore(f.read_text(encoding="utf-8"))]
+    assert offenders == [], "Name the result instead of assigning to _ in: " + ", ".join(offenders)

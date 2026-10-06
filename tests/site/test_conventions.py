@@ -39,3 +39,12 @@ def test_callout_legend_shows_all_four_kinds(site):
     text = load("getting-started/using-this-site.html").get_text(" ")
     for title in ["In plain language", "Watch out", "R vs Python", "Under the hood"]:
         assert title in text, title
+
+
+def test_every_python_print_shows_its_output(site):
+    """reticulate can drop Python output silently (see test_sources.py); catch the symptom too."""
+    for page in PAGES:
+        for cell in load(page).select("div.cell"):
+            code = cell.select_one("pre.sourceCode.python")
+            if code is not None and "print(" in code.get_text():
+                assert cell.select(".cell-output-stdout"), f"{page}: no output for {code.get_text()[:60]!r}"

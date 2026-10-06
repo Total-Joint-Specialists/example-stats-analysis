@@ -304,7 +304,7 @@ residuals = cohort["bmi"] - cohort.groupby("procedure")["bmi"].transform("mean")
 print(stats.shapiro(residuals).pvalue)
 
 fig, ax = plt.subplots(figsize=(4, 3))
-_ = stats.probplot(residuals, plot=ax)                   # "_ =" hides probplot's returned numbers
+qq = stats.probplot(residuals, plot=ax)                  # naming the result keeps its numbers out of the output
 plt.show()
 ```
 :::
@@ -573,8 +573,8 @@ skewness(preop$prom_score)
 ```{python}
 preop = proms[(proms["visit"] == "preop") & proms["prom_score"].notna()]
 fig, axes = plt.subplots(1, 2, figsize=(8, 3))
-_ = axes[0].hist(preop["prom_score"], bins=30)   # "_ =" hides the returned counts
-_ = stats.probplot(preop["prom_score"], plot=axes[1])
+axes[0].hist(preop["prom_score"], bins=30)
+qq = stats.probplot(preop["prom_score"], plot=axes[1])   # naming the result keeps its numbers out of the output
 plt.show()
 print(skewness(preop["prom_score"]))
 ```

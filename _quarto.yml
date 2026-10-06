@@ -4,6 +4,8 @@ project:
   execute-dir: project
   render:
     - index.qmd
+    - choose-a-test.qmd
+    - tests-a-z.qmd
     - getting-started/*.qmd
     - foundations/*.qmd
     - catalog/*.qmd
@@ -33,10 +35,14 @@ website:
   favicon: images/tjs-icon.png
   navbar:
     left:
-      - text: "Decision table"
+      - text: "Home"
         href: index.qmd
       - text: "Getting started"
         href: getting-started/setup.qmd
+      - text: "Choose a test"
+        href: choose-a-test.qmd
+      - text: "Tests A–Z"
+        href: tests-a-z.qmd
     right:
       - icon: github
         href: "https://github.com/Total-Joint-Specialists/example-stats-analysis"
@@ -51,8 +57,12 @@ website:
         path: images/tjs-logo-dark.png
         alt: "Total Joint Specialists"
     contents:
-      - text: "Decision table"
+      - text: "Home"
         href: index.qmd
+      - text: "Choose a test"
+        href: choose-a-test.qmd
+      - text: "Tests A–Z"
+        href: tests-a-z.qmd
       - section: "Getting started"
         contents:
           - getting-started/setup.qmd

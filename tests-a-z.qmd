@@ -1,0 +1,78 @@
+---
+title: "Tests A–Z"
+subtitle: "Every test and method on this site, under the names you'll meet in papers"
+toc: false
+---
+
+Know the name of the test you need? Find it here and jump straight to its section. Papers often call the same test by different names, so those names get their own rows. Not sure which test fits your question? Start with [Which statistical test should I use?](choose-a-test.qmd)
+
+| Test or method | Use it to | Where |
+|------|------|------|
+| Aalen-Johansen estimator | Same as the cumulative incidence | [13 · Competing risks](survival/13-kaplan-meier.qmd#competing-risks) |
+| Benjamini-Hochberg adjustment | Adjust many p-values while controlling the false discovery rate | [15 · Adjusting p-values](beyond/15-post-hoc.qmd#adjusting-p-values) |
+| Binomial test | Compare one proportion with a hypothetical value | [5 · Binomial test](catalog/05-one-group-vs-hypothetical.qmd#binomial-test) |
+| Bland-Altman limits of agreement | See how far apart two measurements of the same thing can be | [17 · Bland-Altman](beyond/17-agreement.qmd#bland-altman) |
+| Bonferroni adjustment | Adjust p-values for several comparisons (Holm's method is better) | [15 · Adjusting p-values](beyond/15-post-hoc.qmd#adjusting-p-values) |
+| Chi-square goodness-of-fit test | Compare one group's mix of categories with a hypothetical mix | [5 · Chi-square goodness of fit](catalog/05-one-group-vs-hypothetical.qmd#chi-square-gof) |
+| Chi-square test (2 × 2) | Compare a yes/no outcome between two unpaired groups, in large samples | [6 · Fisher's exact test and chi-square](catalog/06-two-unpaired-groups.qmd#fisher-chi-square) |
+| Chi-square test (3 or more groups) | Compare a categorical outcome across three or more unmatched groups | [8 · Chi-square test](catalog/08-three-plus-unmatched.qmd#chi-square) |
+| Cochran's Q test | Compare a yes/no outcome across three or more visits or matched conditions | [9 · Cochran's Q](catalog/09-three-plus-matched.qmd#cochran-q) |
+| Cohen's kappa | Measure agreement on categories between two raters | [17 · Kappa](beyond/17-agreement.qmd#kappa) |
+| Conditional proportional hazards regression | Same as stratified Cox regression | [7](catalog/07-two-paired-groups.qmd#stratified-cox), [9](catalog/09-three-plus-matched.qmd#stratified-cox), [14 · Stratified Cox](survival/14-cox-regression.qmd#stratified-cox) |
+| Conover's test | Compare pairs of visits after a Friedman test | [15 · After Friedman](beyond/15-post-hoc.qmd#after-friedman) |
+| Contingency coefficients (phi, Cramér's V) | Measure the strength of association between two categorical variables | [10 · Contingency coefficients](catalog/10-association.qmd#contingency-coefficients) |
+| Cox proportional hazards regression | Estimate hazard ratios for time to an event, adjusted for several factors | [14 · Cox regression](survival/14-cox-regression.qmd#hazard-ratio); short examples on pages [8](catalog/08-three-plus-unmatched.qmd#cox), [11](catalog/11-predict-from-one.qmd#cox) and [12](catalog/12-predict-from-several.qmd#cox) |
+| Cramér's V | See contingency coefficients | [10 · Contingency coefficients](catalog/10-association.qmd#contingency-coefficients) |
+| Cumulative incidence | Estimate the proportion with an event when death can come first (competing risks) | [13 · Competing risks](survival/13-kaplan-meier.qmd#competing-risks) |
+| Dunn's test | Compare pairs of groups after a Kruskal-Wallis test | [15 · After Kruskal-Wallis](beyond/15-post-hoc.qmd#after-kruskal-wallis) |
+| Estimated marginal means | Report a model's mean at each visit or in each group, with its CI | [16 · Estimated marginal means](beyond/16-mixed-models.qmd#estimated-marginal-means) |
+| Fine-Gray regression | Model the cumulative incidence with several factors (R only) | [14 · Fine-Gray](survival/14-cox-regression.qmd#fine-gray) |
+| Fisher's exact test | Compare a yes/no outcome between two unpaired groups | [6 · Fisher's exact test and chi-square](catalog/06-two-unpaired-groups.qmd#fisher-chi-square) |
+| Friedman test | Compare a score or skewed measurement across three or more visits or matched conditions | [9 · Friedman test](catalog/09-three-plus-matched.qmd#friedman) |
+| Games-Howell test | Compare pairs of groups after ANOVA when the spreads differ | [15 · After ANOVA](beyond/15-post-hoc.qmd#after-anova) |
+| Gray's test | Compare cumulative incidence curves between groups (R only) | [13 · Competing risks](survival/13-kaplan-meier.qmd#competing-risks) |
+| Hazard ratio | What a Cox model estimates, and why it isn't a risk ratio | [14 · The hazard ratio](survival/14-cox-regression.qmd#hazard-ratio) |
+| Holm adjustment | Adjust p-values for several comparisons (this site's default) | [15 · Adjusting p-values](beyond/15-post-hoc.qmd#adjusting-p-values) |
+| Intraclass correlation coefficient (ICC) | Measure the reliability of a measurement between raters or sessions | [17 · The ICC](beyond/17-agreement.qmd#icc) |
+| Kaplan-Meier survival curve | Estimate survivorship over time when follow-up ends at different times | [4 · Kaplan-Meier](catalog/04-describe-one-group.qmd#kaplan-meier), [13 · The Kaplan-Meier curve](survival/13-kaplan-meier.qmd#kaplan-meier) |
+| Kruskal-Wallis test | Compare a score or skewed measurement across three or more unmatched groups | [8 · Kruskal-Wallis test](catalog/08-three-plus-unmatched.qmd#kruskal-wallis) |
+| Linear mixed model | Analyze scores measured at several visits, including patients who missed some | [16 · Mixed models](beyond/16-mixed-models.qmd#random-intercept) |
+| LOESS | See nonparametric regression | [11 · Nonparametric regression](catalog/11-predict-from-one.qmd#nonparametric-regression) |
+| Log-rank test | Compare survival curves between groups | [6 · Log-rank test](catalog/06-two-unpaired-groups.qmd#log-rank), [13 · The log-rank test](survival/13-kaplan-meier.qmd#log-rank) |
+| Mann-Whitney test | Compare a score or skewed measurement between two unpaired groups | [6 · Mann-Whitney test](catalog/06-two-unpaired-groups.qmd#mann-whitney) |
+| Mantel-Cox test | Same as the log-rank test | [6 · Log-rank test](catalog/06-two-unpaired-groups.qmd#log-rank) |
+| Mantel-Haenszel test (survival) | Same as the log-rank test | [6 · Log-rank test](catalog/06-two-unpaired-groups.qmd#log-rank) |
+| McNemar's test | Compare a yes/no outcome between two paired measurements | [7 · McNemar's test](catalog/07-two-paired-groups.qmd#mcnemar) |
+| Mean and standard deviation | Describe a roughly symmetric measurement | [4 · Mean and SD](catalog/04-describe-one-group.qmd#mean-sd) |
+| Median and interquartile range | Describe a skewed measurement or a score | [4 · Median and IQR](catalog/04-describe-one-group.qmd#median-iqr) |
+| Median follow-up (reverse Kaplan-Meier) | Say how long patients were followed | [13 · Follow-up](survival/13-kaplan-meier.qmd#follow-up) |
+| Mixed model | See linear mixed model | [16 · Mixed models](beyond/16-mixed-models.qmd#random-intercept) |
+| Multiple linear regression | Predict a measurement from several variables | [12 · Multiple linear regression](catalog/12-predict-from-several.qmd#multiple-linear-regression) |
+| Multiple logistic regression | Predict a yes/no outcome from several variables | [12 · Multiple logistic regression](catalog/12-predict-from-several.qmd#multiple-logistic-regression) |
+| Nonlinear regression | Fit a curve, such as a recovery curve, to a measurement | [11 · Nonlinear regression](catalog/11-predict-from-one.qmd#nonlinear-regression), [12 · Multiple nonlinear regression](catalog/12-predict-from-several.qmd#multiple-nonlinear-regression) |
+| Nonparametric regression (LOESS, Theil-Sen) | Describe a trend without assuming a straight line or normal residuals | [11 · Nonparametric regression](catalog/11-predict-from-one.qmd#nonparametric-regression) |
+| One-sample t test | Compare one group's mean with a hypothetical value | [5 · One-sample t test](catalog/05-one-group-vs-hypothetical.qmd#one-sample-t) |
+| One-way ANOVA | Compare a measurement across three or more unmatched groups | [8 · One-way ANOVA](catalog/08-three-plus-unmatched.qmd#one-way-anova) |
+| Paired t test | Compare a measurement between two paired measurements, such as before and after surgery | [7 · Paired t test](catalog/07-two-paired-groups.qmd#paired-t), [15 · After repeated-measures ANOVA](beyond/15-post-hoc.qmd#after-repeated-measures-anova) |
+| Pairwise Fisher's exact tests | Compare pairs of groups after a chi-square test | [15 · After chi-square](beyond/15-post-hoc.qmd#after-chi-square) |
+| Pairwise log-rank tests | Compare pairs of survival curves after a log-rank test | [15 · After a log-rank test](beyond/15-post-hoc.qmd#after-log-rank) |
+| Pairwise McNemar tests | Compare pairs of visits after Cochran's Q | [15 · After Cochran's Q](beyond/15-post-hoc.qmd#after-cochran-q) |
+| Pearson correlation | Measure how closely two measurements follow a straight line | [10 · Pearson correlation](catalog/10-association.qmd#pearson) |
+| Phi coefficient | See contingency coefficients | [10 · Contingency coefficients](catalog/10-association.qmd#contingency-coefficients) |
+| Proportion with a 95% CI | Describe a yes/no outcome in one group | [4 · Proportion](catalog/04-describe-one-group.qmd#proportion) |
+| Proportional hazards check | Check whether a Cox model's hazard ratio stays the same over time | [14 · Proportional hazards](survival/14-cox-regression.qmd#proportional-hazards) |
+| Repeated-measures ANOVA | Compare a measurement across three or more visits or matched conditions | [9 · Repeated-measures ANOVA](catalog/09-three-plus-matched.qmd#repeated-measures-anova) |
+| Shapiro-Wilk test | Test whether data look normal, and see why not to rely on it | [3 · Shapiro-Wilk](foundations/03-distributions.qmd#shapiro) |
+| Simple linear regression | Predict a measurement from one variable | [11 · Simple linear regression](catalog/11-predict-from-one.qmd#linear-regression) |
+| Simple logistic regression | Predict a yes/no outcome from one variable | [11 · Simple logistic regression](catalog/11-predict-from-one.qmd#logistic-regression) |
+| Spearman correlation | Measure how closely two scores or skewed measurements rise and fall together | [10 · Spearman correlation](catalog/10-association.qmd#spearman) |
+| Standardized mean difference (SMD) | Compare groups' baseline characteristics in Table 1 | [2 · SMDs](foundations/02-demographics.qmd#smd) |
+| Stratified Cox regression | Compare survival within matched sets, or with patients who had both sides done | [7](catalog/07-two-paired-groups.qmd#stratified-cox), [9](catalog/09-three-plus-matched.qmd#stratified-cox), [14 · Stratified Cox](survival/14-cox-regression.qmd#stratified-cox) |
+| Student's t test | Like the unpaired t test, but assumes equal spreads; use Welch's instead | [6 · Unpaired t test](catalog/06-two-unpaired-groups.qmd#unpaired-t) |
+| Theil-Sen slope | See nonparametric regression | [11 · Nonparametric regression](catalog/11-predict-from-one.qmd#nonparametric-regression) |
+| Tukey's HSD | Compare every pair of groups after ANOVA | [15 · After ANOVA](beyond/15-post-hoc.qmd#after-anova) |
+| Unpaired t test (Welch's) | Compare a measurement between two unpaired groups | [6 · Unpaired t test](catalog/06-two-unpaired-groups.qmd#unpaired-t) |
+| Weighted kappa | Measure agreement on ordered categories | [17 · Kappa](beyond/17-agreement.qmd#kappa) |
+| Welch's t test | Same as the unpaired t test on this site | [6 · Unpaired t test](catalog/06-two-unpaired-groups.qmd#unpaired-t) |
+| Wilcoxon rank-sum test | Same as the Mann-Whitney test | [6 · Mann-Whitney test](catalog/06-two-unpaired-groups.qmd#mann-whitney) |
+| Wilcoxon signed-rank test | Compare a score with a hypothetical value, or between two paired measurements | [5 · One group](catalog/05-one-group-vs-hypothetical.qmd#wilcoxon-signed-rank), [7 · Paired](catalog/07-two-paired-groups.qmd#wilcoxon-signed-rank), [15 · After Friedman](beyond/15-post-hoc.qmd#after-friedman) |

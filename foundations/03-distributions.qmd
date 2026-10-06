@@ -16,7 +16,7 @@ source("R/check_agree.R")
 cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
 ```
 
-The [decision table](../index.qmd) asks two questions: what's your **goal** (the row), and what **type of data** do you have (the column). This page is about the second question, especially the hardest part of it: is a measurement "Gaussian" (normally distributed) enough for the left-hand column?
+The [decision table](../choose-a-test.qmd) asks two questions: what's your **goal** (the row), and what **type of data** do you have (the column). This page is about the second question, especially the hardest part of it: is a measurement "Gaussian" (normally distributed) enough for the left-hand column?
 
 ## Why the shape of your data matters {#why}
 
@@ -449,7 +449,7 @@ flowchart TD
   H -->|Time until an event| L[Survival column]
 ```
 
-Then find your row and column in the [decision table](../index.qmd). Some worked examples from TJS-style questions:
+Then find your row and column in the [decision table](../choose-a-test.qmd). Some worked examples from TJS-style questions:
 
 | Question | Row | Column | Test |
 |------|------|------|------|

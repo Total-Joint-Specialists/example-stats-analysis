@@ -1,4 +1,4 @@
-/* Home-page decision table */
+/* The test chooser's decision table (choose-a-test.qmd) */
 .decision-table table {
   font-size: 0.9rem;
 }
@@ -10,4 +10,16 @@
 .decision-table td:first-child,
 .decision-table th:first-child {
   min-width: 11rem;
+}
+
+/* Home page: three ways into the site */
+.welcome-card {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+}
+
+.welcome-card h3 {
+  margin-top: 0;
+  font-size: 1.35rem;
 }

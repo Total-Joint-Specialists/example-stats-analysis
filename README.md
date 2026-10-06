@@ -32,7 +32,7 @@ Step-by-step instructions for beginners: [Install & set up](https://total-joint-
 
 | Path | What it holds |
 |------|------|
-| `index.qmd`, `getting-started/`, `foundations/`, `catalog/`, `survival/`, `beyond/`, `report/` | The site's pages |
+| `index.qmd` (welcome), `choose-a-test.qmd` (the decision table), `tests-a-z.qmd`, `getting-started/`, `foundations/`, `catalog/`, `survival/`, `beyond/`, `report/` | The site's pages |
 | `data/` | Synthetic datasets and codebooks |
 | `templates/` | A data-collection template to copy for real projects |
 | `R/` | Site helpers (`check_agree()`) |

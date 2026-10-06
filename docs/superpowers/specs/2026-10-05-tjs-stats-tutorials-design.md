@@ -43,7 +43,9 @@ every code block is commented for someone who has never programmed.
 ## 3. Site map
 
 ```
-Home (index.qmd) — the decision table, every cell a deep link
+Home (index.qmd) — welcome page: three ways in (Getting started, the tutorials, choosing a test)
+Choose a test (choose-a-test.qmd) — "Which statistical test should I use?": the decision table, every cell a deep link
+Tests A–Z (tests-a-z.qmd) — every test and method on the site, with its other names, each a deep link
 
 Getting started
   0.1  Install & set up                getting-started/setup.qmd
@@ -82,7 +84,13 @@ Part 5 — Putting it together
 
 Pages not yet built appear in the navigation as stubs marked **"Coming soon"**.
 
-### 3.1 Home page: the decision table
+### 3.1 Choose a test: the decision table
+
+Changed 2026-10-06 at the maintainer's request: the decision table moved from the home page to its own page,
+titled "Which statistical test should I use?" ("Choose a test" in the menus). The home page became a welcome
+page with three ways in (Getting started; Tutorials & exercises, linking Parts 1–5; Which test should I use?, linking
+this page and Tests A–Z) and keeps the synthetic-data notice (§5.1). Tests A–Z lists every test and method, with
+aliases ("Wilcoxon rank-sum → Mann-Whitney") as their own rows; a site test fails if a test section is missing.
 
 The supplied table is rebuilt as an HTML table. Each non-empty cell links to its
 section anchor on the row page. Changes from the supplied image:

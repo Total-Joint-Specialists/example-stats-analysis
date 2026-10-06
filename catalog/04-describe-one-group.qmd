@@ -17,7 +17,7 @@ source("R/check_agree.R")
 cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
 ```
 
-Before you compare anything, describe it. This page covers the first row of the [decision table](../index.qmd): one number (or one curve) that sums up a group of patients, with a 95% confidence interval that says how precisely you know it. Which summary you use depends on the column, the type of data you have. [Page 3](../foundations/03-distributions.qmd) explains how to choose.
+Before you compare anything, describe it. This page covers the first row of the [decision table](../choose-a-test.qmd): one number (or one curve) that sums up a group of patients, with a 95% confidence interval that says how precisely you know it. Which summary you use depends on the column, the type of data you have. [Page 3](../foundations/03-distributions.qmd) explains how to choose.
 
 ::: {.callout-note}
 ## 💡 How every section on this page works

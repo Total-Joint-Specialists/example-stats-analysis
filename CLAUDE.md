@@ -44,7 +44,7 @@ Public Quarto website and repository. It teaches TJS research assistants (beginn
 
 ## Layout
 
-- Pages: `index.qmd`, `getting-started/`, `foundations/`, `catalog/` (pages 4–12, one per table row), `survival/`, `beyond/`, `report/`
+- Pages: `index.qmd` (the welcome page), `choose-a-test.qmd` ("Which statistical test should I use?": the decision table), `tests-a-z.qmd` (every test and method, with aliases; `tests/site/test_home.py` fails if a test section is missing from it), `getting-started/`, `foundations/`, `catalog/` (pages 4–12, one per table row), `survival/`, `beyond/`, `report/`
 - `R/check_agree.R`: the agreement guard
 - `tests/testthat/` (R), `tests/python/` (Python, data and repo), `tests/site/` (built site and sources)
 - `data/`, `data-raw/`, `templates/`: synthetic data and its generator (Phase 1)

@@ -12,6 +12,8 @@ SITE = ROOT / "_site"
 
 PAGES = [
     "index.html",
+    "choose-a-test.html",
+    "tests-a-z.html",
     "getting-started/setup.html",
     "getting-started/using-this-site.html",
     "getting-started/real-data.html",

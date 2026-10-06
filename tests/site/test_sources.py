@@ -12,7 +12,7 @@ KNITR = re.compile(r"^engine:\s*knitr\s*$", re.MULTILINE)
 
 
 def qmd_files():
-    files = [ROOT / "index.qmd"]
+    files = sorted(ROOT.glob("*.qmd"))   # the home page, the test chooser and the A–Z index
     for d in CONTENT_DIRS:
         files += sorted((ROOT / d).glob("*.qmd"))
     return files

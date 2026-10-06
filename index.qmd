@@ -1,49 +1,48 @@
 ---
 title: "TJS Statistics Tutorials"
-subtitle: "Pick your goal and your type of data. Click the test."
+subtitle: "From raw data to a Results sentence, in R and Python"
+toc: false
+anchor-sections: false   # the hover anchors would wrap the card titles
 ---
+
+These tutorials teach Total Joint Specialists research assistants to prepare data, choose the right statistical test, run it, and report it the way JOA and JBJS reviewers expect. You don't need any experience with statistics or coding: every idea is explained from the start, and every line of code is commented. Each analysis is shown in R and in Python, side by side, so you can learn either language.
 
 ::: {.callout-important}
 ## SYNTHETIC DATA
 Every dataset on this site is invented. None of it describes real patients, and real patient data never goes in this repository. Before you touch real data, read [Working with real TJS data](getting-started/real-data.qmd).
 :::
 
-New here? Start with [Install & set up](getting-started/setup.qmd), then [How to use this site](getting-started/using-this-site.qmd).
+::: {.grid .welcome}
 
-## Which test do I need?
+::: {.g-col-12 .g-col-lg-4 .welcome-card}
+### Getting started {#getting-started}
 
-1. Find your **goal** in the left column (for example, *compare two unpaired groups*).
-2. Find your **type of data** along the top. Not sure whether your measurements are Gaussian (normally distributed)? Read [Distributions & choosing a test](foundations/03-distributions.qmd) first.
-3. Click the test.
+First time here? Set up R, Python and the practice data so you can follow along on your own computer, then learn how the pages work.
 
-::: {.decision-table .table-responsive}
-
-| Goal | Measurement (Gaussian population) | Rank, score, or measurement (non-Gaussian population) | Binomial (two possible outcomes) | Survival time |
-|------|------|------|------|------|
-| **Describe one group** | [Mean, SD](catalog/04-describe-one-group.qmd#mean-sd) | [Median, interquartile range](catalog/04-describe-one-group.qmd#median-iqr) | [Proportion](catalog/04-describe-one-group.qmd#proportion) | [Kaplan-Meier survival curve](catalog/04-describe-one-group.qmd#kaplan-meier) |
-| **Compare one group to a hypothetical value** | [One-sample t test](catalog/05-one-group-vs-hypothetical.qmd#one-sample-t) | [Wilcoxon signed-rank test](catalog/05-one-group-vs-hypothetical.qmd#wilcoxon-signed-rank) | [Chi-square](catalog/05-one-group-vs-hypothetical.qmd#chi-square-gof) or [binomial test](catalog/05-one-group-vs-hypothetical.qmd#binomial-test) | — |
-| **Compare two unpaired groups** | [Unpaired t test](catalog/06-two-unpaired-groups.qmd#unpaired-t) | [Mann-Whitney test](catalog/06-two-unpaired-groups.qmd#mann-whitney) | [Fisher's exact test (chi-square for large samples)](catalog/06-two-unpaired-groups.qmd#fisher-chi-square) | [Log-rank (Mantel-Haenszel) test](catalog/06-two-unpaired-groups.qmd#log-rank) |
-| **Compare two paired groups** | [Paired t test](catalog/07-two-paired-groups.qmd#paired-t) | [Wilcoxon signed-rank test](catalog/07-two-paired-groups.qmd#wilcoxon-signed-rank) | [McNemar's test](catalog/07-two-paired-groups.qmd#mcnemar) | [Conditional proportional hazards regression](catalog/07-two-paired-groups.qmd#stratified-cox) |
-| **Compare three or more unmatched groups** | [One-way ANOVA](catalog/08-three-plus-unmatched.qmd#one-way-anova) | [Kruskal-Wallis test](catalog/08-three-plus-unmatched.qmd#kruskal-wallis) | [Chi-square test](catalog/08-three-plus-unmatched.qmd#chi-square) | [Cox proportional hazards regression](catalog/08-three-plus-unmatched.qmd#cox) |
-| **Compare three or more matched groups** | [Repeated-measures ANOVA](catalog/09-three-plus-matched.qmd#repeated-measures-anova) | [Friedman test](catalog/09-three-plus-matched.qmd#friedman) | [Cochran's Q](catalog/09-three-plus-matched.qmd#cochran-q) | [Conditional proportional hazards regression](catalog/09-three-plus-matched.qmd#stratified-cox) |
-| **Quantify association between two variables** | [Pearson correlation](catalog/10-association.qmd#pearson) | [Spearman correlation](catalog/10-association.qmd#spearman) | [Contingency coefficients](catalog/10-association.qmd#contingency-coefficients) | — |
-| **Predict a value from another measured variable** | [Simple linear regression](catalog/11-predict-from-one.qmd#linear-regression) or [nonlinear regression](catalog/11-predict-from-one.qmd#nonlinear-regression) | [Nonparametric regression](catalog/11-predict-from-one.qmd#nonparametric-regression) | [Simple logistic regression](catalog/11-predict-from-one.qmd#logistic-regression) | [Cox proportional hazards regression](catalog/11-predict-from-one.qmd#cox) |
-| **Predict a value from several measured or binomial variables** | [Multiple linear regression](catalog/12-predict-from-several.qmd#multiple-linear-regression) or [multiple nonlinear regression](catalog/12-predict-from-several.qmd#multiple-nonlinear-regression) | — | [Multiple logistic regression](catalog/12-predict-from-several.qmd#multiple-logistic-regression) | [Cox proportional hazards regression](catalog/12-predict-from-several.qmd#cox) |
-
+- [Install & set up](getting-started/setup.qmd)
+- [How to use this site](getting-started/using-this-site.qmd)
+- [Working with real TJS data](getting-started/real-data.qmd)
 :::
 
-*Adapted from Harvey Motulsky,* Intuitive Biostatistics *(Oxford University Press), and the GraphPad Statistics Guide.*
+::: {.g-col-12 .g-col-lg-4 .welcome-card}
+### Tutorials & exercises {#tutorials}
 
-## Beyond the table
+Work through the parts in order, or go straight to the one you need. Every page ends with exercises and their solutions.
 
-| If you need to… | Read |
-|------|------|
-| Estimate survivorship, draw Kaplan-Meier curves with numbers at risk, or handle death as a competing risk | [13 · Kaplan-Meier & the log-rank test](survival/13-kaplan-meier.qmd) |
-| Adjust a time-to-event comparison for several factors, or check proportional hazards | [14 · Cox proportional hazards regression](survival/14-cox-regression.qmd) |
-| Find out *which* groups differ after ANOVA, Kruskal-Wallis, or chi-square | [15 · Post-hoc tests & multiple comparisons](beyond/15-post-hoc.qmd) |
-| Analyze PROMs collected at several visits, including patients who missed some | [16 · Mixed models for repeated PROMs](beyond/16-mixed-models.qmd) |
-| Measure how well two raters, or one rater on two days, agree on a measurement | [17 · Agreement & reliability](beyond/17-agreement.qmd) |
+- [Part 1 · Foundations](foundations/01-tidy-data.qmd): tidy data, Table 1, choosing a test
+- [Part 2 · Test catalog](catalog/04-describe-one-group.qmd): the common tests, one page per goal
+- [Part 3 · Survival analysis](survival/13-kaplan-meier.qmd): Kaplan-Meier, competing risks, Cox regression
+- [Part 4 · Beyond the table](beyond/15-post-hoc.qmd): post-hoc tests, mixed models, agreement
+- [Part 5 · Putting it together](report/18-example-report.qmd): a complete study, from raw data to manuscript
+:::
 
-## New to statistics?
+::: {.g-col-12 .g-col-lg-4 .welcome-card}
+### Which test should I use? {#which-test}
 
-Work through the site in order: **Getting started**, then **Part 1 · Foundations**, then the catalog pages your project needs. Each page ends with short exercises and hidden solutions.
+Pick your goal and your type of data, and the table sends you to the right test, with a worked example in both languages.
+
+- [Choose a test](choose-a-test.qmd)
+- Know the test's name? [Tests A–Z](tests-a-z.qmd)
+:::
+
+:::

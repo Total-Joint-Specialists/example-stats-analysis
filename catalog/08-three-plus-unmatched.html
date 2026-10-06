@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="One-way ANOVA, Kruskal-Wallis test, chi-square test, Cox regression.">
+<meta name="description" content="One-way ANOVA, Kruskal-Wallis test, chi-square test and Cox regression: three or more groups of different patients.">
 
-<title>8 · Compare three or more unmatched groups (coming soon) – TJS Statistics Tutorials</title>
+<title>8 · Compare three or more unmatched groups – TJS Statistics Tutorials</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -288,7 +323,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/08-three-plus-unmatched.html">8 · Compare three or more unmatched groups (coming soon)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/08-three-plus-unmatched.html">8 · Compare three or more unmatched groups</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -400,13 +435,13 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/08-three-plus-unmatched.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">8 · Compare three or more unmatched groups (coming soon)</span></a>
+ <span class="menu-text">8 · Compare three or more unmatched groups</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/09-three-plus-matched.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">9 · Compare three or more matched groups (coming soon)</span></a>
+ <span class="menu-text">9 · Compare three or more matched groups</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -507,26 +542,28 @@ ul.task-list li input[type="checkbox"] {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
-  <ul>
+  <ul class="collapse">
   <li><a href="#one-way-anova" id="toc-one-way-anova" class="nav-link active" data-scroll-target="#one-way-anova">One-way ANOVA</a></li>
   <li><a href="#kruskal-wallis" id="toc-kruskal-wallis" class="nav-link" data-scroll-target="#kruskal-wallis">Kruskal-Wallis test</a></li>
   <li><a href="#chi-square" id="toc-chi-square" class="nav-link" data-scroll-target="#chi-square">Chi-square test</a></li>
   <li><a href="#cox" id="toc-cox" class="nav-link" data-scroll-target="#cox">Cox regression</a></li>
+  <li><a href="#which-groups-differ" id="toc-which-groups-differ" class="nav-link" data-scroll-target="#which-groups-differ">Which groups differ?</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/08-three-plus-unmatched.html">8 · Compare three or more unmatched groups (coming soon)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/08-three-plus-unmatched.html">8 · Compare three or more unmatched groups</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">8 · Compare three or more unmatched groups (coming soon)</h1>
+<h1 class="title">8 · Compare three or more unmatched groups</h1>
 </div>
 
 <div>
   <div class="description">
-    One-way ANOVA, Kruskal-Wallis test, chi-square test, Cox regression.
+    One-way ANOVA, Kruskal-Wallis test, chi-square test and Cox regression: three or more groups of different patients.
   </div>
 </div>
 
@@ -543,30 +580,1057 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="coming-soon callout callout-style-default callout-note callout-titled">
+<!-- data-checksum: 9e548efb7ad4232927ffa99aa2cdeca7 -->
+<p>Three or more groups of <strong>different</strong> patients: the four ASA classes, the three surgeons, implants A, B and C. You could compare every pair of groups with the tests on <a href="../catalog/06-two-unpaired-groups.html">page 6</a>, but each extra test is another chance of a false positive. The tests on this page ask one question first: <strong>is there any difference among the groups at all?</strong> If the answer is yes, <a href="#which-groups-differ">Which groups differ?</a> explains the next step.</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming soon
+<span class="screen-reader-only">Note</span>💡 How every section on this page works
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.</p>
+<p>Each section answers one question about the practice cohort. Its first code block loads the packages and the data, so you can jump straight to the section you need. Run that section’s blocks in order, top to bottom.</p>
+<p>To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them (<a href="../foundations/03-distributions.html#paired">page 3</a>) and say what you did.</p>
 </div>
 </div>
 <section id="one-way-anova" class="level2">
 <h2 class="anchored" data-anchor-id="one-way-anova">One-way ANOVA</h2>
+<p><strong>The question:</strong> Does age at surgery differ across ASA classes 1 to 4?</p>
+<section id="when-to-use-it" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it">When to use it</h3>
+<ul>
+<li>The outcome is a <strong>measurement</strong>, compared across <strong>three or more independent groups</strong>.</li>
+<li>Within <strong>each group</strong> it’s roughly normal, or each group is reasonably large and not badly skewed (<a href="../foundations/03-distributions.html#within-groups">page 3</a>).</li>
+<li>The groups have <strong>similar spreads</strong>: as a rule of thumb, the largest SD is no more than about twice the smallest. If not, use <strong>Welch’s ANOVA</strong> (see the R vs Python box), especially when the group sizes are unequal.</li>
+<li>If the outcome is skewed, bounded or ordinal → the <a href="#kruskal-wallis">Kruskal-Wallis test</a>.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">asa =</span> <span class="fu">factor</span>(asa))   <span class="co"># ASA class is a group, not a number</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cohort, <span class="fu">aes</span>(asa, age)) <span class="sc">+</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"ASA class"</span>, <span class="at">y =</span> <span class="st">"Age at surgery, years"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08-three-plus-unmatched_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cohort <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(asa) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean =</span> <span class="fu">mean</span>(age), <span class="at">sd =</span> <span class="fu">sd</span>(age))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 4
+  asa       n  mean    sd
+  &lt;fct&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 1        36  59.8  8.66
+2 2       300  63.4  9.08
+3 3       246  68.4  8.77
+4 4        18  73.7  9.31</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pingouin <span class="im">as</span> pg</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>ages <span class="op">=</span> [group[<span class="st">"age"</span>] <span class="cf">for</span> asa, group <span class="kw">in</span> cohort.groupby(<span class="st">"asa"</span>)]   <span class="co"># one list of ages per ASA class</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">3</span>))</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>parts <span class="op">=</span> ax.boxplot(ages, tick_labels<span class="op">=</span>[<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>])   <span class="co"># naming the result keeps it out of the output</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"ASA class"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Age at surgery, years"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08-three-plus-unmatched_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cohort.groupby(<span class="st">"asa"</span>)[<span class="st">"age"</span>].agg([<span class="st">"count"</span>, <span class="st">"mean"</span>, <span class="st">"std"</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     count       mean       std
+asa                            
+1       36  59.750000  8.663140
+2      300  63.396667  9.082637
+3      246  68.357724  8.767873
+4       18  73.666667  9.305280</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Age rises steadily with ASA class. The SDs are all close to 9 years, so the spreads are similar. The groups are very different in size, though: 300 procedures in ASA 2, only 18 in ASA 4.</p>
+</section>
+<section id="run-it" class="level3">
+<h3 class="anchored" data-anchor-id="run-it">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>age_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(age <span class="sc">~</span> asa, <span class="at">data =</span> cohort)   <span class="co"># aov() fits the classic one-way ANOVA</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(age_anova)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+asa           3   5727  1908.9    23.9 1.28e-14 ***
+Residuals   596  47599    79.9                     
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>age_anova <span class="op">=</span> pg.anova(data<span class="op">=</span>cohort, dv<span class="op">=</span><span class="st">"age"</span>, between<span class="op">=</span><span class="st">"asa"</span>, detailed<span class="op">=</span><span class="va">True</span>)   <span class="co"># classic one-way ANOVA</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(age_anova)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Source            SS   DF           MS          F         p_unc       np2
+0     asa   5726.693008    3  1908.897669  23.901792  1.284107e-14  0.107391
+1  Within  47599.066992  596    79.864206        NaN           NaN       NaN</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output">Read the output</h3>
+<ul>
+<li><strong>asa row:</strong> the variation <strong>between</strong> the group means. <strong>Df = 3</strong> (four groups minus one), <strong>Sum Sq = 5727</strong>.</li>
+<li><strong>Residuals</strong> (R) or <strong>Within</strong> (Python): the variation of patients <strong>within</strong> their groups. <strong>Df = 596</strong> (600 procedures minus four groups).</li>
+<li><strong>F = 23.9:</strong> the between-group variation divided by the within-group variation, each per degree of freedom. If the groups had the same mean, F would be close to 1.</li>
+<li><strong>p &lt; 0.001</strong> (R prints <code>1.28e-14</code>): ages this different across groups would be very unlikely if every ASA class had the same mean age.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci">Effect size and 95% CI</h3>
+<p><strong>Omega squared (ω²)</strong> is the share of the variation in age that ASA class accounts for, corrected for the small upward bias of the simpler eta squared (η²). As a rough guide, 0.01 is small, 0.06 medium and 0.14 large.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">omega_squared</span>(age_anova, <span class="at">partial =</span> <span class="cn">FALSE</span>)   <span class="co"># plain (not partial) omega squared</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Effect Size for ANOVA (Type I)
+
+Parameter | Omega2 |       95% CI
+---------------------------------
+asa       |   0.10 | [0.06, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># omega squared from the ANOVA table: (SS between - df between × MS within) / (SS total + MS within)</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ss_between, ss_within <span class="op">=</span> age_anova.loc[<span class="dv">0</span>, <span class="st">"SS"</span>], age_anova.loc[<span class="dv">1</span>, <span class="st">"SS"</span>]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>df_between, ms_within <span class="op">=</span> age_anova.loc[<span class="dv">0</span>, <span class="st">"DF"</span>], age_anova.loc[<span class="dv">1</span>, <span class="st">"MS"</span>]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>omega2 <span class="op">=</span> (ss_between <span class="op">-</span> df_between <span class="op">*</span> ms_within) <span class="op">/</span> (ss_between <span class="op">+</span> ss_within <span class="op">+</span> ms_within)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(omega2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.10274386772151635</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>ω² = 0.10: ASA class accounts for about a tenth of the variation in age, a medium effect. R also prints a one-sided 95% CI (0.06 to 1.00): ω² can’t be negative, so only its lower bound is informative. scipy and pingouin don’t compute this CI. The ANOVA doesn’t say <em>which</em> classes differ: see <a href="#which-groups-differ">Which groups differ?</a>.</p>
+</section>
+<section id="how-to-report-it" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Age was compared across ASA classes with one-way analysis of variance (ANOVA), with omega squared (ω²) as the effect size.</p>
+<p><strong>Results:</strong> Mean age rose with ASA class, from 59.8 years (SD 8.7) in ASA 1 to 73.7 years (SD 9.3) in ASA 4 (one-way ANOVA, F(3, 596) = 23.9, p &lt; 0.001; ω² = 0.10, one-sided 95% CI 0.06 to 1.00).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: ANOVA doesn’t tell you which groups differ
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A significant ANOVA means at least one group mean differs from another, not that every group differs from every other. Don’t follow it with a string of unadjusted t tests: that brings back the false-positive problem the ANOVA was meant to avoid. Use a post-hoc test (<a href="../beyond/15-post-hoc.html">page 15</a>).</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: classic or Welch’s ANOVA
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Classic ANOVA</strong> assumes the groups have the same spread. R’s <code>aov()</code>, scipy’s <code>f_oneway()</code> and pingouin’s <code>anova()</code> all run it by default.</li>
+<li><strong>Welch’s ANOVA</strong> doesn’t assume equal spreads. R’s <code>oneway.test()</code> runs <strong>Welch’s</strong> version by default (add <code>var.equal = TRUE</code> for the classic one), the opposite of <code>aov()</code>. In Python use <code>pg.welch_anova()</code> or <code>stats.f_oneway(..., equal_var=False)</code>.</li>
+<li>Here the SDs are similar, and Welch’s ANOVA agrees: F = 23.5, p &lt; 0.001.</li>
+</ul>
+</div>
+</div>
+</section>
 </section>
 <section id="kruskal-wallis" class="level2">
 <h2 class="anchored" data-anchor-id="kruskal-wallis">Kruskal-Wallis test</h2>
+<p><strong>The question:</strong> Does satisfaction 1 year after surgery differ between surgeons S1, S2 and S3?</p>
+<section id="when-to-use-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-1">When to use it</h3>
+<ul>
+<li>The outcome is <strong>ordinal</strong> (satisfaction from 1 to 5), <strong>skewed</strong>, or has a <strong>ceiling or floor</strong>, compared across <strong>three or more independent groups</strong>.</li>
+<li>Like the <a href="../catalog/06-two-unpaired-groups.html#mann-whitney">Mann-Whitney test</a>, it works on ranks: it asks whether values in some groups tend to be larger than in others.</li>
+<li>With two groups it gives essentially the same result as the Mann-Whitney test.</li>
+<li>If the outcome is a roughly normal measurement → <a href="#one-way-anova">one-way ANOVA</a>.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-1" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-1">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>satisfied <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(satisfaction_1yr))   <span class="co"># patients who answered</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(satisfied, surgeon, satisfaction_1yr) <span class="sc">|&gt;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> satisfaction_1yr, <span class="at">values_from =</span> n)   <span class="co"># one row per surgeon</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 6
+  surgeon   `1`   `2`   `3`   `4`   `5`
+  &lt;chr&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+1 S1          4     8    21    68    91
+2 S2          6    13    18    50    90
+3 S3          5     2    13    44    69</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>satisfied <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(surgeon) <span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">median =</span> <span class="fu">median</span>(satisfaction_1yr),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">q1 =</span> <span class="fu">quantile</span>(satisfaction_1yr, <span class="fl">0.25</span>), <span class="at">q3 =</span> <span class="fu">quantile</span>(satisfaction_1yr, <span class="fl">0.75</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+  surgeon     n median    q1    q3
+  &lt;chr&gt;   &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 S1        192      4     4     5
+2 S2        177      5     4     5
+3 S3        133      5     4     5</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>satisfied <span class="op">=</span> cohort.dropna(subset<span class="op">=</span>[<span class="st">"satisfaction_1yr"</span>])   <span class="co"># patients who answered</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.crosstab(satisfied[<span class="st">"surgeon"</span>], satisfied[<span class="st">"satisfaction_1yr"</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>satisfaction_1yr  1.0  2.0  3.0  4.0  5.0
+surgeon                                  
+S1                  4    8   21   68   91
+S2                  6   13   18   50   90
+S3                  5    2   13   44   69</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(satisfied.groupby(<span class="st">"surgeon"</span>)[<span class="st">"satisfaction_1yr"</span>].describe()[[<span class="st">"count"</span>, <span class="st">"25%"</span>, <span class="st">"50%"</span>, <span class="st">"75%"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         count  25%  50%  75%
+surgeon                      
+S1       192.0  4.0  4.0  5.0
+S2       177.0  4.0  5.0  5.0
+S3       133.0  4.0  5.0  5.0</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Satisfaction was reported for 502 of the 600 procedures. Most were satisfied (4) or very satisfied (5) with every surgeon, and the three distributions look much alike.</p>
+</section>
+<section id="run-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-1">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>satisfaction_test <span class="ot">&lt;-</span> <span class="fu">kruskal.test</span>(satisfaction_1yr <span class="sc">~</span> surgeon, <span class="at">data =</span> satisfied)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>satisfaction_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Kruskal-Wallis rank sum test
+
+data:  satisfaction_1yr by surgeon
+Kruskal-Wallis chi-squared = 0.67685, df = 2, p-value = 0.7129</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> [group[<span class="st">"satisfaction_1yr"</span>] <span class="cf">for</span> surgeon, group <span class="kw">in</span> satisfied.groupby(<span class="st">"surgeon"</span>)]   <span class="co"># one list per surgeon</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>satisfaction_test <span class="op">=</span> stats.kruskal(<span class="op">*</span>scores)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(satisfaction_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>KruskalResult(statistic=np.float64(0.6768533761048873), pvalue=np.float64(0.7128910409037716))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-1" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-1">Read the output</h3>
+<ul>
+<li><strong>Kruskal-Wallis chi-squared = 0.68</strong> (R) or <strong>statistic</strong> (Python): the H statistic. It measures how far apart the groups’ average ranks are. Both programs correct it for the many tied scores.</li>
+<li><strong>df = 2:</strong> three groups minus one.</li>
+<li><strong>p = 0.713:</strong> satisfaction this similar, or less, would be very common if the surgeons’ patients were equally satisfied.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-1" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-1">Effect size and 95% CI</h3>
+<p><strong>Epsilon squared (ε²)</strong> is the rank-based counterpart of ω²: the share of the variation in the ranks that the groups account for, from 0 to 1. It is H divided by (n − 1).</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)   <span class="co"># its CI comes from a bootstrap (random resampling); a seed makes it repeatable</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">rank_epsilon_squared</span>(satisfaction_1yr <span class="sc">~</span> surgeon, <span class="at">data =</span> satisfied)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epsilon2 (rank) |       95% CI
+------------------------------
+1.35e-03        | [0.00, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>epsilon2 <span class="op">=</span> satisfaction_test.statistic <span class="op">/</span> (<span class="bu">len</span>(satisfied) <span class="op">-</span> <span class="dv">1</span>)   <span class="co"># H / (n - 1)</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(epsilon2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.0013510047427243259</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>ε² = 0.001: surgeon accounts for essentially none of the variation in satisfaction. R’s one-sided CI runs from 0.00 to 1.00; it comes from a bootstrap, which is why the code sets a seed. scipy has no function for it.</p>
+</section>
+<section id="how-to-report-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-1">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Satisfaction at 1 year (a 5-point ordinal scale) was compared across surgeons with the Kruskal-Wallis test, with epsilon squared (ε²) as the effect size.</p>
+<p><strong>Results:</strong> Of 600 procedures, 502 had a satisfaction score at 1 year. The median was 4 (IQR 4 to 5) for surgeon S1 and 5 (IQR 4 to 5) for surgeons S2 and S3, with no significant difference between surgeons (Kruskal-Wallis H = 0.68, df = 2, p = 0.713; ε² = 0.001, one-sided 95% CI 0.00 to 1.00).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: missing answers aren’t random
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Satisfaction is missing for 98 procedures. If unhappy patients were less likely to answer, every surgeon looks better than they are, and the comparison can be biased too. Always report how many answered in each group, and consider whether non-response differs between groups.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: ties and the data format
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Both <code>kruskal.test()</code> and <code>stats.kruskal()</code> correct H for ties, so they agree even with a 5-point scale full of tied scores. R takes a formula (<code>outcome ~ group</code>); scipy takes one list of values per group, which is why the Python code builds <code>scores</code> first.</p>
+</div>
+</div>
+</section>
 </section>
 <section id="chi-square" class="level2">
 <h2 class="anchored" data-anchor-id="chi-square">Chi-square test</h2>
+<p><strong>The question:</strong> Do 90-day complication rates differ between surgeons S1, S2 and S3?</p>
+<section id="when-to-use-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-2">When to use it</h3>
+<ul>
+<li>The outcome is <strong>categorical</strong> (here yes/no), compared across <strong>three or more independent groups</strong>: an r × c table.</li>
+<li>Every <strong>expected</strong> count should be at least 5. If not, combine categories that make sense together, or use Fisher’s exact test, which R’s <code>fisher.test()</code> runs exactly on larger tables too. scipy’s <code>stats.fisher_exact()</code> accepts larger tables but estimates their p-value by random resampling, so it changes a little from run to run.</li>
+<li>With two groups and a yes/no outcome → <a href="../catalog/06-two-unpaired-groups.html#fisher-chi-square">Fisher’s exact test</a>.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-2" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-2">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>complication_table <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">surgeon      =</span> cohort<span class="sc">$</span>surgeon,</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">complication =</span> <span class="fu">factor</span>(cohort<span class="sc">$</span>complication_90d, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"yes"</span>, <span class="st">"no"</span>))</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>complication_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       complication
+surgeon yes  no
+     S1  15 217
+     S2  24 187
+     S3  12 145</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(complication_table, <span class="at">margin =</span> <span class="dv">1</span>)   <span class="co"># row percentages: complications per surgeon</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       complication
+surgeon        yes         no
+     S1 0.06465517 0.93534483
+     S2 0.11374408 0.88625592
+     S3 0.07643312 0.92356688</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats.contingency <span class="im">import</span> association</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>complication_table <span class="op">=</span> pd.crosstab(cohort[<span class="st">"surgeon"</span>], cohort[<span class="st">"complication_90d"</span>]).loc[:, [<span class="dv">1</span>, <span class="dv">0</span>]]   <span class="co"># "yes" first</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(complication_table)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>complication_90d   1    0
+surgeon                  
+S1                15  217
+S2                24  187
+S3                12  145</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.crosstab(cohort[<span class="st">"surgeon"</span>], cohort[<span class="st">"complication_90d"</span>], normalize<span class="op">=</span><span class="st">"index"</span>))   <span class="co"># row percentages</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>complication_90d         0         1
+surgeon                             
+S1                0.935345  0.064655
+S2                0.886256  0.113744
+S3                0.923567  0.076433</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Complications followed 6.5% of S1’s procedures, 11.4% of S2’s and 7.6% of S3’s.</p>
+</section>
+<section id="run-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-2">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>complication_test <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(complication_table)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>complication_test<span class="sc">$</span>expected      <span class="co"># all at least 5, so the chi-square test is valid</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       complication
+surgeon    yes      no
+     S1 19.720 212.280
+     S2 17.935 193.065
+     S3 13.345 143.655</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>complication_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test
+
+data:  complication_table
+X-squared = 3.6243, df = 2, p-value = 0.1633</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>complication_test <span class="op">=</span> stats.chi2_contingency(complication_table)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(complication_test.expected_freq)   <span class="co"># all at least 5, so the chi-square test is valid</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[ 19.72  212.28 ]
+ [ 17.935 193.065]
+ [ 13.345 143.655]]</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(complication_test.statistic, complication_test.dof, complication_test.pvalue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3.6243376193045225 2 0.16329958674594236</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-2" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-2">Read the output</h3>
+<ul>
+<li><strong>Expected counts:</strong> what each cell would hold if complication rates were the same for every surgeon. The smallest is 13.3, so the test is valid.</li>
+<li><strong>X-squared = 3.62, df = 2:</strong> the chi-square statistic, with (3 surgeons − 1) × (2 outcomes − 1) = 2 degrees of freedom.</li>
+<li><strong>p = 0.163:</strong> differences like these would be fairly common if the three surgeons had the same complication rate.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-2" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-2">Effect size and 95% CI</h3>
+<p><strong>Cramér’s V</strong> measures the strength of association in a table, from 0 (none) to 1 (perfect). For a table with 2 columns, about 0.1 is small, 0.3 medium and 0.5 large.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">cramers_v</span>(complication_table, <span class="at">adjust =</span> <span class="cn">FALSE</span>)   <span class="co"># see the R vs Python box</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cramer's V |       95% CI
+-------------------------
+0.08       | [0.00, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(association(complication_table, method<span class="op">=</span><span class="st">"cramer"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.0777210569848408</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>V = 0.08, a small association. For yes/no outcomes, the complication rate in each group (with its CI, as on <a href="../catalog/04-describe-one-group.html#proportion">page 4</a>) is usually more informative than V.</p>
+</section>
+<section id="how-to-report-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-2">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Complication rates were compared across surgeons with the chi-square test, with Cramér’s V as the effect size.</p>
+<p><strong>Results:</strong> Complications within 90 days followed 15 of 232 procedures by surgeon S1 (6.5%), 24 of 211 by S2 (11.4%) and 12 of 157 by S3 (7.6%). The difference was not statistically significant (χ² = 3.62, df = 2, p = 0.163; Cramér’s V = 0.08, one-sided 95% CI 0.00 to 1.00).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: no Yates’ correction here, and check the expected counts
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Yates’ continuity correction (<a href="../catalog/06-two-unpaired-groups.html#fisher-chi-square">page 6</a>) only applies to 2 × 2 tables, so both programs skip it for this 3 × 2 table. The expected-count rule still applies: Exercise 3 shows a table that breaks it, and what to do.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: two versions of Cramér’s V
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>effectsize’s <code>cramers_v()</code> applies a small-sample <strong>bias correction</strong> by default (0.05 here). scipy’s <code>association()</code> doesn’t (0.08). We set <code>adjust = FALSE</code> in R so the two match. Either is acceptable; say which you report.</p>
+</div>
+</div>
+</section>
 </section>
 <section id="cox" class="level2">
 <h2 class="anchored" data-anchor-id="cox">Cox regression</h2>
+<p><strong>The question:</strong> Does the risk of revision differ between implants A, B and C?</p>
+<section id="when-to-use-it-3" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-3">When to use it</h3>
+<ul>
+<li>The outcome is <strong>time until an event</strong> (revision), compared across <strong>three or more independent groups</strong>.</li>
+<li>The <strong>log-rank test</strong> extends to three or more groups and answers “do the curves differ?”. <strong>Cox regression</strong> also gives a hazard ratio for each group against a reference group, and can adjust for other variables.</li>
+<li>It assumes each group’s risk is a steady multiple of the reference group’s over time (<strong>proportional hazards</strong>). <a href="../survival/14-cox-regression.html">Page 14</a> shows how to check that and covers Cox regression in full.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-3" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-3">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggsurvfit)</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="fu">survfit2</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant, <span class="at">data =</span> cohort, <span class="at">conf.type =</span> <span class="st">"log-log"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggsurvfit</span>() <span class="sc">+</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_risktable</span>() <span class="sc">+</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_ggsurvfit</span>() <span class="sc">+</span></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Years since surgery"</span>, <span class="at">y =</span> <span class="st">"Revision-free survival"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08-three-plus-unmatched_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines <span class="im">import</span> KaplanMeierFitter, CoxPHFitter</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines.statistics <span class="im">import</span> multivariate_logrank_test</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines.plotting <span class="im">import</span> add_at_risk_counts</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">4.5</span>))</span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>curves <span class="op">=</span> []</span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> implant, group <span class="kw">in</span> cohort.groupby(<span class="st">"implant"</span>):</span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>    km <span class="op">=</span> KaplanMeierFitter(label<span class="op">=</span>implant).fit(group[<span class="st">"followup_years"</span>], group[<span class="st">"revised"</span>])</span>
+<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>    km.plot_survival_function(ax<span class="op">=</span>ax, ci_show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a>    curves.append(km)</span>
+<span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Years since surgery"</span>)</span>
+<span id="cb52-17"><a href="#cb52-17" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Revision-free survival"</span>)</span>
+<span id="cb52-18"><a href="#cb52-18" aria-hidden="true" tabindex="-1"></a>add_at_risk_counts(<span class="op">*</span>curves, ax<span class="op">=</span>ax)</span>
+<span id="cb52-19"><a href="#cb52-19" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb52-20"><a href="#cb52-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08-three-plus-unmatched_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Implants A and B track each other closely; implant C falls away from both.</p>
+</section>
+<section id="run-it-3" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-3">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>implant_cox <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant, <span class="at">data =</span> cohort)   <span class="co"># implant A is the reference</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(implant_cox)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+coxph(formula = Surv(followup_years, revised) ~ implant, data = cohort)
+
+  n= 600, number of events= 81 
+
+            coef exp(coef) se(coef)      z Pr(&gt;|z|)    
+implantB -0.2020    0.8171   0.3092 -0.653    0.514    
+implantC  1.1208    3.0673   0.2579  4.345 1.39e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+         exp(coef) exp(-coef) lower .95 upper .95
+implantB    0.8171      1.224    0.4458     1.498
+implantC    3.0673      0.326    1.8502     5.085
+
+Concordance= 0.659  (se = 0.03 )
+Likelihood ratio test= 27.64  on 2 df,   p=1e-06
+Wald test            = 29.63  on 2 df,   p=4e-07
+Score (logrank) test = 33.48  on 2 df,   p=5e-08</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>implant_cox <span class="op">=</span> CoxPHFitter().fit(</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>    cohort[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, <span class="st">"implant"</span>]],</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>    duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>, formula<span class="op">=</span><span class="st">"implant"</span>,   <span class="co"># implant A is the reference</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>    fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-9</span>},   <span class="co"># stop only when fully converged; see the R vs Python box</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(implant_cox.summary[[<span class="st">"exp(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>, <span class="st">"exp(coef) upper 95%"</span>, <span class="st">"p"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              exp(coef)  exp(coef) lower 95%  exp(coef) upper 95%         p
+covariate                                                                  
+implant[T.B]   0.817091             0.445762             1.497745  0.513515
+implant[T.C]   3.067344             1.850158             5.085296  0.000014</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(implant_cox.log_likelihood_ratio_test().test_statistic)            <span class="co"># overall test, all implants</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>27.63546691821921</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(multivariate_logrank_test(cohort[<span class="st">"followup_years"</span>], cohort[<span class="st">"implant"</span>], cohort[<span class="st">"revised"</span>]).test_statistic)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>33.46861907356945</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-3" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-3">Read the output</h3>
+<ul>
+<li><strong>exp(coef):</strong> the hazard ratio of each implant against implant A, the reference. Implant B: 0.82; implant C: 3.07.</li>
+<li><strong>lower .95 / upper .95:</strong> the 95% CIs. Implant B’s (0.45 to 1.50) includes 1, so the data are compatible with no difference from A. Implant C’s (1.85 to 5.09) doesn’t.</li>
+<li><strong>Pr(&gt;|z|):</strong> the p-value for each implant against A (p = 0.514 for B, p &lt; 0.001 for C).</li>
+<li><strong>Likelihood ratio test = 27.6 on 2 df, p &lt; 0.001:</strong> the overall test that implant matters at all, the Cox counterpart of the ANOVA’s F test. Python prints it as the second number.</li>
+<li><strong>Score (logrank) test = 33.5:</strong> the log-rank test for all three implants, which Python prints last. (The Cox score test and the log-rank test handle tied revision times slightly differently, so they agree to one decimal, not exactly.)</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-3" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-3">Effect size and 95% CI</h3>
+<p>The <strong>hazard ratios</strong> with their 95% CIs are the effect sizes: implant C carried about three times the hazard of revision of implant A (3.07, 95% CI 1.85 to 5.09), while implant B didn’t differ clearly from A (0.82, 95% CI 0.45 to 1.50).</p>
+</section>
+<section id="how-to-report-it-3" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-3">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Revision-free survival was compared across implants with Cox proportional hazards regression, with implant A as the reference.</p>
+<p><strong>Results:</strong> Implant type was associated with revision (likelihood ratio test, χ² = 27.6, df = 2, p &lt; 0.001). Compared with implant A, the hazard of revision was higher with implant C (hazard ratio 3.07, 95% CI 1.85 to 5.09); the estimate for implant B was imprecise (hazard ratio 0.82, 95% CI 0.45 to 1.50).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: the reference group shapes the story
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Every hazard ratio here is relative to implant A, so the output doesn’t compare B with C directly. Choose the reference group on purpose (the standard implant, the largest group) and say which it is. And as on <a href="../catalog/04-describe-one-group.html#kaplan-meier">page 4</a>, deaths here are treated as censored; <a href="../survival/13-kaplan-meier.html">page 13</a> covers competing risks.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: convergence and the reference group
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Both programs use the first group alphabetically (A) as the reference and handle tied revision times with Efron’s method. lifelines’ default convergence rule stops a little early here (a hazard ratio of 0.81713 for implant B instead of 0.81709), so we tighten it with <code>fit_options={"precision": 1e-9}</code>.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="which-groups-differ" class="level2">
+<h2 class="anchored" data-anchor-id="which-groups-differ">Which groups differ?</h2>
+<p>The tests above answer “is there any difference among the groups?”. When the answer is yes, the next question is which groups differ from which. Comparing every pair with an ordinary test inflates the chance of a false positive: with four ASA classes there are six pairs, and six tests at p &lt; 0.05 give roughly a one-in-four chance of at least one false alarm even when nothing is going on.</p>
+<p><strong>Post-hoc tests</strong> compare the pairs while keeping that overall error rate at 5%:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>After</th>
+<th>Use</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>One-way ANOVA</td>
+<td>Tukey’s HSD (Games-Howell if the spreads differ)</td>
+<td><a href="../beyond/15-post-hoc.html">15</a></td>
+</tr>
+<tr class="even">
+<td>Kruskal-Wallis</td>
+<td>Dunn’s test with Holm’s adjustment</td>
+<td><a href="../beyond/15-post-hoc.html">15</a></td>
+</tr>
+<tr class="odd">
+<td>Chi-square</td>
+<td>Pairwise Fisher or chi-square tests with Holm’s adjustment</td>
+<td><a href="../beyond/15-post-hoc.html">15</a></td>
+</tr>
+<tr class="even">
+<td>Cox regression</td>
+<td>Hazard ratios against a chosen reference, or contrasts between groups</td>
+<td><a href="../survival/14-cox-regression.html">14</a></td>
+</tr>
+</tbody>
+</table>
+<p>Only run post-hoc tests when the overall test is significant, or when you planned specific comparisons before seeing the data; say which in your Methods.</p>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The solutions use the packages and data loaded in the sections above, so run the page from the top first.</p>
+<p><strong>1.</strong> Does <strong>BMI</strong> differ across ASA classes? Run a one-way ANOVA and report ω².</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>bmi_data <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">asa =</span> <span class="fu">factor</span>(asa))</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>bmi_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(bmi <span class="sc">~</span> asa, <span class="at">data =</span> bmi_data)</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bmi_anova)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Df Sum Sq Mean Sq F value Pr(&gt;F)    
+asa           3   2388   795.9   31.08 &lt;2e-16 ***
+Residuals   596  15265    25.6                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">omega_squared</span>(bmi_anova, <span class="at">partial =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Effect Size for ANOVA (Type I)
+
+Parameter | Omega2 |       95% CI
+---------------------------------
+asa       |   0.13 | [0.09, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>bmi_data <span class="sc">|&gt;</span> <span class="fu">group_by</span>(asa) <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">mean =</span> <span class="fu">mean</span>(bmi), <span class="at">sd =</span> <span class="fu">sd</span>(bmi))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  asa    mean    sd
+  &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 1      26.3  4.88
+2 2      29.2  5.16
+3 3      32.1  5.07
+4 4      36.2  3.29</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>bmi_anova <span class="op">=</span> pg.anova(data<span class="op">=</span>cohort, dv<span class="op">=</span><span class="st">"bmi"</span>, between<span class="op">=</span><span class="st">"asa"</span>, detailed<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(bmi_anova)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Source            SS   DF          MS          F         p_unc       np2
+0     asa   2387.716479    3  795.905493  31.076001  1.125923e-18  0.135264
+1  Within  15264.501921  596   25.611580        NaN           NaN       NaN</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>ss_b, ss_w, df_b, ms_w <span class="op">=</span> bmi_anova.loc[<span class="dv">0</span>, <span class="st">"SS"</span>], bmi_anova.loc[<span class="dv">1</span>, <span class="st">"SS"</span>], bmi_anova.loc[<span class="dv">0</span>, <span class="st">"DF"</span>], bmi_anova.loc[<span class="dv">1</span>, <span class="st">"MS"</span>]</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((ss_b <span class="op">-</span> df_b <span class="op">*</span> ms_w) <span class="op">/</span> (ss_b <span class="op">+</span> ss_w <span class="op">+</span> ms_w))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.1307220253138767</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cohort.groupby(<span class="st">"asa"</span>)[<span class="st">"bmi"</span>].agg([<span class="st">"mean"</span>, <span class="st">"std"</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          mean       std
+asa                     
+1    26.322222  4.878765
+2    29.197000  5.155459
+3    32.146748  5.070931
+4    36.200000  3.293130</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>BMI rose with ASA class, from a mean of 26.3 kg/m² (SD 4.9) in ASA 1 to 36.2 kg/m² (SD 3.3) in ASA 4 (F(3, 596) = 31.1, p &lt; 0.001; ω² = 0.13, one-sided 95% CI 0.09 to 1.00). That’s no surprise: obesity is one of the things anesthesiologists weigh when they assign an ASA class.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> A colleague asks whether <strong>length of stay</strong> differs between the three surgeons. Which test would you use, and what do you find?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Length of stay is strongly right-skewed with many ties (<a href="../foundations/03-distributions.html#transform">page 3</a>), and there are three independent groups: the <strong>Kruskal-Wallis test</strong>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-13-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-1" role="tab" aria-controls="tabset-13-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-2" role="tab" aria-controls="tabset-13-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-13-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-13-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(los_days <span class="sc">~</span> surgeon, <span class="at">data =</span> cohort)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Kruskal-Wallis rank sum test
+
+data:  los_days by surgeon
+Kruskal-Wallis chi-squared = 0.73189, df = 2, p-value = 0.6935</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">rank_epsilon_squared</span>(los_days <span class="sc">~</span> surgeon, <span class="at">data =</span> cohort)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epsilon2 (rank) |       95% CI
+------------------------------
+1.22e-03        | [0.00, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-13-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>stays <span class="op">=</span> [group[<span class="st">"los_days"</span>] <span class="cf">for</span> surgeon, group <span class="kw">in</span> cohort.groupby(<span class="st">"surgeon"</span>)]</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>los_test <span class="op">=</span> stats.kruskal(<span class="op">*</span>stays)</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(los_test, los_test.statistic <span class="op">/</span> (<span class="bu">len</span>(cohort) <span class="op">-</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>KruskalResult(statistic=np.float64(0.7318931330974262), pvalue=np.float64(0.6935398584479409)) 0.0012218583190274227</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>There’s no evidence that length of stay differs between the surgeons (Kruskal-Wallis H = 0.73, df = 2, p = 0.694; ε² = 0.001, one-sided 95% CI 0.00 to 1.00).</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> Test whether 90-day complications differ across the four <strong>ASA classes</strong>. Check the expected counts first. What do you do, and what do you find?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-14-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-1" role="tab" aria-controls="tabset-14-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-2" role="tab" aria-controls="tabset-14-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-14-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-14-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># R also warns here: "Chi-squared approximation may be incorrect"</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(<span class="fu">table</span>(cohort<span class="sc">$</span>asa, cohort<span class="sc">$</span>complication_90d))<span class="sc">$</span>expected   <span class="co"># two expected counts are below 5</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   
+         0     1
+  1  32.94  3.06
+  2 274.50 25.50
+  3 225.09 20.91
+  4  16.47  1.53</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>asa_grouped <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">asa          =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(cohort<span class="sc">$</span>asa <span class="sc">&gt;=</span> <span class="dv">3</span>, <span class="st">"ASA 3-4"</span>, <span class="st">"ASA 1-2"</span>), <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"ASA 3-4"</span>, <span class="st">"ASA 1-2"</span>)),</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">complication =</span> <span class="fu">factor</span>(cohort<span class="sc">$</span>complication_90d, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"yes"</span>, <span class="st">"no"</span>))</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>asa_grouped</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         complication
+asa       yes  no
+  ASA 3-4  30 234
+  ASA 1-2  21 315</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(asa_grouped)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Fisher's Exact Test for Count Data
+
+data:  asa_grouped
+p-value = 0.02762
+alternative hypothesis: true odds ratio is not equal to 1
+95 percent confidence interval:
+ 1.034232 3.626792
+sample estimates:
+odds ratio 
+  1.920984 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(asa_grouped, <span class="at">correct =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>conf.int   <span class="co"># risk difference, ASA 3-4 minus ASA 1-2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.004924702 0.097348026
+attr(,"conf.level")
+[1] 0.95</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-14-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb87"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats.contingency <span class="im">import</span> odds_ratio</span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.stats.proportion <span class="im">import</span> confint_proportions_2indep</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.chi2_contingency(pd.crosstab(cohort[<span class="st">"asa"</span>], cohort[<span class="st">"complication_90d"</span>])).expected_freq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[ 32.94   3.06]
+ [274.5   25.5 ]
+ [225.09  20.91]
+ [ 16.47   1.53]]</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb89"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>cohort[<span class="st">"asa_group"</span>] <span class="op">=</span> cohort[<span class="st">"asa"</span>].<span class="bu">map</span>(<span class="kw">lambda</span> asa: <span class="st">"ASA 3-4"</span> <span class="cf">if</span> asa <span class="op">&gt;=</span> <span class="dv">3</span> <span class="cf">else</span> <span class="st">"ASA 1-2"</span>)</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>asa_grouped <span class="op">=</span> pd.crosstab(cohort[<span class="st">"asa_group"</span>], cohort[<span class="st">"complication_90d"</span>]).loc[[<span class="st">"ASA 3-4"</span>, <span class="st">"ASA 1-2"</span>], [<span class="dv">1</span>, <span class="dv">0</span>]]</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(asa_grouped)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>complication_90d   1    0
+asa_group                
+ASA 3-4           30  234
+ASA 1-2           21  315</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.fisher_exact(asa_grouped).pvalue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.027624840198071487</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb93"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(odds_ratio(asa_grouped.to_numpy(), kind<span class="op">=</span><span class="st">"conditional"</span>).confidence_interval())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ConfidenceInterval(low=1.0342268694270842, high=3.626948806900833)</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb95"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>high_yes, high_no <span class="op">=</span> asa_grouped.loc[<span class="st">"ASA 3-4"</span>]</span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>low_yes, low_no <span class="op">=</span> asa_grouped.loc[<span class="st">"ASA 1-2"</span>]</span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(confint_proportions_2indep(high_yes, high_yes <span class="op">+</span> high_no, low_yes, low_yes <span class="op">+</span> low_no, method<span class="op">=</span><span class="st">"wald"</span>, compare<span class="op">=</span><span class="st">"diff"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(np.float64(0.004924701725186151), np.float64(0.09734802554754111))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>ASA 1 and ASA 4 each have an expected count of complications below 5 (3.1 and 1.5), so the chi-square test isn’t reliable; R says so itself, with the warning “Chi-squared approximation may be incorrect”. Combining classes into ASA 1–2 and ASA 3–4 makes clinical sense and gives a 2 × 2 table for Fisher’s exact test:</p>
+<p>“Complications within 90 days followed 30 of 264 procedures (11.4%) in ASA 3–4 patients and 21 of 336 (6.2%) in ASA 1–2 patients (risk difference 5.1 percentage points, 95% CI 0.5 to 9.7; odds ratio 1.92, 95% CI 1.03 to 3.63; p = 0.028).”</p>
+<p>Say in your Methods that you combined the classes, and why.</p>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -992,8 +2056,8 @@ ul.task-list li input[type="checkbox"] {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../catalog/09-three-plus-matched.html" class="pagination-link" aria-label="9 · Compare three or more matched groups (coming soon)">
-        <span class="nav-page-text">9 · Compare three or more matched groups (coming soon)</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../catalog/09-three-plus-matched.html" class="pagination-link" aria-label="9 · Compare three or more matched groups">
+        <span class="nav-page-text">9 · Compare three or more matched groups</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

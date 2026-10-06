@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Repeated-measures ANOVA, Friedman test, Cochran’s Q, stratified Cox regression.">
+<meta name="description" content="Repeated-measures ANOVA, Friedman test, Cochran’s Q and stratified Cox regression: the same patients measured three or more times, or matched sets.">
 
-<title>9 · Compare three or more matched groups (coming soon) – TJS Statistics Tutorials</title>
+<title>9 · Compare three or more matched groups – TJS Statistics Tutorials</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -288,7 +323,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/09-three-plus-matched.html">9 · Compare three or more matched groups (coming soon)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/09-three-plus-matched.html">9 · Compare three or more matched groups</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -400,13 +435,13 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/08-three-plus-unmatched.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">8 · Compare three or more unmatched groups (coming soon)</span></a>
+ <span class="menu-text">8 · Compare three or more unmatched groups</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/09-three-plus-matched.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">9 · Compare three or more matched groups (coming soon)</span></a>
+ <span class="menu-text">9 · Compare three or more matched groups</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -507,26 +542,28 @@ ul.task-list li input[type="checkbox"] {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
-  <ul>
+  <ul class="collapse">
   <li><a href="#repeated-measures-anova" id="toc-repeated-measures-anova" class="nav-link active" data-scroll-target="#repeated-measures-anova">Repeated-measures ANOVA</a></li>
   <li><a href="#friedman" id="toc-friedman" class="nav-link" data-scroll-target="#friedman">Friedman test</a></li>
   <li><a href="#cochran-q" id="toc-cochran-q" class="nav-link" data-scroll-target="#cochran-q">Cochran’s Q test</a></li>
   <li><a href="#stratified-cox" id="toc-stratified-cox" class="nav-link" data-scroll-target="#stratified-cox">Stratified Cox regression</a></li>
+  <li><a href="#which-groups-differ" id="toc-which-groups-differ" class="nav-link" data-scroll-target="#which-groups-differ">Which visits differ?</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/09-three-plus-matched.html">9 · Compare three or more matched groups (coming soon)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/09-three-plus-matched.html">9 · Compare three or more matched groups</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">9 · Compare three or more matched groups (coming soon)</h1>
+<h1 class="title">9 · Compare three or more matched groups</h1>
 </div>
 
 <div>
   <div class="description">
-    Repeated-measures ANOVA, Friedman test, Cochran’s Q, stratified Cox regression.
+    Repeated-measures ANOVA, Friedman test, Cochran’s Q and stratified Cox regression: the same patients measured three or more times, or matched sets.
   </div>
 </div>
 
@@ -543,30 +580,1156 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="coming-soon callout callout-style-default callout-note callout-titled">
+<!-- data-checksum: 9e548efb7ad4232927ffa99aa2cdeca7 -->
+<p>The same patients measured <strong>three or more times</strong> (before surgery, then at 6 weeks, 3 months and 1 year), or <strong>matched sets</strong> of three or more patients. This is <a href="../catalog/07-two-paired-groups.html">page 7</a> extended past two measurements. As on <a href="../catalog/08-three-plus-unmatched.html">page 8</a>, each test asks one question first: <strong>does the outcome differ anywhere among the visits (or groups)?</strong> <a href="#which-groups-differ">Which visits differ?</a> explains what to do next.</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming soon
+<span class="screen-reader-only">Note</span>💡 How every section on this page works
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.</p>
+<p>Each section answers one question about the practice data. Its first code block loads the packages and the data, so you can jump straight to the section you need. Run that section’s blocks in order, top to bottom.</p>
+<p>To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them (<a href="../foundations/03-distributions.html#paired">page 3</a>) and say what you did.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: these tests drop anyone with a missed visit
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Repeated-measures ANOVA, the Friedman test and Cochran’s Q need every patient measured at <strong>every</strong> visit. A patient who missed one visit is dropped completely, along with their other measurements. Below, 574 patients had a pre-op VR-12 score, but only 328 had all four, so the analysis loses 246 patients (43%). If the patients who miss visits differ from those who don’t, the result is biased. <a href="../beyond/16-mixed-models.html">Mixed models</a> use everyone’s available data, and are usually the better choice for repeated PROMs.</p>
 </div>
 </div>
 <section id="repeated-measures-anova" class="level2">
 <h2 class="anchored" data-anchor-id="repeated-measures-anova">Repeated-measures ANOVA</h2>
+<p><strong>The question:</strong> Does patients’ physical health (the VR-12 physical component score, PCS) change over the first year after surgery?</p>
+<section id="when-to-use-it" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it">When to use it</h3>
+<ul>
+<li>A <strong>measurement</strong> taken <strong>three or more times</strong> on the same patients (or once on each member of a matched set).</li>
+<li>The changes between visits are roughly normal, or there are plenty of patients.</li>
+<li><strong>Sphericity:</strong> the spread of the changes is similar for every pair of visits. Mauchly’s test checks it; if it fails, the <strong>Greenhouse-Geisser</strong> correction adjusts the degrees of freedom. Both programs below report both.</li>
+<li>Only patients measured at <strong>every</strong> visit are included (see the warning above).</li>
+<li>If the outcome is skewed, bounded or ordinal → the <a href="#friedman">Friedman test</a>.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>proms <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/proms_long.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pcs <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, vr12_pcs) <span class="sc">|&gt;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(case_id) <span class="sc">|&gt;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(vr12_pcs))) <span class="sc">|&gt;</span>     <span class="co"># keep patients measured at all four visits</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">visit =</span> <span class="fu">factor</span>(visit, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)))   <span class="co"># in time order</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(pcs<span class="sc">$</span>case_id)                <span class="co"># patients with complete data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 328</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pcs, <span class="fu">aes</span>(visit, vr12_pcs)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Visit"</span>, <span class="at">y =</span> <span class="st">"VR-12 physical component score"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09-three-plus-matched_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pcs <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(visit) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean =</span> <span class="fu">mean</span>(vr12_pcs), <span class="at">sd =</span> <span class="fu">sd</span>(vr12_pcs))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  visit  mean    sd
+  &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 preop  31.2  6.10
+2 6wk    34.9  6.15
+3 3mo    41.0  6.23
+4 1yr    44.9  6.77</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pingouin <span class="im">as</span> pg</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>proms <span class="op">=</span> pd.read_csv(<span class="st">"data/proms_long.csv"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>visits <span class="op">=</span> [<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]   <span class="co"># in time order</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>pcs <span class="op">=</span> proms[[<span class="st">"case_id"</span>, <span class="st">"visit"</span>, <span class="st">"vr12_pcs"</span>]]</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>complete <span class="op">=</span> pcs.groupby(<span class="st">"case_id"</span>)[<span class="st">"vr12_pcs"</span>].transform(<span class="kw">lambda</span> scores: scores.notna().<span class="bu">all</span>())</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>pcs <span class="op">=</span> pcs[complete]                        <span class="co"># keep patients measured at all four visits</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pcs[<span class="st">"case_id"</span>].nunique())            <span class="co"># patients with complete data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>328</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">3</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>parts <span class="op">=</span> ax.boxplot([pcs.loc[pcs[<span class="st">"visit"</span>] <span class="op">==</span> v, <span class="st">"vr12_pcs"</span>] <span class="cf">for</span> v <span class="kw">in</span> visits], tick_labels<span class="op">=</span>visits)   <span class="co"># naming the result keeps it out of the output</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Visit"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"VR-12 physical component score"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09-three-plus-matched_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pcs.groupby(<span class="st">"visit"</span>)[<span class="st">"vr12_pcs"</span>].agg([<span class="st">"mean"</span>, <span class="st">"std"</span>]).loc[visits])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            mean       std
+visit                     
+preop  31.236585  6.097004
+6wk    34.903354  6.152841
+3mo    40.985671  6.234869
+1yr    44.879268  6.772751</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>328 patients were measured at all four visits. Their mean PCS climbs at every visit, and the spreads stay similar.</p>
+</section>
+<section id="run-it" class="level3">
+<h3 class="anchored" data-anchor-id="run-it">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pcs_anova <span class="ot">&lt;-</span> rstatix<span class="sc">::</span><span class="fu">anova_test</span>(<span class="at">data =</span> pcs, <span class="at">dv =</span> vr12_pcs, <span class="at">wid =</span> case_id, <span class="at">within =</span> visit,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">effect.size =</span> <span class="fu">c</span>(<span class="st">"pes"</span>, <span class="st">"ges"</span>))   <span class="co"># partial and generalized eta squared</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>pcs_anova</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ANOVA Table (type III tests)
+
+$ANOVA
+  Effect DFn DFd       F         p p&lt;.05   pes   ges
+1  visit   3 981 317.067 7.07e-144     * 0.492 0.412
+
+$`Mauchly's Test for Sphericity`
+  Effect     W     p p&lt;.05
+1  visit 0.982 0.324      
+
+$`Sphericity Corrections`
+  Effect   GGe       DF[GG]     p[GG] p[GG]&lt;.05   HFe      DF[HF]     p[HF]
+1  visit 0.988 2.96, 969.07 3.63e-142         * 0.998 2.99, 978.9 1.41e-143
+  p[HF]&lt;.05
+1         *</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pcs_anova <span class="op">=</span> pg.rm_anova(data<span class="op">=</span>pcs, dv<span class="op">=</span><span class="st">"vr12_pcs"</span>, within<span class="op">=</span><span class="st">"visit"</span>, subject<span class="op">=</span><span class="st">"case_id"</span>,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                        correction<span class="op">=</span><span class="va">True</span>, effsize<span class="op">=</span><span class="st">"np2"</span>, detailed<span class="op">=</span><span class="va">True</span>)   <span class="co"># np2 = partial eta squared</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pcs_anova.T)    <span class="co"># .T turns the wide table on its side, so it fits</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       0             1
+Source             visit         Error
+SS          36595.469085  37741.935915
+DF                     3           981
+MS          12198.489695     38.472921
+F             317.066894           NaN
+p_unc                0.0           NaN
+p_GG_corr            0.0           NaN
+np2             0.492289           NaN
+eps             0.987839           NaN
+sphericity          True           NaN
+W_spher         0.982302           NaN
+p_spher           0.3245           NaN</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output">Read the output</h3>
+<ul>
+<li><strong>F = 317.1, with 3 and 981 degrees of freedom</strong> (DFn/DFd in R, DF in Python): how much the visit means differ, compared with how much each patient’s scores bounce around their own average. 3 = four visits minus one; 981 = 3 × (328 patients − 1).</li>
+<li><strong>p</strong> (R prints <code>7.07e-144</code>; pingouin’s table rounds it to <code>0.0</code> in the <code>p_unc</code> row): far below 0.001.</li>
+<li><strong>Mauchly’s test, W = 0.982, p = 0.324:</strong> no evidence that sphericity is violated, so the uncorrected result stands.</li>
+<li><strong>Sphericity corrections</strong> (R) or <strong>eps</strong> and <strong>p_GG_corr</strong> (Python): the Greenhouse-Geisser epsilon is 0.988 (1 means perfect sphericity), and the corrected p-value is still far below 0.001.</li>
+<li><strong>pes = 0.492</strong> (R) or <strong>np2</strong> (Python): partial eta squared, below.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci">Effect size and 95% CI</h3>
+<p><strong>Partial eta squared (η²<sub>p</sub>)</strong> is the share of the within-patient variation that the visits account for. As a rough guide, 0.01 is small, 0.06 medium and 0.14 large. <strong>Generalized eta squared</strong> (ges = 0.412 in R) also counts the differences <em>between</em> patients, which makes it comparable with designs that aren’t repeated measures; report it when readers will compare studies of different designs.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pcs_model <span class="ot">&lt;-</span> <span class="fu">aov</span>(vr12_pcs <span class="sc">~</span> visit <span class="sc">+</span> <span class="fu">Error</span>(case_id <span class="sc">/</span> visit), <span class="at">data =</span> pcs)   <span class="co"># the same ANOVA in base R</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">eta_squared</span>(pcs_model, <span class="at">partial =</span> <span class="cn">TRUE</span>)                         <span class="co"># with a 95% CI</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Effect Size for ANOVA (Type I)
+
+Group         | Parameter | Eta2 (partial) |       95% CI
+---------------------------------------------------------
+case_id:visit |     visit |           0.49 | [0.46, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pcs_anova.loc[<span class="dv">0</span>, <span class="st">"np2"</span>])    <span class="co"># pingouin doesn't compute a CI for it</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.4922887621025491</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>η²<sub>p</sub> = 0.49: a very large effect. The visits account for about half of the variation in each patient’s scores over the year.</p>
+</section>
+<section id="how-to-report-it" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> VR-12 PCS across the four visits was compared with one-way repeated-measures ANOVA in patients with all four measurements. Sphericity was assessed with Mauchly’s test, with the Greenhouse-Geisser correction planned if it was violated. Partial eta squared (η²<sub>p</sub>) is reported as the effect size.</p>
+<p><strong>Results:</strong> Of 574 patients with a pre-op PCS, 328 had all four measurements. Their mean PCS rose from 31.2 (SD 6.1) before surgery to 34.9 (SD 6.2) at 6 weeks, 41.0 (SD 6.2) at 3 months and 44.9 (SD 6.8) at 1 year (F(3, 981) = 317.1, p &lt; 0.001; η²<sub>p</sub> = 0.49, one-sided 95% CI 0.46 to 1.00). Mauchly’s test found no evidence against sphericity (p = 0.324).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: a significant F doesn’t say which visits differ
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The ANOVA says PCS changed somewhere over the year. To say <em>when</em>, compare the visits with paired tests and a correction for multiple comparisons (<a href="../beyond/15-post-hoc.html">page 15</a>). And remember who’s missing: the 246 patients without complete data may have recovered differently.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: which tools check sphericity
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>R:</strong> base <code>aov(... + Error(case_id / visit))</code> gives the same F test but ignores sphericity; <code>rstatix::anova_test()</code> adds Mauchly’s test and the corrections. rstatix rounds its numbers to 3 decimals.</li>
+<li><strong>Python:</strong> pingouin’s <code>rm_anova(correction=True)</code> reports Mauchly’s test and the Greenhouse-Geisser correction. statsmodels’ <code>AnovaRM</code> gives the F test only.</li>
+<li><strong>Effect sizes:</strong> pingouin returns either partial (<code>effsize="np2"</code>) or generalized (<code>effsize="ng2"</code>) eta squared; rstatix returns both if asked.</li>
+</ul>
+</div>
+</div>
+</section>
 </section>
 <section id="friedman" class="level2">
 <h2 class="anchored" data-anchor-id="friedman">Friedman test</h2>
+<p><strong>The question:</strong> After knee replacement, does KOOS JR keep changing between 6 weeks, 3 months and 1 year?</p>
+<section id="when-to-use-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-1">When to use it</h3>
+<ul>
+<li>An outcome measured <strong>three or more times</strong> on the same patients, when it’s <strong>skewed</strong>, <strong>ordinal</strong> or has a <strong>ceiling or floor</strong>. The 1-year KOOS JR has a ceiling (<a href="../foundations/03-distributions.html#transform">page 3</a>).</li>
+<li>It ranks each patient’s own scores (1st, 2nd, 3rd) and asks whether some visits tend to rank higher than others.</li>
+<li>Only patients measured at <strong>every</strong> visit are included.</li>
+<li>If the outcome is a roughly normal measurement → <a href="#repeated-measures-anova">repeated-measures ANOVA</a>.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-1" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-1">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>proms <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/proms_long.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>koos <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(instrument <span class="sc">==</span> <span class="st">"KOOS JR"</span>, visit <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, prom_score) <span class="sc">|&gt;</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(case_id) <span class="sc">|&gt;</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(prom_score))) <span class="sc">|&gt;</span>     <span class="co"># keep patients measured at all three visits</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">visit =</span> <span class="fu">factor</span>(visit, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)))</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(koos<span class="sc">$</span>case_id)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 205</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(koos, <span class="fu">aes</span>(visit, prom_score)) <span class="sc">+</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Visit"</span>, <span class="at">y =</span> <span class="st">"KOOS JR"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09-three-plus-matched_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>koos <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(visit) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">median =</span> <span class="fu">median</span>(prom_score), <span class="at">q1 =</span> <span class="fu">quantile</span>(prom_score, <span class="fl">0.25</span>), <span class="at">q3 =</span> <span class="fu">quantile</span>(prom_score, <span class="fl">0.75</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  visit median    q1    q3
+  &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 6wk     62.6  53.9  70.3
+2 3mo     73.1  65.7  81.5
+3 1yr     85.7  73.6  94  </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pingouin <span class="im">as</span> pg</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>proms <span class="op">=</span> pd.read_csv(<span class="st">"data/proms_long.csv"</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>visits <span class="op">=</span> [<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>koos <span class="op">=</span> proms[(proms[<span class="st">"instrument"</span>] <span class="op">==</span> <span class="st">"KOOS JR"</span>) <span class="op">&amp;</span> proms[<span class="st">"visit"</span>].isin(visits)][[<span class="st">"case_id"</span>, <span class="st">"visit"</span>, <span class="st">"prom_score"</span>]]</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>complete <span class="op">=</span> koos.groupby(<span class="st">"case_id"</span>)[<span class="st">"prom_score"</span>].transform(<span class="kw">lambda</span> scores: scores.notna().<span class="bu">all</span>())</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>koos <span class="op">=</span> koos[complete]                     <span class="co"># keep patients measured at all three visits</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(koos[<span class="st">"case_id"</span>].nunique())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>205</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">3</span>))</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>parts <span class="op">=</span> ax.boxplot([koos.loc[koos[<span class="st">"visit"</span>] <span class="op">==</span> v, <span class="st">"prom_score"</span>] <span class="cf">for</span> v <span class="kw">in</span> visits], tick_labels<span class="op">=</span>visits)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Visit"</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"KOOS JR"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="09-three-plus-matched_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(koos.groupby(<span class="st">"visit"</span>)[<span class="st">"prom_score"</span>].describe()[[<span class="st">"25%"</span>, <span class="st">"50%"</span>, <span class="st">"75%"</span>]].loc[visits])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        25%   50%   75%
+visit                  
+6wk    53.9  62.6  70.3
+3mo    65.7  73.1  81.5
+1yr    73.6  85.7  94.0</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>205 TKA patients were measured at all three visits. Scores rise at each visit, and by 1 year they’re crowding the ceiling of 100.</p>
+</section>
+<section id="run-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-1">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>koos_test <span class="ot">&lt;-</span> <span class="fu">friedman.test</span>(prom_score <span class="sc">~</span> visit <span class="sc">|</span> case_id, <span class="at">data =</span> koos)   <span class="co"># outcome ~ visit | patient</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>koos_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Friedman rank sum test
+
+data:  prom_score and visit and case_id
+Friedman chi-squared = 253.56, df = 2, p-value &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>koos_test <span class="op">=</span> pg.friedman(data<span class="op">=</span>koos, dv<span class="op">=</span><span class="st">"prom_score"</span>, within<span class="op">=</span><span class="st">"visit"</span>, subject<span class="op">=</span><span class="st">"case_id"</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(koos_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Source         W  ddof1           Q         p_unc
+Friedman  visit  0.618437      2  253.559364  8.715329e-56</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-1" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-1">Read the output</h3>
+<ul>
+<li><strong>Friedman chi-squared = 253.6</strong> (R) or <strong>Q</strong> (Python): how consistently the visits rank in the same order across patients.</li>
+<li><strong>df = 2:</strong> three visits minus one.</li>
+<li><strong>p &lt; 0.001</strong> (R prints “p &lt; 2.2e-16”).</li>
+<li><strong>W = 0.618</strong> (Python): Kendall’s W, below.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-1" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-1">Effect size and 95% CI</h3>
+<p><strong>Kendall’s W</strong> measures how consistently patients’ scores rank the visits in the same order: 0 means no agreement at all, 1 means every patient’s scores rank the three visits identically. As a rough guide, 0.1 is small, 0.3 moderate and 0.5 large.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># kendalls_w() warns when a patient has the same score at two visits; the tie correction already handles that</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)   <span class="co"># its CI comes from a bootstrap (random resampling); a seed makes it repeatable</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">kendalls_w</span>(prom_score <span class="sc">~</span> visit <span class="sc">|</span> case_id, <span class="at">data =</span> koos)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Kendall's W |       95% CI
+--------------------------
+0.62        | [0.55, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(koos_test[<span class="st">"W"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Friedman    0.618437
+Name: W, dtype: float64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>W = 0.62: a large effect. Most patients improved from each visit to the next. R’s CI comes from a bootstrap, which is why the code sets a seed; pingouin doesn’t compute one.</p>
+</section>
+<section id="how-to-report-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-1">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Because KOOS JR scores showed a ceiling effect, scores at 6 weeks, 3 months and 1 year were compared with the Friedman test in patients with all three measurements, with Kendall’s W as the effect size.</p>
+<p><strong>Results:</strong> Among 205 patients with all three measurements, median KOOS JR rose from 62.6 (IQR 53.9 to 70.3) at 6 weeks to 73.1 (IQR 65.7 to 81.5) at 3 months and 85.7 (IQR 73.6 to 94.0) at 1 year (Friedman χ² = 253.6, df = 2, p &lt; 0.001; Kendall’s W = 0.62, one-sided 95% CI 0.55 to 1.00).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: the Friedman test ignores how big the changes are
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It only uses each patient’s ranking of the visits. A patient who gained 1 point and one who gained 30 count the same. Report the medians (or the changes) so readers can see the size of the improvement, and judge it against the MCID (<a href="../foundations/03-distributions.html#effect-sizes">page 3</a>).</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: data formats
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’s <code>friedman.test()</code> takes a formula, <code>outcome ~ visit | patient</code>, on long data. pingouin’s <code>friedman()</code> also takes long data; scipy’s <code>friedmanchisquare()</code> instead wants one column per visit in wide data. All three correct for tied scores within a patient, so they agree.</p>
+</div>
+</div>
+</section>
 </section>
 <section id="cochran-q" class="level2">
 <h2 class="anchored" data-anchor-id="cochran-q">Cochran’s Q test</h2>
+<p><strong>The question:</strong> Does walking-aid use change over the first year after surgery?</p>
+<section id="when-to-use-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-2">When to use it</h3>
+<ul>
+<li>A <strong>yes/no</strong> outcome measured <strong>three or more times</strong> on the same patients (or once on each member of a matched set).</li>
+<li>It extends <a href="../catalog/07-two-paired-groups.html#mcnemar">McNemar’s test</a> to more than two visits, and, like McNemar’s, it only learns from patients whose answer changed.</li>
+<li>Only patients measured at <strong>every</strong> visit are included.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-2" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-2">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>proms <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/proms_long.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>aid <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, walking_aid) <span class="sc">|&gt;</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(case_id) <span class="sc">|&gt;</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(walking_aid))) <span class="sc">|&gt;</span>    <span class="co"># keep patients measured at all four visits</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">visit =</span> <span class="fu">factor</span>(visit, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)))</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>aid <span class="sc">|&gt;</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(visit) <span class="sc">|&gt;</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">patients =</span> <span class="fu">n</span>(), <span class="at">using_aid =</span> <span class="fu">sum</span>(walking_aid), <span class="at">percent =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">mean</span>(walking_aid))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 4
+  visit patients using_aid percent
+  &lt;fct&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1 preop      328       114    34.8
+2 6wk        328       194    59.1
+3 3mo        328        80    24.4
+4 1yr        328        34    10.4</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pingouin <span class="im">as</span> pg</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>proms <span class="op">=</span> pd.read_csv(<span class="st">"data/proms_long.csv"</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>visits <span class="op">=</span> [<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>aid <span class="op">=</span> proms[[<span class="st">"case_id"</span>, <span class="st">"visit"</span>, <span class="st">"walking_aid"</span>]]</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>complete <span class="op">=</span> aid.groupby(<span class="st">"case_id"</span>)[<span class="st">"walking_aid"</span>].transform(<span class="kw">lambda</span> answers: answers.notna().<span class="bu">all</span>())</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>aid <span class="op">=</span> aid[complete]                     <span class="co"># keep patients measured at all four visits</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(aid.groupby(<span class="st">"visit"</span>)[<span class="st">"walking_aid"</span>].agg([<span class="st">"count"</span>, <span class="st">"sum"</span>, <span class="st">"mean"</span>]).loc[visits])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       count    sum      mean
+visit                        
+preop    328  114.0  0.347561
+6wk      328  194.0  0.591463
+3mo      328   80.0  0.243902
+1yr      328   34.0  0.103659</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>328 patients answered at all four visits. A third used a walking aid before surgery, more than half at 6 weeks, and one in ten at 1 year.</p>
+</section>
+<section id="run-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-2">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>aid_test <span class="ot">&lt;-</span> DescTools<span class="sc">::</span><span class="fu">CochranQTest</span>(walking_aid <span class="sc">~</span> visit <span class="sc">|</span> case_id, <span class="at">data =</span> aid)   <span class="co"># outcome ~ visit | patient</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>aid_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Cochran's Q test
+
+data:  walking_aid and visit and case_id
+Q = 186.79, df = 3, p-value &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>aid_test <span class="op">=</span> pg.cochran(data<span class="op">=</span>aid, dv<span class="op">=</span><span class="st">"walking_aid"</span>, within<span class="op">=</span><span class="st">"visit"</span>, subject<span class="op">=</span><span class="st">"case_id"</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(aid_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Source  dof           Q         p_unc
+cochran  visit    3  186.792711  3.008880e-40</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-2" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-2">Read the output</h3>
+<ul>
+<li><strong>Q = 186.8, df = 3:</strong> Cochran’s Q statistic, with four visits minus one degrees of freedom.</li>
+<li><strong>p &lt; 0.001</strong> (R prints “p &lt; 2.2e-16”): walking-aid use this different across visits would be very unlikely if it hadn’t changed.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-2" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-2">Effect size and 95% CI</h3>
+<p>Cochran’s Q has no standard single effect size. Describe the <strong>proportion at each visit</strong>, with its 95% CI (the Wilson interval from <a href="../catalog/04-describe-one-group.html#proportion">page 4</a>), and the changes between visits in percentage points.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>aid_by_visit <span class="ot">&lt;-</span> aid <span class="sc">|&gt;</span> <span class="fu">group_by</span>(visit) <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">using =</span> <span class="fu">sum</span>(walking_aid), <span class="at">patients =</span> <span class="fu">n</span>())</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>aid_ci <span class="ot">&lt;-</span> <span class="fu">mapply</span>(<span class="cf">function</span>(k, n) <span class="fu">prop.test</span>(k, n, <span class="at">correct =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>conf.int, aid_by_visit<span class="sc">$</span>using, aid_by_visit<span class="sc">$</span>patients)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>aid_by_visit <span class="sc">|&gt;</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> <span class="dv">100</span> <span class="sc">*</span> using <span class="sc">/</span> patients, <span class="at">ci_low =</span> <span class="dv">100</span> <span class="sc">*</span> aid_ci[<span class="dv">1</span>, ], <span class="at">ci_high =</span> <span class="dv">100</span> <span class="sc">*</span> aid_ci[<span class="dv">2</span>, ])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 6
+  visit using patients percent ci_low ci_high
+  &lt;fct&gt; &lt;dbl&gt;    &lt;int&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+1 preop   114      328    34.8  29.8     40.1
+2 6wk     194      328    59.1  53.8     64.3
+3 3mo      80      328    24.4  20.1     29.3
+4 1yr      34      328    10.4   7.51    14.1</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> aid.groupby(<span class="st">"visit"</span>)[<span class="st">"walking_aid"</span>].agg([<span class="st">"sum"</span>, <span class="st">"count"</span>]).loc[visits]</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>cis <span class="op">=</span> [stats.binomtest(<span class="bu">int</span>(k), <span class="bu">int</span>(n)).proportion_ci(method<span class="op">=</span><span class="st">"wilson"</span>) <span class="cf">for</span> k, n <span class="kw">in</span> <span class="bu">zip</span>(counts[<span class="st">"sum"</span>], counts[<span class="st">"count"</span>])]</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame({<span class="st">"percent"</span>: <span class="dv">100</span> <span class="op">*</span> counts[<span class="st">"sum"</span>] <span class="op">/</span> counts[<span class="st">"count"</span>],</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"ci_low"</span>: [<span class="dv">100</span> <span class="op">*</span> ci.low <span class="cf">for</span> ci <span class="kw">in</span> cis], <span class="st">"ci_high"</span>: [<span class="dv">100</span> <span class="op">*</span> ci.high <span class="cf">for</span> ci <span class="kw">in</span> cis]}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         percent     ci_low    ci_high
+visit                                 
+preop  34.756098  29.806008  40.059120
+6wk    59.146341  53.750541  64.330383
+3mo    24.390244  20.056804  29.316611
+1yr    10.365854   7.513119  14.136213</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Use rose by 24.4 percentage points from pre-op to 6 weeks, then fell well below its pre-op level by 1 year (24.4 points lower).</p>
+</section>
+<section id="how-to-report-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-2">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Walking-aid use at the four visits was compared with Cochran’s Q test in patients assessed at all four. Proportions are reported with Wilson 95% CIs.</p>
+<p><strong>Results:</strong> Among 328 patients assessed at all four visits, walking-aid use rose from 34.8% (95% CI 29.8% to 40.1%) before surgery to 59.1% (95% CI 53.8% to 64.3%) at 6 weeks, then fell to 24.4% (95% CI 20.1% to 29.3%) at 3 months and 10.4% (95% CI 7.5% to 14.1%) at 1 year (Cochran’s Q = 186.8, df = 3, p &lt; 0.001).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: Q doesn’t tell you the direction
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Use went <strong>up</strong> and then <strong>down</strong>. Cochran’s Q only says it wasn’t the same at every visit. To say which changes are real, compare pairs of visits with McNemar’s test and a correction for multiple comparisons (<a href="../beyond/15-post-hoc.html">page 15</a>).</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: where to find Cochran’s Q
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Base R doesn’t have Cochran’s Q; <code>DescTools::CochranQTest()</code> (or <code>rstatix::cochran_qtest()</code>) does. In Python, pingouin’s <code>cochran()</code> takes long data; statsmodels’ <code>cochrans_q()</code> takes a wide array with one column per visit. All give the same Q.</p>
+</div>
+</div>
+</section>
 </section>
 <section id="stratified-cox" class="level2">
 <h2 class="anchored" data-anchor-id="stratified-cox">Stratified Cox regression</h2>
+<p><strong>The question:</strong> In sets of three patients matched on procedure, age, sex, BMI and ASA class, does the risk of revision differ between implants A, B and C?</p>
+<section id="when-to-use-it-3" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-3">When to use it</h3>
+<ul>
+<li>The outcome is <strong>time until an event</strong>, and the patients come in <strong>matched sets</strong> of three or more.</li>
+<li>A Cox model <strong>stratified</strong> by matched set compares the implants only <strong>within</strong> sets, as on <a href="../catalog/07-two-paired-groups.html#stratified-cox">page 7</a>, which used just the A and C patients from the same sets.</li>
+<li>With few events, expect wide CIs. <a href="../survival/14-cox-regression.html">Page 14</a> covers Cox regression in full.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-3" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-3">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>matched <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/matched_sets.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">revised =</span> <span class="fu">as.integer</span>(event_status <span class="sc">==</span> <span class="dv">1</span>))   <span class="co"># 1 = revised; deaths and censoring = 0</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>matched <span class="sc">|&gt;</span> <span class="fu">select</span>(set_id, implant, age, sex, bmi, followup_years, revised) <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">6</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 7
+  set_id implant   age sex      bmi followup_years revised
+  &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;          &lt;dbl&gt;   &lt;int&gt;
+1 M001   C          67 Male    32.5           5.79       1
+2 M001   A          67 Male    35.3           2.44       0
+3 M001   B          68 Male    32             6.38       0
+4 M002   C          64 Female  31.4           0.04       1
+5 M002   A          61 Female  31.3           8.67       0
+6 M002   B          64 Female  28.9           7.41       0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>matched <span class="sc">|&gt;</span> <span class="fu">group_by</span>(implant) <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">patients =</span> <span class="fu">n</span>(), <span class="at">revisions =</span> <span class="fu">sum</span>(revised))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  implant patients revisions
+  &lt;chr&gt;      &lt;int&gt;     &lt;int&gt;
+1 A             52         5
+2 B             52         2
+3 C             52        17</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines <span class="im">import</span> CoxPHFitter</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>matched <span class="op">=</span> pd.read_csv(<span class="st">"data/matched_sets.csv"</span>)</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>matched[<span class="st">"revised"</span>] <span class="op">=</span> (matched[<span class="st">"event_status"</span>] <span class="op">==</span> <span class="dv">1</span>).astype(<span class="bu">int</span>)   <span class="co"># 1 = revised; deaths and censoring = 0</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(matched[[<span class="st">"set_id"</span>, <span class="st">"implant"</span>, <span class="st">"age"</span>, <span class="st">"sex"</span>, <span class="st">"bmi"</span>, <span class="st">"followup_years"</span>, <span class="st">"revised"</span>]].head(<span class="dv">6</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  set_id implant  age     sex   bmi  followup_years  revised
+0   M001       C   67    Male  32.5            5.79        1
+1   M001       A   67    Male  35.3            2.44        0
+2   M001       B   68    Male  32.0            6.38        0
+3   M002       C   64  Female  31.4            0.04        1
+4   M002       A   61  Female  31.3            8.67        0
+5   M002       B   64  Female  28.9            7.41        0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(matched.groupby(<span class="st">"implant"</span>)[<span class="st">"revised"</span>].agg([<span class="st">"count"</span>, <span class="st">"sum"</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         count  sum
+implant            
+A           52    5
+B           52    2
+C           52   17</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>52 matched sets of three: 5 revisions with implant A, 2 with B and 17 with C.</p>
+</section>
+<section id="run-it-3" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-3">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>set_cox <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant <span class="sc">+</span> <span class="fu">strata</span>(set_id), <span class="at">data =</span> matched)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(set_cox)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+coxph(formula = Surv(followup_years, revised) ~ implant + strata(set_id), 
+    data = matched)
+
+  n= 156, number of events= 24 
+
+            coef exp(coef) se(coef)      z Pr(&gt;|z|)  
+implantB -0.8371    0.4330   0.8414 -0.995   0.3198  
+implantC  1.3640    3.9119   0.5696  2.395   0.0166 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+         exp(coef) exp(-coef) lower .95 upper .95
+implantB     0.433     2.3097   0.08322     2.253
+implantC     3.912     0.2556   1.28105    11.946
+
+Concordance= 0.816  (se = 0.093 )
+Likelihood ratio test= 13.48  on 2 df,   p=0.001
+Wald test            = 10.48  on 2 df,   p=0.005
+Score (logrank) test = 13.5  on 2 df,   p=0.001</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>set_cox <span class="op">=</span> CoxPHFitter().fit(</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>    matched[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, <span class="st">"implant"</span>, <span class="st">"set_id"</span>]],</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>    duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>,</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>    formula<span class="op">=</span><span class="st">"implant"</span>, strata<span class="op">=</span>[<span class="st">"set_id"</span>],    <span class="co"># one stratum per matched set</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(set_cox.summary[[<span class="st">"exp(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>, <span class="st">"exp(coef) upper 95%"</span>, <span class="st">"p"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              exp(coef)  exp(coef) lower 95%  exp(coef) upper 95%         p
+covariate                                                                  
+implant[T.B]   0.432957             0.083215             2.252616  0.319809
+implant[T.C]   3.911913             1.281047            11.945745  0.016629</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(set_cox.log_likelihood_ratio_test().test_statistic)   <span class="co"># overall test, all implants</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>13.482363098251813</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-3" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-3">Read the output</h3>
+<ul>
+<li><strong>n = 156, number of events = 24:</strong> 52 sets of three patients, 24 revisions.</li>
+<li><strong>exp(coef):</strong> the hazard ratio of each implant against implant A, within matched sets. Implant B: 0.43; implant C: 3.91.</li>
+<li><strong>lower .95 / upper .95:</strong> implant B’s CI (0.08 to 2.25) is very wide and includes 1; implant C’s (1.28 to 11.95) doesn’t.</li>
+<li><strong>Likelihood ratio test = 13.5 on 2 df, p = 0.001:</strong> the overall test that implant matters at all. Python prints it last.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-3" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-3">Effect size and 95% CI</h3>
+<p>The <strong>hazard ratios</strong> with their 95% CIs: within matched sets, implant C carried about four times the hazard of revision of implant A (3.91, 95% CI 1.28 to 11.95). The estimate for implant B (0.43, 95% CI 0.08 to 2.25) is too imprecise to interpret.</p>
+</section>
+<section id="how-to-report-it-3" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-3">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Revision risk was compared between implants in matched sets using Cox regression stratified by set, with implant A as the reference.</p>
+<p><strong>Results:</strong> In 52 sets of three patients matched on procedure, age, sex, BMI and ASA class, implant type was associated with revision (likelihood ratio test, χ² = 13.5, df = 2, p = 0.001). Compared with implant A, the hazard of revision was higher with implant C (hazard ratio 3.91, 95% CI 1.28 to 11.95); the estimate for implant B was imprecise (hazard ratio 0.43, 95% CI 0.08 to 2.25).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: only 24 events
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A Cox model needs events, not just patients. With 24 revisions across three implants, the CIs are wide and the model can’t support adjustment for anything else. <a href="../survival/14-cox-regression.html">Page 14</a> covers how many events a model needs.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: strata and convergence
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As on <a href="../catalog/07-two-paired-groups.html#stratified-cox">page 7</a>, R puts <code>strata(set_id)</code> in the formula while lifelines takes <code>strata=["set_id"]</code>. Here lifelines’ default convergence matches R exactly; with page 7’s pairs it stopped a little early and needed <code>fit_options={"precision": 1e-9}</code>. If the two programs disagree in the fourth decimal, tighten it.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="which-groups-differ" class="level2">
+<h2 class="anchored" data-anchor-id="which-groups-differ">Which visits differ?</h2>
+<p>Each test above answers “is there any difference among the visits (or implants)?”. When the answer is yes, the next question is which pairs differ. Comparing every pair with an ordinary paired test inflates the chance of a false positive: four visits make six pairs.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>After</th>
+<th>Use</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Repeated-measures ANOVA</td>
+<td>Paired t tests with Holm’s adjustment</td>
+<td><a href="../beyond/15-post-hoc.html">15</a></td>
+</tr>
+<tr class="even">
+<td>Friedman</td>
+<td>Pairwise Wilcoxon signed-rank (or Conover) tests with Holm’s adjustment</td>
+<td><a href="../beyond/15-post-hoc.html">15</a></td>
+</tr>
+<tr class="odd">
+<td>Cochran’s Q</td>
+<td>Pairwise McNemar tests with Holm’s adjustment</td>
+<td><a href="../beyond/15-post-hoc.html">15</a></td>
+</tr>
+<tr class="even">
+<td>Stratified Cox</td>
+<td>Hazard ratios against a chosen reference</td>
+<td><a href="../survival/14-cox-regression.html">14</a></td>
+</tr>
+</tbody>
+</table>
+<p>For repeated PROMs, a <a href="../beyond/16-mixed-models.html">mixed model</a> answers both questions at once (does the score change, and at which visits?) while keeping patients who missed a visit.</p>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The solutions use the packages and data loaded in the sections above, so run the page from the top first.</p>
+<p><strong>1.</strong> Repeat the repeated-measures ANOVA for the VR-12 <strong>mental</strong> component score (<code>vr12_mcs</code>) across the four visits.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>mcs <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, vr12_mcs) <span class="sc">|&gt;</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(case_id) <span class="sc">|&gt;</span></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(vr12_mcs))) <span class="sc">|&gt;</span></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">visit =</span> <span class="fu">factor</span>(visit, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)))</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>rstatix<span class="sc">::</span><span class="fu">anova_test</span>(<span class="at">data =</span> mcs, <span class="at">dv =</span> vr12_mcs, <span class="at">wid =</span> case_id, <span class="at">within =</span> visit, <span class="at">effect.size =</span> <span class="st">"pes"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ANOVA Table (type III tests)
+
+$ANOVA
+  Effect DFn DFd     F       p p&lt;.05   pes
+1  visit   3 981 9.326 4.4e-06     * 0.028
+
+$`Mauchly's Test for Sphericity`
+  Effect     W     p p&lt;.05
+1  visit 0.993 0.814      
+
+$`Sphericity Corrections`
+  Effect   GGe       DF[GG]   p[GG] p[GG]&lt;.05   HFe       DF[HF]   p[HF]
+1  visit 0.995 2.99, 976.46 4.6e-06         * 1.006 3.02, 986.45 4.4e-06
+  p[HF]&lt;.05
+1         *</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">eta_squared</span>(<span class="fu">aov</span>(vr12_mcs <span class="sc">~</span> visit <span class="sc">+</span> <span class="fu">Error</span>(case_id <span class="sc">/</span> visit), <span class="at">data =</span> mcs), <span class="at">partial =</span> <span class="cn">TRUE</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Effect Size for ANOVA (Type I)
+
+Group         | Parameter | Eta2 (partial) |       95% CI
+---------------------------------------------------------
+case_id:visit |     visit |           0.03 | [0.01, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>mcs <span class="sc">|&gt;</span> <span class="fu">group_by</span>(visit) <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">mean =</span> <span class="fu">mean</span>(vr12_mcs), <span class="at">sd =</span> <span class="fu">sd</span>(vr12_mcs))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  visit  mean    sd
+  &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 preop  49.7  8.96
+2 6wk    51.1  8.68
+3 3mo    51.7  8.67
+4 1yr    53.3  9.03</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>mcs <span class="op">=</span> proms[[<span class="st">"case_id"</span>, <span class="st">"visit"</span>, <span class="st">"vr12_mcs"</span>]]</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>mcs <span class="op">=</span> mcs[mcs.groupby(<span class="st">"case_id"</span>)[<span class="st">"vr12_mcs"</span>].transform(<span class="kw">lambda</span> scores: scores.notna().<span class="bu">all</span>())]</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pg.rm_anova(data<span class="op">=</span>mcs, dv<span class="op">=</span><span class="st">"vr12_mcs"</span>, within<span class="op">=</span><span class="st">"visit"</span>, subject<span class="op">=</span><span class="st">"case_id"</span>, correction<span class="op">=</span><span class="va">True</span>, effsize<span class="op">=</span><span class="st">"np2"</span>).T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   0
+Source         visit
+ddof1              3
+ddof2            981
+F            9.32639
+p_unc       0.000004
+p_GG_corr   0.000005
+np2          0.02773
+eps         0.995371
+sphericity      True
+W_spher     0.993122
+p_spher     0.813884</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(mcs.groupby(<span class="st">"visit"</span>)[<span class="st">"vr12_mcs"</span>].agg([<span class="st">"mean"</span>, <span class="st">"std"</span>]).loc[[<span class="st">"preop"</span>, <span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            mean       std
+visit                     
+preop  49.692378  8.963021
+6wk    51.052744  8.679269
+3mo    51.742378  8.674850
+1yr    53.261585  9.025444</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The mental component also changed (F(3, 981) = 9.33, p &lt; 0.001), but far less: from a mean of 49.7 (SD 9.0) before surgery to 53.3 (SD 9.0) at 1 year, with η²<sub>p</sub> = 0.03 (one-sided 95% CI 0.01 to 1.00), a small effect. Mauchly’s test found no evidence against sphericity (p = 0.814).</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> A colleague wants to know whether <strong>HOOS JR</strong> (hip patients) keeps changing between 6 weeks, 3 months and 1 year. Which test would you use, and what do you find?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>HOOS JR, like KOOS JR, has a ceiling at 1 year, and the same patients are measured three times: the <strong>Friedman test</strong>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-13-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-1" role="tab" aria-controls="tabset-13-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-2" role="tab" aria-controls="tabset-13-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-13-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-13-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>hoos <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(instrument <span class="sc">==</span> <span class="st">"HOOS JR"</span>, visit <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, prom_score) <span class="sc">|&gt;</span></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(case_id) <span class="sc">|&gt;</span></span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(prom_score))) <span class="sc">|&gt;</span></span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">visit =</span> <span class="fu">factor</span>(visit, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)))</span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a><span class="fu">friedman.test</span>(prom_score <span class="sc">~</span> visit <span class="sc">|</span> case_id, <span class="at">data =</span> hoos)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Friedman rank sum test
+
+data:  prom_score and visit and case_id
+Friedman chi-squared = 159.7, df = 2, p-value &lt; 2.2e-16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">kendalls_w</span>(prom_score <span class="sc">~</span> visit <span class="sc">|</span> case_id, <span class="at">data =</span> hoos)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Kendall's W |       95% CI
+--------------------------
+0.57        | [0.48, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>hoos <span class="sc">|&gt;</span> <span class="fu">group_by</span>(visit) <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">median =</span> <span class="fu">median</span>(prom_score), <span class="at">q1 =</span> <span class="fu">quantile</span>(prom_score, <span class="fl">0.25</span>), <span class="at">q3 =</span> <span class="fu">quantile</span>(prom_score, <span class="fl">0.75</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  visit median    q1    q3
+  &lt;fct&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 6wk     68.2  61.3  74.1
+2 3mo     79.8  71.6  90.3
+3 1yr     89.2  81.1  97.4</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-13-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>hoos <span class="op">=</span> proms[(proms[<span class="st">"instrument"</span>] <span class="op">==</span> <span class="st">"HOOS JR"</span>) <span class="op">&amp;</span> proms[<span class="st">"visit"</span>].isin([<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>])][[<span class="st">"case_id"</span>, <span class="st">"visit"</span>, <span class="st">"prom_score"</span>]]</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>hoos <span class="op">=</span> hoos[hoos.groupby(<span class="st">"case_id"</span>)[<span class="st">"prom_score"</span>].transform(<span class="kw">lambda</span> scores: scores.notna().<span class="bu">all</span>())]</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pg.friedman(data<span class="op">=</span>hoos, dv<span class="op">=</span><span class="st">"prom_score"</span>, within<span class="op">=</span><span class="st">"visit"</span>, subject<span class="op">=</span><span class="st">"case_id"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Source        W  ddof1           Q         p_unc
+Friedman  visit  0.57036      2  159.700901  2.095994e-35</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hoos.groupby(<span class="st">"visit"</span>)[<span class="st">"prom_score"</span>].describe()[[<span class="st">"25%"</span>, <span class="st">"50%"</span>, <span class="st">"75%"</span>]].loc[[<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          25%    50%     75%
+visit                       
+6wk    61.275  68.20  74.150
+3mo    71.600  79.75  90.275
+1yr    81.125  89.20  97.350</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Among 140 hip patients with all three scores, median HOOS JR rose from 68.2 (IQR 61.3 to 74.2) at 6 weeks to 79.8 (IQR 71.6 to 90.3) at 3 months and 89.2 (IQR 81.1 to 97.4) at 1 year (Friedman χ² = 159.7, df = 2, p &lt; 0.001; Kendall’s W = 0.57, one-sided 95% CI 0.48 to 1.00).</p>
+<p>R’s table shows the 6-week upper quartile as 74.1. The exact value is 74.15, which the computer stores as 74.1499…, so R rounds it down; Python prints 74.150.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> Leaving out the pre-op visit, does walking-aid use change between 6 weeks, 3 months and 1 year? Run the test and write the Results sentence.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-14-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-1" role="tab" aria-controls="tabset-14-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-2" role="tab" aria-controls="tabset-14-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-14-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-14-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>after_surgery <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(visit <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, walking_aid) <span class="sc">|&gt;</span></span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(case_id) <span class="sc">|&gt;</span></span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">all</span>(<span class="sc">!</span><span class="fu">is.na</span>(walking_aid))) <span class="sc">|&gt;</span></span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">visit =</span> <span class="fu">factor</span>(visit, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>)))</span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a>DescTools<span class="sc">::</span><span class="fu">CochranQTest</span>(walking_aid <span class="sc">~</span> visit <span class="sc">|</span> case_id, <span class="at">data =</span> after_surgery)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Cochran's Q test
+
+data:  walking_aid and visit and case_id
+Q = 185.95, df = 2, p-value &lt; 2.2e-16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>after_counts <span class="ot">&lt;-</span> after_surgery <span class="sc">|&gt;</span> <span class="fu">group_by</span>(visit) <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">using =</span> <span class="fu">sum</span>(walking_aid), <span class="at">patients =</span> <span class="fu">n</span>())</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>after_counts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  visit using patients
+  &lt;fct&gt; &lt;dbl&gt;    &lt;int&gt;
+1 6wk     203      345
+2 3mo      87      345
+3 1yr      37      345</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mapply</span>(<span class="cf">function</span>(k, n) <span class="fu">prop.test</span>(k, n, <span class="at">correct =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>conf.int, after_counts<span class="sc">$</span>using, after_counts<span class="sc">$</span>patients)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          [,1]      [,2]       [,3]
+[1,] 0.5357806 0.2092508 0.07881396
+[2,] 0.6390839 0.3005552 0.14432884</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-14-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb89"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>after <span class="op">=</span> proms[proms[<span class="st">"visit"</span>].isin([<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>])][[<span class="st">"case_id"</span>, <span class="st">"visit"</span>, <span class="st">"walking_aid"</span>]]</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>after <span class="op">=</span> after[after.groupby(<span class="st">"case_id"</span>)[<span class="st">"walking_aid"</span>].transform(<span class="kw">lambda</span> answers: answers.notna().<span class="bu">all</span>())]</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pg.cochran(data<span class="op">=</span>after, dv<span class="op">=</span><span class="st">"walking_aid"</span>, within<span class="op">=</span><span class="st">"visit"</span>, subject<span class="op">=</span><span class="st">"case_id"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Source  dof           Q         p_unc
+cochran  visit    2  185.948718  4.185515e-41</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> after.groupby(<span class="st">"visit"</span>)[<span class="st">"walking_aid"</span>].agg([<span class="st">"sum"</span>, <span class="st">"count"</span>]).loc[[<span class="st">"6wk"</span>, <span class="st">"3mo"</span>, <span class="st">"1yr"</span>]]</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(counts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         sum  count
+visit              
+6wk    203.0    345
+3mo     87.0    345
+1yr     37.0    345</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb93"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>([stats.binomtest(<span class="bu">int</span>(k), <span class="bu">int</span>(n)).proportion_ci(method<span class="op">=</span><span class="st">"wilson"</span>) <span class="cf">for</span> k, n <span class="kw">in</span> <span class="bu">zip</span>(counts[<span class="st">"sum"</span>], counts[<span class="st">"count"</span>])])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[ConfidenceInterval(low=np.float64(0.5357806069444521), high=np.float64(0.6390839295307099)), ConfidenceInterval(low=np.float64(0.2092507746792112), high=np.float64(0.3005551968412363)), ConfidenceInterval(low=np.float64(0.07881395916574538), high=np.float64(0.14432883780525613))]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>“Among 345 patients assessed at all three post-operative visits, walking-aid use fell from 58.8% (95% CI 53.6% to 63.9%) at 6 weeks to 25.2% (95% CI 20.9% to 30.1%) at 3 months and 10.7% (95% CI 7.9% to 14.4%) at 1 year (Cochran’s Q = 185.9, df = 2, p &lt; 0.001).”</p>
+<p>More patients are included here (345 vs 328) because patients who missed only the pre-op visit now count.</p>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -987,8 +2150,8 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../catalog/08-three-plus-unmatched.html" class="pagination-link" aria-label="8 · Compare three or more unmatched groups (coming soon)">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">8 · Compare three or more unmatched groups (coming soon)</span>
+      <a href="../catalog/08-three-plus-unmatched.html" class="pagination-link" aria-label="8 · Compare three or more unmatched groups">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">8 · Compare three or more unmatched groups</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

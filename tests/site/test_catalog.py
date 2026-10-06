@@ -146,7 +146,7 @@ REPORTING_PAGES = [page for page in WRITTEN if page >= "catalog/08-"]   # pages 
 
 @pytest.mark.parametrize("page", THREE_GROUP_PAGES)
 def test_three_group_pages_end_with_which_groups_differ(site, page):
-    hrefs = [a["href"] for a in section(page, "which-groups-differ").select("a[href]")]
+    hrefs = [a["href"].split("#")[0] for a in section(page, "which-groups-differ").select("a[href]")]
     assert any(href.endswith("beyond/15-post-hoc.html") for href in hrefs)
 
 
@@ -154,7 +154,7 @@ def test_matched_page_warns_that_missed_visits_drop_patients(site):
     soup = load("catalog/09-three-plus-matched.html")
     warnings = [box for box in soup.select("div.callout-warning") if "missed visit" in text_of(box)]
     assert warnings, "no warning about missed visits"
-    assert any(a["href"].endswith("beyond/16-mixed-models.html") for a in warnings[0].select("a[href]"))
+    assert any(a["href"].split("#")[0].endswith("beyond/16-mixed-models.html") for a in warnings[0].select("a[href]"))
 
 
 @pytest.mark.parametrize("page", REPORTING_PAGES)
@@ -201,7 +201,7 @@ def test_curve_fits_warn_that_repeated_scores_make_the_cis_unreliable(site, page
     warnings = [box for box in section(page, anchor).select("div.callout-warning") if "can't be trusted" in text_of(box)]
     assert warnings, f"{page}#{anchor}: no warning that the CIs can't be trusted"
     assert "are too narrow" not in text_of(warnings[0])
-    assert any(a["href"].endswith("beyond/16-mixed-models.html") for a in warnings[0].select("a[href]"))
+    assert any(a["href"].split("#")[0].endswith("beyond/16-mixed-models.html") for a in warnings[0].select("a[href]"))
 
 
 def test_cox_warning_describes_the_cause_specific_hazard(site):

@@ -28,7 +28,7 @@ To keep the code short, the examples use every case, including the 80 patients w
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: these tests drop anyone with a missed visit
-Repeated-measures ANOVA, the Friedman test and Cochran's Q need every patient measured at **every** visit. A patient who missed one visit is dropped completely, along with their other measurements. Below, 574 patients had a pre-op VR-12 score, but only 328 had all four, so the analysis loses 246 patients (43%). If the patients who miss visits differ from those who don't, the result is biased. [Mixed models](../beyond/16-mixed-models.qmd) use everyone's available data, and are usually the better choice for repeated PROMs.
+Repeated-measures ANOVA, the Friedman test and Cochran's Q need every patient measured at **every** visit. A patient who missed one visit is dropped completely, along with their other measurements. Below, 574 patients had a pre-op VR-12 score, but only 328 had all four, so the analysis loses 246 patients (43%). If the patients who miss visits differ from those who don't, the result is biased. [Mixed models](../beyond/16-mixed-models.qmd#why-mixed-models) use everyone's available data, and are usually the better choice for repeated PROMs.
 :::
 
 ## Repeated-measures ANOVA {#repeated-measures-anova}
@@ -179,7 +179,7 @@ print(pcs_anova.loc[0, "np2"])    # pingouin doesn't compute a CI for it
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: a significant F doesn't say which visits differ
-The ANOVA says PCS changed somewhere over the year. To say *when*, compare the visits with paired tests and a correction for multiple comparisons ([page 15](../beyond/15-post-hoc.qmd)). And remember who's missing: the 246 patients without complete data may have recovered differently.
+The ANOVA says PCS changed somewhere over the year. To say *when*, compare the visits with paired tests and a correction for multiple comparisons ([page 15](../beyond/15-post-hoc.qmd#after-repeated-measures-anova)). And remember who's missing: the 246 patients without complete data may have recovered differently.
 :::
 
 ::: {.callout-tip}
@@ -479,7 +479,7 @@ Use rose by 24.4 percentage points from pre-op to 6 weeks, then fell well below 
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: Q doesn't tell you the direction
-Use went **up** and then **down**. Cochran's Q only says it wasn't the same at every visit. To say which changes are real, compare pairs of visits with McNemar's test and a correction for multiple comparisons ([page 15](../beyond/15-post-hoc.qmd)).
+Use went **up** and then **down**. Cochran's Q only says it wasn't the same at every visit. To say which changes are real, compare pairs of visits with McNemar's test and a correction for multiple comparisons ([page 15](../beyond/15-post-hoc.qmd#after-cochran-q)).
 :::
 
 ::: {.callout-tip}
@@ -604,12 +604,12 @@ Each test above answers "is there any difference among the visits (or implants)?
 
 | After | Use | Page |
 |---|---|---|
-| Repeated-measures ANOVA | Paired t tests with Holm's adjustment | [15](../beyond/15-post-hoc.qmd) |
-| Friedman | Pairwise Wilcoxon signed-rank (or Conover) tests with Holm's adjustment | [15](../beyond/15-post-hoc.qmd) |
-| Cochran's Q | Pairwise McNemar tests with Holm's adjustment | [15](../beyond/15-post-hoc.qmd) |
+| Repeated-measures ANOVA | Paired t tests with Holm's adjustment | [15](../beyond/15-post-hoc.qmd#after-repeated-measures-anova) |
+| Friedman | Pairwise Wilcoxon signed-rank (or Conover) tests with Holm's adjustment | [15](../beyond/15-post-hoc.qmd#after-friedman) |
+| Cochran's Q | Pairwise McNemar tests with Holm's adjustment | [15](../beyond/15-post-hoc.qmd#after-cochran-q) |
 | Stratified Cox | Hazard ratios against a chosen reference | [14](../survival/14-cox-regression.qmd) |
 
-For repeated PROMs, a [mixed model](../beyond/16-mixed-models.qmd) answers both questions at once (does the score change, and at which visits?) while keeping patients who missed a visit.
+For repeated PROMs, a [mixed model](../beyond/16-mixed-models.qmd#why-mixed-models) answers both questions at once (does the score change, and at which visits?) while keeping patients who missed a visit.
 
 ```{r}
 #| include: false

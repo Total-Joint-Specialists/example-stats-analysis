@@ -355,7 +355,7 @@ The time constant was 27.5 days longer for knees (95% CI 15.9 to 40.1). Half of 
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: two questionnaires, and repeated scores
-Hips answer HOOS JR and knees KOOS JR. A point on one isn't guaranteed to equal a point on the other, so the differences in start and plateau mix up the joints with the questionnaires. The time constant is measured in days, not points, so it compares more fairly, as long as both questionnaires track recovery in a similar way. As on [page 11](11-predict-from-one.qmd#nonlinear-regression), each joint contributes up to four related scores, so these CIs can't be trusted: some may be too narrow and others too wide. A mixed model ([page 16](../beyond/16-mixed-models.qmd)) handles that.
+Hips answer HOOS JR and knees KOOS JR. A point on one isn't guaranteed to equal a point on the other, so the differences in start and plateau mix up the joints with the questionnaires. The time constant is measured in days, not points, so it compares more fairly, as long as both questionnaires track recovery in a similar way. As on [page 11](11-predict-from-one.qmd#nonlinear-regression), each joint contributes up to four related scores, so these CIs can't be trusted: some may be too narrow and others too wide. A mixed model ([page 16](../beyond/16-mixed-models.qmd#random-intercept)) handles that.
 :::
 
 ::: {.callout-tip}

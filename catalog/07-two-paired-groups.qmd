@@ -28,7 +28,7 @@ To keep the code short, the examples use every case, including the 80 patients w
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: only complete pairs count
-A paired test can only use patients measured at **both** times. Patients who missed a visit drop out, and if they differ from the rest (for example, the patients who did badly stop coming back), the result is biased. Always report how many patients had both measurements. [Mixed models](../beyond/16-mixed-models.qmd) can use everyone's data, including incomplete follow-up.
+A paired test can only use patients measured at **both** times. Patients who missed a visit drop out, and if they differ from the rest (for example, the patients who did badly stop coming back), the result is biased. Always report how many patients had both measurements. [Mixed models](../beyond/16-mixed-models.qmd#why-mixed-models) can use everyone's data, including incomplete follow-up.
 :::
 
 ## Paired t test {#paired-t}
@@ -752,7 +752,7 @@ print(hka_test, (readings["R2"] - readings["R1"]).mean(), hka_test.confidence_in
 ```
 :::
 
-Rater 2 measured 0.50° higher on average (95% CI 0.08° to 0.93°; p = 0.022). A systematic difference this small may not matter clinically; [page 17](../beyond/17-agreement.qmd) shows how to judge agreement between raters properly.
+Rater 2 measured 0.50° higher on average (95% CI 0.08° to 0.93°; p = 0.022). A systematic difference this small may not matter clinically; [page 17](../beyond/17-agreement.qmd#bland-altman) shows how to judge agreement between raters properly.
 :::
 
 **3.** Patients improve a lot in the first 3 months. Do they keep improving between 3 months and 1 year? Test it for KOOS JR and write the Results sentence.

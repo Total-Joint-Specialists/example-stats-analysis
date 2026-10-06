@@ -530,7 +530,7 @@ check_agree(list(chisq = implant_logrank$chisq, p = implant_logrank$pvalue), ret
 ```
 
 - **Observed / Expected:** implant C had 38 revisions where 16.9 were expected. Implants A (25 vs 34.0) and B (18 vs 30.0) had fewer than expected.
-- **Chisq = 33.5 on 2 degrees of freedom, p < 0.001:** at least one implant's curve differs from the others. The test doesn't say which; [page 15](../beyond/15-post-hoc.qmd) covers comparing pairs of groups. [Page 8](../catalog/08-three-plus-unmatched.qmd#cox) gives each implant's hazard ratio.
+- **Chisq = 33.5 on 2 degrees of freedom, p < 0.001:** at least one implant's curve differs from the others. The test doesn't say which; [page 15](../beyond/15-post-hoc.qmd#after-log-rank) covers comparing pairs of groups. [Page 8](../catalog/08-three-plus-unmatched.qmd#cox) gives each implant's hazard ratio.
 
 > **Methods:** Revision-free survival was compared between groups with the log-rank test.
 >

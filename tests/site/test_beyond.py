@@ -112,3 +112,43 @@ def test_kappa_and_weighted_kappa_with_ordered_categories(site):
     code = code_of(found)
     assert "CohenKappa(" in code and "cohens_kappa(" in code and "Equal-Spacing" in code and 'wt="linear"' in code
     assert "alphabetically" in text_of(found)
+
+
+# ---- links into pages 15-17 ----------------------------------------------------------
+
+# Where a sentence promises one topic ("compare the visits with paired tests ... page 15"),
+# its link lands on that section, not the top of the page.
+SECTION_LINKS = {
+    "foundations/03-distributions.html": ["beyond/16-mixed-models.html#bilateral"],
+    "catalog/07-two-paired-groups.html": ["beyond/16-mixed-models.html#why-mixed-models",
+                                          "beyond/17-agreement.html#bland-altman"],
+    "catalog/08-three-plus-unmatched.html": ["beyond/15-post-hoc.html#after-anova", "beyond/15-post-hoc.html#after-kruskal-wallis",
+                                             "beyond/15-post-hoc.html#after-chi-square", "beyond/15-post-hoc.html#overall-test-first"],
+    "catalog/09-three-plus-matched.html": ["beyond/15-post-hoc.html#after-repeated-measures-anova",
+                                           "beyond/15-post-hoc.html#after-friedman", "beyond/15-post-hoc.html#after-cochran-q",
+                                           "beyond/16-mixed-models.html#why-mixed-models"],
+    "catalog/11-predict-from-one.html": ["beyond/16-mixed-models.html#random-intercept"],
+    "catalog/12-predict-from-several.html": ["beyond/16-mixed-models.html#random-intercept"],
+    "survival/13-kaplan-meier.html": ["beyond/15-post-hoc.html#after-log-rank"],
+}
+
+
+def beyond_links(page):
+    return [a["href"].replace("../", "") for a in load(page).select("main a[href]") if "beyond/1" in a["href"]]
+
+
+@pytest.mark.parametrize("page,targets", SECTION_LINKS.items())
+def test_links_into_pages_15_to_17_land_on_the_section_they_promise(site, page, targets):
+    assert [target for target in targets if target not in beyond_links(page)] == []
+
+
+@pytest.mark.parametrize("page", SECTION_LINKS)
+def test_no_link_into_pages_15_to_17_stops_at_the_top_of_the_page(site, page):
+    assert [href for href in beyond_links(page) if "#" not in href] == []
+
+
+def test_post_hoc_tests_are_no_longer_gated_on_the_overall_test(site):
+    """Phase 3b's deferred question, settled on page 15: adjusted post-hoc tests don't need a significant overall test."""
+    found = section("catalog/08-three-plus-unmatched.html", "which-groups-differ")
+    assert "Only run post-hoc tests when the overall test is significant" not in text_of(found)
+    assert any(a["href"].endswith("beyond/15-post-hoc.html#overall-test-first") for a in found.select("a[href]"))

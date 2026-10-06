@@ -30,6 +30,7 @@ website:
   repo-actions: [issue]
   search: true
   page-navigation: true
+  favicon: images/tjs-icon.png
   navbar:
     left:
       - text: "Decision table"
@@ -42,6 +43,13 @@ website:
         aria-label: "GitHub repository"
   sidebar:
     style: docked
+    logo:
+      light:
+        path: images/tjs-logo.png
+        alt: "Total Joint Specialists"
+      dark:
+        path: images/tjs-logo-dark.png
+        alt: "Total Joint Specialists"
     contents:
       - text: "Decision table"
         href: index.qmd

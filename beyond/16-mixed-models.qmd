@@ -1,10 +1,487 @@
 ---
-title: "16 · Mixed models for repeated PROMs (coming soon)"
-description: "PROMs at several visits, including patients who missed some."
+title: "16 · Mixed models for repeated PROMs"
+description: "PROMs at several visits, including patients who missed some: random intercepts, time as categories or a curve, group × time, and estimated marginal means."
+engine: knitr
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
+PROMs are collected at several visits, and patients miss some of them. [Page 9](../catalog/09-three-plus-matched.qmd#repeated-measures-anova) analyzed repeated scores with repeated-measures ANOVA, which only uses patients measured at every visit. A **linear mixed model** uses every score from every patient, and answers the questions a PROM study usually asks: how much do patients improve, by when, and does recovery differ between groups?
+
+The examples use KOOS JR, the knee score, in the 330 total knee replacements. Hips answer a different questionnaire (HOOS JR), and a point on one isn't guaranteed to equal a point on the other, so the two aren't mixed in one model.
+
+::: {.callout-note}
+## 💡 How this page works
+Run the code blocks in order, from the top: later blocks use the packages, data and models made earlier.
+
+Each knee is treated as its own patient until the section on [bilateral patients](#bilateral).
 :::
 
+## Why not repeated-measures ANOVA? {#why-mixed-models}
+
+Count how many of the four visits each knee has a score for:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+library(lmerTest)        # lme4's lmer(), plus p-values for its fixed effects
+library(emmeans)         # estimated marginal means
+library(splines)         # natural cubic splines, for time as a curve
+
+proms <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+knees <- proms |>
+  filter(instrument == "KOOS JR", !is.na(prom_score)) |>          # every knee score that exists
+  left_join(select(cohort, case_id, sex, age), by = "case_id") |>
+  mutate(visit = factor(visit, levels = c("preop", "6wk", "3mo", "1yr")))
+
+knees |>
+  count(case_id, name = "visits") |>            # scores per knee
+  count(visits, name = "knees")                 # knees with 1, 2, 3 or 4 scores
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import patsy
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+
+proms = pd.read_csv("data/proms_long.csv")
+cohort = pd.read_csv("data/cohort.csv")
+
+knees = proms[(proms["instrument"] == "KOOS JR") & proms["prom_score"].notna()]    # every knee score that exists
+knees = knees.merge(cohort[["case_id", "sex", "age"]], on="case_id")
+visits = ["preop", "6wk", "3mo", "1yr"]
+knees["visit"] = pd.Categorical(knees["visit"], categories=visits)               # pre-op first: the reference
+
+print(knees.groupby("case_id").size().value_counts().sort_index())   # knees with 1, 2, 3 or 4 scores
+```
+:::
+
+```{python}
+#| include: false
+per_knee = knees.groupby("case_id").size()
+chk = {"knees": float(per_knee.size), "complete": float((per_knee == 4).sum()), "scores": float(len(knees))}
+```
+
+```{r}
+#| include: false
+per_knee <- count(knees, case_id)
+check_agree(list(knees = nrow(per_knee), complete = sum(per_knee$n == 4), scores = nrow(knees)), reticulate::py$chk)
+```
+
+All 330 knees have at least one score, 1146 scores in all, but only 192 knees have all four. Repeated-measures ANOVA would drop the other 138 knees (42%) together with every score they did give. A mixed model keeps all 1146 scores.
+
+Dropping patients isn't only wasteful. It can bias the result, and that depends on why scores are missing:
+- **Missing completely at random:** a missed visit has nothing to do with the patient's recovery (the clinic rescheduled, the patient moved). Both methods are unbiased; the mixed model is more precise because it uses more data.
+- **Missing at random:** missing depends on things you measured, such as an earlier score. A patient who scored badly at 6 weeks is less likely to return at 3 months. Repeated-measures ANOVA is then biased, because the patients it keeps recovered better; a mixed model is still unbiased, because it uses the earlier scores to fill the picture in.
+- **Missing not at random:** missing depends on the score that wasn't collected (patients stay away *because* their knee is worse that week). Nothing fixes this from the data alone. Say so as a limitation.
+
+## A random intercept for each knee {#random-intercept}
+
+Scores from the same knee are related: a knee that starts low tends to stay lower than average. A mixed model handles this with a **random intercept**: each knee gets its own baseline level, shifted up or down from the average. The **fixed effects** (here, the visits) describe the average patient; the random intercepts describe how much knees differ from that average.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+knee_model <- lmer(prom_score ~ visit + (1 | case_id), data = knees)   # (1 | case_id): an intercept per knee
+print(summary(knee_model), correlation = FALSE)
+```
+
+## Python
+
+```{python}
+knee_model = smf.mixedlm("prom_score ~ visit", knees, groups="case_id").fit(reml=True)   # groups: an intercept per knee
+print(knee_model.summary())
+```
+:::
+
+```{python}
+#| include: false
+fixed = knee_model.fe_params
+chk = {"intercept": float(fixed["Intercept"]), "visit_6wk": float(fixed["visit[T.6wk]"]), "visit_1yr": float(fixed["visit[T.1yr]"]),
+       "se_1yr": float(knee_model.bse_fe["visit[T.1yr]"]), "sd_knee": float(np.sqrt(knee_model.cov_re.iloc[0, 0])),
+       "sd_residual": float(np.sqrt(knee_model.scale))}
+```
+
+```{r}
+#| include: false
+knee_sd <- as.data.frame(VarCorr(knee_model))$sdcor
+# The estimates agree to about 1e-6. The standard errors differ in the fourth significant figure:
+# lme4 computes them with the variances held fixed, statsmodels from the whole likelihood's
+# Hessian (checked by hand while writing this page). See the R vs Python box.
+check_agree(list(intercept = fixef(knee_model)[["(Intercept)"]], visit_6wk = fixef(knee_model)[["visit6wk"]],
+                 visit_1yr = fixef(knee_model)[["visit1yr"]], se_1yr = sqrt(diag(vcov(knee_model)))[4],
+                 sd_knee = knee_sd[1], sd_residual = knee_sd[2]),
+            reticulate::py$chk, tol = 1e-3)
+```
+
+Reading the output:
+- **Fixed effects:** the average KOOS JR was 50.0 before surgery (the intercept), and higher by 12.5 points at 6 weeks, 24.2 at 3 months and 33.9 at 1 year. Each visit's coefficient is its difference from pre-op.
+- **Random effects:** knees' own baseline levels vary around the average with an SD of 8.8 points (R's "case_id (Intercept)" row; Python's "case_id Var" row gives the variance, 8.8² = 78.1). The scores also vary from visit to visit within a knee with a residual SD of 8.6 points.
+- **How much of the variation is between knees:** 78.1 / (78.1 + 73.5) = 0.52, the intraclass correlation ([page 17](17-agreement.qmd#icc) uses the same idea for raters). About half of the spread in scores comes from knees differing from each other; that's why the scores can't be treated as independent.
+- **REML:** both programs fit the model by restricted maximum likelihood, the standard choice for estimating it.
+
+::: {.callout-tip}
+## 🔀 R vs Python: degrees of freedom
+The estimates agree. The standard errors agree to three or four significant figures: lme4 computes them with the knee and residual variances held at their estimates, statsmodels from the curvature of the whole likelihood. The p-values and CIs differ a little more. lmerTest gives each fixed effect a t test with **Satterthwaite** degrees of freedom, an approximation to how much information the estimate rests on. statsmodels uses a z test, as if the degrees of freedom were infinite. With 330 knees the difference is in the third decimal place; with a small study, trust R's.
+:::
+
+## Estimated marginal means {#estimated-marginal-means}
+
+Report the model's estimate at each visit, with its 95% CI. These are the **estimated marginal means** (EMMs): the average score the model expects at each visit, using every knee, including those with missed visits.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+knee_means <- emmeans(knee_model, ~ visit, lmer.df = "satterthwaite")
+knee_means
+# each visit minus pre-op; adjust = "none" because these are the planned comparisons (page 15)
+confint(contrast(knee_means, method = "trt.vs.ctrl", adjust = "none"))
+```
+
+## Python
+
+```{python}
+def marginal_means(model, grid):
+    """The model's average score for each row of grid (fixed effects only), with its standard error and 95% CI."""
+    X = patsy.build_design_matrices([model.model.data.model_spec], grid, return_type="dataframe")[0]
+    beta = model.fe_params
+    cov = model.cov_params().loc[beta.index, beta.index]
+    means = grid.copy()
+    means["emmean"] = X @ beta
+    means["se"] = np.sqrt(np.diag(X @ cov @ X.T))
+    means["lower"] = means["emmean"] - 1.96 * means["se"]
+    means["upper"] = means["emmean"] + 1.96 * means["se"]
+    return means
+
+visit_grid = pd.DataFrame({"visit": pd.Categorical(visits, categories=visits)})
+print(marginal_means(knee_model, visit_grid).round(2))
+print(knee_model.conf_int().loc[["visit[T.6wk]", "visit[T.3mo]", "visit[T.1yr]"]])   # each visit minus pre-op
+```
+:::
+
+```{python}
+#| include: false
+knee_means = marginal_means(knee_model, visit_grid)
+chk = {"emm_pre": float(knee_means["emmean"].iloc[0]), "emm_1yr": float(knee_means["emmean"].iloc[3]),
+       "se_pre": float(knee_means["se"].iloc[0]), "se_1yr": float(knee_means["se"].iloc[3])}
+```
+
+```{r}
+#| include: false
+knee_emm <- summary(knee_means)
+# standard errors computed two ways, as in the check above
+check_agree(list(emm_pre = knee_emm$emmean[1], emm_1yr = knee_emm$emmean[4], se_pre = knee_emm$SE[1], se_1yr = knee_emm$SE[4]),
+            reticulate::py$chk, tol = 1e-3)
+```
+
+- **emmean, lower.CL / upper.CL:** KOOS JR averaged 50.0 (95% CI 48.6 to 51.3) before surgery, 62.5 at 6 weeks, 74.2 at 3 months and 83.9 (95% CI 82.5 to 85.3) at 1 year.
+- **The contrasts:** the improvement from pre-op, with its CI: 33.9 points by 1 year (95% CI 32.5 to 35.3).
+
+The 192 knees with all four scores average 49.2 before surgery and 84.0 at 1 year. That's close to the mixed model, as expected here: in this synthetic cohort, visits were missed completely at random. With real patients you can't count on that, and the mixed model's answer, which uses all 330 knees, is the one to report.
+
+## Time: categories or a curve? {#time}
+
+So far each visit has its own mean: **time as categories**. That fits when everyone is seen at the same few scheduled visits, and it makes no assumption about the shape of recovery. The alternative is **time as a number**, days since surgery, with a curve. That suits many or irregular visits, but the curve's shape must be right. Recovery isn't a straight line, so use a natural cubic spline ([page 12](../catalog/12-predict-from-several.qmd#multiple-nonlinear-regression) explains splines):
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| fig-height: 3.5
+curve_model <- lmer(prom_score ~ ns(visit_days, df = 3) + (1 | case_id), data = knees)
+
+days <- tibble(visit_days = c(-14, 42, 90, 365))           # the scheduled visit days
+on_days <- predict(curve_model, newdata = days, re.form = NA)   # re.form = NA: the average knee
+on_days
+
+curve <- tibble(visit_days = -27:395)
+curve$prom_score <- predict(curve_model, newdata = curve, re.form = NA)
+ggplot(curve, aes(visit_days, prom_score)) +
+  geom_line() +
+  geom_point(data = summary(knee_means) |> mutate(visit_days = c(-14, 42, 90, 365)), aes(y = emmean)) +
+  labs(x = "Days since surgery", y = "KOOS JR")
+```
+
+## Python
+
+```{python}
+day_knots = list(knees["visit_days"].quantile([1/3, 2/3]))     # the same knots R's ns(df = 3) uses
+day_low, day_high = knees["visit_days"].min(), knees["visit_days"].max()
+curve_model = smf.mixedlm("prom_score ~ cr(visit_days, knots=day_knots, lower_bound=day_low, upper_bound=day_high,"
+                          " constraints='center')", knees, groups="case_id").fit(reml=True)
+
+days = pd.DataFrame({"visit_days": [-14, 42, 90, 365]})        # the scheduled visit days
+on_days = curve_model.predict(days)                            # the average knee
+print(on_days.round(2))
+
+curve = pd.DataFrame({"visit_days": np.arange(-27, 396)})
+fig, ax = plt.subplots(figsize=(7, 3.5))
+ax.plot(curve["visit_days"], curve_model.predict(curve))
+ax.scatter(days["visit_days"], marginal_means(knee_model, visit_grid)["emmean"])
+ax.set_xlabel("Days since surgery")
+ax.set_ylabel("KOOS JR")
+plt.tight_layout()
+plt.show()
+```
+:::
+
+```{python}
+#| include: false
+chk = {"day_42": float(on_days.iloc[1]), "day_365": float(on_days.iloc[3])}
+```
+
+```{r}
+#| include: false
+# the two optimizers stop at slightly different points
+check_agree(list(day_42 = on_days[[2]], day_365 = on_days[[4]]), reticulate::py$chk, tol = 1e-4)
+```
+
+The curve passes close to the visit means (the points): 62.7 at 6 weeks and 84.1 at 1 year, against 62.5 and 83.9. But look between 3 months and 1 year. No knee was scored there, and the curve invents a peak of about 89 points at around 8 months, then falls. With a few fixed visits, a curve has nothing to follow between them. Categories are simpler, make no such claims, and are what the rest of this page uses.
+
+::: {.callout-warning}
+## ⚠️ Watch out: a straight line for time
+`prom_score ~ visit_days` would force recovery to be a straight line: as steep between 3 months and 1 year as in the first 6 weeks. Always plot the visit means first. If you use time as a number, let it bend.
+:::
+
+## Does recovery differ between groups? {#group-by-time}
+
+To ask whether men and women recover differently, add sex and its **interaction** with visit. The interaction lets each sex have its own pattern of change. Its test asks whether the patterns differ, which is the question; the main effect of sex alone only compares the average levels.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| fig-height: 3.5
+sex_model <- lmer(prom_score ~ visit * sex + (1 | case_id), data = knees)
+sex_anova <- anova(sex_model)                           # F tests, Satterthwaite degrees of freedom
+sex_anova
+
+sex_means <- emmeans(sex_model, ~ visit | sex, lmer.df = "satterthwaite")
+sex_means
+emmip(sex_model, sex ~ visit, CIs = TRUE) +            # the two recovery patterns, with 95% CIs
+  labs(x = "Visit", y = "KOOS JR")
+```
+
+## Python
+
+```{python}
+sex_model = smf.mixedlm("prom_score ~ visit * sex", knees, groups="case_id").fit(reml=True)
+
+interaction = [name for name in sex_model.fe_params.index if ":" in name]     # the three visit x sex terms
+sex_wald = sex_model.wald_test(" = 0, ".join(interaction) + " = 0", scalar=True)   # do the patterns differ?
+print(sex_wald.statistic, sex_wald.pvalue)                                          # chi-square on 3 df, p-value
+
+sex_grid = pd.DataFrame([(visit, sex) for sex in ["Female", "Male"] for visit in visits], columns=["visit", "sex"])
+sex_grid["visit"] = pd.Categorical(sex_grid["visit"], categories=visits)
+sex_means = marginal_means(sex_model, sex_grid)
+print(sex_means.round(2))
+
+fig, ax = plt.subplots(figsize=(7, 3.5))
+for sex, rows in sex_means.groupby("sex"):
+    ax.errorbar(rows["visit"].astype(str), rows["emmean"], yerr=1.96 * rows["se"], marker="o", capsize=3, label=sex)
+ax.set_xlabel("Visit")
+ax.set_ylabel("KOOS JR")
+legend = ax.legend()
+plt.tight_layout()
+plt.show()
+```
+:::
+
+```{python}
+#| include: false
+chk = {"wald_per_df": float(sex_wald.statistic) / 3, "emm_male_6wk": float(sex_means["emmean"].iloc[5]),
+       "emm_female_1yr": float(sex_means["emmean"].iloc[3])}
+```
+
+```{r}
+#| include: false
+sex_emm <- summary(sex_means)
+# R's F is the same Wald statistic divided by its 3 degrees of freedom; it inherits the
+# standard-error difference explained in the check after the first model
+check_agree(list(wald_per_df = sex_anova["visit:sex", "F value"], emm_male_6wk = sex_emm$emmean[6],
+                 emm_female_1yr = sex_emm$emmean[4]),
+            reticulate::py$chk, tol = 1e-3)
+```
+
+- **visit:sex, F = 2.09 on 3 and 832 df, p = 0.100:** no clear evidence that recovery differs between men and women. Python's Wald test gives the undivided statistic, 6.26 on 3 degrees of freedom, with a chi-square p-value of 0.099.
+- **The EMMs** show why: the two patterns cross back and forth by a point or two. Men were 2.8 points ahead at 6 weeks (63.9 vs 61.2), women 0.9 points ahead at 3 months, and they were within about a point of each other at 1 year (84.4 vs 83.4).
+
+::: {.callout-warning}
+## ⚠️ Watch out: a non-significant interaction isn't "the same recovery"
+p = 0.100 means the data can't show a difference in recovery between the sexes; it doesn't show the recoveries are the same. Report the EMMs with their CIs so readers can see how big a difference the data still allow.
+:::
+
+## Bilateral patients {#bilateral}
+
+46 of the knee patients had both knees replaced, so 92 of the 330 knees come in pairs. The two knees share the same person, so their scores may be related beyond what each knee's own intercept captures. The standard fix is a second random intercept, for the patient, with knees **nested** in patients: in lme4, `(1 | patient_id/case_id)`; in statsmodels, `groups="patient_id"` with a variance component for `case_id`.
+
+In this cohort the patient-level intercept comes out at almost exactly zero (lme4 warns that the fit is "singular"), so the simpler model above is enough. In your data, fit the nested model and report it unless it is singular. [Page 3](../foundations/03-distributions.qmd#paired) explains why bilateral patients need care, and [page 14](../survival/14-cox-regression.qmd#stratified-cox) shows the survival-analysis version.
+
+## How to report it {#reporting}
+
+> **Methods:** KOOS JR scores before surgery and at 6 weeks, 3 months and 1 year were analyzed with a linear mixed model, with visit as a categorical fixed effect and a random intercept for each knee, fitted by restricted maximum likelihood. All available scores were used, including those from knees that missed a visit. Differences between men and women in the pattern of recovery were tested with a visit × sex interaction (Satterthwaite degrees of freedom). Estimated marginal means are reported with 95% CIs.
+>
+> **Results:** Of 330 knees, 192 (58.2%) had all four scores; all 1146 scores were analyzed. The estimated mean KOOS JR rose from 50.0 (95% CI 48.6 to 51.3) before surgery to 83.9 (95% CI 82.5 to 85.3) at 1 year, an improvement of 33.9 points (95% CI 32.5 to 35.3). There was no clear evidence that the pattern of recovery differed between men and women (interaction F(3, 832) = 2.09, p = 0.100).
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+knee_vc <- as.data.frame(VarCorr(knee_model))
+knee_change <- summary(confint(contrast(knee_means, method = "trt.vs.ctrl", adjust = "none")))
+complete_means <- knees |> group_by(case_id) |> filter(n() == 4) |> ungroup() |> group_by(visit) |> summarise(mean = mean(prom_score))
+bilateral_knees <- knees |> distinct(patient_id, case_id) |> count(patient_id) |> filter(n == 2)
+hips <- proms |> filter(instrument == "HOOS JR", !is.na(prom_score)) |> mutate(visit = factor(visit, levels = c("preop", "6wk", "3mo", "1yr")))
+hip_emm <- summary(emmeans(lmer(prom_score ~ visit + (1 | case_id), data = hips), ~ visit, lmer.df = "satterthwaite"))
+pcs_all <- proms |> filter(!is.na(vr12_pcs)) |> mutate(visit = factor(visit, levels = c("preop", "6wk", "3mo", "1yr")))
+pcs_emm <- summary(emmeans(lmer(vr12_pcs ~ visit + (1 | case_id), data = pcs_all), ~ visit, lmer.df = "satterthwaite"))
+age_knees <- knees |> mutate(age_group = cut(age, c(0, 64, 74, Inf), labels = c("under 65", "65 to 74", "75 and over")))
+age_anova <- anova(lmer(prom_score ~ visit * age_group + (1 | case_id), data = age_knees))
+stopifnot(
+  nrow(per_knee) == 330, sum(per_knee$n == 4) == 192, nrow(knees) == 1146, 330 - 192 == 138,
+  round(100 * 138 / 330) == 42, round(100 * 192 / 330, 1) == 58.2,
+  round(fixef(knee_model)[2:4], 1) == c(12.5, 24.2, 33.9), round(fixef(knee_model)[[1]], 1) == 50.0,
+  round(knee_vc$sdcor, 1) == c(8.8, 8.6), round(knee_vc$vcov, 1) == c(78.1, 73.5),
+  round(knee_vc$vcov[1] / sum(knee_vc$vcov), 2) == 0.52,
+  round(knee_emm$emmean, 1) == c(50.0, 62.5, 74.2, 83.9),
+  round(c(knee_emm$lower.CL[1], knee_emm$upper.CL[1], knee_emm$lower.CL[4], knee_emm$upper.CL[4]), 1) == c(48.6, 51.3, 82.5, 85.3),
+  round(c(knee_change$estimate[3], knee_change$lower.CL[3], knee_change$upper.CL[3]), 1) == c(33.9, 32.5, 35.3),
+  round(complete_means$mean[c(1, 4)], 1) == c(49.2, 84.0),
+  round(on_days[c(2, 4)], 1) == c(62.7, 84.1),
+  round(max(curve$prom_score)) == 89, curve$visit_days[which.max(curve$prom_score)] %/% 30 == 8,
+  round(sex_anova["visit:sex", "F value"], 2) == 2.09, round(sex_anova["visit:sex", "DenDF"]) == 832,
+  round(sex_anova["visit:sex", "Pr(>F)"], 3) == 0.100,
+  round(reticulate::py_eval("float(sex_wald.statistic)"), 2) == 6.26, round(reticulate::py_eval("float(sex_wald.pvalue)"), 3) == 0.099,
+  round(sex_emm$emmean[c(6, 2)], 1) == c(63.9, 61.2), round(sex_emm$emmean[6] - sex_emm$emmean[2], 1) == 2.8,
+  round(sex_emm$emmean[3] - sex_emm$emmean[7], 1) == 0.9, round(sex_emm$emmean[c(8, 4)], 1) == c(84.4, 83.4),
+  nrow(bilateral_knees) == 46,
+  # exercise solutions (recomputed here: the guard runs before the solution chunks)
+  n_distinct(hips$case_id) == 270, nrow(hips) == 906, sum(table(hips$case_id) == 4) == 136,
+  round(hip_emm$emmean, 1) == c(45.5, 68.6, 80.1, 88.2),
+  round(c(hip_emm$lower.CL[4], hip_emm$upper.CL[4]), 1) == c(86.7, 89.7),
+  n_distinct(pcs_all$case_id) == 600, nrow(pcs_all) == 2052,
+  round(pcs_emm$emmean, 1) == c(31.2, 35.3, 41.0, 44.9),
+  round(age_anova["visit:age_group", "F value"], 2) == 1.00, round(age_anova["visit:age_group", "Pr(>F)"], 3) == 0.422,
+  round(age_anova["visit:age_group", "NumDF"]) == 6
+)
+```
+
+## Exercises {#exercises}
+
+The solutions use the packages, data and functions loaded in the sections above, so run the page from the top first.
+
+**1.** Fit the same random-intercept model to HOOS JR in the total hip replacements and report the estimated mean at each visit.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+hips <- proms |>
+  filter(instrument == "HOOS JR", !is.na(prom_score)) |>
+  mutate(visit = factor(visit, levels = c("preop", "6wk", "3mo", "1yr")))
+c(hips = n_distinct(hips$case_id), scores = nrow(hips), complete = sum(table(hips$case_id) == 4))
+
+hip_model <- lmer(prom_score ~ visit + (1 | case_id), data = hips)
+emmeans(hip_model, ~ visit, lmer.df = "satterthwaite")
+```
+
+## Python
+
+```{python}
+hips = proms[(proms["instrument"] == "HOOS JR") & proms["prom_score"].notna()].copy()
+hips["visit"] = pd.Categorical(hips["visit"], categories=visits)
+print(hips["case_id"].nunique(), len(hips), (hips.groupby("case_id").size() == 4).sum())
+
+hip_model = smf.mixedlm("prom_score ~ visit", hips, groups="case_id").fit(reml=True)
+print(marginal_means(hip_model, visit_grid).round(2))
+```
+:::
+
+Of 270 hips, 136 had all four scores; all 906 scores were used. The estimated mean HOOS JR rose from 45.5 before surgery to 68.6 at 6 weeks, 80.1 at 3 months and 88.2 (95% CI 86.7 to 89.7) at 1 year.
+:::
+
+**2.** [Page 9](../catalog/09-three-plus-matched.qmd#repeated-measures-anova) analyzed the VR-12 physical component score (PCS) with repeated-measures ANOVA in the 328 patients measured at all four visits. Fit a mixed model with every PCS score instead. How many patients does it use, and do the visit means change?
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+pcs_all <- proms |>
+  filter(!is.na(vr12_pcs)) |>
+  mutate(visit = factor(visit, levels = c("preop", "6wk", "3mo", "1yr")))
+c(patients = n_distinct(pcs_all$case_id), scores = nrow(pcs_all))
+
+pcs_model <- lmer(vr12_pcs ~ visit + (1 | case_id), data = pcs_all)
+emmeans(pcs_model, ~ visit, lmer.df = "satterthwaite")
+```
+
+## Python
+
+```{python}
+pcs_all = proms[proms["vr12_pcs"].notna()].copy()
+pcs_all["visit"] = pd.Categorical(pcs_all["visit"], categories=visits)
+print(pcs_all["case_id"].nunique(), len(pcs_all))
+
+pcs_model = smf.mixedlm("vr12_pcs ~ visit", pcs_all, groups="case_id").fit(reml=True)
+print(marginal_means(pcs_model, visit_grid).round(2))
+```
+:::
+
+The mixed model uses all 600 patients (2052 scores) instead of 328. Its visit means, 31.2, 35.3, 41.0 and 44.9, are almost the same as page 9's complete-patient means (31.2, 34.9, 41.0 and 44.9): in this synthetic cohort visits were missed completely at random, so dropping patients cost precision rather than accuracy.
+:::
+
+**3.** Does knee recovery differ by age group (under 65, 65 to 74, 75 and over)? Fit the visit × age group model and write the Results sentence.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+age_knees <- knees |>
+  mutate(age_group = cut(age, c(0, 64, 74, Inf), labels = c("under 65", "65 to 74", "75 and over")))
+age_model <- lmer(prom_score ~ visit * age_group + (1 | case_id), data = age_knees)
+anova(age_model)
+```
+
+## Python
+
+```{python}
+age_knees = knees.copy()
+age_knees["age_group"] = pd.cut(age_knees["age"], [0, 64, 74, 200], labels=["under 65", "65 to 74", "75 and over"])
+age_model = smf.mixedlm("prom_score ~ visit * age_group", age_knees, groups="case_id").fit(reml=True)
+age_terms = [name for name in age_model.fe_params.index if ":" in name]     # the six visit x age group terms
+age_wald = age_model.wald_test(" = 0, ".join(age_terms) + " = 0", scalar=True)
+print(age_wald.statistic, age_wald.pvalue)                                          # chi-square on 6 df, p-value
+```
+:::
+
+There was no clear evidence that the pattern of recovery in KOOS JR differed between age groups (visit × age group interaction F(6, 831) = 1.00, p = 0.422).
+:::

@@ -69,6 +69,9 @@ FREE_FORM_SECTIONS = {
         "why-adjust", "adjusting-p-values", "after-anova", "after-kruskal-wallis", "after-chi-square",
         "after-repeated-measures-anova", "after-friedman", "after-cochran-q", "after-log-rank",
         "overall-test-first", "planned-comparisons", "exercises"],
+    "beyond/16-mixed-models.html": [
+        "why-mixed-models", "random-intercept", "estimated-marginal-means", "time", "group-by-time",
+        "bilateral", "reporting", "exercises"],
 }
 
 

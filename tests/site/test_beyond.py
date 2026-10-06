@@ -6,6 +6,7 @@ import pytest
 from sitelib import code_of, load, section, text_of
 
 POST_HOC = "beyond/15-post-hoc.html"
+MIXED = "beyond/16-mixed-models.html"
 
 
 # ---- page 15: post-hoc tests and multiple comparisons ----------------------------
@@ -49,3 +50,35 @@ def test_the_overall_test_is_not_a_gate(site):
 def test_planned_and_exploratory_comparisons_are_distinguished(site):
     text = text_of(section(POST_HOC, "planned-comparisons"))
     assert "pre-specified" in text and "exploratory" in text
+
+
+# ---- page 16: mixed models ---------------------------------------------------------
+
+def test_mixed_model_page_counts_what_repeated_measures_anova_drops(site):
+    text = text_of(section(MIXED, "why-mixed-models"))
+    assert "192 knees" in text and "138 knees (42%)" in text
+    for kind in ["Missing completely at random", "Missing at random", "Missing not at random"]:
+        assert kind in text, kind
+
+
+def test_random_intercept_and_marginal_means_in_both_languages(site):
+    code = code_of(section(MIXED, "random-intercept")) + code_of(section(MIXED, "estimated-marginal-means"))
+    for call in ["lmer(", "(1 | case_id)", "mixedlm(", "emmeans(", "marginal_means("]:
+        assert call in code, call
+    assert "Satterthwaite" in text_of(section(MIXED, "random-intercept"))
+
+
+def test_time_is_shown_as_categories_and_as_a_curve(site):
+    code = code_of(section(MIXED, "time"))
+    assert "ns(visit_days" in code and "cr(visit_days" in code
+
+
+def test_group_by_time_tests_the_interaction(site):
+    text = text_of(section(MIXED, "group-by-time"))
+    assert "visit:sex" in text and "p = 0.100" in text and "no clear evidence" in text
+
+
+def test_bilateral_patients_get_a_nested_model_and_a_pointer(site):
+    found = section(MIXED, "bilateral")
+    assert "(1 | patient_id/case_id)" in text_of(found)
+    assert any(a["href"].endswith("survival/14-cox-regression.html#stratified-cox") for a in found.select("a[href]"))

@@ -11,6 +11,7 @@ dependencies = [
     "pandas>=2.2",
     "pingouin>=0.7.0",
     "python-docx>=1.2.0",
+    "scikit-posthocs>=0.17.0",
     "scipy>=1.18.1",
     "statsmodels>=0.15.0",
     "tableone>=0.9.6",

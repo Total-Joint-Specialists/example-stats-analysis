@@ -137,7 +137,7 @@ The **adjusted coefficients** with their 95% CIs are the effect sizes, with **R�
 
 > **Methods:** Operative time was modeled with multiple linear regression on BMI, age, sex and procedure, chosen before the analysis.
 >
-> **Results:** Adjusted for age, sex and procedure, each 1 kg/m² of BMI was associated with 1.27 minutes longer operative time (95% CI 1.06 to 1.49, p < 0.001). TKAs took 6.74 minutes longer than THAs (95% CI 4.40 to 9.08), and each year of age added 0.27 minutes (95% CI 0.15 to 0.39). The model explained 27% of the variation in operative time (R² = 0.27).
+> **Results:** Adjusted for age, sex and procedure, the coefficient for BMI was 1.27 minutes of operative time per kg/m² (95% CI 1.06 to 1.49; p < 0.001). The coefficient for TKA (vs THA) was 6.74 minutes (95% CI 4.40 to 9.08) and for age 0.27 minutes per year (95% CI 0.15 to 0.39). The model explained 27% of the variation in operative time (R² = 0.27).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: "adjusted" isn't "caused", and more predictors isn't better
@@ -351,7 +351,7 @@ The time constant was 27.5 days longer for knees (95% CI 15.9 to 40.1). Half of 
 
 > **Methods:** HOOS JR (hips) and KOOS JR (knees) were modeled against days since surgery with an exponential recovery curve whose start, plateau and time constant could differ between hips and knees, fitted by nonlinear least squares. Whether BMI's effect on operative time was linear was checked by adding a natural cubic spline (3 degrees of freedom) and comparing the models with an F test.
 >
-> **Results:** Knees recovered more slowly than hips: the time constant was 27.5 days longer (95% CI 15.9 to 40.1), so half of the eventual gain took about 56 days after knee replacement and 37 days after hip replacement. Allowing BMI's effect on operative time to bend did not clearly improve the fit (F = 0.58, df = 2 and 593, p = 0.562).
+> **Results:** The difference in the time constant between knees and hips was 27.5 days (95% CI 15.9 to 40.1); half of the change was reached at about 56 days after knee replacement and 37 days after hip replacement. For BMI and operative time, comparing a spline with a straight line gave F = 0.58 (df = 2 and 593, p = 0.562).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: two questionnaires, and repeated scores
@@ -482,7 +482,7 @@ The **adjusted odds ratios** are the effect sizes: 2.08 per 10 years of age (95%
 
 > **Methods:** Complications within 90 days were modeled with multiple logistic regression on age (per 10 years), BMI (per 5 kg/m²), ASA class, diabetes and sex, chosen before the analysis.
 >
-> **Results:** Complications followed 51 of 600 procedures (8.5%). Older age (odds ratio 2.08 per 10 years, 95% CI 1.46 to 3.02) and higher BMI (odds ratio 1.39 per 5 kg/m², 95% CI 1.03 to 1.86) were independently associated with complications. The estimates for ASA class (1.16 per class, 95% CI 0.68 to 2.00), diabetes (0.88, 95% CI 0.31 to 2.15) and male sex (0.94, 95% CI 0.51 to 1.72) were imprecise.
+> **Results:** Complications followed 51 of 600 procedures (8.5%). In the multivariable model, the odds ratios for a complication were 2.08 per 10 years of age (95% CI 1.46 to 3.02), 1.39 per 5 kg/m² of BMI (95% CI 1.03 to 1.86), 1.16 per ASA class (95% CI 0.68 to 2.00), 0.88 for diabetes (95% CI 0.31 to 2.15) and 0.94 for male sex (95% CI 0.51 to 1.72).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: too few events
@@ -600,7 +600,7 @@ The **adjusted hazard ratios** with their 95% CIs are the effect sizes. The one 
 
 > **Methods:** Revision was modeled with Cox proportional hazards regression on implant (reference A), age (per 10 years), sex and BMI (per 5 kg/m²), chosen before the analysis.
 >
-> **Results:** After adjustment for age, sex and BMI, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.19, 95% CI 1.92 to 5.29, p < 0.001); the estimate for implant B was imprecise (0.83, 95% CI 0.45 to 1.52). In an unplanned, exploratory finding, men had a lower hazard of revision than women (hazard ratio 0.51, 95% CI 0.32 to 0.81).
+> **Results:** After adjustment for age, sex and BMI, the hazard ratio for revision compared with implant A was 3.19 (95% CI 1.92 to 5.29; p < 0.001) for implant C and 0.83 (95% CI 0.45 to 1.52) for implant B. In an unplanned, exploratory analysis, the hazard ratio for men compared with women was 0.51 (95% CI 0.32 to 0.81).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: the unexpected finding
@@ -720,7 +720,9 @@ print(surgeon_table.loc[["bmi", "surgeon[T.S2]", "surgeon[T.S3]"]])
 ```
 :::
 
-There's no clear evidence that adding surgeon improves the model (F = 0.09, df = 2 and 593, p = 0.911): compared with S1, S2's operations took 0.07 minutes longer (95% CI −2.57 to 2.72) and S3's 0.60 minutes longer (95% CI −2.28 to 3.48). BMI's coefficient is unchanged at 1.27 minutes per kg/m² (95% CI 1.06 to 1.49).
+> **Results:** Compared with surgeon S1, the coefficients were 0.07 minutes for S2 (95% CI −2.57 to 2.72) and 0.60 minutes for S3 (95% CI −2.28 to 3.48) (F test for adding surgeon, F = 0.09, df = 2 and 593, p = 0.911). The coefficient for BMI was 1.27 minutes per kg/m² (95% CI 1.06 to 1.49).
+
+There's no clear evidence that adding surgeon improves the model, and BMI's coefficient doesn't change.
 :::
 
 **2.** A colleague wants to know which patient factors predict discharge to a facility rather than home. Only 30 patients went to a facility. Which model would you use, how many predictors can it take, and what do you find with age, sex and ASA class?
@@ -748,7 +750,9 @@ print(facility_ors)
 ```
 :::
 
-Older age was associated with discharge to a facility (odds ratio 2.08 per 10 years, 95% CI 1.34 to 3.31; R's profile CI). The estimates for male sex (1.36, 95% CI 0.63 to 2.89) and ASA class (1.06 per class, 95% CI 0.58 to 1.94) were imprecise.
+> **Results:** The odds ratios for discharge to a facility were 2.08 per 10 years of age (95% CI 1.34 to 3.31), 1.36 for male sex (95% CI 0.63 to 2.89) and 1.06 per ASA class (95% CI 0.58 to 1.94).
+
+The CIs are R's profile CIs. Only age's CI excludes 1.
 :::
 
 **3.** On [page 11](11-predict-from-one.qmd#logistic-regression), complications seemed to jump after age 80. Fit age as a natural cubic spline (3 degrees of freedom) in the logistic regression, compare it with the straight line, and write the Results sentence.
@@ -778,7 +782,7 @@ print(lr, stats.chi2.sf(lr, df=2))           # 2 extra degrees of freedom
 ```
 :::
 
-"Allowing the effect of age to bend, with a natural cubic spline, did not clearly improve the fit over a straight line (likelihood ratio χ² = 3.49, df = 2, p = 0.175), so age was modeled as linear: each 10 years multiplied the odds of a complication by 2.12 (95% CI 1.53 to 2.98)."
+> **Results:** Comparing a natural cubic spline for age with a straight line gave a likelihood ratio χ² of 3.49 (df = 2, p = 0.175). With age modeled as linear, the odds ratio for a complication per 10 years of age was 2.12 (95% CI 1.53 to 2.98).
 
 The jump after 80 rests on 14 complications in 53 patients, too few to pin down a curve.
 :::

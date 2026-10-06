@@ -123,7 +123,22 @@ def docx_text(path) -> str:
 
 # ---- reporting conventions (spec section 4, page 0.2) ------------------------
 
-# A wide CI or a non-significant check is "no clear evidence of a difference", never "similar" or "held".
+# Results sentences report the numbers and stop: no comparison words, significance judgments, direction
+# verbs or descriptive labels. Saying what the numbers mean is the Discussion's job (CLAUDE.md rule 8).
+INTERPRETATION = re.compile(
+    r"\b(?:similar(?:ly)?|comparable|differ(?:s|ed)?|higher|lower|greater|fewer|less|more|better|worse|longer"
+    r"|shorter|older|younger|larger|smaller|than|significant(?:ly)?|non-?significant|evidence|imprecise"
+    r"|associated|independently|rose|rise[sn]?|fell|falls?|increased?|decreased?|improved?|improvement"
+    r"|declined?|excellent|good|moderate|substantial|almost perfect|poor|weak|strong(?:ly)?)\b", re.IGNORECASE)
+
+
+def results_of(text):
+    """The Results part of a Methods/Results blockquote's text, or "" if it has none."""
+    return text.split("Results:", 1)[1] if "Results:" in text else ""
+
+
+# In the teaching prose, a wide CI or a non-significant check is "no clear evidence of a difference",
+# never "similar" or "held".
 NO_EVIDENCE_AS_NO_DIFFERENCE = re.compile(
     r"\b(similar|no difference|held|not violated|(?:did not|does not|doesn't) improve)\b", re.IGNORECASE)
 EFFECT_SIZE = re.compile(r"(ω²|ε²|η²( p)?|Kendall's W|Cramér's V|\br|ρ|φ|κ) = [\d.]+|(odds|hazard) ratio [\d.]+"

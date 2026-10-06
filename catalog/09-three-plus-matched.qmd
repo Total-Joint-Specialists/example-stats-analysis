@@ -175,7 +175,7 @@ print(pcs_anova.loc[0, "np2"])    # pingouin doesn't compute a CI for it
 
 > **Methods:** VR-12 PCS across the four visits was compared with one-way repeated-measures ANOVA in patients with all four measurements. Sphericity was assessed with Mauchly's test, with the Greenhouse-Geisser correction planned if it was violated. Partial eta squared (η²~p~) is reported as the effect size.
 >
-> **Results:** Of 574 patients with a pre-op PCS, 328 had all four measurements. Their mean PCS rose from 31.2 (SD 6.1) before surgery to 34.9 (SD 6.2) at 6 weeks, 41.0 (SD 6.2) at 3 months and 44.9 (SD 6.8) at 1 year (F(3, 981) = 317.1, p < 0.001; η²~p~ = 0.49, one-sided 95% CI 0.46 to 1.00). Mauchly's test found no evidence against sphericity (p = 0.324).
+> **Results:** Of 574 patients with a pre-op PCS, 328 had all four measurements. Their mean PCS was 31.2 (SD 6.1) before surgery, 34.9 (SD 6.2) at 6 weeks, 41.0 (SD 6.2) at 3 months and 44.9 (SD 6.8) at 1 year (F(3, 981) = 317.1, p < 0.001; η²~p~ = 0.49, one-sided 95% CI 0.46 to 1.00; Mauchly's test of sphericity p = 0.324).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: a significant F doesn't say which visits differ
@@ -333,7 +333,7 @@ W = 0.62: a large effect. Most patients improved from each visit to the next. R'
 
 > **Methods:** Because KOOS JR scores showed a ceiling effect, scores at 6 weeks, 3 months and 1 year were compared with the Friedman test in patients with all three measurements, with Kendall's W as the effect size.
 >
-> **Results:** Among 205 patients with all three measurements, median KOOS JR rose from 62.6 (IQR 53.9 to 70.3) at 6 weeks to 73.1 (IQR 65.7 to 81.5) at 3 months and 85.7 (IQR 73.6 to 94.0) at 1 year (Friedman χ² = 253.6, df = 2, p < 0.001; Kendall's W = 0.62, one-sided 95% CI 0.55 to 1.00).
+> **Results:** Among 205 patients with all three measurements, median KOOS JR was 62.6 (IQR 53.9 to 70.3) at 6 weeks, 73.1 (IQR 65.7 to 81.5) at 3 months and 85.7 (IQR 73.6 to 94.0) at 1 year (Friedman χ² = 253.6, df = 2, p < 0.001; Kendall's W = 0.62, one-sided 95% CI 0.55 to 1.00).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: the Friedman test ignores how big the changes are
@@ -475,7 +475,7 @@ Use rose by 24.4 percentage points from pre-op to 6 weeks, then fell well below 
 
 > **Methods:** Walking-aid use at the four visits was compared with Cochran's Q test in patients assessed at all four. Proportions are reported with Wilson 95% CIs.
 >
-> **Results:** Among 328 patients assessed at all four visits, walking-aid use rose from 34.8% (95% CI 29.8% to 40.1%) before surgery to 59.1% (95% CI 53.8% to 64.3%) at 6 weeks, then fell to 24.4% (95% CI 20.1% to 29.3%) at 3 months and 10.4% (95% CI 7.5% to 14.1%) at 1 year (Cochran's Q = 186.8, df = 3, p < 0.001).
+> **Results:** Among 328 patients assessed at all four visits, walking-aid use was 34.8% (95% CI 29.8% to 40.1%) before surgery, 59.1% (95% CI 53.8% to 64.3%) at 6 weeks, 24.4% (95% CI 20.1% to 29.3%) at 3 months and 10.4% (95% CI 7.5% to 14.1%) at 1 year (Cochran's Q = 186.8, df = 3, p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: Q doesn't tell you the direction
@@ -586,7 +586,7 @@ The **hazard ratios** with their 95% CIs: within matched sets, implant C carried
 
 > **Methods:** Revision risk was compared between implants in matched sets using Cox regression stratified by set, with implant A as the reference.
 >
-> **Results:** In 52 sets of three patients matched on procedure, age, sex, BMI and ASA class, implant type was associated with revision (likelihood ratio test, χ² = 13.5, df = 2, p = 0.001). Compared with implant A, the hazard of revision was higher with implant C (hazard ratio 3.91, 95% CI 1.28 to 11.95); the estimate for implant B was imprecise (hazard ratio 0.43, 95% CI 0.08 to 2.25).
+> **Results:** In 52 sets of three patients matched on procedure, age, sex, BMI and ASA class, the hazard ratio for revision compared with implant A was 3.91 (95% CI 1.28 to 11.95) for implant C and 0.43 (95% CI 0.08 to 2.25) for implant B (likelihood ratio test for implant type, χ² = 13.5, df = 2, p = 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: only 24 events
@@ -716,7 +716,9 @@ print(mcs.groupby("visit")["vr12_mcs"].agg(["mean", "std"]).loc[["preop", "6wk",
 ```
 :::
 
-The mental component also changed (F(3, 981) = 9.33, p < 0.001), but far less: from a mean of 49.7 (SD 9.0) before surgery to 53.3 (SD 9.0) at 1 year, with η²~p~ = 0.03 (one-sided 95% CI 0.01 to 1.00), a small effect. Mauchly's test found no evidence against sphericity (p = 0.814).
+> **Results:** Mean MCS was 49.7 (SD 9.0) before surgery and 53.3 (SD 9.0) at 1 year (F(3, 981) = 9.33, p < 0.001; η²~p~ = 0.03, one-sided 95% CI 0.01 to 1.00; Mauchly's test of sphericity p = 0.814).
+
+The mental component changed far less than the physical one: a small effect, against a large one for the physical component.
 :::
 
 **2.** A colleague wants to know whether **HOOS JR** (hip patients) keeps changing between 6 weeks, 3 months and 1 year. Which test would you use, and what do you find?
@@ -754,7 +756,7 @@ print(hoos.groupby("visit")["prom_score"].describe()[["25%", "50%", "75%"]].loc[
 ```
 :::
 
-Among 140 hip patients with all three scores, median HOOS JR rose from 68.2 (IQR 61.3 to 74.2) at 6 weeks to 79.8 (IQR 71.6 to 90.3) at 3 months and 89.2 (IQR 81.1 to 97.4) at 1 year (Friedman χ² = 159.7, df = 2, p < 0.001; Kendall's W = 0.57, one-sided 95% CI 0.48 to 1.00).
+> **Results:** Among 140 hip patients with all three scores, median HOOS JR was 68.2 (IQR 61.3 to 74.2) at 6 weeks, 79.8 (IQR 71.6 to 90.3) at 3 months and 89.2 (IQR 81.1 to 97.4) at 1 year (Friedman χ² = 159.7, df = 2, p < 0.001; Kendall's W = 0.57, one-sided 95% CI 0.48 to 1.00).
 
 R's table shows the 6-week upper quartile as 74.1. The exact value is 74.15, which the computer stores as 74.1499…, so R rounds it down; Python prints 74.150.
 :::
@@ -794,7 +796,7 @@ print([stats.binomtest(int(k), int(n)).proportion_ci(method="wilson") for k, n i
 ```
 :::
 
-"Among 345 patients assessed at all three post-operative visits, walking-aid use fell from 58.8% (95% CI 53.6% to 63.9%) at 6 weeks to 25.2% (95% CI 20.9% to 30.1%) at 3 months and 10.7% (95% CI 7.9% to 14.4%) at 1 year (Cochran's Q = 185.9, df = 2, p < 0.001)."
+> **Results:** Among 345 patients assessed at all three post-operative visits, walking-aid use was 58.8% (95% CI 53.6% to 63.9%) at 6 weeks, 25.2% (95% CI 20.9% to 30.1%) at 3 months and 10.7% (95% CI 7.9% to 14.4%) at 1 year (Cochran's Q = 185.9, df = 2, p < 0.001).
 
 More patients are included here (345 vs 328) because patients who missed only the pre-op visit now count.
 :::

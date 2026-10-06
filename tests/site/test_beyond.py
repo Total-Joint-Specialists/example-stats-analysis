@@ -197,8 +197,8 @@ def test_agreement_reporting_gives_every_ci_and_says_whose_readings(site):
     found = section(AGREEMENT, "reporting")
     quotes = " ".join(text_of(q) for q in found.select("blockquote"))
     assert "(95% CI −3.48° to −2.00°)" in quotes and "(95% CI 3.00° to 4.48°)" in quotes
-    assert "rater 1's intra-rater reliability" in quotes and "each rater's first reading" in quotes
-    assert "moderate to substantial (κ = 0.58" in quotes and "moderate to almost perfect (weighted κ = 0.73" in quotes
+    assert "rater 1's intra-rater ICC" in quotes and "each rater's first reading" in quotes
+    assert "κ = 0.58 (95% CI 0.44 to 0.73)" in quotes and "weighted κ = 0.73 (95% CI 0.58 to 0.87)" in quotes
 
 
 def test_scikit_learn_kappa_ordering_trap_is_named(site):
@@ -247,7 +247,7 @@ def test_mixed_model_exercise_counts_joint_replacements_not_patients(site):
 
 def test_walking_aid_answer_gives_counts_with_percentages(site):
     text = text_of(section(POST_HOC, "exercises"))
-    assert re.search(r"\d+ \(58\.8%\) at 6 weeks to \d+ \(25\.2%\) at 3 months and \d+ \(10\.7%\)", text)
+    assert re.search(r"\d+ \(58\.8%\) used a walking aid at 6 weeks, \d+ \(25\.2%\) at 3 months and \d+ \(10\.7%\)", text)
 
 
 def test_log_rank_box_says_lifelines_needs_a_tighter_convergence_setting(site):

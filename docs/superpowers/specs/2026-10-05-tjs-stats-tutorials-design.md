@@ -144,6 +144,7 @@ Choosing a language (the tabs remember it). Copying code. Where to do exercises
 - categorical variables: n (%)
 - p-values: three decimals, floor "p < 0.001", never "p = 0.000"
 - 95% confidence intervals with every effect estimate
+- Results sentences report the numbers without interpretation: no "similar", "higher than", "improved", "significant" or "no clear evidence"; interpretation belongs in the Discussion (added 2026-10-06 at the maintainer's request)
 - Table 1 laid out the way JOA/JBJS expect
 
 ### 0.3 Working with real TJS data

@@ -102,7 +102,7 @@ def test_the_manuscript_states_the_caveats_and_the_missing_data(site):
 def test_missing_data_exercise_separates_the_two_reasons_a_score_is_missing(site):
     text = text_of(section(REPORT, "exercises"))
     assert "didn't answer" not in text
-    assert "the other 5 TKA patients had no pre-op score" in text and "(13.2% against 22.4%, p = 0.239)" in text
+    assert "the other 5 TKA patients had no pre-op score" in text and "15 TKA patients (22.4%; p = 0.239)" in text
 
 
 def test_the_manuscript_does_not_claim_to_update_itself(site):

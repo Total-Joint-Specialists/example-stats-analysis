@@ -663,9 +663,9 @@ To compare the improvement in joint-specific patient-reported scores from before
 
 ## Results {#results}
 
-Of the 120 patients, 53 (44.2%) had a THA and 67 (55.8%) a TKA (@tbl-baseline). THA patients were more often women (38 of 53, 71.7%, against 33 of 67, 49.3%; SMD 0.47), and TKA patients started with a pre-op score 2.9 points higher (51.0 against 48.1 points; SMD 0.26).
+Of the 120 patients, 53 (44.2%) had a THA and 67 (55.8%) a TKA (@tbl-baseline). Women made up 38 of 53 THA patients (71.7%) and 33 of 67 TKA patients (49.3%; SMD 0.47). The mean pre-op score was 48.1 points (SD 11.5) in THA patients and 51.0 points (SD 11.8) in TKA patients (SMD 0.26).
 
-Both scores were available for 93 patients (77.5%): 46 of 53 after THA (86.8%) and 47 of 67 after TKA (70.1%). The score improved by a mean of 42.4 points (SD 13.0) after THA and 33.4 points (SD 13.9) after TKA, a difference of 9.0 points (95% CI 3.5 to 14.6; Hedges' g 0.66, 95% CI 0.25 to 1.08; p = 0.002). At 1 year, 15 of 46 THA patients (32.6%) and 7 of 47 TKA patients (14.9%) had the maximum score.
+Both scores were available for 93 patients (77.5%): 46 of 53 after THA (86.8%) and 47 of 67 after TKA (70.1%). The mean change in score was 42.4 points (SD 13.0) after THA and 33.4 points (SD 13.9) after TKA (difference 9.0 points, 95% CI 3.5 to 14.6; Hedges' g 0.66, 95% CI 0.25 to 1.08; p = 0.002). At 1 year, 15 of 46 THA patients (32.6%) and 7 of 47 TKA patients (14.9%) had the maximum score.
 
 Over a median follow-up of 6.05 years (IQR 4.16 to 8.27), 18 patients had a revision and 18 died without one. The cumulative incidence of revision was 3.4% (95% CI 1.1% to 7.8%) at 2 years and 12.6% (95% CI 7.0% to 19.8%) at 5 years (@fig-revision).
 
@@ -691,7 +691,7 @@ smd_of <- function(v) round(abs(smd_r$estimate[smd_r$variable == v]), 2)
 sex_counts <- table(study$procedure, study$sex)
 ceiling_counts <- analysed |> group_by(procedure) |> summarise(n = sum(prom_1yr == 100), pct = 100 * mean(prom_1yr == 100))
 both_counts <- study |> group_by(procedure) |> summarise(n = n(), both = sum(!is.na(prom_1yr - prom_preop)))
-pre_means <- study |> group_by(procedure) |> summarise(mean = mean(prom_preop, na.rm = TRUE))
+pre_means <- study |> group_by(procedure) |> summarise(mean = mean(prom_preop, na.rm = TRUE), sd = sd(prom_preop, na.rm = TRUE))
 ancova <- lm(prom_1yr ~ prom_preop + procedure, data = analysed)
 ancova_ci <- confint(ancova)["procedureTKA", ]
 rank_check <- wilcox.test(change ~ procedure, data = analysed, exact = FALSE, conf.int = TRUE)
@@ -704,7 +704,7 @@ stopifnot(
   sex_counts["THA", "Female"] == 38, sex_counts["TKA", "Female"] == 33,
   round(100 * 38 / 53, 1) == 71.7, round(100 * 33 / 67, 1) == 49.3, round(100 * 38 / 53) == 72, round(100 * 33 / 67) == 49,
   smd_of("sex") == 0.47, smd_of("sleep_apnea") == 0.31, smd_of("asa") == 0.29, smd_of("prom_preop") == 0.26,
-  round(pre_means$mean, 1) == c(48.1, 51.0), round(round(pre_means$mean[2], 1) - round(pre_means$mean[1], 1), 1) == 2.9,
+  round(pre_means$mean, 1) == c(48.1, 51.0), round(pre_means$sd, 1) == c(11.5, 11.8), round(round(pre_means$mean[2], 1) - round(pre_means$mean[1], 1), 1) == 2.9,
   nrow(analysed) == 93, round(100 * 93 / 120, 1) == 77.5,
   both_counts$both == c(46, 47), round(100 * both_counts$both / both_counts$n, 1) == c(86.8, 70.1),
   round(change_summary$mean, 1) == c(42.4, 33.4), round(change_summary$sd, 1) == c(13.0, 13.9),
@@ -760,7 +760,9 @@ print(np.median(np.subtract.outer(tha.to_numpy(), tka.to_numpy())))   # the Hodg
 ```
 :::
 
-No: the Hodges-Lehmann difference is 9.5 points (95% CI 3.6 to 15.2), p = 0.003, close to the 9.0 points from the t test. Python gives the same estimate and p-value; its CI needs a bootstrap ([page 6](../catalog/06-two-unpaired-groups.qmd#mann-whitney)).
+> **Results:** The Hodges-Lehmann difference in the change was 9.5 points (95% CI 3.6 to 15.2; p = 0.003).
+
+The conclusion doesn't change: 9.5 points is close to the 9.0 from the t test. Python gives the same estimate and p-value; its CI needs a bootstrap ([page 6](../catalog/06-two-unpaired-groups.qmd#mann-whitney)).
 :::
 
 **2.** A reviewer writes: "TKA patients started with higher scores, so they had less room to improve. Adjust for the pre-op score." Which analysis answers this, and what does it show?
@@ -789,7 +791,9 @@ print(adjusted.pvalues.round(3).to_string())
 ```
 :::
 
-For the same pre-op score, TKA patients scored 7.4 points lower at 1 year than THA patients (95% CI 2.9 to 11.9; p = 0.002). The difference shrinks a little from the unadjusted 9.0 points but doesn't go away, so the higher starting point explains only part of it.
+> **Results:** Adjusted for the pre-op score, the difference in the 1-year score between TKA and THA was −7.4 points (95% CI −11.9 to −2.9; p = 0.002).
+
+The difference shrinks a little from the unadjusted 9.0 points but doesn't go away, so the higher starting point explains only part of it.
 :::
 
 **3.** 27 patients have no change score, so the primary analysis leaves them out. Were they left out more often after one procedure, and which score was missing? Test it and write the Results sentence.
@@ -826,6 +830,8 @@ print(stats.fisher_exact(pd.crosstab(study["procedure"], study["prom_1yr"].isna(
 ```
 :::
 
-The change score was missing for 7 of 53 THA patients (13.2%) and 20 of 67 TKA patients (29.9%; Fisher's exact test p = 0.046). The reasons differ: all 7 THA patients and 15 TKA patients had no 1-year score, and the other 5 TKA patients had no pre-op score. On the 1-year score alone, the difference is smaller and less certain (13.2% against 22.4%, p = 0.239). If the patients left out fared differently from those analysed, the comparison is biased; the Discussion should say so.
+> **Results:** The change score was missing for 7 of 53 THA patients (13.2%) and 20 of 67 TKA patients (29.9%; Fisher's exact test p = 0.046): all 7 THA patients and 15 TKA patients had no 1-year score, and the other 5 TKA patients had no pre-op score. The 1-year score alone was missing for 7 THA patients (13.2%) and 15 TKA patients (22.4%; p = 0.239).
+
+If the patients left out fared differently from those analysed, the comparison is biased; the Discussion should say so.
 :::
 :::

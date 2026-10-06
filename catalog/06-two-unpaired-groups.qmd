@@ -165,7 +165,7 @@ Hedges' g is 0.33: TKA patients' BMI is about a third of a standard deviation hi
 
 > **Methods:** BMI was compared between procedures with Welch's unpaired t test.
 >
-> **Results:** TKA patients had a higher BMI than THA patients (mean 31.2 vs 29.5 kg/m²; difference 1.8 kg/m², 95% CI 0.9 to 2.6; Hedges' g = 0.33; p < 0.001).
+> **Results:** Mean BMI was 31.2 kg/m² after TKA and 29.5 kg/m² after THA (difference 1.8 kg/m², 95% CI 0.9 to 2.6; Hedges' g = 0.33; p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: don't test the variances first
@@ -336,7 +336,7 @@ Men scored 0.8 points higher (95% CI 1.6 points lower to 4.4 points higher), and
 
 > **Methods:** Because 1-year KOOS JR scores showed a ceiling effect, they were compared between men and women with the Mann-Whitney test, with the Hodges-Lehmann estimate of the difference and its 95% CI as the effect size.
 >
-> **Results:** 1-year KOOS JR was similar in men (median 87.0 points, IQR 75.5 to 93.7) and women (median 85.0, IQR 72.5 to 94.0); the difference was not statistically significant (Hodges-Lehmann difference 0.8 points, 95% CI −1.6 to 4.4; rank-biserial r = 0.06; p = 0.432).
+> **Results:** KOOS JR at 1 year was a median of 87.0 points (IQR 75.5 to 93.7) in men and 85.0 (IQR 72.5 to 94.0) in women (Hodges-Lehmann difference 0.8 points, 95% CI −1.6 to 4.4; rank-biserial r = 0.06; p = 0.432).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: it isn't a test of medians
@@ -507,7 +507,7 @@ Men's readmission rate was 0.3 percentage points higher (95% CI 3.1 points lower
 
 > **Methods:** Categorical outcomes were compared with Fisher's exact test. Effect sizes are reported as risk differences with Wald 95% CIs and as odds ratios with exact 95% CIs.
 >
-> **Results:** Ninety-day readmission did not differ significantly between men and women (4.7% vs 4.4%; risk difference 0.3 percentage points, 95% CI −3.1 to 3.7; odds ratio 1.07, 95% CI 0.45 to 2.50; p > 0.999).
+> **Results:** Ninety-day readmission followed 4.7% of procedures in men and 4.4% in women (risk difference 0.3 percentage points, 95% CI −3.1 to 3.7; odds ratio 1.07, 95% CI 0.45 to 2.50; p > 0.999).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: "no difference" needs a narrow CI
@@ -695,7 +695,7 @@ check_agree(list(surv_a = survival_5$surv[1], low_a = survival_5$lower[1], high_
 
 > **Methods:** Revision-free survival was estimated with the Kaplan-Meier method and compared between implants with the log-rank test. Hazard ratios were estimated with Cox proportional hazards regression.
 >
-> **Results:** Revision-free survival was lower with implant C than with implant A: 71.1% (95% CI 61.5% to 78.8%) vs 89.9% (95% CI 84.7% to 93.3%) at 5 years (log-rank p < 0.001; hazard ratio 3.04, 95% CI 1.83 to 5.04).
+> **Results:** Revision-free survival at 5 years was 71.1% (95% CI 61.5% to 78.8%) with implant C and 89.9% (95% CI 84.7% to 93.3%) with implant A (log-rank p < 0.001; hazard ratio 3.04, 95% CI 1.83 to 5.04).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: overlapping CIs aren't a test
@@ -792,7 +792,7 @@ print(op_test, op_tka.mean() - op_tha.mean(), op_test.confidence_interval())
 ```
 :::
 
-TKAs took longer (mean 88.3 vs 79.8 minutes; difference 8.5 minutes, 95% CI 6.0 to 11.1; p < 0.001).
+> **Results:** Mean operative time was 88.3 minutes for TKA and 79.8 minutes for THA (difference 8.5 minutes, 95% CI 6.0 to 11.1; p < 0.001).
 :::
 
 **2.** A colleague wants to know whether **length of stay** differs between Site A and Site B. Which test would you choose, and what do you find?
@@ -822,7 +822,7 @@ print(cohort.groupby("site")["los_days"].describe()[["25%", "50%", "75%"]])
 ```
 :::
 
-Stays were longer at Site A (median 1 day, IQR 0 to 2) than at Site B (median 0 days, IQR 0 to 1; rank-biserial r = 0.10; p = 0.020).
+> **Results:** The median length of stay was 1 day (IQR 0 to 2) at Site A and 0 days (IQR 0 to 1) at Site B (rank-biserial r = 0.10; p = 0.020).
 
 Notice that we didn't report a Hodges-Lehmann estimate. With whole days and so many ties, a third of the Site A − Site B differences are exactly 0 days (34%), and fewer than half are positive (38%; 28% are negative), so the middle difference, and with it the estimate, is 0 even though Site A's stays tend to run longer. For data like these, the medians with IQRs and the rank-biserial r describe the difference better.
 :::
@@ -856,5 +856,5 @@ print(confint_proportions_2indep(18, 150, 33, 450, method="wald", compare="diff"
 ```
 :::
 
-"Complications within 90 days were more frequent after general than spinal anesthesia, but the difference was not statistically significant (12.0% vs 7.3%; risk difference 4.7 percentage points, 95% CI −1.1 to 10.4; odds ratio 1.72, 95% CI 0.88 to 3.27; p = 0.090)."
+> **Results:** Complications within 90 days followed 12.0% of procedures under general and 7.3% under spinal anesthesia (risk difference 4.7 percentage points, 95% CI −1.1 to 10.4; odds ratio 1.72, 95% CI 0.88 to 3.27; p = 0.090).
 :::

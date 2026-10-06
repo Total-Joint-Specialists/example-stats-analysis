@@ -534,7 +534,7 @@ check_agree(list(chisq = implant_logrank$chisq, p = implant_logrank$pvalue), ret
 
 > **Methods:** Revision-free survival was compared between groups with the log-rank test.
 >
-> **Results:** Revision-free survival differed between implants (log-rank χ² = 33.5, df = 2, p < 0.001). Over the whole follow-up there was no clear evidence of a difference between surgical approaches in total hip arthroplasty (log-rank χ² = 0.9, df = 1, p = 0.340), but the difference was concentrated early: survivorship at 6 months was 88.7% (95% CI 81.7% to 93.2%) after the posterior approach and 98.6% (95% CI 94.5% to 99.6%) after the anterior approach.
+> **Results:** The log-rank test for revision-free survival across implants gave χ² = 33.5 (df = 2, p < 0.001). In total hip arthroplasty, survivorship at 6 months was 88.7% (95% CI 81.7% to 93.2%) after the posterior approach and 98.6% (95% CI 94.5% to 99.6%) after the anterior approach (log-rank test over the whole follow-up, χ² = 0.9, df = 1, p = 0.340).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: always plot the curves before you trust the test
@@ -652,7 +652,7 @@ The cumulative incidence of revision differed between implants (Gray's test χ²
 
 > **Methods:** The cumulative incidence of revision was estimated with the Aalen-Johansen method, treating death as a competing risk, and compared between implants with Gray's test.
 >
-> **Results:** The cumulative incidence of revision was 12.8% (95% CI 10.0% to 15.9%) at 5 years and 19.3% (95% CI 15.3% to 23.7%) at 10 years, when the cumulative incidence of death was 24.0% (95% CI 19.3% to 29.0%). It differed between implants (Gray's test χ² = 31.5, df = 2, p < 0.001).
+> **Results:** The cumulative incidence of revision was 12.8% (95% CI 10.0% to 15.9%) at 5 years and 19.3% (95% CI 15.3% to 23.7%) at 10 years, when the cumulative incidence of death was 24.0% (95% CI 19.3% to 29.0%). Gray's test for the cumulative incidence of revision across implants gave χ² = 31.5 (df = 2, p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: which number answers your question?
@@ -754,7 +754,7 @@ print(procedure_logrank.test_statistic, procedure_logrank.p_value)
 ```
 :::
 
-Survivorship free of revision at 5 years was 86.9% (95% CI 81.4% to 90.8%) after THA and 85.9% (95% CI 80.9% to 89.6%) after TKA. There was no clear evidence of a difference between the procedures (log-rank χ² = 0.01, df = 1, p = 0.937).
+> **Results:** Survivorship free of revision at 5 years was 86.9% (95% CI 81.4% to 90.8%) after THA and 85.9% (95% CI 80.9% to 89.6%) after TKA (log-rank χ² = 0.01, df = 1, p = 0.937).
 :::
 
 **2.** A surgeon asks: "Of my patients aged 75 and over, what proportion will need a revision within 5 years?" Which estimate answers that question? Calculate it, and compare it with 1 − Kaplan-Meier.
@@ -793,7 +793,9 @@ print(1 - old_km.survival_function_at_times(5).iloc[0])
 ```
 :::
 
-Of the 100 procedures in patients aged 75 and over, 41 ended in death and only 13 in revision. The cumulative incidence of revision at 5 years was 13.9% (95% CI 7.8% to 21.8%). 1 − Kaplan-Meier gives 16.5%, overstating it by about a fifth.
+> **Results:** Of the 100 procedures in patients aged 75 and over, 41 ended in death and 13 in revision. The cumulative incidence of revision at 5 years was 13.9% (95% CI 7.8% to 21.8%); 1 − Kaplan-Meier at 5 years was 16.5%.
+
+1 − Kaplan-Meier overstates the real proportion revised by about a fifth.
 :::
 
 **3.** Estimate the cumulative incidence of revision at 5 years for each implant, with death as a competing risk, and write the Results sentence, including Gray's test.
@@ -825,5 +827,5 @@ for implant, group in cohort.groupby("implant"):
 Python has no Gray's test; take it from R.
 :::
 
-The cumulative incidence of revision at 5 years, with death as a competing risk, was 9.7% (95% CI 6.2% to 14.1%) with implant A, 6.8% (95% CI 3.7% to 11.2%) with implant B and 27.3% (95% CI 19.5% to 35.6%) with implant C (Gray's test χ² = 31.5, df = 2, p < 0.001).
+> **Results:** The cumulative incidence of revision at 5 years, with death as a competing risk, was 9.7% (95% CI 6.2% to 14.1%) with implant A, 6.8% (95% CI 3.7% to 11.2%) with implant B and 27.3% (95% CI 19.5% to 35.6%) with implant C (Gray's test χ² = 31.5, df = 2, p < 0.001).
 :::

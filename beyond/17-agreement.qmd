@@ -362,7 +362,7 @@ DescTools' `CohenKappa()` and statsmodels' `cohens_kappa()` give the same kappa 
 
 > **Methods:** Two raters measured the hip-knee-ankle angle, MPTA and LDFA on 60 long-leg radiographs, twice, at least 2 weeks apart. Inter- and intra-rater reliability were assessed with two-way random-effects, absolute-agreement, single-rater intraclass correlation coefficients (ICC(A,1)) and interpreted according to Koo and Li. Inter-rater reliability used each rater's first reading; intra-rater reliability compared rater 1's two readings. Agreement was assessed with Bland-Altman 95% limits of agreement. Agreement on CPAK class was assessed with Cohen's kappa, and on the ordered arithmetic HKA group with linearly weighted kappa.
 >
-> **Results:** Inter-rater reliability of the hip-knee-ankle angle was good to excellent (ICC 0.89, 95% CI 0.82 to 0.93), and rater 1's intra-rater reliability excellent at its point estimate (ICC 0.91, 95% CI 0.86 to 0.95). Rater 2 measured 0.50° higher than rater 1 on average (95% CI 0.08° to 0.93°), with 95% limits of agreement from −2.74° (95% CI −3.48° to −2.00°) to 3.74° (95% CI 3.00° to 4.48°). Agreement on CPAK class was moderate to substantial (κ = 0.58, 95% CI 0.44 to 0.73), and on the arithmetic HKA group moderate to almost perfect (weighted κ = 0.73, 95% CI 0.58 to 0.87).
+> **Results:** For the hip-knee-ankle angle, the inter-rater ICC was 0.89 (95% CI 0.82 to 0.93) and rater 1's intra-rater ICC 0.91 (95% CI 0.86 to 0.95). The mean difference between rater 2 and rater 1 was 0.50° (95% CI 0.08° to 0.93°), with 95% limits of agreement from −2.74° (95% CI −3.48° to −2.00°) to 3.74° (95% CI 3.00° to 4.48°). For CPAK class, κ = 0.58 (95% CI 0.44 to 0.73); for the arithmetic HKA group, weighted κ = 0.73 (95% CI 0.58 to 0.87).
 
 ```{r}
 #| include: false
@@ -430,7 +430,9 @@ print(mpta_icc.set_index("Type").loc["ICC(A,1)", ["ICC", "CI95"]])
 ```
 :::
 
-Inter-rater reliability of the MPTA was excellent at its point estimate (ICC(A,1) = 0.93, 95% CI 0.89 to 0.96); the CI runs from good to excellent.
+> **Results:** The inter-rater ICC(A,1) for the MPTA was 0.93 (95% CI 0.89 to 0.96).
+
+On Koo and Li's guide, that's excellent at the point estimate, and the CI runs from good to excellent.
 :::
 
 **2.** Using rater 1's two sessions, calculate the Bland-Altman bias and 95% limits of agreement for HKA, and write the Results sentence.
@@ -456,7 +458,7 @@ print(retest.mean(), retest_ci.low, retest_ci.high, retest.mean() + np.array([-1
 ```
 :::
 
-Rater 1's second readings were 0.26° lower than the first on average (95% CI −0.65° to 0.12°), with 95% limits of agreement from −3.20° to 2.67°.
+> **Results:** The mean difference between rater 1's second and first readings was −0.26° (95% CI −0.65° to 0.12°), with 95% limits of agreement from −3.20° to 2.67°.
 :::
 
 **3.** A colleague reports that the two raters' HKA readings correlate well (Pearson's r = 0.90, 95% CI 0.83 to 0.94) as evidence that they agree. What's wrong with that? Show it by adding 5° to every one of rater 2's readings and recalculating r and the ICC.

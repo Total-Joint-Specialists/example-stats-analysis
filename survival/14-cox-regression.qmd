@@ -486,7 +486,7 @@ Choose the cut point before you look, from clinical reasoning: here, the period 
 
 > **Methods:** Proportional hazards were checked with scaled Schoenfeld residuals. Because the effect of surgical approach changed over time, its hazard ratio was estimated separately for the first 6 months after surgery and thereafter.
 >
-> **Results:** The posterior approach was associated with a higher hazard of revision in the first 6 months (hazard ratio 8.47, 95% CI 1.93 to 37.3); after 6 months the estimate was imprecise (0.43, 95% CI 0.16 to 1.16).
+> **Results:** The hazard ratio for revision with the posterior approach compared with the anterior approach was 8.47 (95% CI 1.93 to 37.3) in the first 6 months and 0.43 (95% CI 0.16 to 1.16) after 6 months.
 
 ## Stratified Cox: matched sets and bilateral patients {#stratified-cox}
 
@@ -650,7 +650,7 @@ check_agree(list(uni_age = unname(uni_hr("age_10")), uni_male = unname(uni_hr("s
 
 > **Methods:** The association between implant and revision for any reason was estimated with Cox proportional hazards regression, with time from surgery as the time scale and implant A as the reference. Age, sex and body mass index were chosen in advance as covariates. Age entered the model as a linear term after a natural cubic spline showed no clear evidence of non-linearity. Proportional hazards were checked with scaled Schoenfeld residuals. In the Cox models, robust standard errors clustered on patient accounted for patients who had both sides replaced. A Fine-Gray model, treating death as a competing risk, was fitted as a sensitivity analysis.
 >
-> **Results:** During follow-up, 81 of 600 procedures (13.5%) were revised. After adjustment for age, sex and body mass index, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.19, 95% CI 1.92 to 5.28), while the estimate for implant B was imprecise (0.83, 95% CI 0.45 to 1.52). There was no clear evidence that any hazard ratio changed over time (global test p = 0.359). With death treated as a competing risk, the subdistribution hazard ratio for implant C was 3.09 (95% CI 1.86 to 5.14).
+> **Results:** During follow-up, 81 of 600 procedures (13.5%) were revised. After adjustment for age, sex and body mass index, the hazard ratio for revision compared with implant A was 3.19 (95% CI 1.92 to 5.28) for implant C and 0.83 (95% CI 0.45 to 1.52) for implant B (test of proportional hazards, global p = 0.359). With death treated as a competing risk, the subdistribution hazard ratio for implant C was 3.09 (95% CI 1.86 to 5.14).
 
 Before you submit, check that the paper states:
 - the number of patients, procedures and events
@@ -741,7 +741,9 @@ print(asa_model.summary[["exp(coef)", "exp(coef) lower 95%", "exp(coef) upper 95
 ```
 :::
 
-Each one-class increase in ASA class was associated with a hazard ratio for revision of 1.38 (95% CI 0.99 to 1.93, p = 0.060). The estimate is imprecise: the data are compatible with no association and with a near doubling of the hazard per class.
+> **Results:** The hazard ratio for revision per ASA class was 1.38 (95% CI 0.99 to 1.93; p = 0.060).
+
+The estimate is imprecise: the data are compatible with no association and with a near doubling of the hazard per class.
 :::
 
 **2.** Check whether BMI's effect in the adjusted model is a straight line, using a natural cubic spline with 3 degrees of freedom.
@@ -776,7 +778,9 @@ print(bmi_lr, chi2.sf(bmi_lr, df=2))
 ```
 :::
 
-There was no clear evidence that BMI's effect bends (likelihood ratio χ² = 2.64, df = 2, p = 0.267), so the straight line stands.
+> **Results:** Comparing a natural cubic spline for BMI with a straight line gave a likelihood ratio χ² of 2.64 (df = 2, p = 0.267).
+
+There's no clear evidence that BMI's effect bends, so the straight line stands.
 :::
 
 **3.** Total hips and total knees may have different baseline revision rates. Refit the adjusted model stratified by procedure. Does implant C's hazard ratio change? Write the Results sentence.
@@ -804,5 +808,7 @@ print(procedure_model.summary.loc["implant[T.C]", ["exp(coef)", "exp(coef) lower
 ```
 :::
 
-Barely. In a Cox model stratified by procedure and adjusted for age, sex and BMI, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.16, 95% CI 1.90 to 5.24), close to the unstratified estimate of 3.19.
+Barely.
+
+> **Results:** In a Cox model stratified by procedure and adjusted for age, sex and BMI, the hazard ratio for revision with implant C compared with implant A was 3.16 (95% CI 1.90 to 5.24); without stratification it was 3.19.
 :::

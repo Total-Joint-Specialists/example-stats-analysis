@@ -552,7 +552,9 @@ print(n, mean, sd, stats.t.interval(0.95, df=n - 1, loc=mean, scale=sd / n ** 0.
 ```
 :::
 
-The histogram is roughly symmetric, so the mean is fair: mean BMI 30.4 kg/m² (SD 5.4; 95% CI for the mean 30.0 to 30.9).
+The histogram is roughly symmetric, so the mean is a fair summary.
+
+> **Results:** Mean BMI was 30.4 kg/m² (SD 5.4; 95% CI for the mean 30.0 to 30.9).
 :::
 
 **2.** A resident wants to summarize **length of stay** in a Table 1 as "0.9 ± 1.1 days". What would you suggest instead, and why? Compute it.
@@ -576,7 +578,7 @@ print(np.quantile(cohort["los_days"], [0.25, 0.50, 0.75]))
 ```
 :::
 
-Median 1 day (IQR 0 to 1).
+> **Results:** The median length of stay was 1 day (IQR 0 to 1).
 :::
 
 **3.** Twenty-seven of the 600 procedures were followed by a readmission within 90 days. Write the Results sentence, with a Wilson 95% CI.
@@ -598,5 +600,5 @@ print(stats.binomtest(27, 600).proportion_ci(method="wilson"))
 ```
 :::
 
-"Readmission within 90 days followed 27 of 600 procedures (4.5%; 95% CI 3.1% to 6.5%)."
+> **Results:** Readmission within 90 days followed 27 of 600 procedures (4.5%; 95% CI 3.1% to 6.5%).
 :::

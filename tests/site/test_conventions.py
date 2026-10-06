@@ -1,6 +1,31 @@
 """Site-wide page conventions (spec section 6)."""
 
-from sitelib import PAGES, ROOT, SITE, load
+from sitelib import INTERPRETATION, PAGES, ROOT, SITE, load, results_of, text_of
+
+
+def test_rule_flags_interpretation_in_results_sentences():
+    for sentence in ["KOOS JR was similar in men and women", "TKA patients had a higher BMI than THA patients",
+                     "the difference was not statistically significant", "PCS improved from 31.2 to 44.9",
+                     "Inter-rater reliability was good to excellent", "the estimate for implant B was imprecise"]:
+        assert INTERPRETATION.search(sentence), sentence
+    assert not INTERPRETATION.search("KOOS JR at 1 year was a median of 87.0 points (IQR 75.5 to 93.7) in men "
+                                     "and 85.0 (IQR 72.5 to 94.0) in women (Hodges-Lehmann difference 0.8 points, "
+                                     "95% CI −1.6 to 4.4; rank-biserial r = 0.06; p = 0.432).")
+
+
+def test_results_report_numbers_not_interpretation(site):
+    """Every Results sentence (blockquotes, exercise answers, page 18's manuscript) gives the numbers only."""
+    for page in PAGES:
+        soup = load(page)
+        texts = [results_of(text_of(q)) for q in soup.select("blockquote")]
+        texts += [text_of(p) for p in soup.select("section#results p")]
+        for text in texts:
+            assert not INTERPRETATION.findall(text), f"{page}: {INTERPRETATION.findall(text)} in {text[:120]}"
+
+
+def test_the_reporting_rules_say_results_report_numbers_only(site):
+    text = text_of(load("getting-started/using-this-site.html"))
+    assert "Saying what the numbers mean is the Discussion's job" in text
 
 
 def test_language_tabs_are_grouped_and_ordered(site):

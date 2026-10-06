@@ -158,7 +158,7 @@ Operations took 5.5 minutes less than the booked 90 on average (95% CI 4.2 to 6.
 
 > **Methods:** Mean operative time was compared with the 90 minutes booked per case using a one-sample t test.
 >
-> **Results:** Mean operative time was 84.5 minutes (SD 16.4), 5.5 minutes shorter than the 90 minutes booked (95% CI 4.2 to 6.8 minutes shorter; p < 0.001).
+> **Results:** Mean operative time was 84.5 minutes (SD 16.4); the booked time was 90 minutes (difference −5.5 minutes, 95% CI −6.8 to −4.2; p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: a published mean has its own uncertainty
@@ -321,7 +321,7 @@ The typical 1-year score was about 4 points above the target (Hodges-Lehmann est
 
 > **Methods:** Because 1-year KOOS JR scores showed a ceiling effect, they were compared with the 80-point target using a Wilcoxon signed-rank test, with the Hodges-Lehmann estimate and its 95% CI as the effect size.
 >
-> **Results:** The median 1-year KOOS JR was 85.8 points (IQR 74.7 to 93.9), above the 80-point target (Hodges-Lehmann estimate 84.4, 95% CI 82.7 to 86.1; rank-biserial r = 0.34; p < 0.001).
+> **Results:** The median 1-year KOOS JR was 85.8 points (IQR 74.7 to 93.9); the target was 80 points (Hodges-Lehmann estimate 84.4, 95% CI 82.7 to 86.1; rank-biserial r = 0.34; p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: two different "Wilcoxon" tests
@@ -464,7 +464,7 @@ ASA 3 makes the biggest difference: 41.0% of our patients (95% CI 37.1% to 45.0%
 
 > **Methods:** The distribution of ASA classes was compared with the registry's using a chi-square goodness-of-fit test.
 >
-> **Results:** Our patients' ASA classes differed from the registry's (χ² = 27.0, df = 3, p < 0.001). More of our patients were ASA class 3 (41.0%, 95% CI 37.1% to 45.0%, vs 33% in the registry) and fewer were ASA class 1 (6.0% vs 10%).
+> **Results:** ASA class 3 accounted for 41.0% of our patients (95% CI 37.1% to 45.0%) and 33% of the registry's, and ASA class 1 for 6.0% and 10% (χ² = 27.0, df = 3, p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: counts, not percentages
@@ -567,7 +567,7 @@ The effect size is the difference from the hypothetical rate: 4.5% − 6% = −1
 
 > **Methods:** The 90-day readmission rate was compared with the state benchmark of 6% using an exact binomial test. 95% CIs for proportions are exact (Clopper-Pearson).
 >
-> **Results:** Readmission within 90 days followed 27 of 600 procedures (4.5%; 95% CI 3.0% to 6.5%). This did not differ significantly from the 6% benchmark (p = 0.143).
+> **Results:** Readmission within 90 days followed 27 of 600 procedures (4.5%; 95% CI 3.0% to 6.5%); the benchmark was 6% (binomial test p = 0.143).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: "not significantly different" doesn't mean "the same"
@@ -650,7 +650,9 @@ print(cohort["age"].mean() - 66, ci.low - 66, ci.high - 66)
 ```
 :::
 
-Mean age was 65.5 years, 0.5 years younger than the registry (95% CI 1.2 years younger to 0.3 years older; p = 0.213). The data are compatible with no difference, and the CI rules out a difference of more than about a year.
+> **Results:** Mean age was 65.5 years; the registry's was 66 years (difference −0.5 years, 95% CI −1.2 to 0.3; p = 0.213).
+
+The CI includes 0 and rules out a difference of more than about a year in either direction.
 :::
 
 **2.** A state report says 90% of joint replacement patients go home rather than to a facility. After 570 of our 600 procedures, the patient went home. Which test would you use, and what do you conclude?
@@ -674,7 +676,7 @@ print(home.pvalue, home.proportion_ci(method="exact"))
 ```
 :::
 
-Discharge home followed 95.0% of our procedures (95% CI 92.9% to 96.6%), more than the 90% in the report (p < 0.001).
+> **Results:** Discharge home followed 570 of 600 procedures (95.0%; 95% CI 92.9% to 96.6%); the state report gives 90% (binomial test p < 0.001).
 :::
 
 **3.** Suppose a survey of joint replacement patients found 50% never smokers, 40% former smokers and 10% current smokers. Test whether our smoking mix differs, and write the Results sentence.
@@ -700,5 +702,5 @@ print(stats.chisquare(smoking, f_exp=smoking.sum() * pd.Series([0.50, 0.40, 0.10
 ```
 :::
 
-"Our patients' smoking status (53.5% never, 38.3% former, 8.2% current smokers) did not differ significantly from the survey's (χ² = 3.9, df = 2, p = 0.142)."
+> **Results:** Of our patients, 53.5% had never smoked, 38.3% were former and 8.2% current smokers; the survey's figures were 50%, 40% and 10% (χ² = 3.9, df = 2, p = 0.142).
 :::

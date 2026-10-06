@@ -213,7 +213,7 @@ def test_cox_warning_describes_the_cause_specific_hazard(site):
 def test_unplanned_findings_are_labeled_in_the_results(site):
     """The adjusted Cox model's sex effect wasn't the question, so the Results sentence says it's exploratory."""
     results = " ".join(text_of(q) for q in section("catalog/12-predict-from-several.html", "cox").select("blockquote"))
-    sentence = next(s for s in results.split(". ") if "Men had" in s or "men had" in s)
+    sentence = next(s for s in results.split(". ") if "for men compared with women" in s)
     assert "exploratory" in sentence
 
 

@@ -204,7 +204,7 @@ Four of the six pairs differ clearly (p < 0.001 or, for ASA 2 vs 4 in the Games-
 
 > **Methods:** Age was compared across ASA classes with one-way ANOVA, followed by Tukey's honestly significant difference test for pairwise comparisons.
 >
-> **Results:** Mean age differed across ASA classes (F(3, 596) = 23.9, p < 0.001). In pairwise comparisons, ASA 3 patients were 5.0 years older than ASA 2 patients (95% CI 3.0 to 6.9, p < 0.001); the differences between ASA 1 and 2 (3.6 years, 95% CI −0.4 to 7.7, p = 0.096) and between ASA 3 and 4 (5.3 years, 95% CI −0.3 to 10.9, p = 0.072) were imprecise. Table 2 gives all six pairwise comparisons.
+> **Results:** Across ASA classes, one-way ANOVA gave F(3, 596) = 23.9 (p < 0.001). In pairwise comparisons, the difference in mean age was 5.0 years between ASA 3 and ASA 2 (95% CI 3.0 to 6.9; p < 0.001), 3.6 years between ASA 2 and ASA 1 (95% CI −0.4 to 7.7; p = 0.096) and 5.3 years between ASA 4 and ASA 3 (95% CI −0.3 to 10.9; p = 0.072). Table 2 gives all six pairwise comparisons.
 
 ::: {.callout-tip}
 ## 🔀 R vs Python: Tukey and Games-Howell
@@ -261,7 +261,7 @@ check_agree(list(h = unname(los_kw$statistic), p_12 = dunn$p.adj[1], p_23 = dunn
 - **Dunn's test:** ASA 1 differs from every other class (adjusted p = 0.011 against ASA 2, p < 0.001 against ASAs 3 and 4), and ASA 2 differs from ASAs 3 (p = 0.047) and 4 (p = 0.022). There was no clear evidence of a difference between ASA 3 and 4 (p = 0.061).
 - **The statistic** in R's output is a z score: positive means the second group's ranks are higher (longer stays).
 
-> **Results:** Length of stay rose with ASA class, from a median of 0 days (IQR 0 to 0) in ASA 1 to 1 day (IQR 0.25 to 3.5) in ASA 4 (Kruskal-Wallis H = 24.3, df = 3, p < 0.001). In Dunn's tests with Holm's adjustment, ASA 1 differed from every other class (p ≤ 0.011); the difference between ASA 3 and 4 was imprecise (p = 0.061).
+> **Results:** The median length of stay was 0 days (IQR 0 to 0) in ASA 1 and 1 day (IQR 0.25 to 3.5) in ASA 4 (Kruskal-Wallis H = 24.3, df = 3, p < 0.001). In Dunn's tests with Holm's adjustment, p ≤ 0.011 for ASA 1 against each other class and p = 0.061 for ASA 3 against ASA 4.
 
 ::: {.callout-tip}
 ## 🔀 R vs Python: Dunn's test
@@ -550,7 +550,7 @@ check_agree(list(p_ab = logrank_results$p[1], holm_ab = logrank_results$p_holm[1
 
 Implant C differs from both A and B (adjusted p < 0.001 for each). There was no clear evidence of a difference between A and B (p = 0.520). Against implant B, implant C's hazard ratio was 3.75 (95% CI 2.14 to 6.58); against implant A it was 3.07 (95% CI 1.85 to 5.09; [page 8](../catalog/08-three-plus-unmatched.qmd#cox)).
 
-> **Results:** Revision-free survival differed across implants (log-rank χ² = 33.5, df = 2, p < 0.001). In pairwise log-rank tests with Holm's adjustment, implant C differed from implant A and from implant B (both p < 0.001), with no clear evidence of a difference between A and B (p = 0.520).
+> **Results:** The log-rank test for revision-free survival across implants gave χ² = 33.5 (df = 2, p < 0.001). In pairwise log-rank tests with Holm's adjustment, p < 0.001 for implant C against implant A and against implant B, and p = 0.520 for implant A against implant B.
 
 ::: {.callout-tip}
 ## 🔀 R vs Python: pairwise log-rank tests
@@ -581,7 +581,7 @@ Everything else is **exploratory**: comparisons chosen after seeing the data, or
 
 > **Methods:** Pairwise comparisons after the omnibus tests used Tukey's honestly significant difference test (after ANOVA), Dunn's test (after Kruskal-Wallis) and Fisher's exact tests (after chi-square), with Holm's adjustment for multiple comparisons where the method did not adjust itself. All pairwise comparisons were exploratory.
 >
-> **Results:** Mean age differed across ASA classes (F(3, 596) = 23.9, p < 0.001); ASA 3 patients were 5.0 years older than ASA 2 patients (95% CI 3.0 to 6.9, p < 0.001). Table 2 gives all six pairwise comparisons.
+> **Results:** Across ASA classes, one-way ANOVA gave F(3, 596) = 23.9 (p < 0.001); in pairwise comparisons, the difference in mean age between ASA 3 and ASA 2 was 5.0 years (95% CI 3.0 to 6.9; p < 0.001). Table 2 gives all six pairwise comparisons.
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: report every comparison you ran
@@ -665,7 +665,9 @@ print(pairwise_tukeyhsd(cohort["bmi"], cohort["asa"]).summary())
 ```
 :::
 
-Every pair differs (all adjusted p < 0.01): mean BMI rises with each step in ASA class. The least certain differences involve the two small classes: ASA 2 vs 1 (2.9 kg/m², 95% CI 0.6 to 5.2, p = 0.007) and ASA 4 vs 3 (4.1 kg/m², 95% CI 0.9 to 7.2, p = 0.006).
+> **Results:** In Tukey's HSD, all six pairwise differences in mean BMI had adjusted p < 0.01, including ASA 2 vs 1 (2.9 kg/m², 95% CI 0.6 to 5.2; p = 0.007) and ASA 4 vs 3 (4.1 kg/m², 95% CI 0.9 to 7.2; p = 0.006).
+
+Every pair differs, and mean BMI rises with each step in ASA class. The least certain differences involve the two small classes, ASA 1 and ASA 4.
 :::
 
 **2.** A colleague compares men and women on six yes/no characteristics (diabetes, hypertension, sleep apnea, readmission, complications and discharge to a facility) with Fisher's exact test. Which adjustment fits, and which differences survive it?
@@ -740,5 +742,5 @@ print(multipletests(later_p, method="holm")[1])
 ```
 :::
 
-Among 345 patients assessed at all three visits, walking-aid use fell from 203 (58.8%) at 6 weeks to 87 (25.2%) at 3 months and 37 (10.7%) at 1 year; every pair of visits differed in McNemar tests with Holm's adjustment (all p < 0.001).
+> **Results:** Among 345 patients assessed at all three visits, 203 (58.8%) used a walking aid at 6 weeks, 87 (25.2%) at 3 months and 37 (10.7%) at 1 year; in McNemar tests with Holm's adjustment, p < 0.001 for every pair of visits.
 :::

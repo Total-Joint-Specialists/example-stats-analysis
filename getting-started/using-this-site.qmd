@@ -105,6 +105,12 @@ Every "How to report it" paragraph on this site follows the same rules, which ma
 
 The examples in the table are illustrations, not results from our data. [Demographics (Table 1)](../foundations/02-demographics.qmd) shows the full Table 1 layout.
 
+**Results sentences give the numbers and stop there:** each group's value, the estimate with its 95% CI, and the p-value. Leave out words that interpret them, such as "similar", "higher than", "more often", "improved", "significant", "no clear evidence", or labels like "good" or "moderate". Saying what the numbers mean is the Discussion's job. An illustration:
+
+> KOOS JR at 1 year was a median of 87 points (IQR 76 to 94) in men and 85 (IQR 73 to 94) in women (Hodges-Lehmann difference 1 point, 95% CI −2 to 4; p = 0.432).
+
+Around each Results sentence, this site's text does interpret the numbers, because that's how you learn to read an output. The Results sentence itself is the part to copy into a manuscript.
+
 ## Exercises
 
 Each page ends with two to four short exercises on the practice data. They get harder in three steps: run the same analysis on a different variable, pick the right test for a short scenario, then write the Results sentence. Solutions are hidden in both languages. Try first, then check.

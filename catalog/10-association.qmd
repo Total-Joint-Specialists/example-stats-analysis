@@ -119,7 +119,7 @@ check_agree(list(r = unname(bmi_corr$estimate), p = bmi_corr$p.value,
 
 > **Methods:** The association between BMI and operative time was measured with Pearson's correlation coefficient (r).
 >
-> **Results:** Operative time rose with BMI (Pearson r = 0.45, 95% CI 0.39 to 0.51, p < 0.001; n = 600 procedures).
+> **Results:** The correlation between BMI and operative time was r = 0.45 (Pearson; 95% CI 0.39 to 0.51; p < 0.001; n = 600 procedures).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: r only sees straight lines, and isn't cause
@@ -267,7 +267,7 @@ check_agree(list(low = satisfaction_rho[["lwr.ci"]], high = satisfaction_rho[["u
 
 > **Methods:** The association between improvement in HOOS JR or KOOS JR from before surgery to 1 year and satisfaction at 1 year was measured with Spearman's rank correlation coefficient (ρ).
 >
-> **Results:** Among 404 procedures with both scores and a satisfaction answer, greater improvement went with higher satisfaction (Spearman ρ = 0.38, 95% CI 0.30 to 0.46, p < 0.001).
+> **Results:** Among 404 procedures with both scores and a satisfaction answer, the correlation between the change in HOOS JR or KOOS JR and satisfaction was ρ = 0.38 (Spearman; 95% CI 0.30 to 0.46; p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: two instruments in one number
@@ -396,7 +396,7 @@ check_agree(list(v = asa_v$Cramers_v, c = asa_c$Pearsons_c), reticulate::py$chk)
 
 > **Methods:** The association between ASA class and hypertension was tested with the chi-square test, with Cramér's V as the effect size.
 >
-> **Results:** Hypertension was more common at higher ASA classes, from 12 of 36 procedures (33.3%) in ASA 1 to 16 of 18 (88.9%) in ASA 4 (χ² = 23.2, df = 3, p < 0.001; Cramér's V = 0.20, one-sided 95% CI 0.12 to 1.00).
+> **Results:** Hypertension was present in 12 of 36 procedures (33.3%) in ASA 1 and 16 of 18 (88.9%) in ASA 4 (χ² = 23.2, df = 3, p < 0.001; Cramér's V = 0.20, one-sided 95% CI 0.12 to 1.00).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: V gives the strength, not the pattern
@@ -473,7 +473,9 @@ print(age_corr, age_corr.confidence_interval(confidence_level=0.95))
 ```
 :::
 
-Operative time rose only slightly with age (Pearson r = 0.14, 95% CI 0.06 to 0.22, p < 0.001). The association is clear but weak: age goes with about 2% of the variation in operative time (r² = 0.02), against 20% for BMI.
+> **Results:** The correlation between age and operative time was r = 0.14 (Pearson; 95% CI 0.06 to 0.22; p < 0.001).
+
+The association is clear but weak: age goes with about 2% of the variation in operative time (r² = 0.02), against 20% for BMI.
 :::
 
 **2.** A colleague asks whether older patients stay in hospital longer. Which correlation would you use, and what do you find?
@@ -499,7 +501,9 @@ print(los_corr, np.tanh(z - half_width), np.tanh(z + half_width))
 ```
 :::
 
-Older patients tended to stay slightly longer (Spearman ρ = 0.15, 95% CI 0.07 to 0.22, p < 0.001), a weak association.
+> **Results:** The correlation between age and length of stay was ρ = 0.15 (Spearman; 95% CI 0.07 to 0.22; p < 0.001).
+
+Older patients tended to stay slightly longer, but the association is weak.
 :::
 
 **3.** Is sleep apnea more common in men than in women, and how strongly is it linked with sex? Write the Results sentence with φ.
@@ -528,5 +532,5 @@ print(stats.contingency.association(apnea, method="cramer"))   # phi without its
 ```
 :::
 
-"Sleep apnea was more common in men (69 of 257, 26.8%) than in women (43 of 343, 12.5%) (χ² = 19.8, df = 1, p < 0.001; φ = 0.18, one-sided 95% CI 0.11 to 1.00)."
+> **Results:** Sleep apnea was present in 69 of 257 men (26.8%) and 43 of 343 women (12.5%) (χ² = 19.8, df = 1, p < 0.001; φ = 0.18, one-sided 95% CI 0.11 to 1.00).
 :::

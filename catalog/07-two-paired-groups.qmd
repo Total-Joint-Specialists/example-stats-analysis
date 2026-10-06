@@ -175,7 +175,7 @@ d~z~ = 1.49 is a very large effect: 93% of patients' PCS went up.
 
 > **Methods:** Change in VR-12 PCS from before surgery to 1 year was assessed with a paired t test in patients with both measurements.
 >
-> **Results:** Of 574 patients with a pre-op PCS, 436 also had a 1-year score. PCS improved from a mean of 31.2 (SD 6.3) to 44.9 (SD 6.8) (mean change 13.7 points, 95% CI 12.8 to 14.5; d~z~ = 1.49; p < 0.001).
+> **Results:** Of 574 patients with a pre-op PCS, 436 also had a 1-year score. Mean PCS was 31.2 (SD 6.3) before surgery and 44.9 (SD 6.8) at 1 year (mean change 13.7 points, 95% CI 12.8 to 14.5; d~z~ = 1.49; p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: don't analyze paired data as unpaired
@@ -347,7 +347,7 @@ check_agree(list(hl = unname(koos_test$estimate)), reticulate::py$chk,
 
 > **Methods:** Because 1-year KOOS JR scores showed a ceiling effect, change from before surgery was assessed with the Wilcoxon signed-rank test, with the Hodges-Lehmann estimate of the change and its 95% CI as the effect size.
 >
-> **Results:** All 246 patients with both scores improved. Median KOOS JR rose from 50.0 (IQR 40.8 to 58.2) before surgery to 85.8 (IQR 75.0 to 94.0) at 1 year (Hodges-Lehmann estimate of the change 34.1 points, 95% CI 32.3 to 35.9; p < 0.001).
+> **Results:** In all 246 patients with both scores, the change was positive. Median KOOS JR was 50.0 (IQR 40.8 to 58.2) before surgery and 85.8 (IQR 75.0 to 94.0) at 1 year (Hodges-Lehmann estimate of the change 34.1 points, 95% CI 32.3 to 35.9; p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: "significant improvement" isn't the whole story
@@ -497,7 +497,7 @@ Patients were 2.8 times as likely to start using an aid as to stop (95% CI 2.1 t
 
 > **Methods:** Walking-aid use before surgery and at 6 weeks was compared with McNemar's test, with the discordant-pair odds ratio and its exact 95% CI as the effect size.
 >
-> **Results:** Among 505 patients assessed at both visits, walking-aid use increased from 35.2% before surgery to 59.6% at 6 weeks: 193 patients started and 70 stopped using an aid (discordant-pair odds ratio 2.76, 95% CI 2.09 to 3.68; p < 0.001).
+> **Results:** Among 505 patients assessed at both visits, 35.2% used a walking aid before surgery and 59.6% at 6 weeks; 193 patients started and 70 stopped using an aid (discordant-pair odds ratio 2.76, 95% CI 2.09 to 3.68; p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: no chi-square or Fisher's test on paired yes/no data
@@ -614,7 +614,7 @@ The **hazard ratio** is the effect size: within matched pairs, the hazard of rev
 
 > **Methods:** Revision risk was compared between implants in matched pairs using Cox regression stratified by pair.
 >
-> **Results:** In 52 pairs matched on procedure, age, sex, BMI and ASA class, implant C had a higher hazard of revision than implant A (17 vs 5 revisions; hazard ratio 3.50, 95% CI 1.15 to 10.63; p = 0.027).
+> **Results:** In 52 pairs matched on procedure, age, sex, BMI and ASA class, 17 implant C and 5 implant A procedures were revised (hazard ratio for implant C vs A 3.50, 95% CI 1.15 to 10.63; p = 0.027).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: don't ignore the matching
@@ -721,7 +721,9 @@ print(mcs_test, change.mean(), mcs_test.confidence_interval(), change.mean() / c
 ```
 :::
 
-The mental component improved much less than the physical one: mean change 3.4 points (95% CI 2.3 to 4.6; d~z~ = 0.28, a small effect; p < 0.001).
+> **Results:** The mean change in MCS from before surgery to 1 year was 3.4 points (95% CI 2.3 to 4.6; d~z~ = 0.28; p < 0.001).
+
+That's a small effect, and much smaller than the physical component's 13.7 points.
 :::
 
 **2.** Two raters measured the hip-knee-ankle (HKA) angle on the same 60 knee X-rays (`radiographic_reliability.csv`, session 1). Does rater 2 measure systematically higher than rater 1? Choose the test and run it.
@@ -752,7 +754,9 @@ print(hka_test, (readings["R2"] - readings["R1"]).mean(), hka_test.confidence_in
 ```
 :::
 
-Rater 2 measured 0.50° higher on average (95% CI 0.08° to 0.93°; p = 0.022). A systematic difference this small may not matter clinically; [page 17](../beyond/17-agreement.qmd#bland-altman) shows how to judge agreement between raters properly.
+> **Results:** The mean difference between rater 2's and rater 1's readings was 0.50° (95% CI 0.08° to 0.93°; p = 0.022).
+
+A systematic difference this small may not matter clinically; [page 17](../beyond/17-agreement.qmd#bland-altman) shows how to judge agreement between raters properly.
 :::
 
 **3.** Patients improve a lot in the first 3 months. Do they keep improving between 3 months and 1 year? Test it for KOOS JR and write the Results sentence.
@@ -789,5 +793,5 @@ print(later[["3mo", "1yr"]].quantile([0.25, 0.50, 0.75]))
 ```
 :::
 
-"Between 3 months and 1 year, KOOS JR improved further in 176 of 225 patients and declined in 46; the median rose from 73.1 (IQR 65.4 to 81.5) to 85.2 (IQR 73.6 to 93.8). The Hodges-Lehmann estimate of the change was 9.9 points (95% CI 8.2 to 11.6; rank-biserial r = 0.74; p < 0.001)."
+> **Results:** Between 3 months and 1 year, the change in KOOS JR was positive in 176 of 225 patients and negative in 46. The median was 73.1 (IQR 65.4 to 81.5) at 3 months and 85.2 (IQR 73.6 to 93.8) at 1 year (Hodges-Lehmann estimate of the change 9.9 points, 95% CI 8.2 to 11.6; rank-biserial r = 0.74; p < 0.001).
 :::

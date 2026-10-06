@@ -16,6 +16,7 @@ WRITTEN = [
     "catalog/09-three-plus-matched.html",
     "catalog/10-association.html",
     "catalog/11-predict-from-one.html",
+    "catalog/12-predict-from-several.html",
 ]
 
 # Spec section 6, steps 2-7, as h3 headings in this order. Page 4 describes a

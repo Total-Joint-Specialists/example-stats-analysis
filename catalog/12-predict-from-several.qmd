@@ -1,17 +1,784 @@
 ---
-title: "12 · Predict a value from several variables (coming soon)"
-description: "Multiple linear and nonlinear regression, multiple logistic regression, Cox regression."
+title: "12 · Predict a value from several variables"
+description: "Multiple linear and nonlinear regression, multiple logistic regression and Cox regression: the effect of each predictor, adjusted for the others."
+engine: knitr
+toc-depth: 2
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
+Outcomes rarely depend on one thing. Heavier patients may take longer to operate on, but so may older ones, and knees take longer than hips. **Multiple regression** puts several predictors in one model, so each coefficient is that predictor's effect **with the others held fixed**: adjusted for them. The regressions are the same four as on [page 11](11-predict-from-one.qmd), with more than one predictor.
+
+::: {.callout-note}
+## 💡 How every section on this page works
+Each section answers one question about the practice cohort. Its first code block loads the packages and the data, so you can jump straight to the section you need. Run that section's blocks in order, top to bottom.
+
+To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them ([page 3](../foundations/03-distributions.qmd#paired)) and say what you did.
 :::
 
 ## Multiple linear regression {#multiple-linear-regression}
 
+**The question:** Does BMI still predict operative time once age, sex and procedure are taken into account?
+
+### When to use it
+
+- The outcome is a **measurement**, and you want the effect of each of **several predictors**, adjusted for the others.
+- The assumptions of [simple linear regression](11-predict-from-one.qmd#linear-regression) still apply: straight-line effects, independent patients, and residuals that are roughly normal with an even spread.
+- Choose the predictors **before** looking at the results, from what you know clinically. As a rule of thumb, allow at least 10 to 20 patients per predictor.
+- If an effect may bend → [splines](#multiple-nonlinear-regression). If the outcome is yes/no → [multiple logistic regression](#multiple-logistic-regression).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3.5
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+ggplot(cohort, aes(bmi, op_time_min, colour = procedure)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "BMI, kg/m²", y = "Operative time, minutes", colour = "Procedure")
+
+cohort |>
+  group_by(procedure) |>
+  summarise(n = n(), mean = mean(op_time_min), sd = sd(op_time_min))
+```
+
+## Python
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+
+cohort = pd.read_csv("data/cohort.csv")
+
+fig, ax = plt.subplots(figsize=(6, 3.5))
+for procedure, group in cohort.groupby("procedure"):
+    ax.scatter(group["bmi"], group["op_time_min"], alpha=0.5, label=procedure)
+ax.set_xlabel("BMI, kg/m²")
+ax.set_ylabel("Operative time, minutes")
+legend = ax.legend(title="Procedure")
+plt.show()
+
+print(cohort.groupby("procedure")["op_time_min"].agg(["count", "mean", "std"]))
+```
+:::
+
+Operative time rises with BMI for both procedures, and TKAs take longer than THAs on average: 88.3 minutes (SD 16.2) against 79.8 (SD 15.5).
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+time_model <- lm(op_time_min ~ bmi + age + sex + procedure, data = cohort)   # predictors joined with +
+summary(time_model)
+confint(time_model)
+```
+
+## Python
+
+```{python}
+time_model = smf.ols("op_time_min ~ bmi + age + sex + procedure", data=cohort).fit()   # predictors joined with +
+print(time_model.summary())
+```
+:::
+
+```{python}
+#| include: false
+ci = time_model.conf_int()
+chk = {"bmi": float(time_model.params["bmi"]), "age": float(time_model.params["age"]),
+       "male": float(time_model.params["sex[T.Male]"]), "tka": float(time_model.params["procedure[T.TKA]"]),
+       "bmi_low": float(ci.loc["bmi", 0]), "bmi_high": float(ci.loc["bmi", 1]),
+       "r2": float(time_model.rsquared), "adj_r2": float(time_model.rsquared_adj)}
+```
+
+```{r}
+#| include: false
+time_fit <- summary(time_model)
+time_ci <- confint(time_model)
+check_agree(list(bmi = coef(time_model)[["bmi"]], age = coef(time_model)[["age"]], male = coef(time_model)[["sexMale"]],
+                 tka = coef(time_model)[["procedureTKA"]], bmi_low = time_ci["bmi", 1], bmi_high = time_ci["bmi", 2],
+                 r2 = time_fit$r.squared, adj_r2 = time_fit$adj.r.squared), reticulate::py$chk)
+```
+
+### Read the output
+
+Each coefficient is the change in operative time for one unit of that predictor, **with the other predictors held fixed**:
+
+- **bmi = 1.27:** 1.27 more minutes per kg/m² (95% CI 1.06 to 1.49), for patients of the same age, sex and procedure.
+- **age = 0.27:** 0.27 more minutes per year of age (95% CI 0.15 to 0.39).
+- **sexMale** (R) or **sex[T.Male]** (Python) **= −1.48:** men took 1.48 minutes less than women, but the CI (−3.81 to 0.84) includes 0. Women are the reference group because "Female" comes first alphabetically.
+- **procedureTKA = 6.74:** TKAs took 6.74 minutes longer than THAs (95% CI 4.40 to 9.08).
+- **Multiple R-squared = 0.27, adjusted R-squared = 0.26:** the four predictors together explain about a quarter of the variation. The adjusted value is penalized for the number of predictors.
+- **F-statistic, p < 0.001:** the test that all four predictors together explain nothing.
+
+### Effect size and 95% CI
+
+The **adjusted coefficients** with their 95% CIs are the effect sizes, with **R²** for the model as a whole. BMI's coefficient fell only a little after adjustment, from 1.37 minutes per kg/m² on its own ([page 11](11-predict-from-one.qmd#linear-regression)) to 1.27: age, sex and procedure explain little of BMI's link with operative time.
+
+### How to report it
+
+> **Methods:** Operative time was modeled with multiple linear regression on BMI, age, sex and procedure, chosen before the analysis.
+>
+> **Results:** Adjusted for age, sex and procedure, each 1 kg/m² of BMI was associated with 1.27 minutes longer operative time (95% CI 1.06 to 1.49, p < 0.001). TKAs took 6.74 minutes longer than THAs (95% CI 4.40 to 9.08), and each year of age added 0.27 minutes (95% CI 0.15 to 0.39). The model explained 27% of the variation in operative time (R² = 0.27).
+
+::: {.callout-warning}
+## ⚠️ Watch out: "adjusted" isn't "caused", and more predictors isn't better
+Adjusting removes the part of an effect explained by the variables **in** the model, not by the ones you left out or never measured, so an adjusted coefficient still isn't proof of cause. Choose the predictors in advance and stop there: adding variables until something becomes significant, or dropping those that don't (stepwise selection), gives results that won't replicate.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: names for the same coefficients
+Both programs use the first category alphabetically as the reference (Female, THA). R names the coefficients `sexMale` and `procedureTKA`; statsmodels names them `sex[T.Male]` and `procedure[T.TKA]` (T for "treatment" coding). The numbers are the same.
+:::
+
 ## Multiple nonlinear regression {#multiple-nonlinear-regression}
+
+**The question:** Do hips recover faster than knees after joint replacement?
+
+### When to use it
+
+- **The curve's shape is known, but its numbers may depend on other variables.** Extend the [recovery curve](11-predict-from-one.qmd#nonlinear-regression) so that each of its numbers can differ between hips and knees, and fit one model with nonlinear least squares.
+- **The shape isn't known.** Let a measured predictor's effect bend with a **spline**: a flexible curve made of short cubic pieces joined smoothly at points called knots. A **natural** (or **restricted**) cubic spline is a straight line beyond the outer knots, which keeps it from flailing at the ends. Splines fit inside an ordinary linear, logistic or Cox model, and they're the usual way to check whether a straight line is good enough.
+- If every effect is a straight line → [multiple linear regression](#multiple-linear-regression).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3.5
+library(tidyverse)
+library(splines)
+
+proms <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+recovery_data <- proms |>
+  filter(!is.na(prom_score)) |>
+  mutate(days = pmax(visit_days, 0),                        # pre-op visits count as day 0
+         joint = if_else(instrument == "HOOS JR", "hip", "knee"),
+         knee = as.numeric(joint == "knee"))                # 1 = knee, 0 = hip
+
+ggplot(recovery_data, aes(days, prom_score, colour = joint)) +
+  geom_point(alpha = 0.15) +
+  labs(x = "Days since surgery", y = "HOOS JR (hips) or KOOS JR (knees)", colour = "Joint")
+
+count(recovery_data, joint)
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+from scipy import stats
+from scipy.optimize import curve_fit
+from statsmodels.stats.anova import anova_lm
+
+proms = pd.read_csv("data/proms_long.csv")
+cohort = pd.read_csv("data/cohort.csv")
+
+recovery_data = proms.dropna(subset=["prom_score"]).copy()
+recovery_data["days"] = recovery_data["visit_days"].clip(lower=0)             # pre-op visits count as day 0
+recovery_data["knee"] = (recovery_data["instrument"] == "KOOS JR").astype(int)   # 1 = knee, 0 = hip
+
+fig, ax = plt.subplots(figsize=(6, 3.5))
+for knee, group in recovery_data.groupby("knee"):
+    ax.scatter(group["days"], group["prom_score"], alpha=0.15, label="knee" if knee else "hip")
+ax.set_xlabel("Days since surgery")
+ax.set_ylabel("HOOS JR (hips) or KOOS JR (knees)")
+legend = ax.legend(title="Joint")
+plt.show()
+
+print(recovery_data["knee"].value_counts())
+```
+:::
+
+2052 scores: 906 from hips and 1146 from knees. Both rise and level off; the hip scores seem to get there sooner.
+
+### Run it
+
+Each of the curve's three numbers gets a value for hips and a difference for knees: for a knee, `plateau = plateau_hip + plateau_diff`, and the same for `start` and `tau`.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+recovery_by_joint <- function(days, knee, plateau_hip, plateau_diff, start_hip, start_diff, tau_hip, tau_diff) {
+  plateau <- plateau_hip + plateau_diff * knee   # knee = 0 for hips, 1 for knees
+  start <- start_hip + start_diff * knee
+  tau <- tau_hip + tau_diff * knee
+  plateau - (plateau - start) * exp(-days / tau)
+}
+
+joint_recovery <- nls(
+  prom_score ~ recovery_by_joint(days, knee, plateau_hip, plateau_diff, start_hip, start_diff, tau_hip, tau_diff),
+  data = recovery_data,
+  start = list(plateau_hip = 85, plateau_diff = 0, start_hip = 50, start_diff = 0, tau_hip = 60, tau_diff = 0)
+)
+summary(joint_recovery)
+```
+
+## Python
+
+```{python}
+def recovery_by_joint(x, plateau_hip, plateau_diff, start_hip, start_diff, tau_hip, tau_diff):
+    days, knee = x
+    plateau = plateau_hip + plateau_diff * knee   # knee = 0 for hips, 1 for knees
+    start = start_hip + start_diff * knee
+    tau = tau_hip + tau_diff * knee
+    return plateau - (plateau - start) * np.exp(-days / tau)
+
+names = ["plateau_hip", "plateau_diff", "start_hip", "start_diff", "tau_hip", "tau_diff"]
+estimates, covariance = curve_fit(recovery_by_joint, (recovery_data["days"], recovery_data["knee"]),
+                                  recovery_data["prom_score"], p0=[85, 0, 50, 0, 60, 0])
+standard_errors = np.sqrt(np.diag(covariance))
+print(pd.DataFrame({"estimate": estimates, "std_error": standard_errors}, index=names))
+```
+:::
+
+```{python}
+#| include: false
+chk = {"tau_hip": float(estimates[4]), "tau_diff": float(estimates[5]), "plateau_diff": float(estimates[1]),
+       "start_diff": float(estimates[3]), "se_tau_diff": float(standard_errors[5])}
+```
+
+```{r}
+#| include: false
+joint_coef <- summary(joint_recovery)$coefficients
+check_agree(list(tau_hip = joint_coef["tau_hip", "Estimate"], tau_diff = joint_coef["tau_diff", "Estimate"],
+                 plateau_diff = joint_coef["plateau_diff", "Estimate"], start_diff = joint_coef["start_diff", "Estimate"],
+                 se_tau_diff = joint_coef["tau_diff", "Std. Error"]),
+            reticulate::py$chk, tol = 1e-4)   # both approximate the curve's derivatives numerically, so they agree to ~5 digits
+```
+
+When you don't know the shape, use a spline instead. Here a natural cubic spline lets BMI's effect on operative time bend, and an F test asks whether the bend improves on the straight line of the [multiple linear regression](#multiple-linear-regression).
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+straight <- lm(op_time_min ~ bmi + age + sex + procedure, data = cohort)
+bendy <- lm(op_time_min ~ ns(bmi, df = 3) + age + sex + procedure, data = cohort)   # ns(): natural cubic spline
+anova(straight, bendy)   # does the bend improve the fit?
+```
+
+## Python
+
+```{python}
+bmi_knots = list(cohort["bmi"].quantile([1/3, 2/3]))         # the same knots R's ns(df = 3) uses
+bmi_low, bmi_high = cohort["bmi"].min(), cohort["bmi"].max()
+
+straight = smf.ols("op_time_min ~ bmi + age + sex + procedure", data=cohort).fit()
+bendy = smf.ols("op_time_min ~ cr(bmi, knots=bmi_knots, lower_bound=bmi_low, upper_bound=bmi_high, constraints='center')"
+                " + age + sex + procedure", data=cohort).fit()   # cr(): natural cubic spline
+print(anova_lm(straight, bendy))   # does the bend improve the fit?
+```
+:::
+
+```{python}
+#| include: false
+bend_test = anova_lm(straight, bendy)
+chk = {"f": float(bend_test.loc[1, "F"]), "p": float(bend_test.loc[1, "Pr(>F)"]), "r2": float(bendy.rsquared)}
+```
+
+```{r}
+#| include: false
+bend_test <- anova(straight, bendy)
+check_agree(list(f = bend_test$F[2], p = bend_test$`Pr(>F)`[2], r2 = summary(bendy)$r.squared), reticulate::py$chk)
+```
+
+### Read the output
+
+The recovery curve:
+
+- **plateau_hip, start_hip, tau_hip:** the hip curve, the same as fitting hips alone ([page 11, exercise 3](11-predict-from-one.qmd#exercises)): τ = 53.4 days.
+- **tau_diff = 27.5:** knees' time constant is 27.5 days longer, so knees recover more slowly.
+- **plateau_diff = −3.66, start_diff = 4.25:** the knee curve starts 4.25 points higher and levels off 3.66 points lower; see the warning below before reading anything into these.
+
+The spline:
+
+- **F = 0.58, p = 0.562:** letting BMI's effect bend doesn't improve the fit. Keep the straight line.
+
+### Effect size and 95% CI
+
+The **differences between hips and knees**, with their 95% CIs, are the effect sizes.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+confint(joint_recovery)                                          # profile CIs
+log(2) * c(hip = coef(joint_recovery)[["tau_hip"]],
+           knee = coef(joint_recovery)[["tau_hip"]] + coef(joint_recovery)[["tau_diff"]])   # days to half the gain
+log(2) * confint(joint_recovery)["tau_diff", ]                   # difference in days to half the gain
+```
+
+## Python
+
+```{python}
+t_crit = stats.t.ppf(0.975, df=len(recovery_data) - 6)   # 6 parameters
+print(pd.DataFrame({"low": estimates - t_crit * standard_errors, "high": estimates + t_crit * standard_errors}, index=names))
+print(np.log(2) * estimates[4], np.log(2) * (estimates[4] + estimates[5]))   # days to half the gain: hips, knees
+```
+:::
+
+The time constant was 27.5 days longer for knees (95% CI 15.9 to 40.1). Half of the eventual gain took about 37 days after a hip replacement and 56 days after a knee replacement, a difference of 19 days (95% CI 11 to 28).
+
+### How to report it
+
+> **Methods:** HOOS JR (hips) and KOOS JR (knees) were modeled against days since surgery with an exponential recovery curve whose start, plateau and time constant could differ between hips and knees, fitted by nonlinear least squares. Whether BMI's effect on operative time was linear was checked by adding a natural cubic spline (3 degrees of freedom) and comparing the models with an F test.
+>
+> **Results:** Knees recovered more slowly than hips: the time constant was 27.5 days longer (95% CI 15.9 to 40.1), so half of the eventual gain took about 56 days after knee replacement and 37 days after hip replacement. Allowing BMI's effect on operative time to bend did not improve the fit (F = 0.58, df = 2 and 593, p = 0.562).
+
+::: {.callout-warning}
+## ⚠️ Watch out: two questionnaires, and repeated scores
+Hips answer HOOS JR and knees KOOS JR. A point on one isn't guaranteed to equal a point on the other, so the differences in start and plateau mix up the joints with the questionnaires. The time constant is measured in days, not points, so it compares cleanly. As on [page 11](11-predict-from-one.qmd#nonlinear-regression), each joint contributes up to four scores, so these CIs are too narrow; a mixed model ([page 16](../beyond/16-mixed-models.qmd)) handles that.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: splines and CIs
+- R's `ns()` and Python's `cr()` (from patsy, the formula library statsmodels uses) build the same natural cubic spline only when the knots match. `ns(df = 3)` puts knots at the 1/3 and 2/3 quantiles and at the minimum and maximum, so the Python code sets those explicitly. Other tools, like `rms::rcs()`, place the knots elsewhere and give slightly different curves.
+- As on [page 11](11-predict-from-one.qmd#nonlinear-regression), R's `confint()` profiles the nonlinear fit, while the Python code uses estimate ± t × standard error, so the CIs differ slightly (τ difference: 15.3 to 39.7 days in Python).
+:::
 
 ## Multiple logistic regression {#multiple-logistic-regression}
 
+**The question:** Which patient factors predict a complication within 90 days?
+
+### When to use it
+
+- The outcome is **yes/no**, and you want the **odds ratio** for each of several predictors, adjusted for the others.
+- The assumptions of [simple logistic regression](11-predict-from-one.qmd#logistic-regression) still apply, for every measured predictor.
+- **Events limit predictors.** A common rule of thumb is at least 10 patients **with** the outcome per predictor. With 51 complications, this model can afford about five.
+- If the outcome is time until an event → [Cox regression](#cox).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE) |>
+  mutate(age_10 = age / 10,   # per 10 years
+         bmi_5 = bmi / 5)     # per 5 kg/m²
+
+cohort |>
+  group_by(complication_90d) |>
+  summarise(n = n(), age = mean(age), bmi = mean(bmi), asa = mean(asa),
+            diabetes_percent = 100 * mean(diabetes), male_percent = 100 * mean(sex == "Male"))
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import statsmodels.formula.api as smf
+
+cohort = pd.read_csv("data/cohort.csv")
+cohort["age_10"] = cohort["age"] / 10   # per 10 years
+cohort["bmi_5"] = cohort["bmi"] / 5     # per 5 kg/m²
+cohort["male"] = (cohort["sex"] == "Male").astype(int)
+
+print(cohort.groupby("complication_90d")[["age", "bmi", "asa", "diabetes", "male"]].mean())
+print(cohort["complication_90d"].value_counts())
+```
+:::
+
+The 51 patients with a complication were older on average (71.2 against 65.0 years), with a higher BMI (32.3 against 30.3) and a slightly higher ASA class. Diabetes was a little more common (11.8% against 9.1%), and men a little less common (39.2% against 43.2%).
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+complication_model <- glm(complication_90d ~ age_10 + bmi_5 + asa + diabetes + sex,
+                          family = binomial, data = cohort)
+summary(complication_model)
+```
+
+## Python
+
+```{python}
+complication_model = smf.logit("complication_90d ~ age_10 + bmi_5 + asa + diabetes + sex",
+                               data=cohort).fit(disp=False)
+print(complication_model.summary())
+```
+:::
+
+```{python}
+#| include: false
+params, errors = complication_model.params, complication_model.bse
+chk = {"age": float(params["age_10"]), "bmi": float(params["bmi_5"]), "asa": float(params["asa"]),
+       "diabetes": float(params["diabetes"]), "male": float(params["sex[T.Male]"]),
+       "se_age": float(errors["age_10"]), "se_bmi": float(errors["bmi_5"])}
+```
+
+```{r}
+#| include: false
+complication_coef <- summary(complication_model)$coefficients
+check_agree(list(age = complication_coef["age_10", "Estimate"], bmi = complication_coef["bmi_5", "Estimate"],
+                 asa = complication_coef["asa", "Estimate"], diabetes = complication_coef["diabetes", "Estimate"],
+                 male = complication_coef["sexMale", "Estimate"], se_age = complication_coef["age_10", "Std. Error"],
+                 se_bmi = complication_coef["bmi_5", "Std. Error"]),
+            reticulate::py$chk, tol = 1e-4)   # glm() stops once the deviance settles, a step before statsmodels does
+```
+
+### Read the output
+
+- Each **coefficient** is the change in the log odds of a complication per unit of that predictor, adjusted for the others; the next step turns them into odds ratios.
+- **age_10: p < 0.001** and **bmi_5: p = 0.029:** age and BMI each predict complications, even allowing for the other.
+- **asa (p = 0.592), diabetes (p = 0.789), sexMale (p = 0.849):** no clear evidence for these, once age and BMI are in the model.
+- ASA class is entered as a number (1 to 4), so it counts as one predictor with one odds ratio per class. As four separate groups it would use three of the model's five or so predictors.
+
+### Effect size and 95% CI
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+exp(cbind(odds_ratio = coef(complication_model), confint(complication_model)))   # profile CIs
+```
+
+## Python
+
+```{python}
+odds_ratios = np.exp(pd.concat([complication_model.params, complication_model.conf_int()], axis=1))   # Wald CIs
+odds_ratios.columns = ["odds_ratio", "low", "high"]
+print(odds_ratios)
+```
+:::
+
+The **adjusted odds ratios** are the effect sizes: 2.08 per 10 years of age (95% CI 1.46 to 3.02) and 1.39 per 5 kg/m² of BMI (95% CI 1.03 to 1.86). The CIs for ASA class (1.16 per class, 0.68 to 2.00), diabetes (0.88, 0.31 to 2.15) and male sex (0.94, 0.51 to 1.72) are wide.
+
+### How to report it
+
+> **Methods:** Complications within 90 days were modeled with multiple logistic regression on age (per 10 years), BMI (per 5 kg/m²), ASA class, diabetes and sex, chosen before the analysis.
+>
+> **Results:** Complications followed 51 of 600 procedures (8.5%). Older age (odds ratio 2.08 per 10 years, 95% CI 1.46 to 3.02) and higher BMI (odds ratio 1.39 per 5 kg/m², 95% CI 1.03 to 1.86) were independently associated with complications. The estimates for ASA class (1.16 per class, 95% CI 0.68 to 2.00), diabetes (0.88, 95% CI 0.31 to 2.15) and male sex (0.94, 95% CI 0.51 to 1.72) were imprecise.
+
+::: {.callout-warning}
+## ⚠️ Watch out: too few events
+With 51 complications, five predictors is already at the limit. Add more and the odds ratios become unstable: their CIs balloon, and some may shoot off toward 0 or infinity. If you have more candidate predictors than events allow, choose the most important ones clinically, in advance; don't let p-values choose them for you.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: profile and Wald CIs, again
+As on [page 11](11-predict-from-one.qmd#logistic-regression), R's `confint()` profiles the likelihood and statsmodels uses Wald CIs. With few events the two can differ in the second decimal: for diabetes, 0.31 to 2.15 in R and 0.33 to 2.30 in Python. Say which you used.
+:::
+
 ## Cox regression {#cox}
+
+**The question:** Does implant C still carry a higher hazard of revision after adjusting for age, sex and BMI?
+
+### When to use it
+
+- The outcome is **time until an event** (revision), and you want each predictor's **hazard ratio**, adjusted for the others.
+- **Events limit predictors**, as in logistic regression: about 10 events per predictor. 81 revisions allow about eight; implant (which uses two, B and C against A), age, sex and BMI use five.
+- Proportional hazards must hold for every predictor. [Page 14](../survival/14-cox-regression.qmd) shows how to check it and covers Cox regression in full.
+
+### Look at the data first
+
+Adjusting matters when the groups differ in other ways. Compare the implants:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+library(survival)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE) |>
+  mutate(age_10 = age / 10, bmi_5 = bmi / 5)   # per 10 years, per 5 kg/m²
+
+cohort |>
+  group_by(implant) |>
+  summarise(n = n(), revised = sum(revised), age = mean(age), male_percent = 100 * mean(sex == "Male"), bmi = mean(bmi))
+```
+
+## Python
+
+```{python}
+import pandas as pd
+from lifelines import CoxPHFitter
+
+cohort = pd.read_csv("data/cohort.csv")
+cohort["age_10"] = cohort["age"] / 10   # per 10 years
+cohort["bmi_5"] = cohort["bmi"] / 5     # per 5 kg/m²
+cohort["male"] = (cohort["sex"] == "Male").astype(int)
+
+print(cohort.groupby("implant").agg(n=("case_id", "count"), revised=("revised", "sum"), age=("age", "mean"),
+                                    male=("male", "mean"), bmi=("bmi", "mean")))
+```
+:::
+
+38 of 137 implant C procedures were revised, against 25 of 246 for A and 18 of 217 for B. The three groups are alike in age (65 to 66 years on average), sex (42% to 44% men) and BMI (about 30 to 31), so adjustment shouldn't change much.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+adjusted_cox <- coxph(Surv(followup_years, revised) ~ implant + age_10 + sex + bmi_5, data = cohort)
+summary(adjusted_cox)
+```
+
+## Python
+
+```{python}
+adjusted_cox = CoxPHFitter().fit(
+    cohort[["followup_years", "revised", "implant", "age_10", "sex", "bmi_5"]],
+    duration_col="followup_years", event_col="revised", formula="implant + age_10 + sex + bmi_5",
+    fit_options={"precision": 1e-9},   # stop only when fully converged; see the R vs Python box
+)
+print(adjusted_cox.summary[["exp(coef)", "exp(coef) lower 95%", "exp(coef) upper 95%", "p"]])
+print(adjusted_cox.log_likelihood_ratio_test().test_statistic)   # overall likelihood ratio test
+```
+:::
+
+```{python}
+#| include: false
+rows = adjusted_cox.summary
+chk = {"hr_b": float(rows.loc["implant[T.B]", "exp(coef)"]), "hr_c": float(rows.loc["implant[T.C]", "exp(coef)"]),
+       "low_c": float(rows.loc["implant[T.C]", "exp(coef) lower 95%"]), "high_c": float(rows.loc["implant[T.C]", "exp(coef) upper 95%"]),
+       "hr_age": float(rows.loc["age_10", "exp(coef)"]), "hr_male": float(rows.loc["sex[T.Male]", "exp(coef)"]),
+       "hr_bmi": float(rows.loc["bmi_5", "exp(coef)"]), "lr": float(adjusted_cox.log_likelihood_ratio_test().test_statistic)}
+```
+
+```{r}
+#| include: false
+adjusted_hr <- summary(adjusted_cox)$conf.int
+check_agree(list(hr_b = adjusted_hr["implantB", "exp(coef)"], hr_c = adjusted_hr["implantC", "exp(coef)"],
+                 low_c = adjusted_hr["implantC", "lower .95"], high_c = adjusted_hr["implantC", "upper .95"],
+                 hr_age = adjusted_hr["age_10", "exp(coef)"], hr_male = adjusted_hr["sexMale", "exp(coef)"],
+                 hr_bmi = adjusted_hr["bmi_5", "exp(coef)"], lr = unname(summary(adjusted_cox)$logtest["test"])),
+            reticulate::py$chk)
+```
+
+### Read the output
+
+- **implantC = 3.19 (95% CI 1.92 to 5.29):** adjusted for age, sex and BMI, implant C carried about three times the hazard of revision of implant A, almost the same as without adjustment (3.07, [page 8](08-three-plus-unmatched.qmd#cox)).
+- **implantB = 0.83 (95% CI 0.45 to 1.52):** imprecise, as before.
+- **sexMale = 0.51 (95% CI 0.32 to 0.81, p = 0.005):** men had about half the hazard of revision of women.
+- **age_10 = 1.22 (95% CI 0.96 to 1.57)** and **bmi_5 = 1.03 (95% CI 0.84 to 1.27):** imprecise.
+- **Likelihood ratio test = 39.1 on 5 df, p < 0.001:** the five terms together predict revision.
+
+### Effect size and 95% CI
+
+The **adjusted hazard ratios** with their 95% CIs are the effect sizes. The one the question asks about: implant C against A, 3.19 (95% CI 1.92 to 5.29).
+
+### How to report it
+
+> **Methods:** Revision was modeled with Cox proportional hazards regression on implant (reference A), age (per 10 years), sex and BMI (per 5 kg/m²), chosen before the analysis.
+>
+> **Results:** After adjustment for age, sex and BMI, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.19, 95% CI 1.92 to 5.29, p < 0.001); the estimate for implant B was imprecise (0.83, 95% CI 0.45 to 1.52). Men had a lower hazard of revision than women (hazard ratio 0.51, 95% CI 0.32 to 0.81).
+
+::: {.callout-warning}
+## ⚠️ Watch out: the unexpected finding
+The sex difference wasn't the question; the model was built to adjust for sex, not to test it. An unplanned finding like this is a reason for a new study, not a conclusion: report it as exploratory. And check proportional hazards for every predictor before trusting any of them ([page 14](../survival/14-cox-regression.qmd)).
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: convergence and names
+As on [page 8](08-three-plus-unmatched.qmd#cox), lifelines' default convergence rule stops a little early (a hazard ratio of 0.82915 for implant B instead of 0.82912), so the Python code tightens it with `fit_options={"precision": 1e-9}`. lifelines names the terms `implant[T.C]` and `sex[T.Male]`; R names them `implantC` and `sexMale`.
+:::
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+by_procedure <- cohort |> group_by(procedure) |> summarise(mean = mean(op_time_min), sd = sd(op_time_min))
+joint_ci <- confint(joint_recovery)
+joint_wald <- joint_coef[, "Estimate"] + outer(joint_coef[, "Std. Error"], c(-1, 1) * qt(0.975, nrow(recovery_data) - 6))
+complication_or <- exp(coef(complication_model))
+complication_ci <- exp(confint(complication_model))
+complication_wald <- exp(confint.default(complication_model))
+by_complication <- cohort |> group_by(complication_90d) |>
+  summarise(n = n(), age = mean(age), bmi = mean(bmi), diabetes = 100 * mean(diabetes), male = 100 * mean(sex == "Male"))
+by_implant <- cohort |> group_by(implant) |> summarise(n = n(), revised = sum(revised), age = mean(age), male = 100 * mean(sex == "Male"), bmi = mean(bmi))
+adjusted_p <- summary(adjusted_cox)$coefficients[, "Pr(>|z|)"]
+unadjusted_hr <- exp(coef(coxph(Surv(followup_years, revised) ~ implant, data = cohort)))
+ex_surgeon <- lm(op_time_min ~ bmi + age + sex + procedure + surgeon, data = cohort)
+ex_surgeon_test <- anova(time_model, ex_surgeon)
+ex_facility <- glm(I(discharge == "facility") ~ age_10 + sex + asa, family = binomial, data = cohort)
+ex_facility_ci <- exp(confint(ex_facility))
+ex_line <- glm(complication_90d ~ age, family = binomial, data = cohort)
+ex_bend <- glm(complication_90d ~ ns(age, df = 3), family = binomial, data = cohort)
+ex_bend_test <- anova(ex_line, ex_bend, test = "LRT")
+stopifnot(
+  sum(table(cohort$patient_id) == 2) == 80, nrow(cohort) == 600,
+  round(by_procedure$mean, 1) == c(79.8, 88.3), round(by_procedure$sd, 1) == c(15.5, 16.2),
+  round(coef(time_model)[c("bmi", "age", "sexMale", "procedureTKA")], 2) == c(1.27, 0.27, -1.48, 6.74),
+  round(time_ci["bmi", ], 2) == c(1.06, 1.49), round(time_ci["age", ], 2) == c(0.15, 0.39),
+  round(time_ci["sexMale", ], 2) == c(-3.81, 0.84), round(time_ci["procedureTKA", ], 2) == c(4.40, 9.08),
+  round(time_fit$r.squared, 2) == 0.27, round(time_fit$adj.r.squared, 2) == 0.26,
+  pf(time_fit$fstatistic[1], time_fit$fstatistic[2], time_fit$fstatistic[3], lower.tail = FALSE) < 0.001,
+  round(coef(lm(op_time_min ~ bmi, data = cohort))[["bmi"]], 2) == 1.37,
+  nrow(recovery_data) == 2052, sum(recovery_data$knee) == 1146, sum(recovery_data$knee == 0) == 906,
+  round(joint_coef["tau_hip", "Estimate"], 1) == 53.4, round(joint_coef["tau_diff", "Estimate"], 1) == 27.5,
+  round(joint_coef[c("plateau_diff", "start_diff"), "Estimate"], 2) == c(-3.66, 4.25),
+  round(joint_ci["tau_diff", ], 1) == c(15.9, 40.1), round(joint_wald["tau_diff", ], 1) == c(15.3, 39.7),
+  round(log(2) * joint_coef["tau_hip", "Estimate"]) == 37,
+  round(log(2) * sum(joint_coef[c("tau_hip", "tau_diff"), "Estimate"])) == 56,
+  round(log(2) * joint_coef["tau_diff", "Estimate"]) == 19, round(log(2) * joint_ci["tau_diff", ]) == c(11, 28),
+  round(bend_test$F[2], 2) == 0.58, round(bend_test$`Pr(>F)`[2], 3) == 0.562,
+  bend_test$Df[2] == 2, bend_test$Res.Df[2] == 593,
+  sum(cohort$complication_90d) == 51, round(100 * mean(cohort$complication_90d), 1) == 8.5,
+  by_complication$n == c(549, 51), round(by_complication$age, 1) == c(65.0, 71.2), round(by_complication$bmi, 1) == c(30.3, 32.3),
+  round(by_complication$diabetes, 1) == c(9.1, 11.8), round(by_complication$male, 1) == c(43.2, 39.2),
+  complication_coef["age_10", "Pr(>|z|)"] < 0.001, round(complication_coef["bmi_5", "Pr(>|z|)"], 3) == 0.029,
+  round(complication_coef[c("asa", "diabetes", "sexMale"), "Pr(>|z|)"], 3) == c(0.592, 0.789, 0.849),
+  round(complication_or[c("age_10", "bmi_5", "asa", "diabetes", "sexMale")], 2) == c(2.08, 1.39, 1.16, 0.88, 0.94),
+  round(complication_ci["age_10", ], 2) == c(1.46, 3.02), round(complication_ci["bmi_5", ], 2) == c(1.03, 1.86),
+  round(complication_ci["asa", ], 2) == c(0.68, 2.00), round(complication_ci["diabetes", ], 2) == c(0.31, 2.15),
+  round(complication_ci["sexMale", ], 2) == c(0.51, 1.72), round(complication_wald["diabetes", ], 2) == c(0.33, 2.30),
+  by_implant$n == c(246, 217, 137), by_implant$revised == c(25, 18, 38), sum(cohort$revised) == 81,
+  round(range(by_implant$age)) == c(65, 66), round(range(by_implant$male)) == c(42, 44), round(range(by_implant$bmi)) == c(30, 31),
+  round(adjusted_hr[, "exp(coef)"], 2) == c(0.83, 3.19, 1.22, 0.51, 1.03),
+  round(adjusted_hr["implantC", c("lower .95", "upper .95")], 2) == c(1.92, 5.29),
+  round(adjusted_hr["implantB", c("lower .95", "upper .95")], 2) == c(0.45, 1.52),
+  round(adjusted_hr["sexMale", c("lower .95", "upper .95")], 2) == c(0.32, 0.81),
+  round(adjusted_hr["age_10", c("lower .95", "upper .95")], 2) == c(0.96, 1.57),
+  round(adjusted_hr["bmi_5", c("lower .95", "upper .95")], 2) == c(0.84, 1.27),
+  round(adjusted_p[["sexMale"]], 3) == 0.005, adjusted_p[["implantC"]] < 0.001,
+  round(unname(summary(adjusted_cox)$logtest["test"]), 1) == 39.1, summary(adjusted_cox)$logtest["pvalue"] < 0.001,
+  round(unadjusted_hr[["implantC"]], 2) == 3.07,
+  round(reticulate::py_eval("float(CoxPHFitter().fit(cohort[['followup_years', 'revised', 'implant', 'age_10', 'sex', 'bmi_5']], duration_col='followup_years', event_col='revised', formula='implant + age_10 + sex + bmi_5').summary.loc['implant[T.B]', 'exp(coef)'])"), 5) == 0.82915,
+  round(adjusted_hr["implantB", "exp(coef)"], 5) == 0.82912,
+  # exercise solutions (recomputed here: the guard runs before the solution chunks)
+  round(ex_surgeon_test$F[2], 2) == 0.09, round(ex_surgeon_test$`Pr(>F)`[2], 3) == 0.911,
+  round(coef(ex_surgeon)[["bmi"]], 2) == 1.27, round(confint(ex_surgeon)["bmi", ], 2) == c(1.06, 1.49),
+  round(coef(ex_surgeon)[c("surgeonS2", "surgeonS3")], 2) == c(0.07, 0.60),
+  round(confint(ex_surgeon)["surgeonS2", ], 2) == c(-2.57, 2.72), round(confint(ex_surgeon)["surgeonS3", ], 2) == c(-2.28, 3.48),
+  sum(cohort$discharge == "facility") == 30,
+  round(exp(coef(ex_facility))[c("age_10", "sexMale", "asa")], 2) == c(2.08, 1.36, 1.06),
+  round(ex_facility_ci["age_10", ], 2) == c(1.34, 3.31), round(ex_facility_ci["sexMale", ], 2) == c(0.63, 2.89),
+  round(ex_facility_ci["asa", ], 2) == c(0.58, 1.94),
+  round(ex_bend_test$Deviance[2], 2) == 3.49, ex_bend_test$Df[2] == 2, round(ex_bend_test$`Pr(>Chi)`[2], 3) == 0.175,
+  round(exp(10 * coef(ex_line)[["age"]]), 2) == 2.12, round(exp(10 * confint(ex_line)["age", ]), 2) == c(1.53, 2.98),
+  sum(cohort$age >= 80) == 53, sum(cohort$complication_90d[cohort$age >= 80]) == 14
+)
+```
+
+## Exercises {#exercises}
+
+The solutions use the packages and data loaded in the sections above, so run the page from the top first.
+
+**1.** Add **surgeon** to the multiple linear regression for operative time. Does it improve the model, and does BMI's coefficient change?
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+with_surgeon <- lm(op_time_min ~ bmi + age + sex + procedure + surgeon, data = cohort)
+anova(time_model, with_surgeon)                            # does surgeon add anything?
+confint(with_surgeon)[c("bmi", "surgeonS2", "surgeonS3"), ]
+coef(with_surgeon)[c("bmi", "surgeonS2", "surgeonS3")]
+```
+
+## Python
+
+```{python}
+from statsmodels.stats.anova import anova_lm
+
+with_surgeon = smf.ols("op_time_min ~ bmi + age + sex + procedure + surgeon", data=cohort).fit()
+print(anova_lm(time_model, with_surgeon))
+surgeon_table = pd.concat([with_surgeon.params, with_surgeon.conf_int()], axis=1)
+surgeon_table.columns = ["estimate", "low", "high"]
+print(surgeon_table.loc[["bmi", "surgeon[T.S2]", "surgeon[T.S3]"]])
+```
+:::
+
+Adding surgeon doesn't improve the model (F = 0.09, df = 2 and 593, p = 0.911): compared with S1, S2's operations took 0.07 minutes longer (95% CI −2.57 to 2.72) and S3's 0.60 minutes longer (95% CI −2.28 to 3.48). BMI's coefficient is unchanged at 1.27 minutes per kg/m² (95% CI 1.06 to 1.49).
+:::
+
+**2.** A colleague wants to know which patient factors predict discharge to a facility rather than home. Only 30 patients went to a facility. Which model would you use, how many predictors can it take, and what do you find with age, sex and ASA class?
+
+::: {.callout-tip collapse="true"}
+## Solution
+The outcome is yes/no: **multiple logistic regression**. With 30 events, the rule of thumb allows about three predictors, so choose them in advance; age, sex and ASA class are reasonable choices.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+facility_model <- glm(I(discharge == "facility") ~ age_10 + sex + asa, family = binomial, data = cohort)
+exp(cbind(odds_ratio = coef(facility_model), confint(facility_model)))
+```
+
+## Python
+
+```{python}
+cohort["facility"] = (cohort["discharge"] == "facility").astype(int)
+facility_model = smf.logit("facility ~ age_10 + sex + asa", data=cohort).fit(disp=False)
+facility_ors = np.exp(pd.concat([facility_model.params, facility_model.conf_int()], axis=1))
+facility_ors.columns = ["odds_ratio", "low", "high"]
+print(facility_ors)
+```
+:::
+
+Older age was associated with discharge to a facility (odds ratio 2.08 per 10 years, 95% CI 1.34 to 3.31; R's profile CI). The estimates for male sex (1.36, 95% CI 0.63 to 2.89) and ASA class (1.06 per class, 95% CI 0.58 to 1.94) were imprecise.
+:::
+
+**3.** On [page 11](11-predict-from-one.qmd#logistic-regression), complications seemed to jump after age 80. Fit age as a natural cubic spline (3 degrees of freedom) in the logistic regression, compare it with the straight line, and write the Results sentence.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+line_model <- glm(complication_90d ~ age, family = binomial, data = cohort)
+bend_model <- glm(complication_90d ~ ns(age, df = 3), family = binomial, data = cohort)
+anova(line_model, bend_model, test = "LRT")   # likelihood ratio test
+```
+
+## Python
+
+```{python}
+age_knots = list(cohort["age"].quantile([1/3, 2/3]))
+age_low, age_high = cohort["age"].min(), cohort["age"].max()
+line_model = smf.logit("complication_90d ~ age", data=cohort).fit(disp=False)
+bend_model = smf.logit("complication_90d ~ cr(age, knots=age_knots, lower_bound=age_low, upper_bound=age_high,"
+                       " constraints='center')", data=cohort).fit(disp=False)
+lr = 2 * (bend_model.llf - line_model.llf)    # likelihood ratio statistic
+print(lr, stats.chi2.sf(lr, df=2))           # 2 extra degrees of freedom
+```
+:::
+
+"Allowing the effect of age to bend, with a natural cubic spline, did not clearly improve the fit over a straight line (likelihood ratio χ² = 3.49, df = 2, p = 0.175), so age was modeled as linear: each 10 years multiplied the odds of a complication by 2.12 (95% CI 1.53 to 2.98)."
+
+The jump after 80 rests on 14 complications in 53 patients, too few to pin down a curve.
+:::

@@ -148,3 +148,46 @@ def test_reporting_gives_univariable_and_multivariable_hazard_ratios(site):
     table = found.select_one("table")
     assert table is not None and "Univariable" in text_of(table) and "Multivariable" in text_of(table)
     assert "Univariable HR (95% CI)" in " ".join(out.get_text() for out in found.select(".cell-output"))
+
+
+# ---- final review fixes ------------------------------------------------------
+
+@pytest.mark.parametrize("page", SECTIONS)
+def test_printed_tables_show_every_column(site, page):
+    """pandas swaps columns that don't fit for "..."; print wide tables with .to_string()."""
+    for out in load(page).select(".cell-output"):
+        text = out.get_text()
+        assert " ... " not in text and "rows x" not in text, f"{page}: {text[:120]}"
+
+
+def test_reported_models_all_allow_for_bilateral_patients(site):
+    """The Methods promise robust standard errors, so both columns of the table use them."""
+    found = section(COX, "reporting")
+    table = text_of(found.select_one("table"))
+    assert "1.87, 5.04" in table and "1.92, 5.28" in table   # implant C, univariable and multivariable, clustered
+    printed = " ".join(out.get_text() for out in found.select(".cell-output"))
+    assert "3.07 (1.87 to 5.04)" in printed and "3.19 (1.92 to 5.28)" in printed
+    methods = next(text_of(q) for q in found.select("blockquote") if "Methods:" in text_of(q))
+    assert "In the Cox models, robust standard errors" in methods
+
+
+def test_imprecise_estimates_are_not_described_as_effects(site):
+    """Explanatory prose follows the same rule as the Results: no clear evidence isn't evidence of none."""
+    for page, phrase in [(KM, "does worse early and better later"), (KM, "but the curves crossed"),
+                         (COX, "Death doesn't depend on the implant"), (COX, "age barely changes"),
+                         (COX, "a later one in the other direction")]:
+        assert phrase not in text_of(load(page)), f"{page}: {phrase!r}"
+
+
+def test_a_moving_hazard_ratio_is_not_proof_of_confounding(site):
+    """Hazard ratios shift when a strong predictor is added, even without confounding."""
+    text = text_of(section(COX, "univariable-multivariable"))
+    assert "the covariates were confounding the unadjusted one" not in text
+    assert "even without confounding" in text
+
+
+def test_results_give_every_estimate_its_ci_and_every_count_its_percentage(site):
+    km_results = " ".join(text_of(q) for q in section(KM, "competing-risks").select("blockquote"))
+    assert "24.0% (95% CI 19.3% to 29.0%)" in km_results
+    cox_results = " ".join(text_of(q) for q in section(COX, "reporting").select("blockquote"))
+    assert "81 of 600 procedures (13.5%)" in cox_results

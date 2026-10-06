@@ -460,7 +460,7 @@ check_agree(list(chisq = approach_logrank$chisq, p = approach_logrank$pvalue), r
 - **Observed / Expected:** the posterior hips had 19 revisions where 16.1 were expected; the anterior hips had 18 where 20.9 were expected.
 - **Chisq = 0.9 on 1 degree of freedom, p = 0.340:** no clear evidence that the curves differ over the whole follow-up.
 
-But look at the plot. The posterior curve drops sharply in the first months, then the two curves come together and cross. The early revisions are real: by 6 months, survivorship was 88.7% after the posterior approach and 98.6% after the anterior approach.
+But look at the plot. The posterior curve drops sharply in the first months, then the two curves come together (late on they even cross, where the CIs overlap widely). The early revisions are real: by 6 months, survivorship was 88.7% after the posterior approach and 98.6% after the anterior approach.
 
 ::: {.panel-tabset group="language"}
 ## R
@@ -497,7 +497,7 @@ check_agree(list(surv_anterior = approach_6m$surv[1], low_anterior = approach_6m
             reticulate::py$chk)
 ```
 
-The log-rank test adds up the differences over the whole follow-up. When one group does worse early and better later, the two parts cancel out, and the test misses a real difference. [Page 14](14-cox-regression.qmd#proportional-hazards) shows how to detect this and how to model it.
+The log-rank test adds up the differences over the whole follow-up. A large difference in the first months gets diluted by the years after, when the groups differ little, and the test can miss a real difference. [Page 14](14-cox-regression.qmd#proportional-hazards) shows how to detect this and how to model it.
 
 **Three or more groups.** The same test compares any number of groups. Does revision differ between implants A, B and C?
 
@@ -534,7 +534,7 @@ check_agree(list(chisq = implant_logrank$chisq, p = implant_logrank$pvalue), ret
 
 > **Methods:** Revision-free survival was compared between groups with the log-rank test.
 >
-> **Results:** Revision-free survival differed between implants (log-rank χ² = 33.5, df = 2, p < 0.001). Over the whole follow-up there was no clear evidence of a difference between surgical approaches in total hip arthroplasty (log-rank χ² = 0.9, df = 1, p = 0.340), but the curves crossed: survivorship at 6 months was 88.7% (95% CI 81.7% to 93.2%) after the posterior approach and 98.6% (95% CI 94.5% to 99.6%) after the anterior approach.
+> **Results:** Revision-free survival differed between implants (log-rank χ² = 33.5, df = 2, p < 0.001). Over the whole follow-up there was no clear evidence of a difference between surgical approaches in total hip arthroplasty (log-rank χ² = 0.9, df = 1, p = 0.340), but the difference was concentrated early: survivorship at 6 months was 88.7% (95% CI 81.7% to 93.2%) after the posterior approach and 98.6% (95% CI 94.5% to 99.6%) after the anterior approach.
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: always plot the curves before you trust the test
@@ -652,7 +652,7 @@ The cumulative incidence of revision differed between implants (Gray's test χ²
 
 > **Methods:** The cumulative incidence of revision was estimated with the Aalen-Johansen method, treating death as a competing risk, and compared between implants with Gray's test.
 >
-> **Results:** The cumulative incidence of revision was 12.8% (95% CI 10.0% to 15.9%) at 5 years and 19.3% (95% CI 15.3% to 23.7%) at 10 years, when the cumulative incidence of death was 24.0%. It differed between implants (Gray's test χ² = 31.5, df = 2, p < 0.001).
+> **Results:** The cumulative incidence of revision was 12.8% (95% CI 10.0% to 15.9%) at 5 years and 19.3% (95% CI 15.3% to 23.7%) at 10 years, when the cumulative incidence of death was 24.0% (95% CI 19.3% to 29.0%). It differed between implants (Gray's test χ² = 31.5, df = 2, p < 0.001).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: which number answers your question?
@@ -705,6 +705,7 @@ stopifnot(
   round(100 * revision_rows$estimate, 1) == c(5.9, 12.8, 19.3),
   round(100 * revision_rows$conf.low[2:3], 1) == c(10.0, 15.3), round(100 * revision_rows$conf.high[2:3], 1) == c(15.9, 23.7),
   round(100 * death_rows$estimate[3], 1) == 24.0,
+  round(100 * death_rows$conf.low[3], 1) == 19.3, round(100 * death_rows$conf.high[3], 1) == 29.0,
   round(100 * one_minus_km, 1) == 22.0, round(100 * (one_minus_km - revision_rows$estimate[3]), 1) == 2.7,
   gray$outcome_1 == "revision", round(gray$statistic_1, 1) == 31.5, gray$df_1 == 2, gray$p.value_1 < 0.001,
   gray$outcome_2 == "death", round(gray$statistic_2, 2) == 0.97, round(gray$p.value_2, 3) == 0.616,

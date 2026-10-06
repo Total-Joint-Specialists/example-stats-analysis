@@ -72,7 +72,7 @@ implant_model = CoxPHFitter().fit(
     fit_options={"precision": 1e-12},        # stop only when fully converged; see the R vs Python box
 )
 print(implant_model.summary[["coef", "exp(coef)", "se(coef)", "exp(coef) lower 95%",
-                             "exp(coef) upper 95%", "z", "p"]].round(3))
+                             "exp(coef) upper 95%", "z", "p"]].round(3).to_string())   # to_string(): show every column
 print(implant_model.concordance_index_)                              # concordance
 print(implant_model.log_likelihood_ratio_test().test_statistic)     # overall likelihood ratio test
 ```
@@ -201,7 +201,7 @@ check_agree(list(hr_c = adjusted_hr["implantC", "exp(coef)"], low_c = adjusted_h
             reticulate::py$chk)
 ```
 
-Implant C's hazard ratio moved from 3.07 unadjusted to **3.19 adjusted** (95% CI 1.92 to 5.29). Age, sex and BMI don't explain the difference between the implants. When an adjusted estimate moves a lot, the covariates were confounding the unadjusted one; say so in the Discussion.
+Implant C's hazard ratio moved from 3.07 unadjusted to **3.19 adjusted** (95% CI 1.92 to 5.29). Age, sex and BMI don't explain the difference between the implants. When an adjusted estimate moves a lot, the covariates were probably confounding the unadjusted one; say so in the Discussion. Small moves mean little: a hazard ratio shifts a bit whenever a strong predictor is added, even without confounding.
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: the covariates' own hazard ratios aren't findings
@@ -359,7 +359,7 @@ check_agree(list(hr = unname(exp(coef(approach_model))), mean_log_hr = mean(appr
 - **The points:** one per revision. Points near +2 are posterior hips and points near −2 are anterior hips, so early on almost every point sits high.
 - **The solid line** smooths the points into an estimate of the log hazard ratio at each time. It starts high in the first months, when posterior hips were revised far more often, then falls below the dashed line, which marks the model's single hazard ratio of 1.37 (log hazard ratio 0.31).
 
-That single hazard ratio (1.37, 95% CI 0.72 to 2.61) averages a large early effect with a later one in the other direction. It describes no actual moment of follow-up, so don't report it.
+That single hazard ratio (1.37, 95% CI 0.72 to 2.61) mixes a large early effect with the years after, when there's no clear difference. It describes no actual moment of follow-up, so don't report it.
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: test and look
@@ -569,10 +569,12 @@ fine_gray
 ```
 
 Compare it with the cause-specific model:
-- **Implant C:** SHR 3.09 (95% CI 1.86 to 5.14), close to the cause-specific HR of 3.19. Death doesn't depend on the implant, so allowing for it changes little.
-- **Age:** SHR 1.07 per 10 years (95% CI 0.86 to 1.33), against a cause-specific HR of 1.22. Older patients may be revised at a somewhat higher rate while alive, but more of them die before they can be revised, so age barely changes how many are actually revised.
+- **Implant C:** SHR 3.09 (95% CI 1.86 to 5.14), close to the cause-specific HR of 3.19. Death rates didn't clearly differ between implants (Gray's test on [page 13](13-kaplan-meier.qmd#competing-risks)), so allowing for death changes little.
+- **Age:** SHR 1.07 per 10 years (95% CI 0.86 to 1.33), against a cause-specific HR of 1.22. Older patients may be revised at a somewhat higher rate while alive, but more of them die before they can be revised, so the subdistribution estimate is closer to 1: there's no clear evidence that age changes how many patients are actually revised.
 
 Report the cause-specific model to compare implants, and the Fine-Gray model when the question is how many patients will be revised. Many papers report both, and say which is which.
+
+`crr()` can't allow for patients who had both sides replaced. If many of yours did, survival's `finegray()` function prepares the data for a Fine-Gray model that `coxph()` can fit with `cluster = patient_id`.
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: a subdistribution hazard ratio isn't a hazard ratio
@@ -581,7 +583,7 @@ The SHR has no simple meaning as a rate: patients who have died stay in its "at 
 
 ## Reporting a Cox model {#reporting}
 
-Most papers present Cox models as a table: one row per predictor, with the univariable and the multivariable hazard ratios side by side. The multivariable column here comes from the model with robust standard errors ([above](#stratified-cox)), so its CIs allow for the bilateral patients.
+Most papers present Cox models as a table: one row per predictor, with the univariable and the multivariable hazard ratios side by side. Both columns use robust standard errors clustered on patient ([above](#stratified-cox)), so their CIs allow for the bilateral patients.
 
 ::: {.panel-tabset group="language"}
 ## R
@@ -594,8 +596,10 @@ hr_labels <- list(implant ~ "Implant", age_10 ~ "Age (per 10 years)", sex ~ "Sex
                   bmi_5 ~ "BMI (per 5 kg/m²)")
 
 univariable_table <- cohort |>
-  select(followup_years, revised, implant, age_10, sex, bmi_5) |>
+  select(followup_years, revised, implant, age_10, sex, bmi_5, patient_id) |>
   tbl_uvregression(method = coxph, y = Surv(followup_years, revised), exponentiate = TRUE,
+                   include = c(implant, age_10, sex, bmi_5),
+                   method.args = list(cluster = patient_id),       # robust SEs, clustered on patient
                    label = hr_labels, pvalue_fun = label_style_pvalue(digits = 3))
 multivariable_table <- clustered_model |>                   # robust SEs, for the bilateral patients
   tbl_regression(exponentiate = TRUE, label = hr_labels, pvalue_fun = label_style_pvalue(digits = 3))
@@ -615,8 +619,10 @@ def hr_with_ci(model):
 
 univariable = []
 for term in ["implant", "age_10", "sex", "bmi_5"]:
-    one_predictor = CoxPHFitter().fit(cox_data[["followup_years", "revised", term]], duration_col="followup_years",
-                                      event_col="revised", formula=term, fit_options={"precision": 1e-12})
+    one_predictor = CoxPHFitter().fit(cohort[["followup_years", "revised", term, "patient_id"]],
+                                      duration_col="followup_years", event_col="revised", formula=term,
+                                      cluster_col="patient_id",      # robust SEs, clustered on patient
+                                      fit_options={"precision": 1e-12})
     univariable.append(hr_with_ci(one_predictor))
 
 hr_table = pd.DataFrame({"Univariable HR (95% CI)": pd.concat(univariable),
@@ -642,9 +648,9 @@ check_agree(list(uni_age = unname(uni_hr("age_10")), uni_male = unname(uni_hr("s
             reticulate::py$chk)
 ```
 
-> **Methods:** The association between implant and revision for any reason was estimated with Cox proportional hazards regression, with time from surgery as the time scale and implant A as the reference. Age, sex and body mass index were chosen in advance as covariates. Age entered the model as a linear term after a natural cubic spline showed no clear evidence of non-linearity. Proportional hazards were checked with scaled Schoenfeld residuals. Robust standard errors accounted for patients who had both sides replaced. A Fine-Gray model, treating death as a competing risk, was fitted as a sensitivity analysis.
+> **Methods:** The association between implant and revision for any reason was estimated with Cox proportional hazards regression, with time from surgery as the time scale and implant A as the reference. Age, sex and body mass index were chosen in advance as covariates. Age entered the model as a linear term after a natural cubic spline showed no clear evidence of non-linearity. Proportional hazards were checked with scaled Schoenfeld residuals. In the Cox models, robust standard errors clustered on patient accounted for patients who had both sides replaced. A Fine-Gray model, treating death as a competing risk, was fitted as a sensitivity analysis.
 >
-> **Results:** During follow-up, 81 of 600 procedures were revised. After adjustment for age, sex and body mass index, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.19, 95% CI 1.92 to 5.28), while the estimate for implant B was imprecise (0.83, 95% CI 0.45 to 1.52). There was no clear evidence that any hazard ratio changed over time (global test p = 0.359). With death treated as a competing risk, the subdistribution hazard ratio for implant C was 3.09 (95% CI 1.86 to 5.14).
+> **Results:** During follow-up, 81 of 600 procedures (13.5%) were revised. After adjustment for age, sex and body mass index, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.19, 95% CI 1.92 to 5.28), while the estimate for implant B was imprecise (0.83, 95% CI 0.45 to 1.52). There was no clear evidence that any hazard ratio changed over time (global test p = 0.359). With death treated as a competing risk, the subdistribution hazard ratio for implant C was 3.09 (95% CI 1.86 to 5.14).
 
 Before you submit, check that the paper states:
 - the number of patients, procedures and events
@@ -668,7 +674,8 @@ bmi_spline_model <- coxph(Surv(followup_years, revised) ~ implant + age_10 + sex
 bmi_bend <- anova(adjusted_model, bmi_spline_model)
 procedure_model <- coxph(Surv(followup_years, revised) ~ implant + age_10 + sex + bmi_5 + strata(procedure), data = cohort)
 stopifnot(
-  implant_summary$n == 600, implant_summary$nevent == 81, sum(table(cohort$patient_id) == 2) == 80,
+  implant_summary$n == 600, implant_summary$nevent == 81, round(100 * 81 / 600, 1) == 13.5,
+  sum(table(cohort$patient_id) == 2) == 80,
   round(implant_hr[, "exp(coef)"], 2) == c(0.82, 3.07),
   round(implant_hr["implantC", c("lower .95", "upper .95")], 2) == c(1.85, 5.09),
   round(implant_hr["implantB", c("lower .95", "upper .95")], 2) == c(0.45, 1.50),

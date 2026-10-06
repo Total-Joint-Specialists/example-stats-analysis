@@ -30,7 +30,8 @@ data:
     Rscript data-raw/validate.R
     uv run pytest tests/python -q
     # Freeze only notices .qmd changes, so re-render every folder whose pages read data/.
-    # (Rendering a folder always re-runs its code.) Add beyond, report, ... as they gain code.
+    # (Rendering a folder always re-runs its code.) Add report when it gains code.
     quarto render foundations
     quarto render catalog
     quarto render survival
+    quarto render beyond

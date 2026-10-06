@@ -56,6 +56,22 @@ CELL_ANCHORS = {
 }
 
 
+# Free-form pages (spec section 6): one ## section per topic in the spec's outline.
+# Each phase adds its pages as they're written; tests/site/test_free_form.py checks them all.
+FREE_FORM_SECTIONS = {
+    "survival/13-kaplan-meier.html": [
+        "censoring", "time-zero", "kaplan-meier", "survivorship", "follow-up", "log-rank",
+        "competing-risks", "exercises"],
+    "survival/14-cox-regression.html": [
+        "hazard-ratio", "choosing-covariates", "univariable-multivariable", "linearity",
+        "proportional-hazards", "remedies", "stratified-cox", "fine-gray", "reporting", "exercises"],
+    "beyond/15-post-hoc.html": [
+        "why-adjust", "adjusting-p-values", "after-anova", "after-kruskal-wallis", "after-chi-square",
+        "after-repeated-measures-anova", "after-friedman", "after-cochran-q", "after-log-rank",
+        "overall-test-first", "planned-comparisons", "exercises"],
+}
+
+
 def load(page: str) -> BeautifulSoup:
     return BeautifulSoup((SITE / page).read_text(encoding="utf-8"), "html.parser")
 
@@ -73,6 +89,11 @@ def section(page, anchor):
     found = load(page).select_one(f"section#{anchor}")
     assert found is not None, f"{page} has no section #{anchor}"
     return found
+
+
+def code_of(found):
+    """The code shown in a page element, as one string."""
+    return " ".join(pre.get_text() for pre in found.select("pre"))
 
 
 # ---- reporting conventions (spec section 4, page 0.2) ------------------------

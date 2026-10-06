@@ -1,17 +1,604 @@
 ---
-title: "4 · Describe one group (coming soon)"
-description: "Mean and SD, median and IQR, proportion, and the Kaplan-Meier curve."
+title: "4 · Describe one group"
+description: "Mean and SD, median and IQR, a proportion, and a Kaplan-Meier survival curve, each with a 95% confidence interval."
+engine: knitr
+toc-depth: 2
+execute:
+  message: false
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
+Before you compare anything, describe it. This page covers the first row of the [decision table](../index.qmd): one number (or one curve) that sums up a group of patients, with a 95% confidence interval that says how precisely you know it. Which summary you use depends on the column, the type of data you have. [Page 3](../foundations/03-distributions.qmd) explains how to choose.
+
+::: {.callout-note}
+## 💡 How every section on this page works
+Each section answers one question about the practice cohort. Its first code block loads the packages and the data, so you can jump straight to the section you need. Run that section's blocks in order, top to bottom.
+
+To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them ([page 3](../foundations/03-distributions.qmd#paired)) and say what you did.
 :::
 
 ## Mean and standard deviation {#mean-sd}
 
+**The question:** How old are our patients, and how much do their ages vary?
+
+### When to use it
+
+- The variable is a **measurement** (age, BMI, operative time), not a category.
+- Its distribution is **roughly symmetric**, without extreme outliers. Check with a histogram ([page 3](../foundations/03-distributions.qmd#look)).
+- If it's **skewed**, has a **ceiling or floor**, or is **ordinal** → use the [median and IQR](#median-iqr) instead.
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+ggplot(cohort, aes(age)) +
+  geom_histogram(binwidth = 2) +
+  geom_vline(xintercept = mean(cohort$age), linetype = "dashed") +   # the mean
+  labs(x = "Age at surgery, years", y = "Patients")
+```
+
+## Python
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+
+cohort = pd.read_csv("data/cohort.csv")
+
+fig, ax = plt.subplots(figsize=(6, 3))
+ax.hist(cohort["age"], bins=range(40, 90, 2))
+ax.axvline(cohort["age"].mean(), linestyle="--")       # the mean
+ax.set_xlabel("Age at surgery, years")
+ax.set_ylabel("Patients")
+plt.show()
+```
+:::
+
+A single, roughly symmetric hump: the mean sits in the middle of it, so it's a fair summary.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+age_summary <- cohort |>
+  summarise(n = n(), mean = mean(age), sd = sd(age))
+age_summary
+
+age_ci <- t.test(cohort$age)$conf.int   # 95% CI for the mean
+age_ci
+```
+
+## Python
+
+```{python}
+n = cohort["age"].count()
+mean = cohort["age"].mean()
+sd = cohort["age"].std()                 # pandas divides by n - 1, like R
+
+# 95% CI for the mean: mean ± t × (SD / √n)
+age_ci = stats.t.interval(0.95, df=n - 1, loc=mean, scale=sd / n ** 0.5)
+
+print(f"n = {n}, mean = {mean:.2f}, sd = {sd:.2f}")
+print(f"95% CI {age_ci[0]:.2f} to {age_ci[1]:.2f}")
+```
+:::
+
+```{python}
+#| include: false
+chk = {"n": float(n), "mean": float(mean), "sd": float(sd),
+       "ci_low": float(age_ci[0]), "ci_high": float(age_ci[1])}
+```
+
+```{r}
+#| include: false
+check_agree(list(n = age_summary$n, mean = age_summary$mean, sd = age_summary$sd,
+                 ci_low = age_ci[1], ci_high = age_ci[2]), reticulate::py$chk)
+```
+
+### Read the output
+
+- **n = 600:** the number of cases with an age recorded.
+- **Mean = 65.5 years:** the average age.
+- **SD = 9.4 years:** the standard deviation, the typical distance of a patient's age from the mean. In a bell-shaped distribution about 95% of patients lie within 2 SDs of the mean, here roughly 47 to 84 years.
+- **95% CI 64.8 to 66.3:** the confidence interval for the **mean**. It tells you how precisely 600 patients pin down the average age of patients like ours. It says nothing about how spread out individual patients are; that's the SD's job.
+
+::: {.callout-note collapse="true"}
+## 🔍 Under the hood: the CI for a mean
+The **standard error** of the mean is SD / √n = 9.4 / √600 ≈ 0.39 years. The 95% CI is the mean ± *t* × standard error, where *t* ≈ 1.96 for large samples (it's a little bigger for small ones). Quadruple the sample size and the standard error halves; the SD stays about the same.
+:::
+
+### How to report it
+
+> **Methods:** Continuous variables are reported as mean (standard deviation, SD) when approximately normally distributed.
+>
+> **Results:** The mean age at surgery was 65.5 years (SD 9.4; 95% CI for the mean 64.8 to 66.3).
+
+::: {.callout-warning}
+## ⚠️ Watch out: SD or SEM?
+The **standard error of the mean (SEM)** is much smaller than the SD (0.39 vs 9.4 years here), which is why some papers report "mean ± SEM": it looks tidier. But it describes the precision of the mean, not your patients. Use the **SD** to describe patients and a **95% CI** to show the precision of an estimate. Never report a bare "±" without saying which one it is.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: dividing by n or n − 1
+R's `sd()` and pandas' `.std()` divide by n − 1 (the "sample" SD), which is what you want. **NumPy's `np.std()` divides by n** unless you write `np.std(x, ddof=1)`. With 600 patients the difference is tiny; with 10 it isn't.
+:::
+
 ## Median and interquartile range {#median-iqr}
+
+**The question:** What's a typical KOOS JR score 1 year after knee replacement, and how much do scores vary?
+
+### When to use it
+
+- The variable is **skewed**, has a **ceiling or floor**, has **outliers**, or is **ordinal** (an ordered scale such as satisfaction from 1 to 5).
+- The median is the middle value: half the patients are above it and half below. The **interquartile range (IQR)** runs from the 25th to the 75th percentile (the first and third quartiles), so it holds the middle half of the patients.
+- If the variable is a roughly symmetric measurement → the [mean and SD](#mean-sd) are fine and more familiar.
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3
+library(tidyverse)
+
+proms <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+koos_1yr <- proms |>
+  filter(instrument == "KOOS JR", visit == "1yr", !is.na(prom_score)) |>
+  pull(prom_score)
+
+ggplot(tibble(score = koos_1yr), aes(score)) +
+  geom_histogram(binwidth = 2.5) +
+  labs(x = "KOOS JR at 1 year (100 = best)", y = "Patients")
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+
+proms = pd.read_csv("data/proms_long.csv")
+koos_1yr = proms.loc[(proms["instrument"] == "KOOS JR") & (proms["visit"] == "1yr"),
+                     "prom_score"].dropna()
+
+fig, ax = plt.subplots(figsize=(6, 3))
+ax.hist(koos_1yr, bins=np.arange(35, 102.5, 2.5))
+ax.set_xlabel("KOOS JR at 1 year (100 = best)")
+ax.set_ylabel("Patients")
+plt.show()
+```
+:::
+
+Scores pile up against the maximum of 100 (a **ceiling**), with a long tail of patients who did less well. A mean would be dragged down by that tail; the median isn't.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+length(koos_1yr)                                # how many patients
+quantile(koos_1yr, probs = c(0.25, 0.50, 0.75)) # first quartile, median, third quartile
+
+DescTools::MedianCI(koos_1yr, method = "exact") # the median with its 95% CI
+```
+
+## Python
+
+```{python}
+print(len(koos_1yr))                                     # how many patients
+print(np.quantile(koos_1yr, [0.25, 0.50, 0.75]))         # first quartile, median, third quartile
+
+# scipy has no "median CI" function, but quantile_test() reports one.
+# Its q argument is the value it would test against; it doesn't change the CI.
+median_ci = stats.quantile_test(koos_1yr, q=koos_1yr.median(), p=0.5).confidence_interval()
+print(median_ci)
+```
+:::
+
+```{python}
+#| include: false
+q = np.quantile(koos_1yr, [0.25, 0.50, 0.75])
+chk = {"n": float(len(koos_1yr)), "q1": float(q[0]), "median": float(q[1]), "q3": float(q[2]),
+       "ci_low": float(median_ci.low), "ci_high": float(median_ci.high)}
+```
+
+```{r}
+#| include: false
+q <- quantile(koos_1yr, probs = c(0.25, 0.50, 0.75))
+m_ci <- DescTools::MedianCI(koos_1yr, method = "exact")
+check_agree(list(n = length(koos_1yr), q1 = q[[1]], median = q[[2]], q3 = q[[3]],
+                 ci_low = m_ci[["lwr.ci"]], ci_high = m_ci[["upr.ci"]]), reticulate::py$chk)
+```
+
+### Read the output
+
+- **n = 260:** TKA patients with a 1-year KOOS JR score.
+- **Median = 85.8:** half the patients scored above 85.8, half below.
+- **IQR 74.7 to 93.9:** the middle half of patients scored between these two values. A quarter scored below 74.7.
+- **95% CI for the median 84.0 to 88.2:** how precisely 260 patients pin down the median.
+
+::: {.callout-note collapse="true"}
+## 🔍 Under the hood: where the median's CI comes from
+The CI for a median uses no formula with an SD in it. It counts instead. Sort the scores, then pick two positions such that, if the study were repeated many times, the true median would fall between the scores at those positions at least 95% of the time. The binomial distribution says which positions those are, and the CI is the pair of scores sitting there. Because positions are whole numbers, the actual confidence is a little over 95% (R reports 0.9595 here). This "exact" method needs no assumption about the shape of the data.
+:::
+
+### How to report it
+
+> **Methods:** Continuous variables that were skewed or bounded are reported as median (interquartile range, IQR).
+>
+> **Results:** The median 1-year KOOS JR was 85.8 points (IQR 74.7 to 93.9; 95% CI for the median 84.0 to 88.2).
+
+::: {.callout-warning}
+## ⚠️ Watch out: report the IQR as two numbers
+Write "IQR 74.7 to 93.9", not "IQR 19.2" (the width). Readers want to know where the middle half of patients sits, not just how wide it is. And don't report a median with an SD: they belong to different summaries.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: quartiles
+R's `quantile()` and NumPy's `np.quantile()` use the same default method (R calls it "type 7"), so they agree. Other software doesn't always: gtsummary, SPSS and SAS can give slightly different quartiles on the same data ([page 2](../foundations/02-demographics.qmd#which-summary) shows an example). Say which software you used.
+:::
 
 ## Proportion {#proportion}
 
+**The question:** What proportion of patients had a complication within 90 days of surgery?
+
+### When to use it
+
+- The outcome is **yes/no** (binomial): complication, readmission, discharge home.
+- Report the count, the percentage, and a 95% CI for the percentage.
+- If patients were followed for **different lengths of time** and the event can happen at any time (revision, death) → use a [Kaplan-Meier curve](#kaplan-meier) instead.
+
+### Look at the data first
+
+For a yes/no variable, "looking" means counting, including the missing values.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+count(cohort, complication_90d)   # 1 = yes, 0 = no
+```
+
+## Python
+
+```{python}
+import pandas as pd
+from scipy import stats
+
+cohort = pd.read_csv("data/cohort.csv")
+
+print(cohort["complication_90d"].value_counts(dropna=False))   # 1 = yes, 0 = no
+```
+:::
+
+No missing values, and only the two codes the codebook allows (0 and 1).
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+events   <- sum(cohort$complication_90d == 1)
+patients <- nrow(cohort)
+
+events / patients                                           # the proportion
+
+# Wilson 95% CI: prop.test() without the continuity correction
+prop.test(events, patients, correct = FALSE)$conf.int
+```
+
+## Python
+
+```{python}
+events = int((cohort["complication_90d"] == 1).sum())
+patients = len(cohort)
+
+print(events / patients)                                    # the proportion
+
+# Wilson 95% CI
+print(stats.binomtest(events, patients).proportion_ci(method="wilson"))
+```
+:::
+
+```{python}
+#| include: false
+wilson = stats.binomtest(events, patients).proportion_ci(method="wilson")
+chk = {"events": float(events), "patients": float(patients),
+       "ci_low": float(wilson.low), "ci_high": float(wilson.high)}
+```
+
+```{r}
+#| include: false
+wilson <- prop.test(events, patients, correct = FALSE)$conf.int
+check_agree(list(events = events, patients = patients, ci_low = wilson[1], ci_high = wilson[2]),
+            reticulate::py$chk)
+```
+
+### Read the output
+
+- **51 of 600 = 0.085:** 8.5% of patients had a complication.
+- **95% CI 0.065 to 0.110:** the true complication rate for patients like ours is plausibly anywhere from 6.5% to 11.0%.
+
+### How to report it
+
+> **Methods:** Categorical variables are reported as number (percentage). 95% confidence intervals for proportions were calculated with the Wilson score method.
+>
+> **Results:** Fifty-one patients (8.5%; 95% CI 6.5% to 11.0%) had a complication within 90 days.
+
+::: {.callout-warning}
+## ⚠️ Watch out: percent of what?
+- **Say what the denominator is.** Here it's 600 *procedures*. Our 80 bilateral patients count twice, so it isn't a percentage of patients. If some outcomes were missing, the denominator is the patients with a known outcome; say how many were missing.
+- **Don't use the simple "± 1.96 standard errors" CI** (the Wald interval) for proportions. For rare events it can dip below 0%. The Wilson interval doesn't.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: which CI for a proportion?
+R's `prop.test()` gives the Wilson interval, but adds a continuity correction unless you set `correct = FALSE`. scipy's `proportion_ci()` calls the uncorrected version `"wilson"` and the corrected one `"wilsoncc"`. R's `binom.test()` and scipy's `method="exact"` give the more conservative Clopper-Pearson interval ([page 5](05-one-group-vs-hypothetical.qmd#binomial-test) uses it). All are acceptable; say which you used.
+:::
+
 ## Kaplan-Meier survival curve {#kaplan-meier}
+
+**The question:** What proportion of implants are still unrevised 5 years after surgery?
+
+### When to use it
+
+- The outcome is **time until an event** (revision, death), and patients were followed for **different lengths of time**.
+- Some patients are **censored**: their follow-up ended (the study closed, they moved away, they died) before any revision. We know they went *at least* that long without one.
+- A plain percentage ("13.5% were revised") ignores follow-up time: a patient operated on last year hasn't had time to need a revision. The Kaplan-Meier method uses each patient's follow-up for as long as it lasts.
+
+[Page 13](../survival/13-kaplan-meier.qmd) covers survival analysis in depth. This section shows the basic curve.
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+library(survival)
+library(ggsurvfit)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+# followup_years: time from surgery to revision or censoring; revised: 1 = revised, 0 = censored
+cohort |> select(case_id, followup_years, revised) |> head(4)
+cohort |> summarise(patients = n(), revisions = sum(revised),
+                    median_followup = median(followup_years))
+```
+
+## Python
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+from lifelines import KaplanMeierFitter
+from lifelines.plotting import add_at_risk_counts
+
+cohort = pd.read_csv("data/cohort.csv")
+
+# followup_years: time from surgery to revision or censoring; revised: 1 = revised, 0 = censored
+print(cohort[["case_id", "followup_years", "revised"]].head(4))
+print(len(cohort), cohort["revised"].sum(), cohort["followup_years"].median())
+```
+:::
+
+Each row needs exactly two things: **how long** the patient was followed and **whether** the follow-up ended with the event (1) or was censored (0). The first case was followed for 6.2 years without a revision; the fifth was revised at 5.8 years.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| fig-height: 4.5
+km <- survfit2(Surv(followup_years, revised) ~ 1, data = cohort,
+               conf.type = "log-log")              # the CI method lifelines uses
+
+km |>
+  ggsurvfit() +
+  add_confidence_interval() +
+  add_risktable() +
+  scale_ggsurvfit() +
+  labs(x = "Years since surgery", y = "Revision-free survival")
+
+summary(km, times = 5)                             # the estimate at 5 years
+```
+
+## Python
+
+```{python}
+km = KaplanMeierFitter()
+km.fit(cohort["followup_years"], event_observed=cohort["revised"])
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+km.plot_survival_function(ax=ax, legend=False)
+ax.set_xlabel("Years since surgery")
+ax.set_ylabel("Revision-free survival")
+add_at_risk_counts(km, ax=ax)
+plt.tight_layout()
+plt.show()
+
+# the estimate and its 95% CI at 5 years
+at_5 = km.survival_function_at_times(5).iloc[0]
+ci_5 = km.confidence_interval_survival_function_.loc[:5].iloc[-1]   # last step at or before 5 years
+print(at_5, ci_5.to_list())
+```
+:::
+
+```{python}
+#| include: false
+chk = {"surv_5": float(at_5), "ci_low": float(ci_5.iloc[0]), "ci_high": float(ci_5.iloc[1])}
+```
+
+```{r}
+#| include: false
+km_5 <- summary(km, times = 5)
+check_agree(list(surv_5 = km_5$surv, ci_low = km_5$lower, ci_high = km_5$upper), reticulate::py$chk)
+```
+
+### Read the output
+
+- **The curve** starts at 100% and steps down at each revision. Censored patients don't make it step; they just leave the group "at risk".
+- **The shaded band** is the 95% CI. It widens to the right as fewer patients remain under follow-up.
+- **The numbers at risk** under the plot show how many patients were still being followed at each time. Trust the right-hand end of the curve less: by 10 years only a handful remain.
+- **At 5 years:** survival 0.863 (95% CI 0.828 to 0.892), with 263 patients still at risk.
+
+### How to report it
+
+> **Methods:** Implant survivorship was estimated with the Kaplan-Meier method, with revision for any reason as the end point. Patients were censored at death or at their last follow-up.
+>
+> **Results:** Revision-free survival at 5 years was 86.3% (95% CI 82.8% to 89.2%; 263 patients at risk).
+
+::: {.callout-warning}
+## ⚠️ Watch out: death isn't just "lost to follow-up"
+Treating deaths as censored, as here, assumes the patients who died would have gone on to be revised at the same rate as everyone else. They can't be: a patient who has died can never be revised. When many patients die during follow-up, 1 minus the Kaplan-Meier estimate **overstates** the risk of revision. [Page 13](../survival/13-kaplan-meier.qmd) shows the competing-risks method that fixes this.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: the confidence band
+R's `survfit()` uses a "log" CI by default; lifelines uses "log-log". The estimates are identical but the CIs differ slightly. We set `conf.type = "log-log"` in R so the two match. Log-log keeps the CI between 0% and 100%; say which you used.
+:::
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+stopifnot(
+  nrow(cohort) == 600,
+  round(mean(cohort$age), 1) == 65.5, round(sd(cohort$age), 1) == 9.4,
+  round(mean(cohort$age) - 2 * sd(cohort$age)) == 47, round(mean(cohort$age) + 2 * sd(cohort$age)) == 84,
+  round(age_ci[1], 1) == 64.8, round(age_ci[2], 1) == 66.3,
+  round(sd(cohort$age) / sqrt(600), 2) == 0.39,
+  length(koos_1yr) == 260,
+  round(q[[1]], 1) == 74.7, round(q[[2]], 1) == 85.8, round(q[[3]], 1) == 93.9,
+  round(q[[3]] - q[[1]], 1) == 19.2,
+  round(m_ci[["lwr.ci"]], 1) == 84.0, round(m_ci[["upr.ci"]], 1) == 88.2,
+  round(attr(m_ci, "conf.level"), 4) == 0.9595,
+  events == 51, round(100 * events / patients, 1) == 8.5,
+  round(100 * wilson[1], 1) == 6.5, round(100 * wilson[2], 1) == 11.0,
+  sum(table(cohort$patient_id) == 2) == 80,
+  round(100 * mean(cohort$revised), 1) == 13.5,
+  cohort$followup_years[1] > 6.2, cohort$followup_years[1] < 6.25, cohort$revised[1] == 0,
+  round(cohort$followup_years[5], 1) == 5.8, cohort$revised[5] == 1,
+  round(km_5$surv, 3) == 0.863, round(km_5$lower, 3) == 0.828, round(km_5$upper, 3) == 0.892,
+  km_5$n.risk == 263,
+  # exercise solutions
+  round(mean(cohort$bmi), 1) == 30.4, round(sd(cohort$bmi), 1) == 5.4,
+  round(t.test(cohort$bmi)$conf.int[1], 1) == 30.0, round(t.test(cohort$bmi)$conf.int[2], 1) == 30.9,
+  round(mean(cohort$los_days), 1) == 0.9, round(sd(cohort$los_days), 1) == 1.1,
+  all(quantile(cohort$los_days, c(0.25, 0.5, 0.75)) == c(0, 1, 1)),
+  round(100 * prop.test(27, 600, correct = FALSE)$conf.int, 1) == c(3.1, 6.5),
+  sum(cohort$readmit_90d) == 27
+)
+```
+
+## Exercises {#exercises}
+
+The solutions use the packages and data loaded in the sections above, so run the page from the top first.
+
+**1.** Describe **BMI** in the cohort with a mean, SD and 95% CI for the mean. Check the histogram first: is the mean a fair summary?
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+ggplot(cohort, aes(bmi)) + geom_histogram(binwidth = 1)
+cohort |> summarise(n = n(), mean = mean(bmi), sd = sd(bmi))
+t.test(cohort$bmi)$conf.int
+```
+
+## Python
+
+```{python}
+fig, ax = plt.subplots(figsize=(6, 3))
+ax.hist(cohort["bmi"], bins=range(18, 46))
+plt.show()
+n, mean, sd = cohort["bmi"].count(), cohort["bmi"].mean(), cohort["bmi"].std()
+print(n, mean, sd, stats.t.interval(0.95, df=n - 1, loc=mean, scale=sd / n ** 0.5))
+```
+:::
+
+The histogram is roughly symmetric, so the mean is fair: mean BMI 30.4 kg/m² (SD 5.4; 95% CI for the mean 30.0 to 30.9).
+:::
+
+**2.** A resident wants to summarize **length of stay** in a Table 1 as "0.9 ± 1.1 days". What would you suggest instead, and why? Compute it.
+
+::: {.callout-tip collapse="true"}
+## Solution
+Length of stay is strongly right-skewed (most patients go home on day 0 or 1, a few stay 4 to 6 days), so report the median (IQR). "±" is also ambiguous: SD or SEM?
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+quantile(cohort$los_days, probs = c(0.25, 0.50, 0.75))
+```
+
+## Python
+
+```{python}
+import numpy as np
+print(np.quantile(cohort["los_days"], [0.25, 0.50, 0.75]))
+```
+:::
+
+Median 1 day (IQR 0 to 1).
+:::
+
+**3.** Twenty-seven of the 600 patients were readmitted within 90 days. Write the Results sentence, with a Wilson 95% CI.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+prop.test(27, 600, correct = FALSE)$conf.int
+```
+
+## Python
+
+```{python}
+print(stats.binomtest(27, 600).proportion_ci(method="wilson"))
+```
+:::
+
+"Twenty-seven patients (4.5%; 95% CI 3.1% to 6.5%) were readmitted within 90 days."
+:::

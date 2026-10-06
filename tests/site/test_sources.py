@@ -56,23 +56,24 @@ def test_tidy_page_checks_both_answer_keys_in_both_languages():
                    for lang, code in chunks), f"no hidden Python check against {key}"
 
 
-def written_foundations():
-    """Foundations pages that are no longer "(coming soon)" stubs."""
-    for path in sorted((ROOT / "foundations").glob("*.qmd")):
-        text = path.read_text(encoding="utf-8")
-        if "(coming soon)" not in front_matter(text):
-            yield path.name, text
+def written_pages(*dirs):
+    """Pages in these folders that are no longer "(coming soon)" stubs."""
+    for d in dirs:
+        for path in sorted((ROOT / d).glob("*.qmd")):
+            text = path.read_text(encoding="utf-8")
+            if "(coming soon)" not in front_matter(text):
+                yield f"{d}/{path.name}", text
 
 
-def test_foundations_exercise_solutions_are_executed():
+def test_exercise_solutions_are_executed():
     """Solutions run on every render, so a typo in one can't ship unnoticed."""
-    for name, text in written_foundations():
+    for name, text in written_pages("foundations", "catalog"):
         exercises = text[text.index("## Exercises {#exercises}"):]
         assert "```r\n" not in exercises and "```python\n" not in exercises, name
 
 
-def test_foundations_pages_guard_the_numbers_in_their_prose():
-    for name, text in written_foundations():
+def test_pages_guard_the_numbers_in_their_prose():
+    for name, text in written_pages("foundations", "catalog"):
         chunks = HIDDEN_CHUNK.findall(text)
         assert any(lang == "r" and "Prose guard" in code and "stopifnot(" in code
                    for lang, code in chunks), name
@@ -134,3 +135,36 @@ def test_rule_allows_named_results_and_keyword_arguments():
 def test_no_python_chunk_assigns_to_underscore():
     offenders = [str(f.relative_to(ROOT)) for f in qmd_files() if assigns_underscore(f.read_text(encoding="utf-8"))]
     assert offenders == [], "Name the result instead of assigning to _ in: " + ", ".join(offenders)
+
+
+# ---- catalog sections ------------------------------------------------------
+
+CELL_HEADING = re.compile(r"^## .*\{#([a-z0-9-]+)\}\s*$", re.MULTILINE)
+VISIBLE_CHUNK = re.compile(r"```\{(r|python)\}\n(?!#\| include: false)(.*?)\n```", re.DOTALL)
+
+
+def catalog_sections():
+    """(page, anchor, source) for every decision-table section of the written catalog pages."""
+    for name, text in written_pages("catalog"):
+        marks = list(CELL_HEADING.finditer(text))
+        for mark, following in zip(marks, marks[1:] + [None]):
+            if mark.group(1) != "exercises":
+                yield name, mark.group(1), text[mark.end():following.start() if following else len(text)]
+
+
+def test_each_catalog_section_loads_its_own_packages_and_data():
+    """Readers arrive from the decision table straight at a section and copy its code."""
+    for name, anchor, body in catalog_sections():
+        first = {}
+        for lang, code in VISIBLE_CHUNK.findall(body):
+            first.setdefault(lang, code)
+        assert "library(" in first["r"] and 'read_csv("data/' in first["r"], f"{name}#{anchor}: first R block"
+        assert "import " in first["python"] and 'read_csv("data/' in first["python"], f"{name}#{anchor}: first Python block"
+
+
+def test_every_catalog_section_checks_r_against_python():
+    for name, anchor, body in catalog_sections():
+        hidden = HIDDEN_CHUNK.findall(body)
+        r_checks = sum(lang == "r" and "check_agree(" in code for lang, code in hidden)
+        py_values = sum(lang == "python" and "chk = " in code for lang, code in hidden)
+        assert r_checks >= 1 and r_checks == py_values, f"{name}#{anchor}: {r_checks} R checks, {py_values} Python chk"

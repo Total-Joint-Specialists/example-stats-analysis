@@ -34,4 +34,6 @@ def test_pages_that_read_data_were_rendered_from_the_current_data(site):
 def test_just_data_re_renders_the_pages_that_read_data():
     justfile = (ROOT / "Justfile").read_text(encoding="utf-8")
     recipe = justfile[justfile.index("\ndata:"):]
-    assert "quarto render foundations" in recipe
+    folders = sorted({page.parts[0] for page in data_pages()})
+    missing = [f for f in folders if not re.search(rf"^\s*quarto render {f}\s*$", recipe, re.MULTILINE)]
+    assert missing == [], f"`just data` must re-render: {missing}"

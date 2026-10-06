@@ -100,7 +100,7 @@ Every "How to report it" paragraph on this site follows the same rules, which ma
 | Continuous, roughly symmetric | mean (SD) | age 67.4 (6.6) years |
 | Continuous, skewed | median (IQR) | length of stay 1 (0–2) days |
 | Categories | n (%) | 312 (52%) female |
-| p-values | three decimals; never "p = 0.000" | p = 0.017; p < 0.001 |
+| p-values | three decimals; never "p = 0.000" or "p = 1.000" | p = 0.017; p < 0.001; p > 0.999 |
 | Effect estimates | with a 95% confidence interval | difference 1.6 kg/m² (95% CI 0.7 to 2.5) |
 
 The examples in the table are illustrations, not results from our data. [Demographics (Table 1)](../foundations/02-demographics.qmd) shows the full Table 1 layout.

@@ -1,8 +1,10 @@
 """Source-level rules for .qmd files (no built site needed)."""
 
+import ast
+import builtins
 import re
 
-from sitelib import ROOT
+from sitelib import CELL_ANCHORS, ROOT
 
 CONTENT_DIRS = ["getting-started", "foundations", "catalog", "survival", "beyond", "report"]
 EXECUTABLE_CHUNK = re.compile(r"^```\{(r|python)[ ,}]", re.MULTILINE)
@@ -143,13 +145,25 @@ CELL_HEADING = re.compile(r"^## .*\{#([a-z0-9-]+)\}\s*$", re.MULTILINE)
 VISIBLE_CHUNK = re.compile(r"```\{(r|python)\}\n(?!#\| include: false)(.*?)\n```", re.DOTALL)
 
 
+def cell_sections(page, text):
+    """(anchor, source) for each decision-table cell section of one catalog page, skipping
+    other sections such as "Which groups differ?" and the exercises."""
+    marks = list(CELL_HEADING.finditer(text))
+    for mark, following in zip(marks, marks[1:] + [None]):
+        if mark.group(1) in CELL_ANCHORS[page]:
+            yield mark.group(1), text[mark.end():following.start() if following else len(text)]
+
+
 def catalog_sections():
     """(page, anchor, source) for every decision-table section of the written catalog pages."""
     for name, text in written_pages("catalog"):
-        marks = list(CELL_HEADING.finditer(text))
-        for mark, following in zip(marks, marks[1:] + [None]):
-            if mark.group(1) != "exercises":
-                yield name, mark.group(1), text[mark.end():following.start() if following else len(text)]
+        for anchor, body in cell_sections(name.replace(".qmd", ".html"), text):
+            yield name, anchor, body
+
+
+def test_cell_sections_skip_sections_that_are_not_table_cells():
+    text = "## Cox regression {#cox}\nA\n## Which groups differ? {#which-groups-differ}\nB\n## Exercises {#exercises}\nC\n"
+    assert [a for a, _ in cell_sections("catalog/08-three-plus-unmatched.html", text)] == ["cox"]
 
 
 def test_each_catalog_section_loads_its_own_packages_and_data():
@@ -168,3 +182,63 @@ def test_every_catalog_section_checks_r_against_python():
         r_checks = sum(lang == "r" and "check_agree(" in code for lang, code in hidden)
         py_values = sum(lang == "python" and "chk = " in code for lang, code in hidden)
         assert r_checks >= 1 and r_checks == py_values, f"{name}#{anchor}: {r_checks} R checks, {py_values} Python chk"
+
+
+# ---- each section's Python runs on its own -------------------------------
+
+def undefined_names(code):
+    """Names the code reads but never imports, assigns or defines (statement order ignored)."""
+    defined, used = set(dir(builtins)), set()
+    for node in ast.walk(ast.parse(code)):
+        if isinstance(node, ast.Name):
+            (used if isinstance(node.ctx, ast.Load) else defined).add(node.id)
+        elif isinstance(node, (ast.Import, ast.ImportFrom)):
+            defined.update((alias.asname or alias.name).split(".")[0] for alias in node.names)
+        elif isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+            defined.add(node.name)
+        elif isinstance(node, ast.arg):
+            defined.add(node.arg)
+    return used - defined
+
+
+def test_rule_finds_names_a_section_never_defines():
+    assert undefined_names("import pandas as pd\nprint(np.mean(scores))") == {"np", "scores"}
+    assert undefined_names("import numpy as np\nx = [1]\nf = lambda v: v + 1\nprint(np.mean(x), f(2))") == set()
+
+
+def test_each_catalog_section_python_runs_on_its_own():
+    """Every name a section's visible Python uses is created in that section, so it can be copied alone."""
+    for name, anchor, body in catalog_sections():
+        code = "\n".join(chunk for lang, chunk in VISIBLE_CHUNK.findall(body) if lang == "python")
+        assert undefined_names(code) == set(), f"{name}#{anchor} uses {sorted(undefined_names(code))}"
+
+
+# ---- bootstrap CIs need a seed ---------------------------------------------
+# effectsize computes the CIs of these effect sizes by bootstrap (random resampling),
+# so without set.seed() the printed CI changes on every render.
+
+BOOTSTRAP_CI_FUNCTIONS = ("rank_epsilon_squared(", "kendalls_w(")
+R_CHUNK = re.compile(r"```\{r[^}]*\}\n(.*?)\n```", re.DOTALL)
+
+
+def unseeded_bootstrap(text):
+    for code in R_CHUNK.findall(text):
+        for line in code.splitlines():
+            if line.lstrip().startswith("#"):
+                continue
+            if any(f in line for f in BOOTSTRAP_CI_FUNCTIONS) and "ci = NULL" not in line:
+                if "set.seed(" not in code[:code.index(line)]:
+                    return True
+    return False
+
+
+def test_rule_catches_an_unseeded_bootstrap_ci():
+    assert unseeded_bootstrap("```{r}\neffectsize::kendalls_w(y ~ v | id, data = d)\n```")
+    assert not unseeded_bootstrap("```{r}\nset.seed(1)\neffectsize::kendalls_w(y ~ v | id, data = d)\n```")
+    assert not unseeded_bootstrap("```{r}\neffectsize::kendalls_w(y ~ v | id, data = d, ci = NULL)\n```")
+    assert not unseeded_bootstrap("```{r}\n# kendalls_w() warns about ties\nx <- 1\n```")
+
+
+def test_bootstrap_cis_are_seeded():
+    offenders = [str(f.relative_to(ROOT)) for f in qmd_files() if unseeded_bootstrap(f.read_text(encoding="utf-8"))]
+    assert offenders == [], "Call set.seed() before (or pass ci = NULL to) a bootstrap CI in: " + ", ".join(offenders)

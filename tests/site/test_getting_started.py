@@ -76,3 +76,8 @@ def test_no_clone_instructions_install_packages_and_handle_excel(site):
     assert 'install.packages(c("readr", "readxl"))' in text
     assert "uv run --with pandas --with openpyxl python" in text
     assert 'download.file(url, path, mode = "wb")' in text
+
+
+def test_reporting_conventions_cap_large_p_values(site):
+    text = load("getting-started/using-this-site.html").get_text(" ")
+    assert "p > 0.999" in text and "p = 1.000" in text

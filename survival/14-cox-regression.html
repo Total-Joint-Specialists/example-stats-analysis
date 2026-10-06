@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Hazard ratios, multivariable Cox, checking proportional hazards, stratified Cox.">
+<meta name="description" content="Hazard ratios, choosing covariates, univariable and multivariable Cox models, checking straight-line effects and proportional hazards, remedies, stratified Cox for matched sets and bilateral patients, Fine-Gray regression, and reporting.">
 
-<title>14 · Cox proportional hazards regression (coming soon) – TJS Statistics Tutorials</title>
+<title>14 · Cox proportional hazards regression – TJS Statistics Tutorials</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -288,7 +323,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">Part 3 · Survival analysis</a></li><li class="breadcrumb-item"><a href="../survival/14-cox-regression.html">14 · Cox proportional hazards regression (coming soon)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">Part 3 · Survival analysis</a></li><li class="breadcrumb-item"><a href="../survival/14-cox-regression.html">14 · Cox proportional hazards regression</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -441,13 +476,13 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../survival/13-kaplan-meier.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">13 · Kaplan-Meier &amp; the log-rank test (coming soon)</span></a>
+ <span class="menu-text">13 · Kaplan-Meier &amp; the log-rank test</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../survival/14-cox-regression.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">14 · Cox proportional hazards regression (coming soon)</span></a>
+ <span class="menu-text">14 · Cox proportional hazards regression</span></a>
   </div>
 </li>
       </ul>
@@ -503,21 +538,36 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#hazard-ratio" id="toc-hazard-ratio" class="nav-link active" data-scroll-target="#hazard-ratio">The hazard ratio</a></li>
+  <li><a href="#choosing-covariates" id="toc-choosing-covariates" class="nav-link" data-scroll-target="#choosing-covariates">Choosing covariates</a></li>
+  <li><a href="#univariable-multivariable" id="toc-univariable-multivariable" class="nav-link" data-scroll-target="#univariable-multivariable">From univariable to multivariable</a></li>
+  <li><a href="#linearity" id="toc-linearity" class="nav-link" data-scroll-target="#linearity">Is the effect a straight line?</a></li>
+  <li><a href="#proportional-hazards" id="toc-proportional-hazards" class="nav-link" data-scroll-target="#proportional-hazards">Checking proportional hazards</a></li>
+  <li><a href="#remedies" id="toc-remedies" class="nav-link" data-scroll-target="#remedies">When hazards aren’t proportional</a></li>
+  <li><a href="#stratified-cox" id="toc-stratified-cox" class="nav-link" data-scroll-target="#stratified-cox">Stratified Cox: matched sets and bilateral patients</a></li>
+  <li><a href="#fine-gray" id="toc-fine-gray" class="nav-link" data-scroll-target="#fine-gray">Competing risks regression: Fine-Gray (R only)</a></li>
+  <li><a href="#reporting" id="toc-reporting" class="nav-link" data-scroll-target="#reporting">Reporting a Cox model</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">Part 3 · Survival analysis</a></li><li class="breadcrumb-item"><a href="../survival/14-cox-regression.html">14 · Cox proportional hazards regression (coming soon)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">Part 3 · Survival analysis</a></li><li class="breadcrumb-item"><a href="../survival/14-cox-regression.html">14 · Cox proportional hazards regression</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">14 · Cox proportional hazards regression (coming soon)</h1>
+<h1 class="title">14 · Cox proportional hazards regression</h1>
 </div>
 
 <div>
   <div class="description">
-    Hazard ratios, multivariable Cox, checking proportional hazards, stratified Cox.
+    Hazard ratios, choosing covariates, univariable and multivariable Cox models, checking straight-line effects and proportional hazards, remedies, stratified Cox for matched sets and bilateral patients, Fine-Gray regression, and reporting.
   </div>
 </div>
 
@@ -534,21 +584,1448 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="coming-soon callout callout-style-default callout-note callout-titled">
+<!-- data-checksum: 9e548efb7ad4232927ffa99aa2cdeca7 -->
+<p><a href="../survival/13-kaplan-meier.html">Page 13</a> compared survival curves. <strong>Cox regression</strong> goes further: it gives each group or predictor a <strong>hazard ratio</strong> with a 95% CI, and it can adjust for several predictors at once. Pages <a href="../catalog/08-three-plus-unmatched.html#cox">8</a>, <a href="../catalog/11-predict-from-one.html#cox">11</a> and <a href="../catalog/12-predict-from-several.html#cox">12</a> each fitted a Cox model in a few steps. This page covers the whole job: - what a hazard ratio means - how to choose covariates - how to check the model’s assumptions, and what to do when one fails - how to handle matched sets and bilateral patients - how to model competing risks - how to report the result</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming soon
+<span class="screen-reader-only">Note</span>💡 How this page works
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.</p>
+<p>Run the code blocks in order, from the top: later blocks use the packages, data and models made earlier.</p>
+<p>Until the section on <a href="#stratified-cox">bilateral patients</a>, the examples use every case as if it were a separate patient, including the 80 patients who had both sides operated on.</p>
+</div>
+</div>
+<section id="hazard-ratio" class="level2">
+<h2 class="anchored" data-anchor-id="hazard-ratio">The hazard ratio</h2>
+<p>The <strong>hazard</strong> is the rate of revision at a given moment among the implants still in place: the chance that an unrevised implant is revised in the next short interval. It can rise or fall over time. The <strong>hazard ratio</strong> (HR) divides one group’s hazard by another’s. A Cox model assumes that this ratio stays the same over the whole follow-up, even if the hazards themselves change: the hazards are <strong>proportional</strong>.</p>
+<p>Here is the Cox model for implant alone, with implant A as the reference:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggsurvfit)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_10 =</span> age <span class="sc">/</span> <span class="dv">10</span>,                 <span class="co"># hazard ratios per 10 years of age</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">bmi_5 =</span> bmi <span class="sc">/</span> <span class="dv">5</span>)                   <span class="co"># and per 5 kg/m² of BMI</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>implant_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant, <span class="at">data =</span> cohort)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(implant_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+coxph(formula = Surv(followup_years, revised) ~ implant, data = cohort)
+
+  n= 600, number of events= 81 
+
+            coef exp(coef) se(coef)      z Pr(&gt;|z|)    
+implantB -0.2020    0.8171   0.3092 -0.653    0.514    
+implantC  1.1208    3.0673   0.2579  4.345 1.39e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+         exp(coef) exp(-coef) lower .95 upper .95
+implantB    0.8171      1.224    0.4458     1.498
+implantC    3.0673      0.326    1.8502     5.085
+
+Concordance= 0.659  (se = 0.03 )
+Likelihood ratio test= 27.64  on 2 df,   p=1e-06
+Wald test            = 29.63  on 2 df,   p=4e-07
+Score (logrank) test = 33.48  on 2 df,   p=5e-08</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines <span class="im">import</span> CoxPHFitter, KaplanMeierFitter</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>cohort[<span class="st">"age_10"</span>] <span class="op">=</span> cohort[<span class="st">"age"</span>] <span class="op">/</span> <span class="dv">10</span>       <span class="co"># hazard ratios per 10 years of age</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>cohort[<span class="st">"bmi_5"</span>] <span class="op">=</span> cohort[<span class="st">"bmi"</span>] <span class="op">/</span> <span class="dv">5</span>         <span class="co"># and per 5 kg/m² of BMI</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>implant_model <span class="op">=</span> CoxPHFitter().fit(</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    cohort[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, <span class="st">"implant"</span>]],</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>, formula<span class="op">=</span><span class="st">"implant"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>},        <span class="co"># stop only when fully converged; see the R vs Python box</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(implant_model.summary[[<span class="st">"coef"</span>, <span class="st">"exp(coef)"</span>, <span class="st">"se(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"exp(coef) upper 95%"</span>, <span class="st">"z"</span>, <span class="st">"p"</span>]].<span class="bu">round</span>(<span class="dv">3</span>).to_string())   <span class="co"># to_string(): show every column</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               coef  exp(coef)  se(coef)  exp(coef) lower 95%  exp(coef) upper 95%      z      p
+covariate                                                                                       
+implant[T.B] -0.202      0.817     0.309                0.446                1.498 -0.653  0.514
+implant[T.C]  1.121      3.067     0.258                1.850                5.085  4.345  0.000</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(implant_model.concordance_index_)                              <span class="co"># concordance</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.6591952831027229</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(implant_model.log_likelihood_ratio_test().test_statistic)     <span class="co"># overall likelihood ratio test</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>27.63546691821921</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Reading the output, line by line: - <strong>n = 600, number of events = 81:</strong> the procedures and the revisions. The revisions, not the procedures, set how much a Cox model can learn. - <strong>coef:</strong> the log hazard ratio. Nobody reports it; it’s what the model estimates. - <strong>exp(coef):</strong> the <strong>hazard ratio</strong>. Implant C: 3.07. At any moment during follow-up, an unrevised implant C was revised at about three times the rate of an unrevised implant A. Implant B: 0.82. - <strong>se(coef), z, Pr(&gt;|z|):</strong> the standard error of the coefficient, and the Wald test of whether the hazard ratio differs from 1 (p &lt; 0.001 for C, p = 0.514 for B). - <strong>lower .95 / upper .95:</strong> the 95% CI of each hazard ratio: 1.85 to 5.09 for C, 0.45 to 1.50 for B. - <strong>Concordance = 0.659:</strong> how often, in pairs of patients, the one revised sooner had the higher predicted risk. 0.5 is a coin toss and 1 is perfect. - <strong>Likelihood ratio, Wald and score tests:</strong> three versions of the overall test that implant matters at all. With enough events they agree; the likelihood ratio test (27.6 on 2 df, p &lt; 0.001) is the most reliable. Python prints the concordance and then this test under the table.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: convergence and the printout
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Both programs handle tied revision times with Efron’s method and use the first group alphabetically (A) as the reference. lifelines’ default rule for when to stop iterating stops slightly early, so its hazard ratios can differ from R’s in the fifth or sixth digit. Every Python model on this page tightens it with <code>fit_options={"precision": 1e-12}</code>. R’s <code>summary()</code> prints the concordance and three overall tests; lifelines keeps them in <code>concordance_index_</code> and <code>log_likelihood_ratio_test()</code>. (lifelines’ <code>print_summary()</code> shows everything at once, including the time the model was fitted.)</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: a hazard ratio isn’t a risk ratio
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>“Three times the hazard” doesn’t mean three times as many revisions by 5 years. By 5 years, 28.9% of implant C knees and hips had been revised (1 − Kaplan-Meier), against 10.1% of implant A: 2.85 times as many, not 3.07. The two ratios are close when revisions are rare and drift apart as they become common. Report the hazard ratio as a ratio of rates, and give the cumulative risks separately.</p>
+</div>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>km_by_implant <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant, <span class="at">data =</span> cohort)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">summary</span>(km_by_implant, <span class="at">times =</span> <span class="dv">5</span>)<span class="sc">$</span>surv    <span class="co"># revised by 5 years: A, B, C</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.10143478 0.07591293 0.28862332</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> implant, group <span class="kw">in</span> cohort.groupby(<span class="st">"implant"</span>):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    implant_km <span class="op">=</span> KaplanMeierFitter().fit(group[<span class="st">"followup_years"</span>], group[<span class="st">"revised"</span>])</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(implant, <span class="bu">round</span>(<span class="dv">1</span> <span class="op">-</span> implant_km.survival_function_at_times(<span class="dv">5</span>).iloc[<span class="dv">0</span>], <span class="dv">3</span>))   <span class="co"># revised by 5 years</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>A 0.101
+B 0.076
+C 0.289</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="choosing-covariates" class="level2">
+<h2 class="anchored" data-anchor-id="choosing-covariates">Choosing covariates</h2>
+<p>A study comparing implants has one question: does implant C carry a higher revision risk than implant A? The other predictors in the model are there to make that comparison fair. These <strong>covariates</strong> are chosen before you look at the results, for a reason you can write down:</p>
+<ul>
+<li><strong>Adjust for confounders:</strong> factors that affect both which implant a patient gets and their risk of revision. Age, sex and BMI are the usual ones in arthroplasty: surgeons may choose implants differently for older, heavier or female patients, and these factors can change revision risk.</li>
+<li><strong>Don’t adjust for what the implant causes.</strong> A dislocation or a reoperation that follows the implant choice is part of the implant’s effect, not a reason for it. Adjusting for it hides the effect you’re trying to measure.</li>
+<li><strong>Don’t choose covariates from the data.</strong> Keeping only the predictors with p &lt; 0.2 in univariable models, or letting a stepwise procedure pick them, makes p-values and CIs look more certain than they are and gives different answers in every sample.</li>
+</ul>
+<p><strong>Events limit the model.</strong> A Cox model needs about <strong>10 events per term</strong>, where a term is one coefficient: a two-level predictor like sex is one term, implant (B and C against A) is two, and a spline with 3 degrees of freedom is three. The practice cohort has 81 revisions, enough for about eight terms. Implant, age, sex and BMI use five, about 16 events per term. With fewer events, adjust for fewer things, and say so.</p>
+</section>
+<section id="univariable-multivariable" class="level2">
+<h2 class="anchored" data-anchor-id="univariable-multivariable">From univariable to multivariable</h2>
+<p>A <strong>univariable</strong> (or unadjusted) model has one predictor, like the implant model above. A <strong>multivariable</strong> (or adjusted) model has several; each hazard ratio is then that predictor’s effect with the others held fixed.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>adjusted_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant <span class="sc">+</span> age_10 <span class="sc">+</span> sex <span class="sc">+</span> bmi_5, <span class="at">data =</span> cohort)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adjusted_model)<span class="sc">$</span>conf.int</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         exp(coef) exp(-coef) lower .95 upper .95
+implantB 0.8291156  1.2061044 0.4520297 1.5207687
+implantC 3.1884365  0.3136333 1.9209701 5.2921840
+age_10   1.2246225  0.8165782 0.9574440 1.5663582
+sexMale  0.5065688  1.9740655 0.3153674 0.8136921
+bmi_5    1.0308436  0.9700793 0.8386246 1.2671206</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>cox_data <span class="op">=</span> cohort[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, <span class="st">"implant"</span>, <span class="st">"age_10"</span>, <span class="st">"sex"</span>, <span class="st">"bmi_5"</span>]]</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>adjusted_model <span class="op">=</span> CoxPHFitter().fit(cox_data, duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                                   formula<span class="op">=</span><span class="st">"implant + age_10 + sex + bmi_5"</span>, fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>})</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(adjusted_model.summary[[<span class="st">"exp(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>, <span class="st">"exp(coef) upper 95%"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              exp(coef)  exp(coef) lower 95%  exp(coef) upper 95%
+covariate                                                        
+implant[T.B]   0.829116             0.452030             1.520769
+implant[T.C]   3.188436             1.920970             5.292184
+age_10         1.224622             0.957444             1.566358
+sex[T.Male]    0.506569             0.315367             0.813692
+bmi_5          1.030844             0.838625             1.267121</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Implant C’s hazard ratio moved from 3.07 unadjusted to <strong>3.19 adjusted</strong> (95% CI 1.92 to 5.29). Age, sex and BMI don’t explain the difference between the implants. When an adjusted estimate moves a lot, the covariates were probably confounding the unadjusted one; say so in the Discussion. Small moves mean little: a hazard ratio shifts a bit whenever a strong predictor is added, even without confounding.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: the covariates’ own hazard ratios aren’t findings
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The model also prints hazard ratios for age, sex and BMI. Men’s hazard of revision was about half of women’s (0.51, 95% CI 0.32 to 0.81). It’s tempting to report that as a second result, but the model wasn’t built to answer it: nobody chose covariates that would make the comparison of men and women fair. Report the covariates’ estimates in the table, and describe any you discuss as exploratory, as <a href="../catalog/12-predict-from-several.html#cox">page 12</a> does.</p>
+</div>
+</div>
+</section>
+<section id="linearity" class="level2">
+<h2 class="anchored" data-anchor-id="linearity">Is the effect a straight line?</h2>
+<p>A measured predictor like age enters the model as a straight line: each extra 10 years multiplies the hazard by the same amount, whether from 50 to 60 or from 75 to 85. To check, let the effect bend with a <strong>natural cubic spline</strong> (<a href="../catalog/12-predict-from-several.html#multiple-nonlinear-regression">page 12</a> explains splines) and compare the two models with a likelihood ratio test:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(splines)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>age_spline_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant <span class="sc">+</span> <span class="fu">ns</span>(age, <span class="at">df =</span> <span class="dv">3</span>) <span class="sc">+</span> sex <span class="sc">+</span> bmi_5,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">data =</span> cohort)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(adjusted_model, age_spline_model)    <span class="co"># likelihood ratio test: does the bend help?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table
+ Cox model: response is  Surv(followup_years, revised)
+ Model 1: ~ implant + age_10 + sex + bmi_5
+ Model 2: ~ implant + ns(age, df = 3) + sex + bmi_5
+   loglik  Chisq Df Pr(&gt;|Chi|)
+1 -461.26                     
+2 -461.11 0.2935  2     0.8635</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> patsy</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> chi2</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>age_knots <span class="op">=</span> <span class="bu">list</span>(cohort[<span class="st">"age"</span>].quantile([<span class="dv">1</span><span class="op">/</span><span class="dv">3</span>, <span class="dv">2</span><span class="op">/</span><span class="dv">3</span>]))       <span class="co"># the same knots R's ns(df = 3) uses</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>age_low, age_high <span class="op">=</span> cohort[<span class="st">"age"</span>].<span class="bu">min</span>(), cohort[<span class="st">"age"</span>].<span class="bu">max</span>()</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>age_spline <span class="op">=</span> patsy.dmatrix(<span class="st">"cr(age, knots=age_knots, lower_bound=age_low, upper_bound=age_high,"</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>                           <span class="st">" constraints='center') - 1"</span>, cohort, return_type<span class="op">=</span><span class="st">"dataframe"</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>age_spline.columns <span class="op">=</span> [<span class="st">"age_1"</span>, <span class="st">"age_2"</span>, <span class="st">"age_3"</span>]           <span class="co"># three spline terms</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>spline_data <span class="op">=</span> pd.concat([cox_data.drop(columns<span class="op">=</span><span class="st">"age_10"</span>), age_spline], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>age_spline_model <span class="op">=</span> CoxPHFitter().fit(spline_data, duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>                                     formula<span class="op">=</span><span class="st">"implant + age_1 + age_2 + age_3 + sex + bmi_5"</span>,</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>                                     fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>})</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>lr_stat <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> (age_spline_model.log_likelihood_ <span class="op">-</span> adjusted_model.log_likelihood_)</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(lr_stat, chi2.sf(lr_stat, df<span class="op">=</span><span class="dv">2</span>))     <span class="co"># likelihood ratio test: 3 spline terms vs 1 straight line</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.29350381805818415 0.8635081794270494</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The spline didn’t clearly improve the fit (χ² = 0.29, df = 2, p = 0.864), so the straight line for age stands. Report the check in the Methods. (Exercise 2 checks BMI.)</p>
+</section>
+<section id="proportional-hazards" class="level2">
+<h2 class="anchored" data-anchor-id="proportional-hazards">Checking proportional hazards</h2>
+<p>The Cox model assumes each hazard ratio stays the same over the whole follow-up. The standard check uses <strong>Schoenfeld residuals</strong>. At each revision, the model compares the revised patient’s predictors with those of everyone still at risk. Rescaled and added to the model’s coefficient, each residual estimates the log hazard ratio at that moment. If the hazard ratio is constant, these estimates scatter around a flat line; if they drift with time, the assumption fails.</p>
+<p><strong>First, the adjusted model.</strong></p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cox.zph</span>(adjusted_model)    <span class="co"># one test per predictor, and a global test</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         chisq df    p
+implant 2.3906  2 0.30
+age_10  0.0977  1 0.75
+sex     0.1107  1 0.74
+bmi_5   2.6106  1 0.11
+GLOBAL  5.4935  5 0.36</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines.statistics <span class="im">import</span> proportional_hazard_test</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>ph_test <span class="op">=</span> proportional_hazard_test(adjusted_model, cox_data, time_transform<span class="op">=</span><span class="st">"km"</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(ph_test.summary[[<span class="st">"test_statistic"</span>, <span class="st">"p"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              test_statistic         p
+age_10              0.034565  0.852511
+bmi_5               2.705518  0.100002
+implant[T.B]        2.437343  0.118477
+implant[T.C]        0.089494  0.764822
+sex[T.Male]         0.127087  0.721472</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>No predictor’s hazard ratio clearly changed over time (global test p = 0.359; BMI had the smallest p-value, 0.106). That’s no clear evidence against proportional hazards, which isn’t the same as proof that they hold: with 81 revisions, the test can miss a modest change.</p>
+<p><strong>Now a real violation.</strong> The practice data have one built in: in total hips, the posterior approach has a much higher revision rate in the first months after surgery (early dislocation), and no higher rate after that. <a href="../survival/13-kaplan-meier.html#log-rank">Page 13</a> showed the curves crossing.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>tha <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span> <span class="fu">filter</span>(procedure <span class="sc">==</span> <span class="st">"THA"</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>approach_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> approach, <span class="at">data =</span> tha)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>approach_zph <span class="ot">&lt;-</span> <span class="fu">cox.zph</span>(approach_model)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>approach_zph</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         chisq df       p
+approach  11.3  1 0.00078
+GLOBAL    11.3  1 0.00078</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(approach_zph, <span class="at">resid =</span> <span class="cn">TRUE</span>, <span class="at">se =</span> <span class="cn">TRUE</span>)          <span class="co"># the log hazard ratio over time</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">coef</span>(approach_model), <span class="at">lty =</span> <span class="dv">2</span>)            <span class="co"># the single hazard ratio the model assumes</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="14-cox-regression_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.nonparametric.smoothers_lowess <span class="im">import</span> lowess</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>tha <span class="op">=</span> cohort[cohort[<span class="st">"procedure"</span>] <span class="op">==</span> <span class="st">"THA"</span>]</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>tha_data <span class="op">=</span> tha[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, <span class="st">"approach"</span>]]</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>approach_model <span class="op">=</span> CoxPHFitter().fit(tha_data, duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>                                   formula<span class="op">=</span><span class="st">"approach"</span>, fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>})</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(proportional_hazard_test(approach_model, tha_data, time_transform<span class="op">=</span><span class="st">"km"</span>).summary[[<span class="st">"test_statistic"</span>, <span class="st">"p"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       test_statistic         p
+approach[T.posterior]       11.183262  0.000825</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># scaled Schoenfeld residuals, one per revision; adding the coefficient gives the log hazard ratio over time</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>residuals <span class="op">=</span> approach_model.compute_residuals(tha_data, kind<span class="op">=</span><span class="st">"scaled_schoenfeld"</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>log_hr <span class="op">=</span> residuals[<span class="st">"approach[T.posterior]"</span>] <span class="op">+</span> approach_model.params_[<span class="st">"approach[T.posterior]"</span>]</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>years <span class="op">=</span> tha_data.loc[log_hr.index, <span class="st">"followup_years"</span>]</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">4</span>))</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>ax.scatter(years, log_hr, s<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>trend <span class="op">=</span> lowess(log_hr, np.log(years), frac<span class="op">=</span><span class="dv">2</span><span class="op">/</span><span class="dv">3</span>, it<span class="op">=</span><span class="dv">0</span>)     <span class="co"># smooth trend; it=0 keeps every point's full weight</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>ax.plot(np.exp(trend[:, <span class="dv">0</span>]), trend[:, <span class="dv">1</span>])</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>ax.axhline(approach_model.params_[<span class="st">"approach[T.posterior]"</span>], linestyle<span class="op">=</span><span class="st">"--"</span>)   <span class="co"># the single hazard ratio the model assumes</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>ax.set_xscale(<span class="st">"log"</span>)                                       <span class="co"># spreads out the early revisions</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>ax.set_xticks([<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>], labels<span class="op">=</span>[<span class="st">"0.1"</span>, <span class="st">"0.5"</span>, <span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"5"</span>])</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Years since surgery (log scale)"</span>)</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Log hazard ratio, posterior vs anterior"</span>)</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="14-cox-regression_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>The test:</strong> p &lt; 0.001 (R’s χ² = 11.3 on 1 df). The posterior approach’s hazard ratio isn’t constant.</li>
+<li><strong>The points:</strong> one per revision. Points near +2 are posterior hips and points near −2 are anterior hips, so early on almost every point sits high.</li>
+<li><strong>The solid line</strong> smooths the points into an estimate of the log hazard ratio at each time. It starts high in the first months, when posterior hips were revised far more often, then falls below the dashed line, which marks the model’s single hazard ratio of 1.37 (log hazard ratio 0.31).</li>
+</ul>
+<p>That single hazard ratio (1.37, 95% CI 0.72 to 2.61) mixes a large early effect with the years after, when there’s no clear difference. It describes no actual moment of follow-up, so don’t report it.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: test and look
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>With many events, the test flags changes too small to matter; with few, it misses real ones. Always look at the plot too. And report a non-significant test as “no clear evidence that the hazard ratios changed over time”, never as proof that the assumption holds.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: two versions of the test
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’s <code>cox.zph()</code> (survival 3.0 and later) computes the full score test, one per predictor, with implant’s two terms tested together. lifelines’ <code>proportional_hazard_test()</code> uses Grambsch and Therneau’s simpler original approximation and tests every column separately (implant B and implant C each get their own line). The statistics differ slightly (11.3 in R, 11.2 in Python for the approach) and lead to the same conclusions here. lifelines’ scaled Schoenfeld residuals leave out the coefficient that R adds, so the Python code adds it back. R’s plot spaces the revisions evenly along the time axis (its “km” scale); the Python plot uses a log scale for the same reason: to keep the many early revisions from piling up at zero.</p>
+</div>
+</div>
+</section>
+<section id="remedies" class="level2">
+<h2 class="anchored" data-anchor-id="remedies">When hazards aren’t proportional</h2>
+<p>There are two common fixes. Which one fits depends on whether you need the hazard ratio of the predictor that breaks the assumption.</p>
+<p><strong>1. Stratify, when it’s only an adjustment.</strong> Suppose the question is implant, in total hips, and approach is just a covariate. A Cox model <strong>stratified</strong> by approach gives each approach its own baseline hazard, of any shape, and estimates the implant hazard ratios within approaches. Approach gets no hazard ratio of its own, so its non-proportional effect no longer matters.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>stratified_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant <span class="sc">+</span> <span class="fu">strata</span>(approach), <span class="at">data =</span> tha)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(stratified_model)<span class="sc">$</span>conf.int</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         exp(coef) exp(-coef) lower .95 upper .95
+implantB 0.5425943  1.8429976 0.2292543  1.284201
+implantC 2.1139073  0.4730576 1.0163758  4.396606</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>stratified_model <span class="op">=</span> CoxPHFitter().fit(tha[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, <span class="st">"implant"</span>, <span class="st">"approach"</span>]],</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>                                     duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>, formula<span class="op">=</span><span class="st">"implant"</span>,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                                     strata<span class="op">=</span>[<span class="st">"approach"</span>], fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>})</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stratified_model.summary[[<span class="st">"exp(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>, <span class="st">"exp(coef) upper 95%"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              exp(coef)  exp(coef) lower 95%  exp(coef) upper 95%
+covariate                                                        
+implant[T.B]   0.542594             0.229254             1.284201
+implant[T.C]   2.113907             1.016376             4.396606</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>In total hips, with approach as a stratum, implant C’s hazard ratio was 2.11 (95% CI 1.02 to 4.40) against implant A.</p>
+<p><strong>2. Split the follow-up, when you need the effect.</strong> If the approach <em>is</em> the question, give it one hazard ratio for the first 6 months and another for the time after. Each patient followed beyond 6 months gets two rows, one per period; the model then estimates the approach’s effect separately in each:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># one row per patient per period: (0, 0.5] years and (0.5, end of follow-up]</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>tha_split <span class="ot">&lt;-</span> <span class="fu">survSplit</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> ., <span class="at">data =</span> tha, <span class="at">cut =</span> <span class="fl">0.5</span>, <span class="at">episode =</span> <span class="st">"period"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">posterior_early =</span> <span class="fu">as.numeric</span>(approach <span class="sc">==</span> <span class="st">"posterior"</span> <span class="sc">&amp;</span> period <span class="sc">==</span> <span class="dv">1</span>),</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">posterior_late  =</span> <span class="fu">as.numeric</span>(approach <span class="sc">==</span> <span class="st">"posterior"</span> <span class="sc">&amp;</span> period <span class="sc">==</span> <span class="dv">2</span>))</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>split_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(tstart, followup_years, revised) <span class="sc">~</span> posterior_early <span class="sc">+</span> posterior_late,</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">data =</span> tha_split)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(split_model)<span class="sc">$</span>conf.int</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                exp(coef) exp(-coef) lower .95 upper .95
+posterior_early 8.4719845  0.1180361 1.9253393 37.278895
+posterior_late  0.4262855  2.3458458 0.1561268  1.163921</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines <span class="im">import</span> CoxTimeVaryingFitter</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>hips <span class="op">=</span> tha.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>hips[<span class="st">"id"</span>] <span class="op">=</span> hips.index                                   <span class="co"># one ID per hip, shared by its rows</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>early <span class="op">=</span> hips.copy()                                       <span class="co"># row 1: surgery to 6 months</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>early[<span class="st">"start"</span>] <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>early[<span class="st">"stop"</span>] <span class="op">=</span> early[<span class="st">"followup_years"</span>].clip(upper<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>early[<span class="st">"event"</span>] <span class="op">=</span> ((early[<span class="st">"followup_years"</span>] <span class="op">&lt;=</span> <span class="fl">0.5</span>) <span class="op">&amp;</span> (early[<span class="st">"revised"</span>] <span class="op">==</span> <span class="dv">1</span>)).astype(<span class="bu">int</span>)</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>early[<span class="st">"period"</span>] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>late <span class="op">=</span> hips[hips[<span class="st">"followup_years"</span>] <span class="op">&gt;</span> <span class="fl">0.5</span>].copy()          <span class="co"># row 2: 6 months onward, if followed that long</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>late[<span class="st">"start"</span>] <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>late[<span class="st">"stop"</span>] <span class="op">=</span> late[<span class="st">"followup_years"</span>]</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>late[<span class="st">"event"</span>] <span class="op">=</span> late[<span class="st">"revised"</span>]</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>late[<span class="st">"period"</span>] <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>tha_split <span class="op">=</span> pd.concat([early, late])</span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>tha_split[<span class="st">"posterior_early"</span>] <span class="op">=</span> ((tha_split[<span class="st">"approach"</span>] <span class="op">==</span> <span class="st">"posterior"</span>) <span class="op">&amp;</span> (tha_split[<span class="st">"period"</span>] <span class="op">==</span> <span class="dv">1</span>)).astype(<span class="bu">int</span>)</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>tha_split[<span class="st">"posterior_late"</span>] <span class="op">=</span> ((tha_split[<span class="st">"approach"</span>] <span class="op">==</span> <span class="st">"posterior"</span>) <span class="op">&amp;</span> (tha_split[<span class="st">"period"</span>] <span class="op">==</span> <span class="dv">2</span>)).astype(<span class="bu">int</span>)</span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>split_model <span class="op">=</span> CoxTimeVaryingFitter().fit(</span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>    tha_split[[<span class="st">"id"</span>, <span class="st">"start"</span>, <span class="st">"stop"</span>, <span class="st">"event"</span>, <span class="st">"posterior_early"</span>, <span class="st">"posterior_late"</span>]],</span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>    id_col<span class="op">=</span><span class="st">"id"</span>, event_col<span class="op">=</span><span class="st">"event"</span>, start_col<span class="op">=</span><span class="st">"start"</span>, stop_col<span class="op">=</span><span class="st">"stop"</span>, fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>})</span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(split_model.summary[[<span class="st">"exp(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>, <span class="st">"exp(coef) upper 95%"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 exp(coef)  exp(coef) lower 95%  exp(coef) upper 95%
+covariate                                                           
+posterior_early   8.471984             1.925339            37.278895
+posterior_late    0.426285             0.156127             1.163921</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>In the first 6 months, the hazard of revision was 8.47 times higher after the posterior approach (95% CI 1.93 to 37.3). After 6 months the estimate was 0.43 (95% CI 0.16 to 1.16), which is imprecise. The CI for the early effect is wide because it rests on 16 early revisions.</p>
+<p>Choose the cut point before you look, from clinical reasoning: here, the period of highest dislocation risk after hip replacement. Trying several cut points until one gives a striking result is data dredging. R can also let a hazard ratio change smoothly with time (the <code>tt()</code> argument of <code>coxph()</code>), which avoids choosing a cut point.</p>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Proportional hazards were checked with scaled Schoenfeld residuals. Because the effect of surgical approach changed over time, its hazard ratio was estimated separately for the first 6 months after surgery and thereafter.</p>
+<p><strong>Results:</strong> The posterior approach was associated with a higher hazard of revision in the first 6 months (hazard ratio 8.47, 95% CI 1.93 to 37.3); after 6 months the estimate was imprecise (0.43, 95% CI 0.16 to 1.16).</p>
+</blockquote>
+</section>
+<section id="stratified-cox" class="level2">
+<h2 class="anchored" data-anchor-id="stratified-cox">Stratified Cox: matched sets and bilateral patients</h2>
+<p>A Cox model assumes every row is an independent patient. Two common designs break that.</p>
+<p><strong>Matched sets.</strong> When each implant C patient is matched with similar patients who got other implants, the matched patients belong together. A Cox model <strong>stratified by matched set</strong>, <code>strata(set_id)</code>, compares implants only within sets. The decision table calls this <em>conditional proportional hazards regression</em>. <a href="../catalog/07-two-paired-groups.html#stratified-cox">Page 7</a> works through matched pairs and <a href="../catalog/09-three-plus-matched.html#stratified-cox">page 9</a> matched sets of three.</p>
+<p><strong>Bilateral patients.</strong> 80 patients in the cohort had both sides replaced. Their two joints share the same patient’s bone, activity and surgeon, so their outcomes aren’t independent, and treating them as independent makes the CIs too narrow. There are three common choices:</p>
+<ul>
+<li><strong>Keep both joints and use robust standard errors</strong> clustered on patient. The hazard ratios don’t change; the CIs allow for the pairing. This is the usual choice.</li>
+<li><strong>Stratify by patient</strong>, <code>strata(patient_id)</code>, to compare the two sides of each patient. Only patients whose two joints differ in the predictor, and who had a revision, contribute anything, so it’s rarely precise enough.</li>
+<li><strong>Keep one joint per patient</strong>, such as the first one operated on. Simple, but it throws away data.</li>
+</ul>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>clustered_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant <span class="sc">+</span> age_10 <span class="sc">+</span> sex <span class="sc">+</span> bmi_5,</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">data =</span> cohort, <span class="at">cluster =</span> patient_id)    <span class="co"># robust SEs, clustered on patient</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(clustered_model)<span class="sc">$</span>coefficients[, <span class="fu">c</span>(<span class="st">"exp(coef)"</span>, <span class="st">"se(coef)"</span>, <span class="st">"robust se"</span>, <span class="st">"Pr(&gt;|z|)"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         exp(coef)  se(coef) robust se     Pr(&gt;|z|)
+implantB 0.8291156 0.3095014 0.3106780 5.463870e-01
+implantC 3.1884365 0.2585253 0.2575808 6.743766e-06
+age_10   1.2246225 0.1255741 0.1234440 1.006948e-01
+sexMale  0.5065688 0.2418013 0.2414236 4.847144e-03
+bmi_5    1.0308436 0.1052925 0.1044996 7.712846e-01</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(clustered_model)<span class="sc">$</span>conf.int[<span class="st">"implantC"</span>, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> exp(coef) exp(-coef)  lower .95  upper .95 
+ 3.1884365  0.3136333  1.9245297  5.2823958 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>clustered_model <span class="op">=</span> CoxPHFitter().fit(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>    cohort[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, <span class="st">"implant"</span>, <span class="st">"age_10"</span>, <span class="st">"sex"</span>, <span class="st">"bmi_5"</span>, <span class="st">"patient_id"</span>]],</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>, formula<span class="op">=</span><span class="st">"implant + age_10 + sex + bmi_5"</span>,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    cluster_col<span class="op">=</span><span class="st">"patient_id"</span>,                              <span class="co"># robust SEs, clustered on patient</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>},</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clustered_model.summary[[<span class="st">"exp(coef)"</span>, <span class="st">"se(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>, <span class="st">"exp(coef) upper 95%"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              exp(coef)  se(coef)  exp(coef) lower 95%  exp(coef) upper 95%
+covariate                                                                  
+implant[T.B]   0.829116  0.310788             0.450891             1.524608
+implant[T.C]   3.188436  0.257544             1.924668             5.282016
+age_10         1.224622  0.123504             0.961336             1.560017
+sex[T.Male]    0.506569  0.241419             0.315604             0.813082
+bmi_5          1.030844  0.104463             0.839988             1.265063</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>exp(coef):</strong> unchanged: implant C’s hazard ratio is still 3.19.</li>
+<li><strong>se(coef) / robust se:</strong> R prints both; lifelines prints only the robust one when you cluster. Here they’re almost the same (0.259 and 0.258 for implant C), so the CI barely moves (1.92 to 5.28). Only 20 of the 80 bilateral patients had a revision, so the pairing matters little in this cohort. It can matter much more in yours: check, and say in the Methods what you did.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: robust standard errors
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Both programs compute the same robust (“sandwich”) standard errors. When follow-up times are tied, R also applies Efron’s tie correction inside the robust variance and lifelines doesn’t, so the two differ in the fourth significant figure.</p>
+</div>
+</div>
+</section>
+<section id="fine-gray" class="level2">
+<h2 class="anchored" data-anchor-id="fine-gray">Competing risks regression: Fine-Gray (R only)</h2>
+<p>Every Cox model above treated death as censoring. That’s a <strong>cause-specific</strong> Cox model: its hazard ratios describe the revision rate among patients still alive, which is the right question for whether an implant performs worse. But as <a href="../survival/13-kaplan-meier.html#competing-risks">page 13</a> showed, deaths also stop revisions from ever happening. For “which patients will actually be revised?” use the <strong>Fine-Gray</strong> model, which models the cumulative incidence of revision directly. Its effect sizes are <strong>subdistribution hazard ratios</strong> (SHR).</p>
+<p>Fine-Gray regression has no mature Python implementation, so this section is R only. tidycmprsk’s <code>crr()</code> takes the same three-level status as page 13’s cumulative incidence:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidycmprsk)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">status =</span> <span class="fu">factor</span>(event_status, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"censored"</span>, <span class="st">"revision"</span>, <span class="st">"death"</span>)))   <span class="co"># censored must come first</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>fine_gray <span class="ot">&lt;-</span> <span class="fu">crr</span>(<span class="fu">Surv</span>(followup_years, status) <span class="sc">~</span> implant <span class="sc">+</span> age_10 <span class="sc">+</span> sex <span class="sc">+</span> bmi_5,</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> cohort, <span class="at">failcode =</span> <span class="st">"revision"</span>)</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>fine_gray</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Variable   Coef     SE      HR     95% CI       p-value    
+implantB   -0.232   0.307   0.79   0.43, 1.45   0.45       
+implantC   1.13     0.259   3.09   1.86, 5.14   &lt;0.001     
+age_10     0.067    0.113   1.07   0.86, 1.33   0.55       
+sexMale    -0.630   0.240   0.53   0.33, 0.85   0.009      
+bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
+</div>
+</div>
+<p>Compare it with the cause-specific model: - <strong>Implant C:</strong> SHR 3.09 (95% CI 1.86 to 5.14), close to the cause-specific HR of 3.19. Death rates didn’t clearly differ between implants (Gray’s test on <a href="../survival/13-kaplan-meier.html#competing-risks">page 13</a>), so allowing for death changes little. - <strong>Age:</strong> SHR 1.07 per 10 years (95% CI 0.86 to 1.33), against a cause-specific HR of 1.22. Older patients may be revised at a somewhat higher rate while alive, but more of them die before they can be revised, so the subdistribution estimate is closer to 1: there’s no clear evidence that age changes how many patients are actually revised.</p>
+<p>Report the cause-specific model to compare implants, and the Fine-Gray model when the question is how many patients will be revised. Many papers report both, and say which is which.</p>
+<p><code>crr()</code> can’t allow for patients who had both sides replaced. If many of yours did, survival’s <code>finegray()</code> function prepares the data for a Fine-Gray model that <code>coxph()</code> can fit with <code>cluster = patient_id</code>.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: a subdistribution hazard ratio isn’t a hazard ratio
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The SHR has no simple meaning as a rate: patients who have died stay in its “at risk” group. Read it only as “higher or lower cumulative incidence”, and call it a subdistribution hazard ratio in the text and tables.</p>
+</div>
+</div>
+</section>
+<section id="reporting" class="level2">
+<h2 class="anchored" data-anchor-id="reporting">Reporting a Cox model</h2>
+<p>Most papers present Cox models as a table: one row per predictor, with the univariable and the multivariable hazard ratios side by side. Both columns use robust standard errors clustered on patient (<a href="#stratified-cox">above</a>), so their CIs allow for the bilateral patients.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>hr_labels <span class="ot">&lt;-</span> <span class="fu">list</span>(implant <span class="sc">~</span> <span class="st">"Implant"</span>, age_10 <span class="sc">~</span> <span class="st">"Age (per 10 years)"</span>, sex <span class="sc">~</span> <span class="st">"Sex"</span>,</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>                  bmi_5 <span class="sc">~</span> <span class="st">"BMI (per 5 kg/m²)"</span>)</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>univariable_table <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(followup_years, revised, implant, age_10, sex, bmi_5, patient_id) <span class="sc">|&gt;</span></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tbl_uvregression</span>(<span class="at">method =</span> coxph, <span class="at">y =</span> <span class="fu">Surv</span>(followup_years, revised), <span class="at">exponentiate =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">include =</span> <span class="fu">c</span>(implant, age_10, sex, bmi_5),</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">cluster =</span> patient_id),       <span class="co"># robust SEs, clustered on patient</span></span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">label =</span> hr_labels, <span class="at">pvalue_fun =</span> <span class="fu">label_style_pvalue</span>(<span class="at">digits =</span> <span class="dv">3</span>))</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>multivariable_table <span class="ot">&lt;-</span> clustered_model <span class="sc">|&gt;</span>                   <span class="co"># robust SEs, for the bilateral patients</span></span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tbl_regression</span>(<span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">label =</span> hr_labels, <span class="at">pvalue_fun =</span> <span class="fu">label_style_pvalue</span>(<span class="at">digits =</span> <span class="dv">3</span>))</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a><span class="fu">tbl_merge</span>(<span class="fu">list</span>(univariable_table, multivariable_table),</span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>          <span class="at">tab_spanner =</span> <span class="fu">c</span>(<span class="st">"**Univariable**"</span>, <span class="st">"**Multivariable**"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="tfvalmrkin" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#tfvalmrkin table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#tfvalmrkin thead, #tfvalmrkin tbody, #tfvalmrkin tfoot, #tfvalmrkin tr, #tfvalmrkin td, #tfvalmrkin th {
+  border-style: none;
+}
+
+#tfvalmrkin p {
+  margin: 0;
+  padding: 0;
+}
+
+#tfvalmrkin .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#tfvalmrkin .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#tfvalmrkin .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#tfvalmrkin .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#tfvalmrkin .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#tfvalmrkin .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#tfvalmrkin .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#tfvalmrkin .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#tfvalmrkin .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#tfvalmrkin .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#tfvalmrkin .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#tfvalmrkin .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#tfvalmrkin .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#tfvalmrkin .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#tfvalmrkin .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tfvalmrkin .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#tfvalmrkin .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#tfvalmrkin .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#tfvalmrkin .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tfvalmrkin .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#tfvalmrkin .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tfvalmrkin .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#tfvalmrkin .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tfvalmrkin .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#tfvalmrkin .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tfvalmrkin .gt_left {
+  text-align: left;
+}
+
+#tfvalmrkin .gt_center {
+  text-align: center;
+}
+
+#tfvalmrkin .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#tfvalmrkin .gt_font_normal {
+  font-weight: normal;
+}
+
+#tfvalmrkin .gt_font_bold {
+  font-weight: bold;
+}
+
+#tfvalmrkin .gt_font_italic {
+  font-style: italic;
+}
+
+#tfvalmrkin .gt_super {
+  font-size: 65%;
+}
+
+#tfvalmrkin .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#tfvalmrkin .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#tfvalmrkin .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#tfvalmrkin .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#tfvalmrkin .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#tfvalmrkin .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#tfvalmrkin .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#tfvalmrkin .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#tfvalmrkin div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="gt_col_headings gt_spanner_row header">
+<th rowspan="2" id="label" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th colspan="4" id="level 1; stat_n_1" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+<strong>Univariable</strong>
+</div></th>
+<th colspan="3" id="level 1; estimate_2" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+<strong>Multivariable</strong>
+</div></th>
+</tr>
+<tr class="gt_col_headings even">
+<th id="stat_n_1" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>N</strong></th>
+<th id="estimate_1" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>HR</strong></th>
+<th id="conf.low_1" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong></th>
+<th id="p.value_1" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+<th id="estimate_2" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>HR</strong></th>
+<th id="conf.low_2" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong></th>
+<th id="p.value_2" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">Implant</td>
+<td class="gt_row gt_center" headers="stat_n_1">600</td>
+<td class="gt_row gt_center" headers="estimate_1"><br>
+</td>
+<td class="gt_row gt_center" headers="conf.low_1"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value_1"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate_2"><br>
+</td>
+<td class="gt_row gt_center" headers="conf.low_2"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value_2"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;A</td>
+<td class="gt_row gt_center" headers="stat_n_1"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate_1">—</td>
+<td class="gt_row gt_center" headers="conf.low_1">—</td>
+<td class="gt_row gt_center" headers="p.value_1"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate_2">—</td>
+<td class="gt_row gt_center" headers="conf.low_2">—</td>
+<td class="gt_row gt_center" headers="p.value_2"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;B</td>
+<td class="gt_row gt_center" headers="stat_n_1"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate_1">0.82</td>
+<td class="gt_row gt_center" headers="conf.low_1">0.45, 1.49</td>
+<td class="gt_row gt_center" headers="p.value_1">0.511</td>
+<td class="gt_row gt_center" headers="estimate_2">0.83</td>
+<td class="gt_row gt_center" headers="conf.low_2">0.45, 1.52</td>
+<td class="gt_row gt_center" headers="p.value_2">0.546</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;C</td>
+<td class="gt_row gt_center" headers="stat_n_1"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate_1">3.07</td>
+<td class="gt_row gt_center" headers="conf.low_1">1.87, 5.04</td>
+<td class="gt_row gt_center" headers="p.value_1">&lt;0.001</td>
+<td class="gt_row gt_center" headers="estimate_2">3.19</td>
+<td class="gt_row gt_center" headers="conf.low_2">1.92, 5.28</td>
+<td class="gt_row gt_center" headers="p.value_2">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">Age (per 10 years)</td>
+<td class="gt_row gt_center" headers="stat_n_1">600</td>
+<td class="gt_row gt_center" headers="estimate_1">1.25</td>
+<td class="gt_row gt_center" headers="conf.low_1">0.98, 1.58</td>
+<td class="gt_row gt_center" headers="p.value_1">0.068</td>
+<td class="gt_row gt_center" headers="estimate_2">1.22</td>
+<td class="gt_row gt_center" headers="conf.low_2">0.96, 1.56</td>
+<td class="gt_row gt_center" headers="p.value_2">0.101</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Sex</td>
+<td class="gt_row gt_center" headers="stat_n_1">600</td>
+<td class="gt_row gt_center" headers="estimate_1"><br>
+</td>
+<td class="gt_row gt_center" headers="conf.low_1"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value_1"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate_2"><br>
+</td>
+<td class="gt_row gt_center" headers="conf.low_2"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value_2"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
+<td class="gt_row gt_center" headers="stat_n_1"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate_1">—</td>
+<td class="gt_row gt_center" headers="conf.low_1">—</td>
+<td class="gt_row gt_center" headers="p.value_1"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate_2">—</td>
+<td class="gt_row gt_center" headers="conf.low_2">—</td>
+<td class="gt_row gt_center" headers="p.value_2"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
+<td class="gt_row gt_center" headers="stat_n_1"><br>
+</td>
+<td class="gt_row gt_center" headers="estimate_1">0.54</td>
+<td class="gt_row gt_center" headers="conf.low_1">0.34, 0.86</td>
+<td class="gt_row gt_center" headers="p.value_1">0.009</td>
+<td class="gt_row gt_center" headers="estimate_2">0.51</td>
+<td class="gt_row gt_center" headers="conf.low_2">0.32, 0.81</td>
+<td class="gt_row gt_center" headers="p.value_2">0.005</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">BMI (per 5 kg/m²)</td>
+<td class="gt_row gt_center" headers="stat_n_1">600</td>
+<td class="gt_row gt_center" headers="estimate_1">1.05</td>
+<td class="gt_row gt_center" headers="conf.low_1">0.87, 1.28</td>
+<td class="gt_row gt_center" headers="p.value_1">0.600</td>
+<td class="gt_row gt_center" headers="estimate_2">1.03</td>
+<td class="gt_row gt_center" headers="conf.low_2">0.84, 1.27</td>
+<td class="gt_row gt_center" headers="p.value_2">0.771</td>
+</tr>
+</tbody><tfoot>
+<tr class="gt_sourcenotes odd">
+<td colspan="8" class="gt_sourcenote">Abbreviations: CI = Confidence Interval, HR = Hazard Ratio</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hr_with_ci(model):</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Each term's hazard ratio and 95% CI as text, like '3.19 (1.92 to 5.29)'."""</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> model.summary</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (rows[<span class="st">"exp(coef)"</span>].<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.2f}</span><span class="st">"</span>.<span class="bu">format</span>) <span class="op">+</span> <span class="st">" ("</span> <span class="op">+</span> rows[<span class="st">"exp(coef) lower 95%"</span>].<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.2f}</span><span class="st">"</span>.<span class="bu">format</span>)</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> <span class="st">" to "</span> <span class="op">+</span> rows[<span class="st">"exp(coef) upper 95%"</span>].<span class="bu">map</span>(<span class="st">"</span><span class="sc">{:.2f}</span><span class="st">"</span>.<span class="bu">format</span>) <span class="op">+</span> <span class="st">")"</span>)</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>univariable <span class="op">=</span> []</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> term <span class="kw">in</span> [<span class="st">"implant"</span>, <span class="st">"age_10"</span>, <span class="st">"sex"</span>, <span class="st">"bmi_5"</span>]:</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>    one_predictor <span class="op">=</span> CoxPHFitter().fit(cohort[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, term, <span class="st">"patient_id"</span>]],</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>                                      duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>, formula<span class="op">=</span>term,</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>                                      cluster_col<span class="op">=</span><span class="st">"patient_id"</span>,      <span class="co"># robust SEs, clustered on patient</span></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>                                      fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>})</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>    univariable.append(hr_with_ci(one_predictor))</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>hr_table <span class="op">=</span> pd.DataFrame({<span class="st">"Univariable HR (95% CI)"</span>: pd.concat(univariable),</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>                         <span class="st">"Multivariable HR (95% CI)"</span>: hr_with_ci(clustered_model)})   <span class="co"># robust SEs, for the bilateral patients</span></span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hr_table)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Univariable HR (95% CI) Multivariable HR (95% CI)
+covariate                                                     
+implant[T.B]     0.82 (0.45 to 1.49)       0.83 (0.45 to 1.52)
+implant[T.C]     3.07 (1.87 to 5.04)       3.19 (1.92 to 5.28)
+age_10           1.25 (0.98 to 1.58)       1.22 (0.96 to 1.56)
+sex[T.Male]      0.54 (0.34 to 0.86)       0.51 (0.32 to 0.81)
+bmi_5            1.05 (0.87 to 1.28)       1.03 (0.84 to 1.27)</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> The association between implant and revision for any reason was estimated with Cox proportional hazards regression, with time from surgery as the time scale and implant A as the reference. Age, sex and body mass index were chosen in advance as covariates. Age entered the model as a linear term after a natural cubic spline showed no clear evidence of non-linearity. Proportional hazards were checked with scaled Schoenfeld residuals. In the Cox models, robust standard errors clustered on patient accounted for patients who had both sides replaced. A Fine-Gray model, treating death as a competing risk, was fitted as a sensitivity analysis.</p>
+<p><strong>Results:</strong> During follow-up, 81 of 600 procedures (13.5%) were revised. After adjustment for age, sex and body mass index, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.19, 95% CI 1.92 to 5.28), while the estimate for implant B was imprecise (0.83, 95% CI 0.45 to 1.52). There was no clear evidence that any hazard ratio changed over time (global test p = 0.359). With death treated as a competing risk, the subdistribution hazard ratio for implant C was 3.09 (95% CI 1.86 to 5.14).</p>
+</blockquote>
+<p>Before you submit, check that the paper states: - the number of patients, procedures and events - time zero and the event definition (<a href="../survival/13-kaplan-meier.html#time-zero">page 13</a>) - which covariates were adjusted for, and why - how continuous predictors were modeled, and how proportional hazards were checked - how bilateral patients and deaths were handled</p>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The solutions use the packages, data and models made in the sections above, so run the page from the top first.</p>
+<p><strong>1.</strong> Fit a univariable Cox model for ASA class (as a number, 1 to 4) and write the Results sentence.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>asa_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> asa, <span class="at">data =</span> cohort)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(asa_model)<span class="sc">$</span>conf.int</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    exp(coef) exp(-coef) lower .95 upper .95
+asa  1.379391  0.7249577 0.9869659  1.927847</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(asa_model)<span class="sc">$</span>coefficients[, <span class="st">"Pr(&gt;|z|)"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.05968004</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>asa_model <span class="op">=</span> CoxPHFitter().fit(cohort[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, <span class="st">"asa"</span>]], duration_col<span class="op">=</span><span class="st">"followup_years"</span>,</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>                              event_col<span class="op">=</span><span class="st">"revised"</span>, fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>})</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(asa_model.summary[[<span class="st">"exp(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>, <span class="st">"exp(coef) upper 95%"</span>, <span class="st">"p"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           exp(coef)  exp(coef) lower 95%  exp(coef) upper 95%        p
+covariate                                                              
+asa         1.379391             0.986966             1.927847  0.05968</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Each one-class increase in ASA class was associated with a hazard ratio for revision of 1.38 (95% CI 0.99 to 1.93, p = 0.060). The estimate is imprecise: the data are compatible with no association and with a near doubling of the hazard per class.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> Check whether BMI’s effect in the adjusted model is a straight line, using a natural cubic spline with 3 degrees of freedom.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>bmi_spline_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant <span class="sc">+</span> age_10 <span class="sc">+</span> sex <span class="sc">+</span> <span class="fu">ns</span>(bmi, <span class="at">df =</span> <span class="dv">3</span>),</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">data =</span> cohort)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(adjusted_model, bmi_spline_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table
+ Cox model: response is  Surv(followup_years, revised)
+ Model 1: ~ implant + age_10 + sex + bmi_5
+ Model 2: ~ implant + age_10 + sex + ns(bmi, df = 3)
+   loglik  Chisq Df Pr(&gt;|Chi|)
+1 -461.26                     
+2 -459.94 2.6436  2     0.2666</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>bmi_knots <span class="op">=</span> <span class="bu">list</span>(cohort[<span class="st">"bmi"</span>].quantile([<span class="dv">1</span><span class="op">/</span><span class="dv">3</span>, <span class="dv">2</span><span class="op">/</span><span class="dv">3</span>]))</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>bmi_low, bmi_high <span class="op">=</span> cohort[<span class="st">"bmi"</span>].<span class="bu">min</span>(), cohort[<span class="st">"bmi"</span>].<span class="bu">max</span>()</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>bmi_spline <span class="op">=</span> patsy.dmatrix(<span class="st">"cr(bmi, knots=bmi_knots, lower_bound=bmi_low, upper_bound=bmi_high,"</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>                           <span class="st">" constraints='center') - 1"</span>, cohort, return_type<span class="op">=</span><span class="st">"dataframe"</span>)</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>bmi_spline.columns <span class="op">=</span> [<span class="st">"bmi_1"</span>, <span class="st">"bmi_2"</span>, <span class="st">"bmi_3"</span>]</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>bmi_data <span class="op">=</span> pd.concat([cox_data.drop(columns<span class="op">=</span><span class="st">"bmi_5"</span>), bmi_spline], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>bmi_spline_model <span class="op">=</span> CoxPHFitter().fit(bmi_data, duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>,</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>                                     formula<span class="op">=</span><span class="st">"implant + age_10 + sex + bmi_1 + bmi_2 + bmi_3"</span>,</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>                                     fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>})</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>bmi_lr <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> (bmi_spline_model.log_likelihood_ <span class="op">-</span> adjusted_model.log_likelihood_)</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(bmi_lr, chi2.sf(bmi_lr, df<span class="op">=</span><span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2.6436426624027263 0.2666492029134558</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>There was no clear evidence that BMI’s effect bends (likelihood ratio χ² = 2.64, df = 2, p = 0.267), so the straight line stands.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> Total hips and total knees may have different baseline revision rates. Refit the adjusted model stratified by procedure. Does implant C’s hazard ratio change? Write the Results sentence.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-13-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-1" role="tab" aria-controls="tabset-13-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-2" role="tab" aria-controls="tabset-13-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-13-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-13-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>procedure_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant <span class="sc">+</span> age_10 <span class="sc">+</span> sex <span class="sc">+</span> bmi_5 <span class="sc">+</span> <span class="fu">strata</span>(procedure),</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">data =</span> cohort)</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(procedure_model)<span class="sc">$</span>conf.int[<span class="st">"implantC"</span>, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> exp(coef) exp(-coef)  lower .95  upper .95 
+ 3.1570524  0.3167512  1.9021586  5.2398257 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-13-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>procedure_model <span class="op">=</span> CoxPHFitter().fit(cohort[[<span class="st">"followup_years"</span>, <span class="st">"revised"</span>, <span class="st">"implant"</span>, <span class="st">"age_10"</span>, <span class="st">"sex"</span>, <span class="st">"bmi_5"</span>, <span class="st">"procedure"</span>]],</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>                                    duration_col<span class="op">=</span><span class="st">"followup_years"</span>, event_col<span class="op">=</span><span class="st">"revised"</span>,</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>                                    formula<span class="op">=</span><span class="st">"implant + age_10 + sex + bmi_5"</span>, strata<span class="op">=</span>[<span class="st">"procedure"</span>],</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>                                    fit_options<span class="op">=</span>{<span class="st">"precision"</span>: <span class="fl">1e-12</span>})</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(procedure_model.summary.loc[<span class="st">"implant[T.C]"</span>, [<span class="st">"exp(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>, <span class="st">"exp(coef) upper 95%"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>exp(coef)              3.157052
+exp(coef) lower 95%    1.902159
+exp(coef) upper 95%    5.239826
+Name: implant[T.C], dtype: float64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Barely. In a Cox model stratified by procedure and adjusted for age, sex and BMI, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.16, 95% CI 1.90 to 5.24), close to the unstratified estimate of 3.19.</p>
+</div>
 </div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -966,8 +2443,8 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../survival/13-kaplan-meier.html" class="pagination-link" aria-label="13 · Kaplan-Meier &amp; the log-rank test (coming soon)">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">13 · Kaplan-Meier &amp; the log-rank test (coming soon)</span>
+      <a href="../survival/13-kaplan-meier.html" class="pagination-link" aria-label="13 · Kaplan-Meier &amp; the log-rank test">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">13 · Kaplan-Meier &amp; the log-rank test</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
@@ -984,7 +2461,7 @@ ul.task-list li input[type="checkbox"] {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>Text CC BY 4.0 · Code MIT</p>
 </div>

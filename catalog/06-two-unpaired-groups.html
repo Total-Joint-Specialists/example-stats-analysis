@@ -476,13 +476,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../survival/13-kaplan-meier.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">13 · Kaplan-Meier &amp; the log-rank test (coming soon)</span></a>
+ <span class="menu-text">13 · Kaplan-Meier &amp; the log-rank test</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../survival/14-cox-regression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">14 · Cox proportional hazards regression (coming soon)</span></a>
+ <span class="menu-text">14 · Cox proportional hazards regression</span></a>
   </div>
 </li>
       </ul>
@@ -1311,7 +1311,7 @@ attr(,"conf.level")
 <li>The outcome is <strong>time until an event</strong> (revision), patients were followed for different lengths of time, and you’re comparing <strong>two independent groups</strong>.</li>
 <li>It compares the whole survival curves, not the survival at one time point.</li>
 <li>The <strong>Mantel-Haenszel test</strong> (or Mantel-Cox test) in the decision table is the same test under another name.</li>
-<li>It’s most powerful when one group’s risk is a steady multiple of the other’s over time (proportional hazards). If the curves cross, see <a href="../survival/14-cox-regression.html">page 14</a>.</li>
+<li>It’s most powerful when one group’s risk is a steady multiple of the other’s over time (proportional hazards). If the curves cross, see <a href="../survival/14-cox-regression.html#proportional-hazards">page 14</a>.</li>
 <li>To compare three or more groups, or to adjust for other variables → <a href="../catalog/08-three-plus-unmatched.html#cox">Cox regression</a>.</li>
 </ul>
 </section>
@@ -1510,7 +1510,7 @@ C 0.7113766756342532 [0.6145981267706867, 0.7880063762308811]</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Comparing the two curves’ CIs at one time point (“the 5-year CIs overlap, so there’s no difference”) isn’t a valid test, and neither is comparing the crude percentages revised. Use the log-rank test on the whole curves. And as on <a href="../catalog/04-describe-one-group.html#kaplan-meier">page 4</a>, deaths here are treated as censored; <a href="../survival/13-kaplan-meier.html">page 13</a> covers competing risks.</p>
+<p>Comparing the two curves’ CIs at one time point (“the 5-year CIs overlap, so there’s no difference”) isn’t a valid test, and neither is comparing the crude percentages revised. Use the log-rank test on the whole curves. And as on <a href="../catalog/04-describe-one-group.html#kaplan-meier">page 4</a>, deaths here are treated as censored; <a href="../survival/13-kaplan-meier.html#competing-risks">page 13</a> covers competing risks.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">

@@ -476,13 +476,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../survival/13-kaplan-meier.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">13 · Kaplan-Meier &amp; the log-rank test (coming soon)</span></a>
+ <span class="menu-text">13 · Kaplan-Meier &amp; the log-rank test</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../survival/14-cox-regression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">14 · Cox proportional hazards regression (coming soon)</span></a>
+ <span class="menu-text">14 · Cox proportional hazards regression</span></a>
   </div>
 </li>
       </ul>
@@ -1178,7 +1178,7 @@ X-squared = 3.6243, df = 2, p-value = 0.1633</code></pre>
 <ul>
 <li>The outcome is <strong>time until an event</strong> (revision), compared across <strong>three or more independent groups</strong>.</li>
 <li>The <strong>log-rank test</strong> extends to three or more groups and answers “do the curves differ?”. <strong>Cox regression</strong> also gives a hazard ratio for each group against a reference group, and can adjust for other variables.</li>
-<li>It assumes each group’s risk is a steady multiple of the reference group’s over time (<strong>proportional hazards</strong>). <a href="../survival/14-cox-regression.html">Page 14</a> shows how to check that and covers Cox regression in full.</li>
+<li>It assumes each group’s risk is a steady multiple of the reference group’s over time (<strong>proportional hazards</strong>). <a href="../survival/14-cox-regression.html#proportional-hazards">Page 14</a> shows how to check that and covers Cox regression in full.</li>
 </ul>
 </section>
 <section id="look-at-the-data-first-3" class="level3">
@@ -1332,7 +1332,7 @@ implant[T.C]   3.067344             1.850158             5.085296  0.000014</cod
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Every hazard ratio here is relative to implant A, so the output doesn’t compare B with C directly. Choose the reference group on purpose (the standard implant, the largest group) and say which it is. And as on <a href="../catalog/04-describe-one-group.html#kaplan-meier">page 4</a>, deaths here are treated as censored; <a href="../survival/13-kaplan-meier.html">page 13</a> covers competing risks.</p>
+<p>Every hazard ratio here is relative to implant A, so the output doesn’t compare B with C directly. Choose the reference group on purpose (the standard implant, the largest group) and say which it is. And as on <a href="../catalog/04-describe-one-group.html#kaplan-meier">page 4</a>, deaths here are treated as censored; <a href="../survival/13-kaplan-meier.html#competing-risks">page 13</a> covers competing risks.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">

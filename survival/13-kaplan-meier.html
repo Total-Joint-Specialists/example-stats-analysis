@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Censoring, KM curves with numbers at risk, survivorship, log-rank, competing risks.">
+<meta name="description" content="Censoring, time zero, Kaplan-Meier curves with numbers at risk, survivorship at 2, 5 and 10 years, median follow-up, the log-rank test, and competing risks.">
 
-<title>13 · Kaplan-Meier &amp; the log-rank test (coming soon) – TJS Statistics Tutorials</title>
+<title>13 · Kaplan-Meier &amp; the log-rank test – TJS Statistics Tutorials</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -78,6 +113,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -288,7 +352,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">Part 3 · Survival analysis</a></li><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">13 · Kaplan-Meier &amp; the log-rank test (coming soon)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">Part 3 · Survival analysis</a></li><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">13 · Kaplan-Meier &amp; the log-rank test</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -441,13 +505,13 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../survival/13-kaplan-meier.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">13 · Kaplan-Meier &amp; the log-rank test (coming soon)</span></a>
+ <span class="menu-text">13 · Kaplan-Meier &amp; the log-rank test</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../survival/14-cox-regression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">14 · Cox proportional hazards regression (coming soon)</span></a>
+ <span class="menu-text">14 · Cox proportional hazards regression</span></a>
   </div>
 </li>
       </ul>
@@ -503,21 +567,34 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#censoring" id="toc-censoring" class="nav-link active" data-scroll-target="#censoring">What censoring means</a></li>
+  <li><a href="#time-zero" id="toc-time-zero" class="nav-link" data-scroll-target="#time-zero">Time zero and the event</a></li>
+  <li><a href="#kaplan-meier" id="toc-kaplan-meier" class="nav-link" data-scroll-target="#kaplan-meier">The Kaplan-Meier curve</a></li>
+  <li><a href="#survivorship" id="toc-survivorship" class="nav-link" data-scroll-target="#survivorship">Survivorship at 2, 5 and 10 years</a></li>
+  <li><a href="#follow-up" id="toc-follow-up" class="nav-link" data-scroll-target="#follow-up">How long were patients followed?</a></li>
+  <li><a href="#log-rank" id="toc-log-rank" class="nav-link" data-scroll-target="#log-rank">Comparing groups: the log-rank test</a></li>
+  <li><a href="#competing-risks" id="toc-competing-risks" class="nav-link" data-scroll-target="#competing-risks">Competing risks: when patients die first</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">Part 3 · Survival analysis</a></li><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">13 · Kaplan-Meier &amp; the log-rank test (coming soon)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">Part 3 · Survival analysis</a></li><li class="breadcrumb-item"><a href="../survival/13-kaplan-meier.html">13 · Kaplan-Meier &amp; the log-rank test</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">13 · Kaplan-Meier &amp; the log-rank test (coming soon)</h1>
+<h1 class="title">13 · Kaplan-Meier &amp; the log-rank test</h1>
 </div>
 
 <div>
   <div class="description">
-    Censoring, KM curves with numbers at risk, survivorship, log-rank, competing risks.
+    Censoring, time zero, Kaplan-Meier curves with numbers at risk, survivorship at 2, 5 and 10 years, median follow-up, the log-rank test, and competing risks.
   </div>
 </div>
 
@@ -534,21 +611,1002 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="coming-soon callout callout-style-default callout-note callout-titled">
+<!-- data-checksum: 9e548efb7ad4232927ffa99aa2cdeca7 -->
+<p>“How long do the implants last?” is the central question of arthroplasty research, and it needs its own methods. Patients join the study over several years and are followed for different lengths of time, and most of them are never revised. <strong>Survival analysis</strong> uses every patient’s follow-up for as long as it lasts.</p>
+<p>Pages <a href="../catalog/04-describe-one-group.html#kaplan-meier">4</a>, <a href="../catalog/06-two-unpaired-groups.html#log-rank">6</a> and <a href="../catalog/08-three-plus-unmatched.html#cox">8</a> each showed one survival method in a few steps. This page covers the whole method: - what censoring is - how to set up the data - how to read and report a Kaplan-Meier curve - how long the patients were followed - how to compare groups - what to do when patients die before they can be revised</p>
+<p><a href="../survival/14-cox-regression.html">Page 14</a> covers Cox regression.</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming soon
+<span class="screen-reader-only">Note</span>💡 How this page works
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.</p>
+<p>Run the code blocks in order, from the top: later blocks use the packages and data loaded earlier.</p>
+<p>To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them (<a href="../survival/14-cox-regression.html#stratified-cox">page 14</a>) and say what you did.</p>
+</div>
+</div>
+<section id="censoring" class="level2">
+<h2 class="anchored" data-anchor-id="censoring">What censoring means</h2>
+<p>Picture six patients, each followed from surgery until either a revision or the end of their follow-up:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Patient</th>
+<th>Years followed</th>
+<th>Revised?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>1</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>2</td>
+<td>no: the study closed</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>3</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>4</td>
+<td>no: moved away</td>
+</tr>
+<tr class="odd">
+<td>E</td>
+<td>5</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td>F</td>
+<td>6</td>
+<td>no: the study closed</td>
+</tr>
+</tbody>
+</table>
+<p>Patients B, D and F are <strong>censored</strong>. We know they went <em>at least</em> that long without a revision, but not what happened afterwards. Censoring isn’t missing data: it’s partial information, and survival methods use all of it.</p>
+<p>Two simple summaries both get this wrong: - <strong>“3 of 6 (50%) were revised”</strong> ignores time. Patient B was followed for only 2 years, so B’s implant never had the chance to fail at 4 or 5 years. - <strong>Dropping the censored patients</strong> (“3 of 3 were revised”) throws away the years B, D and F spent without a revision.</p>
+<p>The <strong>Kaplan-Meier</strong> method gets it right. It moves through time and recalculates at each revision, using only the patients still being followed (<strong>at risk</strong>) at that moment:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggsurvfit)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>toy <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">patient =</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>, <span class="st">"E"</span>, <span class="st">"F"</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">years   =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">revised =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>)        <span class="co"># 1 = revised, 0 = censored</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>toy_km <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(years, revised) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> toy)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(toy_km)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call: survfit(formula = Surv(years, revised) ~ 1, data = toy)
+
+ time n.risk n.event survival std.err lower 95% CI upper 95% CI
+    1      6       1    0.833   0.152       0.5827            1
+    3      4       1    0.625   0.213       0.3200            1
+    5      2       1    0.312   0.245       0.0671            1</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines <span class="im">import</span> KaplanMeierFitter</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>toy <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"patient"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>, <span class="st">"E"</span>, <span class="st">"F"</span>],</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"years"</span>:   [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>],</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"revised"</span>: [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>],     <span class="co"># 1 = revised, 0 = censored</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>toy_km <span class="op">=</span> KaplanMeierFitter().fit(toy[<span class="st">"years"</span>], event_observed<span class="op">=</span>toy[<span class="st">"revised"</span>])</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(toy_km.event_table[[<span class="st">"at_risk"</span>, <span class="st">"observed"</span>, <span class="st">"censored"</span>]])   <span class="co"># observed = revisions</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          at_risk  observed  censored
+event_at                             
+0.0             6         0         0
+1.0             6         1         0
+2.0             5         0         1
+3.0             4         1         0
+4.0             3         0         1
+5.0             2         1         0
+6.0             1         0         1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(toy_km.survival_function_)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          KM_estimate
+timeline             
+0.0          1.000000
+1.0          0.833333
+2.0          0.833333
+3.0          0.625000
+4.0          0.625000
+5.0          0.312500
+6.0          0.312500</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Reading the output, one revision at a time: - <strong>Year 1:</strong> 6 patients at risk, 1 revised. Survival = 5/6 = 0.833. - <strong>Year 2:</strong> B is censored. Nothing happens to the curve, but the at-risk group shrinks to 4. - <strong>Year 3:</strong> 4 at risk, 1 revised. Survival = 0.833 × 3/4 = 0.625. - <strong>Year 5:</strong> 2 at risk (D was censored at year 4), 1 revised. Survival = 0.625 × 1/2 = 0.3125.</p>
+<p>So the estimated chance of a revision by 5 years is 1 − 0.3125 = 69%, not 50%. Each censored patient counts fully while they’re followed and then leaves the at-risk group.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>🔍 Under the hood: the product-limit formula
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>At each time <span class="math inline">\(t_i\)</span> when at least one revision happens, with <span class="math inline">\(n_i\)</span> patients at risk and <span class="math inline">\(d_i\)</span> revisions, the chance of getting past <span class="math inline">\(t_i\)</span> unrevised is <span class="math inline">\(1 - d_i/n_i\)</span>. Kaplan-Meier survival at time <span class="math inline">\(t\)</span> multiplies these together for every revision time up to <span class="math inline">\(t\)</span>:</p>
+<p><span class="math display">\[\hat S(t) = \prod_{t_i \le t} \left(1 - \frac{d_i}{n_i}\right)\]</span></p>
+<p>This is why the method is also called the <strong>product-limit</strong> estimator. Censored patients appear only in the <span class="math inline">\(n_i\)</span> of the revision times before they leave.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: censoring must be unrelated to the outcome
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Kaplan-Meier assumes a censored patient has the same future risk as the patients still being followed. That’s reasonable when follow-up ends because the study closed. It isn’t when patients stop coming back <em>because</em> their hip hurts, or stay away because it’s perfect. If many patients are lost to follow-up, say how many and why.</p>
+</div>
+</div>
+</section>
+<section id="time-zero" class="level2">
+<h2 class="anchored" data-anchor-id="time-zero">Time zero and the event</h2>
+<p>Every survival analysis needs two definitions, fixed before you look at the results:</p>
+<ul>
+<li><strong>Time zero</strong>, when the clock starts. For implant survival it’s the <strong>date of surgery</strong>: every patient starts at the same clinical moment. Starting at the first clinic visit instead would ignore revisions that happened before that visit.</li>
+<li><strong>The event</strong>, what stops the clock. Here it’s <strong>revision for any reason</strong>: any reoperation that removes or exchanges a component. Other studies use aseptic revision, or any reoperation. Choose one in advance and define it in the Methods.</li>
+</ul>
+<p>Real data rarely arrive as “years followed” and “revised: yes/no”. You build those columns from dates. The practice cohort already has them: <code>followup_years</code> and <code>event_status</code>, where 0 means censored, 1 means revised and 2 means died without a revision. Here’s how to make them from a table of dates, for four made-up patients:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dates <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">patient       =</span> <span class="fu">c</span>(<span class="st">"P1"</span>, <span class="st">"P2"</span>, <span class="st">"P3"</span>, <span class="st">"P4"</span>),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">surgery_date  =</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">"2016-03-14"</span>, <span class="st">"2018-11-05"</span>, <span class="st">"2020-06-30"</span>, <span class="st">"2017-01-09"</span>)),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">revision_date =</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">"2019-07-02"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="st">"2017-04-18"</span>)),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">death_date    =</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">"2023-02-11"</span>, <span class="st">"2022-01-20"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>)),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">last_seen     =</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">"2022-10-03"</span>, <span class="st">"2021-12-02"</span>, <span class="st">"2025-11-17"</span>, <span class="st">"2024-08-15"</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>follow_up <span class="ot">&lt;-</span> dates <span class="sc">|&gt;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the first event wins: a revision, else a death, else censored at the last visit</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">event_status =</span> <span class="fu">case_when</span>(<span class="sc">!</span><span class="fu">is.na</span>(revision_date) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                             <span class="sc">!</span><span class="fu">is.na</span>(death_date)    <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                             <span class="at">.default =</span> <span class="dv">0</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">end_date =</span> <span class="fu">case_when</span>(event_status <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> revision_date,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                         event_status <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> death_date,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                         <span class="at">.default =</span> last_seen),</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">followup_years =</span> <span class="fu">as.numeric</span>(end_date <span class="sc">-</span> surgery_date) <span class="sc">/</span> <span class="fl">365.25</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>follow_up <span class="sc">|&gt;</span> <span class="fu">select</span>(patient, event_status, end_date, followup_years)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 4
+  patient event_status end_date   followup_years
+  &lt;chr&gt;          &lt;dbl&gt; &lt;date&gt;              &lt;dbl&gt;
+1 P1                 1 2019-07-02          3.30 
+2 P2                 2 2022-01-20          3.21 
+3 P3                 0 2025-11-17          5.38 
+4 P4                 1 2017-04-18          0.271</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"patient"</span>:       [<span class="st">"P1"</span>, <span class="st">"P2"</span>, <span class="st">"P3"</span>, <span class="st">"P4"</span>],</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surgery_date"</span>:  [<span class="st">"2016-03-14"</span>, <span class="st">"2018-11-05"</span>, <span class="st">"2020-06-30"</span>, <span class="st">"2017-01-09"</span>],</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"revision_date"</span>: [<span class="st">"2019-07-02"</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="st">"2017-04-18"</span>],</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"death_date"</span>:    [<span class="st">"2023-02-11"</span>, <span class="st">"2022-01-20"</span>, <span class="va">None</span>, <span class="va">None</span>],</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"last_seen"</span>:     [<span class="st">"2022-10-03"</span>, <span class="st">"2021-12-02"</span>, <span class="st">"2025-11-17"</span>, <span class="st">"2024-08-15"</span>],</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> column <span class="kw">in</span> [<span class="st">"surgery_date"</span>, <span class="st">"revision_date"</span>, <span class="st">"death_date"</span>, <span class="st">"last_seen"</span>]:</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    dates[column] <span class="op">=</span> pd.to_datetime(dates[column])</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co"># the first event wins: a revision, else a death, else censored at the last visit</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>dates[<span class="st">"event_status"</span>] <span class="op">=</span> np.select([dates[<span class="st">"revision_date"</span>].notna(), dates[<span class="st">"death_date"</span>].notna()],</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>                                  [<span class="dv">1</span>, <span class="dv">2</span>], default<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>dates[<span class="st">"end_date"</span>] <span class="op">=</span> dates[<span class="st">"revision_date"</span>].fillna(dates[<span class="st">"death_date"</span>]).fillna(dates[<span class="st">"last_seen"</span>])</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>dates[<span class="st">"followup_years"</span>] <span class="op">=</span> (dates[<span class="st">"end_date"</span>] <span class="op">-</span> dates[<span class="st">"surgery_date"</span>]).dt.days <span class="op">/</span> <span class="fl">365.25</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(dates[[<span class="st">"patient"</span>, <span class="st">"event_status"</span>, <span class="st">"end_date"</span>, <span class="st">"followup_years"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  patient  event_status   end_date  followup_years
+0      P1             1 2019-07-02        3.299110
+1      P2             2 2022-01-20        3.208761
+2      P3             0 2025-11-17        5.382615
+3      P4             1 2017-04-18        0.271047</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>P1</strong> was revised in 2019 and died in 2023. The revision came first, so P1’s follow-up ends at the revision, 3.30 years after surgery.</li>
+<li><strong>P2</strong> died 3.21 years after surgery without a revision. Death ends the follow-up: P2 can never be revised. (The section on <a href="#competing-risks">competing risks</a> explains why that matters.)</li>
+<li><strong>P3</strong> was alive and unrevised at the last visit: censored at 5.38 years.</li>
+<li><strong>P4</strong> was revised 99 days after surgery, at 0.27 years.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: follow-up ends at the last visit, not today
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Don’t set every unrevised patient’s end date to the date you pulled the data. A patient last seen in 2021 might have been revised elsewhere since. Censor at the last date you <em>know</em> the implant was in place. And check that no event date comes before the surgery date: it’s always a data-entry error.</p>
+</div>
+</div>
+</section>
+<section id="kaplan-meier" class="level2">
+<h2 class="anchored" data-anchor-id="kaplan-meier">The Kaplan-Meier curve</h2>
+<p>Now the practice cohort: 600 procedures, each followed from surgery to revision, death or the last visit.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>km <span class="ot">&lt;-</span> <span class="fu">survfit2</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> cohort,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">conf.type =</span> <span class="st">"log-log"</span>)              <span class="co"># the CI method lifelines uses</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>km <span class="sc">|&gt;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggsurvfit</span>() <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_confidence_interval</span>() <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_censor_mark</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span>         <span class="co"># a tick for each censored patient</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_risktable</span>(<span class="at">times =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">10</span>)) <span class="sc">+</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_ggsurvfit</span>(<span class="at">x_scales =</span> <span class="fu">list</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">10</span>))) <span class="sc">+</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Years since surgery"</span>, <span class="at">y =</span> <span class="st">"Revision-free survival"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="13-kaplan-meier_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines.plotting <span class="im">import</span> add_at_risk_counts</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>km <span class="op">=</span> KaplanMeierFitter(label<span class="op">=</span><span class="st">"All procedures"</span>).fit(cohort[<span class="st">"followup_years"</span>], event_observed<span class="op">=</span>cohort[<span class="st">"revised"</span>])</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">4.5</span>))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>km.plot_survival_function(ax<span class="op">=</span>ax, show_censors<span class="op">=</span><span class="va">True</span>,                <span class="co"># a tick for each censored patient</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                          censor_styles<span class="op">=</span>{<span class="st">"ms"</span>: <span class="dv">3</span>, <span class="st">"alpha"</span>: <span class="fl">0.4</span>}, legend<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Years since surgery"</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Revision-free survival"</span>)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>add_at_risk_counts(km, ax<span class="op">=</span>ax, xticks<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">10</span>], rows_to_show<span class="op">=</span>[<span class="st">"At risk"</span>, <span class="st">"Events"</span>])</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="13-kaplan-meier_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>How to read it: - <strong>The steps:</strong> the curve starts at 100% and drops at each revision. The drops get bigger later on, because each revision is then a bigger share of the fewer patients still at risk. - <strong>The ticks</strong> mark censored patients. They don’t move the curve; they leave the at-risk group. - <strong>The shaded band</strong> is the 95% CI. It widens as patients leave. - <strong>The table below the plot</strong> gives the number of patients still being followed (<strong>at risk</strong>) at each time, 600 at surgery, 332 at 4 years and 84 at 8 years, and the revisions so far. Always publish the numbers at risk with the curve: they tell the reader how much to trust each part of it.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: the tail of the curve
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>By 10 years only 21 procedures are still followed, so each late revision moves the curve a lot. Don’t draw conclusions from the far right-hand end. A common rule of thumb is to stop drawing the curve once fewer than about 10% of patients (here, 60) remain at risk.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: the confidence band
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’s <code>survfit()</code> uses a “log” CI by default; lifelines uses “log-log”. We set <code>conf.type = "log-log"</code> in R so the two match, as on <a href="../catalog/04-describe-one-group.html#kaplan-meier">page 4</a>. The numbers at risk can differ by one or two: R counts the patients followed for <em>at least</em> 4 years, lifelines those followed for <em>more than</em> 4 years, so a patient censored at exactly 4.00 years is in R’s count only. lifelines’ <code>add_at_risk_counts()</code> also adds a row of censored patients unless you choose rows with <code>rows_to_show</code>.</p>
+</div>
+</div>
+</section>
+<section id="survivorship" class="level2">
+<h2 class="anchored" data-anchor-id="survivorship">Survivorship at 2, 5 and 10 years</h2>
+<p>Papers report the curve at fixed times: the <strong>survivorship</strong>, the percentage of implants still unrevised.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(km, <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call: survfit(formula = Surv(followup_years, revised) ~ 1, data = cohort, 
+    conf.type = "log-log")
+
+ time n.risk n.event survival std.err lower 95% CI upper 95% CI
+    2    496      35    0.939 0.00996        0.916        0.956
+    5    263      31    0.863 0.01617        0.828        0.892
+   10     21      15    0.780 0.02579        0.725        0.826</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> years <span class="kw">in</span> [<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>]:</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    estimate <span class="op">=</span> km.survival_function_at_times(years).iloc[<span class="dv">0</span>]</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    ci <span class="op">=</span> km.confidence_interval_survival_function_.loc[:years].iloc[<span class="op">-</span><span class="dv">1</span>]   <span class="co"># last step at or before that time</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    at_risk <span class="op">=</span> (cohort[<span class="st">"followup_years"</span>] <span class="op">&gt;=</span> years).<span class="bu">sum</span>()</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(years, <span class="bu">round</span>(estimate, <span class="dv">3</span>), ci.<span class="bu">round</span>(<span class="dv">3</span>).to_list(), at_risk)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2 0.939 [0.916, 0.956] 496
+5 0.863 [0.828, 0.892] 263
+10 0.78 [0.725, 0.826] 21</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>survival:</strong> 0.939 at 2 years, 0.863 at 5 years and 0.780 at 10 years.</li>
+<li><strong>lower 95% CI / upper 95% CI:</strong> the CI around each one. The 10-year CI (0.725 to 0.826) is the widest.</li>
+<li><strong>n.risk:</strong> 496 procedures still followed at 2 years, 263 at 5 years and only 21 at 10 years.</li>
+<li><strong>n.event:</strong> the revisions <em>since the previous time shown</em>, not the running total.</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Implant survivorship was estimated with the Kaplan-Meier method, with revision for any reason as the end point and the date of surgery as time zero. Patients were censored at death or at their last follow-up. Confidence intervals used the log-log transformation.</p>
+<p><strong>Results:</strong> Survivorship free of revision was 93.9% (95% CI 91.6% to 95.6%) at 2 years, 86.3% (95% CI 82.8% to 89.2%) at 5 years and 78.0% (95% CI 72.5% to 82.6%) at 10 years, when 21 procedures remained at risk.</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: “86% survival” needs its time point, CI and numbers at risk
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A survivorship figure means nothing without the time it refers to. Give the 95% CI, and the number still at risk at the time you quote, so readers can see how much data the estimate rests on.</p>
+</div>
+</div>
+</section>
+<section id="follow-up" class="level2">
+<h2 class="anchored" data-anchor-id="follow-up">How long were patients followed?</h2>
+<p>Every survival paper reports the <strong>median follow-up</strong>. The obvious way to calculate it is wrong:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(cohort<span class="sc">$</span>followup_years)        <span class="co"># misleading: revisions and deaths cut follow-up short</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4.365</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># reverse Kaplan-Meier: treat "still followed at the end" as the event</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>reverse_km <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(followup_years, event_status <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> cohort)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(reverse_km, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>), <span class="at">conf.int =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  25   50   75 
+3.52 5.62 7.93 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines.utils <span class="im">import</span> qth_survival_times</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cohort[<span class="st">"followup_years"</span>].median())   <span class="co"># misleading: revisions and deaths cut follow-up short</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>4.365</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># reverse Kaplan-Meier: treat "still followed at the end" as the event</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>reverse_km <span class="op">=</span> KaplanMeierFitter().fit(cohort[<span class="st">"followup_years"</span>],</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                                     event_observed<span class="op">=</span>(cohort[<span class="st">"event_status"</span>] <span class="op">==</span> <span class="dv">0</span>))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(qth_survival_times([<span class="fl">0.75</span>, <span class="fl">0.5</span>, <span class="fl">0.25</span>], reverse_km.survival_function_))   <span class="co"># 25th, 50th, 75th percentiles</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      KM_estimate
+0.75         3.52
+0.50         5.62
+0.25         7.93</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The plain median, 4.4 years, mixes two things: how long the study watched patients, and how soon they were revised or died. A patient revised at 1 year wasn’t “followed for 1 year” in the sense readers care about. The study would have kept watching them.</p>
+<p>The <strong>reverse Kaplan-Meier</strong> method answers the real question: how long would patients have been followed if nothing had happened to them? It swaps the roles: being censored at the end of follow-up becomes the “event”, and revisions and deaths become the censored observations. The median follow-up is <strong>5.62 years</strong> (IQR 3.52 to 7.93).</p>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Median follow-up was estimated with the reverse Kaplan-Meier method.</p>
+<p><strong>Results:</strong> The median follow-up was 5.62 years (IQR 3.52 to 7.93).</p>
+</blockquote>
+</section>
+<section id="log-rank" class="level2">
+<h2 class="anchored" data-anchor-id="log-rank">Comparing groups: the log-rank test</h2>
+<p>The <strong>log-rank test</strong> asks whether two or more survival curves differ. At every revision time it compares each group’s observed revisions with the number expected if all groups had the same risk, then adds up the differences across the whole follow-up. It’s the same test as the <strong>Mantel-Haenszel</strong> (or Mantel-Cox) test in the decision table.</p>
+<p><strong>Two groups.</strong> In total hips, does the surgical approach (anterior or posterior) affect revision?</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>tha <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span> <span class="fu">filter</span>(procedure <span class="sc">==</span> <span class="st">"THA"</span>)        <span class="co"># approach applies to hips only</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">survfit2</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> approach, <span class="at">data =</span> tha, <span class="at">conf.type =</span> <span class="st">"log-log"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggsurvfit</span>() <span class="sc">+</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_confidence_interval</span>() <span class="sc">+</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_risktable</span>() <span class="sc">+</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_ggsurvfit</span>() <span class="sc">+</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Years since surgery"</span>, <span class="at">y =</span> <span class="st">"Revision-free survival"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="13-kaplan-meier_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>approach_logrank <span class="ot">&lt;-</span> <span class="fu">survdiff</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> approach, <span class="at">data =</span> tha)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>approach_logrank</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+survdiff(formula = Surv(followup_years, revised) ~ approach, 
+    data = tha)
+
+                     N Observed Expected (O-E)^2/E (O-E)^2/V
+approach=anterior  145       18     20.9     0.397     0.912
+approach=posterior 125       19     16.1     0.513     0.912
+
+ Chisq= 0.9  on 1 degrees of freedom, p= 0.3 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines.statistics <span class="im">import</span> logrank_test</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>tha <span class="op">=</span> cohort[cohort[<span class="st">"procedure"</span>] <span class="op">==</span> <span class="st">"THA"</span>]                <span class="co"># approach applies to hips only</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>anterior <span class="op">=</span> tha[tha[<span class="st">"approach"</span>] <span class="op">==</span> <span class="st">"anterior"</span>]</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>posterior <span class="op">=</span> tha[tha[<span class="st">"approach"</span>] <span class="op">==</span> <span class="st">"posterior"</span>]</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">4.5</span>))</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>km_anterior <span class="op">=</span> KaplanMeierFitter(label<span class="op">=</span><span class="st">"anterior"</span>).fit(anterior[<span class="st">"followup_years"</span>], anterior[<span class="st">"revised"</span>])</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>km_posterior <span class="op">=</span> KaplanMeierFitter(label<span class="op">=</span><span class="st">"posterior"</span>).fit(posterior[<span class="st">"followup_years"</span>], posterior[<span class="st">"revised"</span>])</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>km_anterior.plot_survival_function(ax<span class="op">=</span>ax)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>km_posterior.plot_survival_function(ax<span class="op">=</span>ax)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Years since surgery"</span>)</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Revision-free survival"</span>)</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>add_at_risk_counts(km_anterior, km_posterior, ax<span class="op">=</span>ax, rows_to_show<span class="op">=</span>[<span class="st">"At risk"</span>, <span class="st">"Events"</span>])</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="13-kaplan-meier_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>approach_logrank <span class="op">=</span> logrank_test(anterior[<span class="st">"followup_years"</span>], posterior[<span class="st">"followup_years"</span>],</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>                                event_observed_A<span class="op">=</span>anterior[<span class="st">"revised"</span>], event_observed_B<span class="op">=</span>posterior[<span class="st">"revised"</span>])</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(approach_logrank.test_statistic, approach_logrank.p_value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.9116386659614966 0.33968000597546394</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>Observed / Expected:</strong> the posterior hips had 19 revisions where 16.1 were expected; the anterior hips had 18 where 20.9 were expected.</li>
+<li><strong>Chisq = 0.9 on 1 degree of freedom, p = 0.340:</strong> no clear evidence that the curves differ over the whole follow-up.</li>
+</ul>
+<p>But look at the plot. The posterior curve drops sharply in the first months, then the two curves come together (late on they even cross, where the CIs overlap widely). The early revisions are real: by 6 months, survivorship was 88.7% after the posterior approach and 98.6% after the anterior approach.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">survfit</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> approach, <span class="at">data =</span> tha, <span class="at">conf.type =</span> <span class="st">"log-log"</span>), <span class="at">times =</span> <span class="fl">0.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call: survfit(formula = Surv(followup_years, revised) ~ approach, data = tha, 
+    conf.type = "log-log")
+
+                approach=anterior 
+        time       n.risk      n.event     survival      std.err lower 95% CI 
+      0.5000     137.0000       2.0000       0.9859       0.0099       0.9448 
+upper 95% CI 
+      0.9965 
+
+                approach=posterior 
+        time       n.risk      n.event     survival      std.err lower 95% CI 
+      0.5000     108.0000      14.0000       0.8871       0.0284       0.8168 
+upper 95% CI 
+      0.9315 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> curve <span class="kw">in</span> [km_anterior, km_posterior]:</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    ci <span class="op">=</span> curve.confidence_interval_survival_function_.loc[:<span class="fl">0.5</span>].iloc[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(curve.label, <span class="bu">round</span>(curve.survival_function_at_times(<span class="fl">0.5</span>).iloc[<span class="dv">0</span>], <span class="dv">3</span>), ci.<span class="bu">round</span>(<span class="dv">3</span>).to_list())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>anterior 0.986 [0.945, 0.996]
+posterior 0.887 [0.817, 0.932]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The log-rank test adds up the differences over the whole follow-up. A large difference in the first months gets diluted by the years after, when the groups differ little, and the test can miss a real difference. <a href="../survival/14-cox-regression.html#proportional-hazards">Page 14</a> shows how to detect this and how to model it.</p>
+<p><strong>Three or more groups.</strong> The same test compares any number of groups. Does revision differ between implants A, B and C?</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>implant_logrank <span class="ot">&lt;-</span> <span class="fu">survdiff</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> implant, <span class="at">data =</span> cohort)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>implant_logrank</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+survdiff(formula = Surv(followup_years, revised) ~ implant, data = cohort)
+
+            N Observed Expected (O-E)^2/E (O-E)^2/V
+implant=A 246       25     34.0      2.40      4.15
+implant=B 217       18     30.0      4.81      7.65
+implant=C 137       38     16.9     26.17     33.18
+
+ Chisq= 33.5  on 2 degrees of freedom, p= 5e-08 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines.statistics <span class="im">import</span> multivariate_logrank_test</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>implant_logrank <span class="op">=</span> multivariate_logrank_test(cohort[<span class="st">"followup_years"</span>], cohort[<span class="st">"implant"</span>], cohort[<span class="st">"revised"</span>])</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(implant_logrank.test_statistic, implant_logrank.degrees_of_freedom, implant_logrank.p_value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>33.46861907356945 2 5.399850171504637e-08</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>Observed / Expected:</strong> implant C had 38 revisions where 16.9 were expected. Implants A (25 vs 34.0) and B (18 vs 30.0) had fewer than expected.</li>
+<li><strong>Chisq = 33.5 on 2 degrees of freedom, p &lt; 0.001:</strong> at least one implant’s curve differs from the others. The test doesn’t say which; <a href="../beyond/15-post-hoc.html">page 15</a> covers comparing pairs of groups. <a href="../catalog/08-three-plus-unmatched.html#cox">Page 8</a> gives each implant’s hazard ratio.</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Revision-free survival was compared between groups with the log-rank test.</p>
+<p><strong>Results:</strong> Revision-free survival differed between implants (log-rank χ² = 33.5, df = 2, p &lt; 0.001). Over the whole follow-up there was no clear evidence of a difference between surgical approaches in total hip arthroplasty (log-rank χ² = 0.9, df = 1, p = 0.340), but the difference was concentrated early: survivorship at 6 months was 88.7% (95% CI 81.7% to 93.2%) after the posterior approach and 98.6% (95% CI 94.5% to 99.6%) after the anterior approach.</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: always plot the curves before you trust the test
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The log-rank test is most powerful when one group’s risk is a steady multiple of the other’s over time. When the curves cross, as with the surgical approach here, a non-significant test can hide a real difference. And don’t compare groups at one hand-picked time point to get a significant result: decide your time points before you look.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: one function or two
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’s <code>survdiff()</code> takes a formula and handles two groups or more. lifelines has <code>logrank_test()</code> for two groups, which takes each group’s data separately, and <code>multivariate_logrank_test()</code> for any number, which takes a grouping column. They give identical results.</p>
+</div>
+</div>
+</section>
+<section id="competing-risks" class="level2">
+<h2 class="anchored" data-anchor-id="competing-risks">Competing risks: when patients die first</h2>
+<p>So far, patients who died were treated as censored. That assumes they would have gone on to be revised at the same rate as everyone else. They can’t: a patient who has died can never be revised. Death is a <strong>competing risk</strong>.</p>
+<p>With death treated as censored, 1 − Kaplan-Meier estimates the risk of revision in an imaginary world where nobody dies. In an older population, where many patients die during follow-up, it <strong>overstates</strong> the real proportion who will be revised. The <strong>cumulative incidence function</strong> (CIF), estimated with the <strong>Aalen-Johansen</strong> method, gives the real proportion: the chance of being revised by a given time, allowing for the chance of dying first.</p>
+<p>The data need one status column with three values. In the cohort, <code>event_status</code> is 0 for censored, 1 for revised and 2 for died.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">status =</span> <span class="fu">factor</span>(event_status, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"censored"</span>, <span class="st">"revision"</span>, <span class="st">"death"</span>)))   <span class="co"># censored must come first</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="co"># with a three-level status, survfit() estimates the cumulative incidences (Aalen-Johansen)</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>cif <span class="ot">&lt;-</span> <span class="fu">survfit2</span>(<span class="fu">Surv</span>(followup_years, status) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> cohort, <span class="at">conf.type =</span> <span class="st">"log-log"</span>)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>cif <span class="sc">|&gt;</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggcuminc</span>(<span class="at">outcome =</span> <span class="fu">c</span>(<span class="st">"revision"</span>, <span class="st">"death"</span>)) <span class="sc">+</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_confidence_interval</span>() <span class="sc">+</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_ggsurvfit</span>() <span class="sc">+</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Years since surgery"</span>, <span class="at">y =</span> <span class="st">"Cumulative incidence"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="13-kaplan-meier_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy_survfit</span>(cif, <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(outcome, time, estimate, conf.low, conf.high)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  outcome   time estimate conf.low conf.high
+  &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 death        2   0.0530   0.0369    0.0733
+2 death        5   0.142    0.112     0.174 
+3 death       10   0.240    0.193     0.290 
+4 revision     2   0.0595   0.0423    0.0806
+5 revision     5   0.128    0.100     0.159 
+6 revision    10   0.193    0.153     0.237 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">summary</span>(km, <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>))<span class="sc">$</span>surv    <span class="co"># 1 − Kaplan-Meier, for comparison</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.06071255 0.13690651 0.21968772</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.duration.survfunc <span class="im">import</span> CumIncidenceRight</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co"># event_status: 0 = censored, 1 = revision, 2 = death</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>cif <span class="op">=</span> CumIncidenceRight(cohort[<span class="st">"followup_years"</span>], cohort[<span class="st">"event_status"</span>])</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>revision <span class="op">=</span> pd.DataFrame({<span class="st">"cif"</span>: cif.cinc[<span class="dv">0</span>], <span class="st">"se"</span>: cif.cinc_se[<span class="dv">0</span>]}, index<span class="op">=</span>cif.times)   <span class="co"># event type 1</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>death <span class="op">=</span> pd.DataFrame({<span class="st">"cif"</span>: cif.cinc[<span class="dv">1</span>], <span class="st">"se"</span>: cif.cinc_se[<span class="dv">1</span>]}, index<span class="op">=</span>cif.times)      <span class="co"># event type 2</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">4.5</span>))</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>ax.step(revision.index, revision[<span class="st">"cif"</span>], where<span class="op">=</span><span class="st">"post"</span>, label<span class="op">=</span><span class="st">"revision"</span>)</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>ax.step(death.index, death[<span class="st">"cif"</span>], where<span class="op">=</span><span class="st">"post"</span>, label<span class="op">=</span><span class="st">"death"</span>)</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Years since surgery"</span>)</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Cumulative incidence"</span>)</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>legend <span class="op">=</span> ax.legend()</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="13-kaplan-meier_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> norm.ppf(<span class="fl">0.975</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> years <span class="kw">in</span> [<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>]:</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    row <span class="op">=</span> revision.loc[:years].iloc[<span class="op">-</span><span class="dv">1</span>]                                  <span class="co"># last step at or before that time</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    spread <span class="op">=</span> np.exp(z <span class="op">*</span> row[<span class="st">"se"</span>] <span class="op">/</span> (row[<span class="st">"cif"</span>] <span class="op">*</span> np.log(row[<span class="st">"cif"</span>])))   <span class="co"># the log-log CI, as in R</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(years, <span class="bu">round</span>(row[<span class="st">"cif"</span>], <span class="dv">3</span>), <span class="bu">round</span>(row[<span class="st">"cif"</span>] <span class="op">**</span> (<span class="dv">1</span> <span class="op">/</span> spread), <span class="dv">3</span>), <span class="bu">round</span>(row[<span class="st">"cif"</span>] <span class="op">**</span> spread, <span class="dv">3</span>),</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>          <span class="bu">round</span>(<span class="dv">1</span> <span class="op">-</span> km.survival_function_at_times(years).iloc[<span class="dv">0</span>], <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2 0.059 0.042 0.081 0.061
+5 0.128 0.1 0.159 0.137
+10 0.193 0.153 0.237 0.22</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Reading it: - <strong>The revision curve</strong> is the cumulative incidence of revision: 5.9% at 2 years, 12.8% at 5 years and 19.3% at 10 years. - <strong>The death curve</strong> rises faster: 24.0% of patients had died without a revision by 10 years. - <strong>1 − Kaplan-Meier</strong> says 22.0% by 10 years. It overstates the real proportion revised by 2.7 percentage points, because it pretends the patients who died could still have been revised.</p>
+<p>The gap grows with the number of deaths. It’s small at 2 years, when few patients have died, and largest in older patients (see exercise 2).</p>
+<p><strong>Comparing groups: Gray’s test (R only).</strong> Gray’s test is the competing-risks counterpart of the log-rank test: it compares cumulative incidence curves between groups. The tidycmprsk package runs it:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidycmprsk)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>cif_by_implant <span class="ot">&lt;-</span> <span class="fu">cuminc</span>(<span class="fu">Surv</span>(followup_years, status) <span class="sc">~</span> implant, <span class="at">data =</span> cohort)</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glance</span>(cif_by_implant) <span class="sc">|&gt;</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(outcome_1, statistic_1, p.value_1, outcome_2, statistic_2, p.value_2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 6
+  outcome_1 statistic_1   p.value_1 outcome_2 statistic_2 p.value_2
+  &lt;chr&gt;           &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;
+1 revision         31.5 0.000000142 death           0.969     0.616</code></pre>
+</div>
+</div>
+<p>The cumulative incidence of revision differed between implants (Gray’s test χ² = 31.5, df = 2, p &lt; 0.001); there was no clear evidence that the cumulative incidence of death differed (χ² = 0.97, p = 0.616).</p>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> The cumulative incidence of revision was estimated with the Aalen-Johansen method, treating death as a competing risk, and compared between implants with Gray’s test.</p>
+<p><strong>Results:</strong> The cumulative incidence of revision was 12.8% (95% CI 10.0% to 15.9%) at 5 years and 19.3% (95% CI 15.3% to 23.7%) at 10 years, when the cumulative incidence of death was 24.0% (95% CI 19.3% to 29.0%). It differed between implants (Gray’s test χ² = 31.5, df = 2, p &lt; 0.001).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: which number answers your question?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Both estimates are useful, but they answer different questions: - <strong>1 − Kaplan-Meier</strong> answers “how well does the implant perform while patients are alive?” It’s the usual measure for comparing implants, and registries report it. - <strong>The cumulative incidence</strong> answers “what proportion of patients will actually be revised?” Use it to counsel patients or plan services, especially for older patients.</p>
+<p>Say which one you report. Never call 1 − Kaplan-Meier “the proportion of patients revised” when many patients died.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: which tools
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>The cumulative incidence:</strong> R’s <code>survfit()</code> estimates it whenever the status has more than two levels. In Python, use statsmodels’ <code>CumIncidenceRight()</code>: it gives the estimates and their standard errors but no CI, so the code builds the same log-log CI as R. lifelines also has an <code>AalenJohansenFitter</code>, but it moves tied follow-up times by a small random amount, which can shift an estimate read at exactly 5 or 10 years, so we don’t use it.</li>
+<li><strong>Gray’s test:</strong> Python has no mature implementation of Gray’s test. Plot the curves in Python, but run the test in R. tidycmprsk’s <code>cuminc()</code> also gives the cumulative incidences, with a slightly different CI method.</li>
+<li><strong>Fine-Gray regression</strong> models the cumulative incidence with several predictors at once; it’s R only too (<a href="../survival/14-cox-regression.html#fine-gray">page 14</a>).</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The solutions use the packages and data loaded in the sections above, so run the page from the top first.</p>
+<p><strong>1.</strong> Compare revision-free survival between total hips (THA) and total knees (TKA). Give each procedure’s survivorship at 5 years with its 95% CI, and the log-rank test.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">survfit</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> procedure, <span class="at">data =</span> cohort, <span class="at">conf.type =</span> <span class="st">"log-log"</span>), <span class="at">times =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call: survfit(formula = Surv(followup_years, revised) ~ procedure, 
+    data = cohort, conf.type = "log-log")
+
+                procedure=THA 
+        time       n.risk      n.event     survival      std.err lower 95% CI 
+      5.0000     121.0000      29.0000       0.8688       0.0236       0.8145 
+upper 95% CI 
+      0.9081 
+
+                procedure=TKA 
+        time       n.risk      n.event     survival      std.err lower 95% CI 
+      5.0000     142.0000      37.0000       0.8586       0.0222       0.8086 
+upper 95% CI 
+      0.8964 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">survdiff</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> procedure, <span class="at">data =</span> cohort)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+survdiff(formula = Surv(followup_years, revised) ~ procedure, 
+    data = cohort)
+
+                N Observed Expected (O-E)^2/E (O-E)^2/V
+procedure=THA 270       37     36.6   0.00342   0.00624
+procedure=TKA 330       44     44.4   0.00282   0.00624
+
+ Chisq= 0  on 1 degrees of freedom, p= 0.9 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> procedure, group <span class="kw">in</span> cohort.groupby(<span class="st">"procedure"</span>):</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>    curve <span class="op">=</span> KaplanMeierFitter().fit(group[<span class="st">"followup_years"</span>], group[<span class="st">"revised"</span>])</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    ci <span class="op">=</span> curve.confidence_interval_survival_function_.loc[:<span class="dv">5</span>].iloc[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(procedure, <span class="bu">round</span>(curve.survival_function_at_times(<span class="dv">5</span>).iloc[<span class="dv">0</span>], <span class="dv">3</span>), ci.<span class="bu">round</span>(<span class="dv">3</span>).to_list())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>THA 0.869 [0.814, 0.908]
+TKA 0.859 [0.809, 0.896]</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>hips <span class="op">=</span> cohort[cohort[<span class="st">"procedure"</span>] <span class="op">==</span> <span class="st">"THA"</span>]</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>knees <span class="op">=</span> cohort[cohort[<span class="st">"procedure"</span>] <span class="op">==</span> <span class="st">"TKA"</span>]</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>procedure_logrank <span class="op">=</span> logrank_test(hips[<span class="st">"followup_years"</span>], knees[<span class="st">"followup_years"</span>],</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>                                 event_observed_A<span class="op">=</span>hips[<span class="st">"revised"</span>], event_observed_B<span class="op">=</span>knees[<span class="st">"revised"</span>])</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(procedure_logrank.test_statistic, procedure_logrank.p_value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.006243321559239711 0.9370209370375034</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Survivorship free of revision at 5 years was 86.9% (95% CI 81.4% to 90.8%) after THA and 85.9% (95% CI 80.9% to 89.6%) after TKA. There was no clear evidence of a difference between the procedures (log-rank χ² = 0.01, df = 1, p = 0.937).</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> A surgeon asks: “Of my patients aged 75 and over, what proportion will need a revision within 5 years?” Which estimate answers that question? Calculate it, and compare it with 1 − Kaplan-Meier.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The surgeon wants the real proportion of patients revised, and many patients over 75 die during follow-up. That’s the <strong>cumulative incidence</strong>, with death as a competing risk.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>old <span class="ot">&lt;-</span> cohort <span class="sc">|&gt;</span> <span class="fu">filter</span>(age <span class="sc">&gt;=</span> <span class="dv">75</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(old, status)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  status       n
+  &lt;fct&gt;    &lt;int&gt;
+1 censored    46
+2 revision    13
+3 death       41</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">survfit2</span>(<span class="fu">Surv</span>(followup_years, status) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> old, <span class="at">conf.type =</span> <span class="st">"log-log"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy_survfit</span>(<span class="at">times =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(outcome, estimate, conf.low, conf.high)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 4
+  outcome  estimate conf.low conf.high
+  &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 death       0.397   0.288      0.504
+2 revision    0.139   0.0777     0.218</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">summary</span>(<span class="fu">survfit</span>(<span class="fu">Surv</span>(followup_years, revised) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> old), <span class="at">times =</span> <span class="dv">5</span>)<span class="sc">$</span>surv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1646173</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>old <span class="op">=</span> cohort[cohort[<span class="st">"age"</span>] <span class="op">&gt;=</span> <span class="dv">75</span>]</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(old[<span class="st">"event_status"</span>].value_counts().sort_index())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>event_status
+0    46
+1    13
+2    41
+Name: count, dtype: int64</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>old_cif <span class="op">=</span> CumIncidenceRight(old[<span class="st">"followup_years"</span>], old[<span class="st">"event_status"</span>])</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>old_revision <span class="op">=</span> pd.DataFrame({<span class="st">"cif"</span>: old_cif.cinc[<span class="dv">0</span>], <span class="st">"se"</span>: old_cif.cinc_se[<span class="dv">0</span>]}, index<span class="op">=</span>old_cif.times)</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>row <span class="op">=</span> old_revision.loc[:<span class="dv">5</span>].iloc[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>spread <span class="op">=</span> np.exp(z <span class="op">*</span> row[<span class="st">"se"</span>] <span class="op">/</span> (row[<span class="st">"cif"</span>] <span class="op">*</span> np.log(row[<span class="st">"cif"</span>])))</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">round</span>(row[<span class="st">"cif"</span>], <span class="dv">3</span>), <span class="bu">round</span>(row[<span class="st">"cif"</span>] <span class="op">**</span> (<span class="dv">1</span> <span class="op">/</span> spread), <span class="dv">3</span>), <span class="bu">round</span>(row[<span class="st">"cif"</span>] <span class="op">**</span> spread, <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.139 0.078 0.218</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>old_km <span class="op">=</span> KaplanMeierFitter().fit(old[<span class="st">"followup_years"</span>], old[<span class="st">"revised"</span>])</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="dv">1</span> <span class="op">-</span> old_km.survival_function_at_times(<span class="dv">5</span>).iloc[<span class="dv">0</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.16461732152861452</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Of the 100 procedures in patients aged 75 and over, 41 ended in death and only 13 in revision. The cumulative incidence of revision at 5 years was 13.9% (95% CI 7.8% to 21.8%). 1 − Kaplan-Meier gives 16.5%, overstating it by about a fifth.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> Estimate the cumulative incidence of revision at 5 years for each implant, with death as a competing risk, and write the Results sentence, including Gray’s test.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">survfit2</span>(<span class="fu">Surv</span>(followup_years, status) <span class="sc">~</span> implant, <span class="at">data =</span> cohort, <span class="at">conf.type =</span> <span class="st">"log-log"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy_survfit</span>(<span class="at">times =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(outcome <span class="sc">==</span> <span class="st">"revision"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(strata, estimate, conf.low, conf.high)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  strata estimate conf.low conf.high
+  &lt;fct&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 A        0.0967   0.0616     0.141
+2 B        0.0681   0.0368     0.112
+3 C        0.273    0.195      0.356</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> implant, group <span class="kw">in</span> cohort.groupby(<span class="st">"implant"</span>):</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>    implant_cif <span class="op">=</span> CumIncidenceRight(group[<span class="st">"followup_years"</span>], group[<span class="st">"event_status"</span>])</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>    implant_revision <span class="op">=</span> pd.DataFrame({<span class="st">"cif"</span>: implant_cif.cinc[<span class="dv">0</span>], <span class="st">"se"</span>: implant_cif.cinc_se[<span class="dv">0</span>]}, index<span class="op">=</span>implant_cif.times)</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>    row <span class="op">=</span> implant_revision.loc[:<span class="dv">5</span>].iloc[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>    spread <span class="op">=</span> np.exp(z <span class="op">*</span> row[<span class="st">"se"</span>] <span class="op">/</span> (row[<span class="st">"cif"</span>] <span class="op">*</span> np.log(row[<span class="st">"cif"</span>])))</span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(implant, <span class="bu">round</span>(row[<span class="st">"cif"</span>], <span class="dv">3</span>), <span class="bu">round</span>(row[<span class="st">"cif"</span>] <span class="op">**</span> (<span class="dv">1</span> <span class="op">/</span> spread), <span class="dv">3</span>), <span class="bu">round</span>(row[<span class="st">"cif"</span>] <span class="op">**</span> spread, <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>A 0.097 0.062 0.141
+B 0.068 0.037 0.112
+C 0.273 0.195 0.356</code></pre>
+</div>
+</div>
+<p>Python has no Gray’s test; take it from R.</p>
+</div>
+</div>
+</div>
+<p>The cumulative incidence of revision at 5 years, with death as a competing risk, was 9.7% (95% CI 6.2% to 14.1%) with implant A, 6.8% (95% CI 3.7% to 11.2%) with implant B and 27.3% (95% CI 19.5% to 35.6%) with implant C (Gray’s test χ² = 31.5, df = 2, p &lt; 0.001).</p>
+</div>
 </div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -971,8 +2029,8 @@ ul.task-list li input[type="checkbox"] {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../survival/14-cox-regression.html" class="pagination-link" aria-label="14 · Cox proportional hazards regression (coming soon)">
-        <span class="nav-page-text">14 · Cox proportional hazards regression (coming soon)</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../survival/14-cox-regression.html" class="pagination-link" aria-label="14 · Cox proportional hazards regression">
+        <span class="nav-page-text">14 · Cox proportional hazards regression</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -984,7 +2042,7 @@ ul.task-list li input[type="checkbox"] {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>Text CC BY 4.0 · Code MIT</p>
 </div>

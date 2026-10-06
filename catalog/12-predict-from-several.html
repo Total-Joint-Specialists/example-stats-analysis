@@ -476,13 +476,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../survival/13-kaplan-meier.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">13 · Kaplan-Meier &amp; the log-rank test (coming soon)</span></a>
+ <span class="menu-text">13 · Kaplan-Meier &amp; the log-rank test</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../survival/14-cox-regression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">14 · Cox proportional hazards regression (coming soon)</span></a>
+ <span class="menu-text">14 · Cox proportional hazards regression</span></a>
   </div>
 </li>
       </ul>
@@ -729,7 +729,7 @@ Dep. Variable:            op_time_min   R-squared:                       0.266
 Model:                            OLS   Adj. R-squared:                  0.261
 Method:                 Least Squares   F-statistic:                     53.97
 Date:                Tue, 06 Oct 2026   Prob (F-statistic):           8.05e-39
-Time:                        10:57:13   Log-Likelihood:                -2437.7
+Time:                        12:03:04   Log-Likelihood:                -2437.7
 No. Observations:                 600   AIC:                             4885.
 Df Residuals:                     595   BIC:                             4907.
 Df Model:                           4                                         
@@ -1233,7 +1233,7 @@ Dep. Variable:       complication_90d   No. Observations:                  600
 Model:                          Logit   Df Residuals:                      594
 Method:                           MLE   Df Model:                            5
 Date:                Tue, 06 Oct 2026   Pseudo R-squ.:                 0.08141
-Time:                        10:57:14   Log-Likelihood:                -160.28
+Time:                        12:03:05   Log-Likelihood:                -160.28
 converged:                       True   LL-Null:                       -174.49
 Covariance Type:            nonrobust   LLR p-value:                 3.027e-05
 ===============================================================================
@@ -1342,7 +1342,7 @@ diabetes       0.877025  0.334938  2.296460</code></pre>
 <ul>
 <li>The outcome is <strong>time until an event</strong> (revision), and you want each predictor’s <strong>hazard ratio</strong>, adjusted for the others.</li>
 <li><strong>Events limit predictors</strong>, as in logistic regression: about 10 events per predictor. 81 revisions allow about eight; implant (which uses two, B and C against A), age, sex and BMI use five.</li>
-<li>Proportional hazards must hold for every predictor. <a href="../survival/14-cox-regression.html">Page 14</a> shows how to check it and covers Cox regression in full.</li>
+<li>Proportional hazards must hold for every predictor. <a href="../survival/14-cox-regression.html#proportional-hazards">Page 14</a> shows how to check it and covers Cox regression in full.</li>
 </ul>
 </section>
 <section id="look-at-the-data-first-3" class="level3">
@@ -1492,7 +1492,7 @@ bmi_5          1.030844             0.838625             1.267121  0.772960</cod
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The sex difference wasn’t the question; the model was built to adjust for sex, not to test it. An unplanned finding like this is a reason for a new study, not a conclusion: report it as exploratory. And check proportional hazards for every predictor before trusting any of them (<a href="../survival/14-cox-regression.html">page 14</a>).</p>
+<p>The sex difference wasn’t the question; the model was built to adjust for sex, not to test it. An unplanned finding like this is a reason for a new study, not a conclusion: report it as exploratory. And check proportional hazards for every predictor before trusting any of them (<a href="../survival/14-cox-regression.html#proportional-hazards">page 14</a>).</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -2114,8 +2114,8 @@ Model 2: complication_90d ~ ns(age, df = 3)
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../survival/13-kaplan-meier.html" class="pagination-link" aria-label="13 · Kaplan-Meier &amp; the log-rank test (coming soon)">
-        <span class="nav-page-text">13 · Kaplan-Meier &amp; the log-rank test (coming soon)</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../survival/13-kaplan-meier.html" class="pagination-link" aria-label="13 · Kaplan-Meier &amp; the log-rank test">
+        <span class="nav-page-text">13 · Kaplan-Meier &amp; the log-rank test</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -95,3 +95,44 @@ def test_survival_sections_point_to_the_full_treatment(site, cell, target):
 
 def test_log_rank_section_names_the_mantel_haenszel_test(site):
     assert "Mantel-Haenszel" in text_of(section("catalog/06-two-unpaired-groups.html", "log-rank"))
+
+
+# ---- review fixes ---------------------------------------------------------
+
+def test_kaplan_meier_section_shows_the_revised_case_it_describes(site):
+    outputs = " ".join(o.get_text() for o in section("catalog/04-describe-one-group.html", "kaplan-meier").select(".cell-output"))
+    assert outputs.count("C0005") >= 2, "the fifth case should appear in both the R and the Python output"
+
+
+def test_proportions_name_their_denominator(site):
+    for page, anchor, phrase in [("catalog/04-describe-one-group.html", "proportion", "51 of 600 procedures"),
+                                 ("catalog/05-one-group-vs-hypothetical.html", "binomial-test", "27 of 600 procedures")]:
+        found = section(page, anchor)
+        report = " ".join(text_of(q) for q in found.select("blockquote"))
+        assert phrase in report, f"{page}#{anchor}"
+        assert "of patients had" not in text_of(found)
+    for page, phrase in [("catalog/04-describe-one-group.html", "27 of 600 procedures"),
+                         ("catalog/05-one-group-vs-hypothetical.html", "570 of our 600 procedures")]:
+        exercises = text_of(section(page, "exercises"))
+        assert phrase in exercises and "patients went home" not in exercises and "Twenty-seven patients" not in exercises
+
+
+def test_log_rank_results_give_each_curve_with_its_ci(site):
+    found = section("catalog/06-two-unpaired-groups.html", "log-rank")
+    report = " ".join(text_of(q) for q in found.select("blockquote"))
+    assert "71.1% (95% CI 61.5% to 78.8%)" in report and "89.9% (95% CI 84.7% to 93.3%)" in report
+    outputs = " ".join(o.get_text() for o in found.select(".cell-output"))
+    assert "0.7114" in outputs and "0.8986" in outputs   # the code prints what the Results sentence quotes
+
+
+def test_results_sentences_give_medians_with_their_iqrs(site):
+    report = " ".join(text_of(q) for q in section("catalog/06-two-unpaired-groups.html", "mann-whitney").select("blockquote"))
+    assert "IQR 75.5 to 93.7" in report and "IQR 72.5 to 94.0" in report
+    answer = text_of(section("catalog/07-two-paired-groups.html", "exercises"))
+    assert "IQR 65.4 to 81.5" in answer and "IQR 73.6 to 93.8" in answer
+
+
+def test_tied_los_explanation_is_accurate(site):
+    text = text_of(section("catalog/06-two-unpaired-groups.html", "exercises"))
+    assert "most of the Site A − Site B differences are exactly 0" not in text
+    assert "a third of the Site A − Site B differences are exactly 0 days" in text

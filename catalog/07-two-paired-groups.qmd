@@ -287,6 +287,8 @@ chk = {"p": float(koos_test["p_val"].iloc[0]), "rbc": float(koos_test["RBC"].ilo
 ```{r}
 #| include: false
 koos_rb <- effectsize::rank_biserial(koos$koos_1yr, koos$koos_preop, paired = TRUE)
+# No log-p check here (page 5 has one): R computes this two-sided p as 1 - pnorm(13.6), which is
+# exactly 0 in floating point. With every patient improved, no Wilcoxon setting changes a shown number.
 check_agree(list(p = koos_test$p.value, rbc = koos_rb$r_rank_biserial), reticulate::py$chk)
 ```
 
@@ -680,6 +682,8 @@ stopifnot(
   round(ex_hka_test$conf.int, 2) == c(0.08, 0.93), round(ex_hka_test$p.value, 3) == 0.022,
   nrow(ex_later) == 225, sum(ex_later$koos_1yr > ex_later$koos_3mo) == 176, sum(ex_later$koos_1yr < ex_later$koos_3mo) == 46,
   round(c(median(ex_later$koos_3mo), median(ex_later$koos_1yr)), 1) == c(73.1, 85.2),
+  round(quantile(ex_later$koos_3mo, c(0.25, 0.75)), 1) == c(65.4, 81.5),
+  round(quantile(ex_later$koos_1yr, c(0.25, 0.75)), 1) == c(73.6, 93.8),
   round(unname(ex_later_test$estimate), 1) == 9.9, round(ex_later_test$conf.int, 1) == c(8.2, 11.6),
   ex_later_test$p.value < 0.001,
   round(effectsize::rank_biserial(ex_later$koos_1yr, ex_later$koos_3mo, paired = TRUE)$r_rank_biserial, 2) == 0.74
@@ -771,8 +775,9 @@ later <- proms |>
 
 wilcox.test(later$koos_1yr, later$koos_3mo, paired = TRUE, exact = FALSE, correct = FALSE, conf.int = TRUE)
 effectsize::rank_biserial(later$koos_1yr, later$koos_3mo, paired = TRUE)
-later |> summarise(n = n(), better = sum(koos_1yr > koos_3mo), worse = sum(koos_1yr < koos_3mo),
-                   median_3mo = median(koos_3mo), median_1yr = median(koos_1yr))
+later |> summarise(n = n(), better = sum(koos_1yr > koos_3mo), worse = sum(koos_1yr < koos_3mo))
+quantile(later$koos_3mo, c(0.25, 0.50, 0.75))
+quantile(later$koos_1yr, c(0.25, 0.50, 0.75))
 ```
 
 ## Python
@@ -782,8 +787,9 @@ later = (proms[(proms["instrument"] == "KOOS JR") & proms["visit"].isin(["3mo", 
          .pivot(index="case_id", columns="visit", values="prom_score").dropna())
 print(pg.wilcoxon(later["1yr"], later["3mo"], method="approx", correction=False))
 print(len(later), (later["1yr"] > later["3mo"]).sum(), (later["1yr"] < later["3mo"]).sum())
+print(later[["3mo", "1yr"]].quantile([0.25, 0.50, 0.75]))
 ```
 :::
 
-"Between 3 months and 1 year, KOOS JR improved further in 176 of 225 patients and declined in 46 (median 73.1 to 85.2; Hodges-Lehmann estimate of the change 9.9 points, 95% CI 8.2 to 11.6; rank-biserial r = 0.74; p < 0.001)."
+"Between 3 months and 1 year, KOOS JR improved further in 176 of 225 patients and declined in 46; the median rose from 73.1 (IQR 65.4 to 81.5) to 85.2 (IQR 73.6 to 93.8). The Hodges-Lehmann estimate of the change was 9.9 points (95% CI 8.2 to 11.6; rank-biserial r = 0.74; p < 0.001)."
 :::

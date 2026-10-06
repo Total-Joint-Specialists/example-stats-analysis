@@ -252,12 +252,13 @@ print(koos_test)
 
 ```{python}
 #| include: false
-chk = {"p": float(koos_test["p_val"].iloc[0])}
+chk = {"p": float(koos_test["p_val"].iloc[0]),
+       "log_p": float(np.log(koos_test["p_val"].iloc[0]))}   # tiny p-values: compare them on a log scale too
 ```
 
 ```{r}
 #| include: false
-check_agree(list(p = koos_test$p.value), reticulate::py$chk)
+check_agree(list(p = koos_test$p.value, log_p = log(koos_test$p.value)), reticulate::py$chk)
 ```
 
 ### Read the output
@@ -513,7 +514,7 @@ print(cohort["readmit_90d"].value_counts(dropna=False))   # 1 = readmitted withi
 ```
 :::
 
-27 readmissions among 600 patients, with no missing values.
+27 readmissions after 600 procedures, with no missing values.
 
 ### Run it
 
@@ -568,7 +569,7 @@ The effect size is the difference from the hypothetical rate: 4.5% − 6% = −1
 
 > **Methods:** The 90-day readmission rate was compared with the state benchmark of 6% using an exact binomial test. 95% CIs for proportions are exact (Clopper-Pearson).
 >
-> **Results:** Twenty-seven patients (4.5%; 95% CI 3.0% to 6.5%) were readmitted within 90 days. This did not differ significantly from the 6% benchmark (p = 0.143).
+> **Results:** Readmission within 90 days followed 27 of 600 procedures (4.5%; 95% CI 3.0% to 6.5%). This did not differ significantly from the 6% benchmark (p = 0.143).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: "not significantly different" doesn't mean "the same"
@@ -654,7 +655,7 @@ print(cohort["age"].mean() - 66, ci.low - 66, ci.high - 66)
 Mean age was 65.5 years, 0.5 years younger than the registry (95% CI 1.2 years younger to 0.3 years older; p = 0.213). The data are compatible with no difference, and the CI rules out a difference of more than about a year.
 :::
 
-**2.** A state report says 90% of joint replacement patients go home rather than to a facility. 570 of our 600 patients went home. Which test would you use, and what do you conclude?
+**2.** A state report says 90% of joint replacement patients go home rather than to a facility. After 570 of our 600 procedures, the patient went home. Which test would you use, and what do you conclude?
 
 ::: {.callout-tip collapse="true"}
 ## Solution
@@ -675,7 +676,7 @@ print(home.pvalue, home.proportion_ci(method="exact"))
 ```
 :::
 
-95.0% of our patients went home (95% CI 92.9% to 96.6%), more than the 90% in the report (p < 0.001).
+Discharge home followed 95.0% of our procedures (95% CI 92.9% to 96.6%), more than the 90% in the report (p < 0.001).
 :::
 
 **3.** Suppose a survey of joint replacement patients found 50% never smokers, 40% former smokers and 10% current smokers. Test whether our smoking mix differs, and write the Results sentence.

@@ -267,7 +267,7 @@ R's `quantile()` and NumPy's `np.quantile()` use the same default method (R call
 
 ## Proportion {#proportion}
 
-**The question:** What proportion of patients had a complication within 90 days of surgery?
+**The question:** What proportion of procedures were followed by a complication within 90 days?
 
 ### When to use it
 
@@ -349,14 +349,14 @@ check_agree(list(events = events, patients = patients, ci_low = wilson[1], ci_hi
 
 ### Read the output
 
-- **51 of 600 = 0.085:** 8.5% of patients had a complication.
+- **51 of 600 = 0.085:** a complication followed 8.5% of procedures.
 - **95% CI 0.065 to 0.110:** the true complication rate for patients like ours is plausibly anywhere from 6.5% to 11.0%.
 
 ### How to report it
 
 > **Methods:** Categorical variables are reported as number (percentage). 95% confidence intervals for proportions were calculated with the Wilson score method.
 >
-> **Results:** Fifty-one patients (8.5%; 95% CI 6.5% to 11.0%) had a complication within 90 days.
+> **Results:** A complication within 90 days followed 51 of 600 procedures (8.5%; 95% CI 6.5% to 11.0%).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: percent of what?
@@ -395,7 +395,7 @@ library(ggsurvfit)
 cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
 
 # followup_years: time from surgery to revision or censoring; revised: 1 = revised, 0 = censored
-cohort |> select(case_id, followup_years, revised) |> head(4)
+cohort |> select(case_id, followup_years, revised) |> head(5)
 cohort |> summarise(patients = n(), revisions = sum(revised),
                     median_followup = median(followup_years))
 ```
@@ -411,7 +411,7 @@ from lifelines.plotting import add_at_risk_counts
 cohort = pd.read_csv("data/cohort.csv")
 
 # followup_years: time from surgery to revision or censoring; revised: 1 = revised, 0 = censored
-print(cohort[["case_id", "followup_years", "revised"]].head(4))
+print(cohort[["case_id", "followup_years", "revised"]].head(5))
 print(len(cohort), cohort["revised"].sum(), cohort["followup_years"].median())
 ```
 :::
@@ -581,7 +581,7 @@ print(np.quantile(cohort["los_days"], [0.25, 0.50, 0.75]))
 Median 1 day (IQR 0 to 1).
 :::
 
-**3.** Twenty-seven of the 600 patients were readmitted within 90 days. Write the Results sentence, with a Wilson 95% CI.
+**3.** Twenty-seven of the 600 procedures were followed by a readmission within 90 days. Write the Results sentence, with a Wilson 95% CI.
 
 ::: {.callout-tip collapse="true"}
 ## Solution
@@ -600,5 +600,5 @@ print(stats.binomtest(27, 600).proportion_ci(method="wilson"))
 ```
 :::
 
-"Twenty-seven patients (4.5%; 95% CI 3.1% to 6.5%) were readmitted within 90 days."
+"Readmission within 90 days followed 27 of 600 procedures (4.5%; 95% CI 3.1% to 6.5%)."
 :::

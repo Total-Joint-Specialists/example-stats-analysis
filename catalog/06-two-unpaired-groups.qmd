@@ -338,7 +338,7 @@ Men scored 0.8 points higher (95% CI 1.6 points lower to 4.4 points higher), and
 
 > **Methods:** Because 1-year KOOS JR scores showed a ceiling effect, they were compared between men and women with the Mann-Whitney test, with the Hodges-Lehmann estimate of the difference and its 95% CI as the effect size.
 >
-> **Results:** 1-year KOOS JR did not differ significantly between men and women (median 87.0 vs 85.0 points; Hodges-Lehmann difference 0.8 points, 95% CI −1.6 to 4.4; rank-biserial r = 0.06; p = 0.432).
+> **Results:** 1-year KOOS JR was similar in men (median 87.0 points, IQR 75.5 to 93.7) and women (median 85.0, IQR 72.5 to 94.0); the difference was not statistically significant (Hodges-Lehmann difference 0.8 points, 95% CI −1.6 to 4.4; rank-biserial r = 0.06; p = 0.432).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: it isn't a test of medians
@@ -657,11 +657,47 @@ check_agree(list(hr = hr[1, "exp(coef)"], hr_low = hr[1, "lower .95"], hr_high =
 
 The hazard of revision was about three times higher with implant C (hazard ratio 3.04, 95% CI 1.83 to 5.04).
 
+The Results sentence also gives each implant's revision-free survival at 5 years, with its CI:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+survival_5 <- summary(survfit(Surv(followup_years, revised) ~ implant, data = a_vs_c,
+                              conf.type = "log-log"), times = 5)
+survival_5
+```
+
+## Python
+
+```{python}
+for km in [km_a, km_c]:
+    ci_5 = km.confidence_interval_survival_function_.loc[:5].iloc[-1]   # last step at or before 5 years
+    print(km.label, km.survival_function_at_times(5).iloc[0], ci_5.to_list())
+```
+:::
+
+```{python}
+#| include: false
+ci_a = km_a.confidence_interval_survival_function_.loc[:5].iloc[-1]
+ci_c = km_c.confidence_interval_survival_function_.loc[:5].iloc[-1]
+chk = {"surv_a": float(km_a.survival_function_at_times(5).iloc[0]), "low_a": float(ci_a.iloc[0]),
+       "high_a": float(ci_a.iloc[1]), "surv_c": float(km_c.survival_function_at_times(5).iloc[0]),
+       "low_c": float(ci_c.iloc[0]), "high_c": float(ci_c.iloc[1])}
+```
+
+```{r}
+#| include: false
+check_agree(list(surv_a = survival_5$surv[1], low_a = survival_5$lower[1], high_a = survival_5$upper[1],
+                 surv_c = survival_5$surv[2], low_c = survival_5$lower[2], high_c = survival_5$upper[2]),
+            reticulate::py$chk)
+```
+
 ### How to report it
 
 > **Methods:** Revision-free survival was estimated with the Kaplan-Meier method and compared between implants with the log-rank test. Hazard ratios were estimated with Cox proportional hazards regression.
 >
-> **Results:** Revision-free survival was lower with implant C than with implant A (5-year survival 71.1% vs 89.9%; log-rank p < 0.001; hazard ratio 3.04, 95% CI 1.83 to 5.04).
+> **Results:** Revision-free survival was lower with implant C than with implant A: 71.1% (95% CI 61.5% to 78.8%) vs 89.9% (95% CI 84.7% to 93.3%) at 5 years (log-rank p < 0.001; hazard ratio 3.04, 95% CI 1.83 to 5.04).
 
 ::: {.callout-warning}
 ## ⚠️ Watch out: overlapping CIs aren't a test
@@ -681,6 +717,7 @@ koos_medians <- tapply(koos_1yr$prom_score, koos_1yr$sex, median)
 km5 <- summary(survfit(Surv(followup_years, revised) ~ implant, data = a_vs_c), times = 5)
 expected_counts <- chisq.test(readmit_table)$expected
 op_tka <- cohort$op_time_min[cohort$procedure == "TKA"]
+los_diff <- outer(cohort$los_days[cohort$site == "Site A"], cohort$los_days[cohort$site == "Site B"], "-")
 op_tha <- cohort$op_time_min[cohort$procedure == "THA"]
 comp <- table(factor(cohort$anesthesia, levels = c("general", "spinal")),
               factor(cohort$complication_90d, levels = c(1, 0), labels = c("yes", "no")))
@@ -713,12 +750,15 @@ stopifnot(
   round(implant_logrank$chisq, 1) == 20.5, implant_logrank$pvalue < 0.001,
   round(hr[1, c("exp(coef)", "lower .95", "upper .95")], 2) == c(3.04, 1.83, 5.04),
   round(100 * km5$surv, 1) == c(89.9, 71.1),
+  round(100 * c(survival_5$lower, survival_5$upper), 1) == c(84.7, 61.5, 93.3, 78.8),
+  round(quantile(koos_1yr$prom_score[koos_1yr$sex == "Male"], c(0.25, 0.75)), 1) == c(75.5, 93.7),
+  round(quantile(koos_1yr$prom_score[koos_1yr$sex == "Female"], c(0.25, 0.75)), 1) == c(72.5, 94.0),
   # exercise solutions (recomputed here: the guard runs before the solution chunks)
   round(c(mean(op_tka), mean(op_tha)), 1) == c(88.3, 79.8), round(mean(op_tka) - mean(op_tha), 1) == 8.5,
   round(t.test(op_tka, op_tha)$conf.int, 1) == c(6.0, 11.1),
   round(wilcox.test(los_days ~ site, data = cohort, exact = FALSE)$p.value, 3) == 0.020,
   round(effectsize::rank_biserial(los_days ~ site, data = cohort)$r_rank_biserial, 2) == 0.10,
-  median(outer(cohort$los_days[cohort$site == "Site A"], cohort$los_days[cohort$site == "Site B"], "-")) == 0,
+  median(los_diff) == 0, round(100 * c(mean(los_diff == 0), mean(los_diff > 0), mean(los_diff < 0))) == c(34, 38, 28),
   round(100 * prop.table(comp, 1)[, "yes"], 1) == c(12.0, 7.3),
   round(100 * (prop.table(comp, 1)["general", "yes"] - prop.table(comp, 1)["spinal", "yes"]), 1) == 4.7,
   round(100 * prop.test(comp, correct = FALSE)$conf.int, 1) == c(-1.1, 10.4),
@@ -786,7 +826,7 @@ print(cohort.groupby("site")["los_days"].describe()[["25%", "50%", "75%"]])
 
 Stays were longer at Site A (median 1 day, IQR 0 to 2) than at Site B (median 0 days, IQR 0 to 1; rank-biserial r = 0.10; p = 0.020).
 
-Notice that we didn't report a Hodges-Lehmann estimate. With whole days and so many ties, most of the Site A − Site B differences are exactly 0 days, so the estimate is 0 even though Site A's stays tend to run longer. For data like these, the medians with IQRs and the rank-biserial r describe the difference better.
+Notice that we didn't report a Hodges-Lehmann estimate. With whole days and so many ties, a third of the Site A − Site B differences are exactly 0 days (34%), and fewer than half are positive (38%; 28% are negative), so the middle difference, and with it the estimate, is 0 even though Site A's stays tend to run longer. For data like these, the medians with IQRs and the rank-biserial r describe the difference better.
 :::
 
 **3.** Is the 90-day complication rate different after general and spinal anesthesia? Choose the test, run it, and write the Results sentence with the risk difference and odds ratio.

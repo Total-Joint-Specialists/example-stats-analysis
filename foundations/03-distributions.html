@@ -414,25 +414,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/04-describe-one-group.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">4 · Describe one group (coming soon)</span></a>
+ <span class="menu-text">4 · Describe one group</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/05-one-group-vs-hypothetical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">5 · Compare one group to a hypothetical value (coming soon)</span></a>
+ <span class="menu-text">5 · Compare one group to a hypothetical value</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/06-two-unpaired-groups.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">6 · Compare two unpaired groups (coming soon)</span></a>
+ <span class="menu-text">6 · Compare two unpaired groups</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/07-two-paired-groups.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">7 · Compare two paired groups (coming soon)</span></a>
+ <span class="menu-text">7 · Compare two paired groups</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -951,7 +951,7 @@ TKA 0.12354544393057915</code></pre>
 <pre><code>0.30629201181168864</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">4</span>, <span class="dv">3</span>))</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> stats.probplot(residuals, plot<span class="op">=</span>ax)                   <span class="co"># "_ =" hides probplot's returned numbers</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>qq <span class="op">=</span> stats.probplot(residuals, plot<span class="op">=</span>ax)                  <span class="co"># naming the result keeps its numbers out of the output</span></span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
@@ -1310,8 +1310,8 @@ dtype: float64</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>preop <span class="op">=</span> proms[(proms[<span class="st">"visit"</span>] <span class="op">==</span> <span class="st">"preop"</span>) <span class="op">&amp;</span> proms[<span class="st">"prom_score"</span>].notna()]</span>
 <span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">3</span>))</span>
-<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> axes[<span class="dv">0</span>].hist(preop[<span class="st">"prom_score"</span>], bins<span class="op">=</span><span class="dv">30</span>)   <span class="co"># "_ =" hides the returned counts</span></span>
-<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> stats.probplot(preop[<span class="st">"prom_score"</span>], plot<span class="op">=</span>axes[<span class="dv">1</span>])</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].hist(preop[<span class="st">"prom_score"</span>], bins<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>qq <span class="op">=</span> stats.probplot(preop[<span class="st">"prom_score"</span>], plot<span class="op">=</span>axes[<span class="dv">1</span>])   <span class="co"># naming the result keeps its numbers out of the output</span></span>
 <span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
@@ -1792,8 +1792,8 @@ dtype: float64</code></pre>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../catalog/04-describe-one-group.html" class="pagination-link" aria-label="4 · Describe one group (coming soon)">
-        <span class="nav-page-text">4 · Describe one group (coming soon)</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../catalog/04-describe-one-group.html" class="pagination-link" aria-label="4 · Describe one group">
+        <span class="nav-page-text">4 · Describe one group</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

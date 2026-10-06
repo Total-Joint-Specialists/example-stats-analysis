@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="One-sample t test, Wilcoxon signed-rank test, chi-square goodness-of-fit, binomial test.">
+<meta name="description" content="One-sample t test, Wilcoxon signed-rank test, chi-square goodness-of-fit test and binomial test: is our group different from a target or published value?">
 
-<title>5 · Compare one group to a hypothetical value (coming soon) – TJS Statistics Tutorials</title>
+<title>5 · Compare one group to a hypothetical value – TJS Statistics Tutorials</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -288,7 +323,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/05-one-group-vs-hypothetical.html">5 · Compare one group to a hypothetical value (coming soon)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/05-one-group-vs-hypothetical.html">5 · Compare one group to a hypothetical value</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -376,25 +411,25 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/04-describe-one-group.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">4 · Describe one group (coming soon)</span></a>
+ <span class="menu-text">4 · Describe one group</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/05-one-group-vs-hypothetical.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">5 · Compare one group to a hypothetical value (coming soon)</span></a>
+ <span class="menu-text">5 · Compare one group to a hypothetical value</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/06-two-unpaired-groups.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">6 · Compare two unpaired groups (coming soon)</span></a>
+ <span class="menu-text">6 · Compare two unpaired groups</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/07-two-paired-groups.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">7 · Compare two paired groups (coming soon)</span></a>
+ <span class="menu-text">7 · Compare two paired groups</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -507,26 +542,27 @@ ul.task-list li input[type="checkbox"] {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
-  <ul>
+  <ul class="collapse">
   <li><a href="#one-sample-t" id="toc-one-sample-t" class="nav-link active" data-scroll-target="#one-sample-t">One-sample t test</a></li>
   <li><a href="#wilcoxon-signed-rank" id="toc-wilcoxon-signed-rank" class="nav-link" data-scroll-target="#wilcoxon-signed-rank">Wilcoxon signed-rank test</a></li>
   <li><a href="#chi-square-gof" id="toc-chi-square-gof" class="nav-link" data-scroll-target="#chi-square-gof">Chi-square goodness-of-fit test</a></li>
   <li><a href="#binomial-test" id="toc-binomial-test" class="nav-link" data-scroll-target="#binomial-test">Binomial test</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/05-one-group-vs-hypothetical.html">5 · Compare one group to a hypothetical value (coming soon)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/05-one-group-vs-hypothetical.html">5 · Compare one group to a hypothetical value</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">5 · Compare one group to a hypothetical value (coming soon)</h1>
+<h1 class="title">5 · Compare one group to a hypothetical value</h1>
 </div>
 
 <div>
   <div class="description">
-    One-sample t test, Wilcoxon signed-rank test, chi-square goodness-of-fit, binomial test.
+    One-sample t test, Wilcoxon signed-rank test, chi-square goodness-of-fit test and binomial test: is our group different from a target or published value?
   </div>
 </div>
 
@@ -543,30 +579,942 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="coming-soon callout callout-style-default callout-note callout-titled">
+<!-- data-checksum: 9e548efb7ad4232927ffa99aa2cdeca7 -->
+<p>Sometimes there is only one group of patients, and the comparison is with a number that comes from <strong>outside</strong> your data: a target set by the hospital, a value published by a registry, a benchmark in a quality report. Is our group different from that number?</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming soon
+<span class="screen-reader-only">Note</span>💡 How every section on this page works
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.</p>
+<p>Each section answers one question about the practice cohort. Its first code block loads the packages and the data, so you can jump straight to the section you need. Run that section’s blocks in order, top to bottom. The “hypothetical” values below are made up for teaching; they aren’t real registry figures.</p>
+<p>To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them (<a href="../foundations/03-distributions.html#paired">page 3</a>) and say what you did.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: the value must come from outside your data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Choose the hypothetical value <strong>before</strong> you look at your data, and say where it came from. A value picked after seeing the results (“our mean is 84; let’s test against 90”) makes the p-value meaningless. If the comparison value comes from another group of patients whose data you have, compare the two groups instead (<a href="../catalog/06-two-unpaired-groups.html">page 6</a>).</p>
 </div>
 </div>
 <section id="one-sample-t" class="level2">
 <h2 class="anchored" data-anchor-id="one-sample-t">One-sample t test</h2>
+<p><strong>The question:</strong> The operating room books 90 minutes for every primary joint replacement. Is our average operative time different from 90 minutes?</p>
+<section id="when-to-use-it" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it">When to use it</h3>
+<ul>
+<li>The outcome is a <strong>measurement</strong> (minutes, kg/m², points).</li>
+<li>It’s <strong>roughly normal</strong>, or the sample is large (about 30 or more) and not badly skewed (<a href="../foundations/03-distributions.html#robustness">page 3</a>).</li>
+<li>Each patient is counted once and patients are independent of each other.</li>
+<li>If the data are skewed, bounded or ordinal → the <a href="#wilcoxon-signed-rank">Wilcoxon signed-rank test</a>.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cohort, <span class="fu">aes</span>(op_time_min)) <span class="sc">+</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">90</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span>   <span class="co"># the booked time</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Operative time, minutes"</span>, <span class="at">y =</span> <span class="st">"Patients"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05-one-group-vs-hypothetical_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">3</span>))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>ax.hist(cohort[<span class="st">"op_time_min"</span>], bins<span class="op">=</span><span class="bu">range</span>(<span class="dv">45</span>, <span class="dv">145</span>, <span class="dv">5</span>))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="dv">90</span>, linestyle<span class="op">=</span><span class="st">"--"</span>)                        <span class="co"># the booked time</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Operative time, minutes"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Patients"</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05-one-group-vs-hypothetical_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>A roughly symmetric hump, centered a little to the left of the dashed line at 90 minutes.</p>
+</section>
+<section id="run-it" class="level3">
+<h3 class="anchored" data-anchor-id="run-it">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>op_test <span class="ot">&lt;-</span> <span class="fu">t.test</span>(cohort<span class="sc">$</span>op_time_min, <span class="at">mu =</span> <span class="dv">90</span>)   <span class="co"># mu = the hypothetical mean</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>op_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    One Sample t-test
+
+data:  cohort$op_time_min
+t = -8.2265, df = 599, p-value = 1.204e-15
+alternative hypothesis: true mean is not equal to 90
+95 percent confidence interval:
+ 83.1622 85.7978
+sample estimates:
+mean of x 
+    84.48 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>op_test <span class="op">=</span> stats.ttest_1samp(cohort[<span class="st">"op_time_min"</span>], popmean<span class="op">=</span><span class="dv">90</span>)   <span class="co"># popmean = the hypothetical mean</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(op_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TtestResult(statistic=np.float64(-8.226498476022671), pvalue=np.float64(1.2039160411565963e-15), df=np.int64(599))</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cohort[<span class="st">"op_time_min"</span>].mean(), op_test.confidence_interval())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>84.48 ConfidenceInterval(low=np.float64(83.162196800282), high=np.float64(85.797803199718))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output">Read the output</h3>
+<ul>
+<li><strong>t = −8.23:</strong> the observed mean is 8.2 standard errors below 90. The sign says which side.</li>
+<li><strong>df = 599:</strong> degrees of freedom, n − 1.</li>
+<li><strong>p &lt; 0.001:</strong> a mean this far from 90 would be very unlikely if the true average were 90 minutes.</li>
+<li><strong>mean of x = 84.48:</strong> our average operative time.</li>
+<li><strong>95% CI 83.2 to 85.8:</strong> the CI for our <strong>mean</strong>, not for the difference from 90.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci">Effect size and 95% CI</h3>
+<p>The effect size is simply the difference from the hypothetical value: subtract 90 from the mean and from both ends of its CI.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>op_test<span class="sc">$</span>estimate <span class="sc">-</span> <span class="dv">90</span>    <span class="co"># mean difference</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>mean of x 
+    -5.52 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>op_test<span class="sc">$</span>conf.int <span class="sc">-</span> <span class="dv">90</span>    <span class="co"># its 95% CI</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -6.837803 -4.202197
+attr(,"conf.level")
+[1] 0.95</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cohort[<span class="st">"op_time_min"</span>].mean() <span class="op">-</span> <span class="dv">90</span>)                        <span class="co"># mean difference</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>-5.519999999999996</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(op_test.confidence_interval().low <span class="op">-</span> <span class="dv">90</span>, op_test.confidence_interval().high <span class="op">-</span> <span class="dv">90</span>)   <span class="co"># its 95% CI</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>-6.837803199717996 -4.202196800281996</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Operations took 5.5 minutes less than the booked 90 on average (95% CI 4.2 to 6.8 minutes less). Whether that matters is a scheduling question, not a statistical one: over a day of four joints, it adds up to about 20 minutes.</p>
+</section>
+<section id="how-to-report-it" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Mean operative time was compared with the 90 minutes booked per case using a one-sample t test.</p>
+<p><strong>Results:</strong> Mean operative time was 84.5 minutes (SD 16.4), 5.5 minutes shorter than the 90 minutes booked (95% CI 4.2 to 6.8 minutes shorter; p &lt; 0.001).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: a published mean has its own uncertainty
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A one-sample test treats the hypothetical value as exact. A registry mean is itself an estimate with a CI. If you’re comparing your patients with a published series and its CI is wide, say so, and don’t over-read a small difference.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: what the CI is a CI for
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Both R’s <code>t.test(x, mu = 90)</code> and scipy’s <code>ttest_1samp(x, popmean=90)</code> report the CI for the <strong>mean</strong> (83.2 to 85.8), not for the difference from 90. Subtract the hypothetical value yourself, as above.</p>
+</div>
+</div>
+</section>
 </section>
 <section id="wilcoxon-signed-rank" class="level2">
 <h2 class="anchored" data-anchor-id="wilcoxon-signed-rank">Wilcoxon signed-rank test</h2>
+<p><strong>The question:</strong> Suppose our practice’s target is a 1-year KOOS JR of 80 points after knee replacement. Is our typical patient’s score different from 80?</p>
+<section id="when-to-use-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-1">When to use it</h3>
+<ul>
+<li>The outcome is <strong>skewed</strong> or has a <strong>ceiling or floor</strong>, so a mean isn’t a fair summary (<a href="../foundations/03-distributions.html#transform">page 3</a>).</li>
+<li>It ranks how far each patient is above or below the hypothetical value. It doesn’t assume a normal distribution, but it does need distances that can be compared, so the outcome must be a measurement.</li>
+<li>For an <strong>ordinal</strong> scale (satisfaction from 1 to 5), count the patients above and below the value and compare the two counts with a <a href="#binomial-test">binomial test</a>. This is called the <strong>sign test</strong>.</li>
+<li>Strictly, it tests the <strong>pseudomedian</strong> (the Hodges-Lehmann estimate below), which equals the median only for a symmetric distribution. With a ceiling the two differ a little; report both.</li>
+<li>If the data are roughly normal → the <a href="#one-sample-t">one-sample t test</a> is more familiar and slightly more powerful.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-1" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-1">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>proms <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/proms_long.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>koos_1yr <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(instrument <span class="sc">==</span> <span class="st">"KOOS JR"</span>, visit <span class="sc">==</span> <span class="st">"1yr"</span>, <span class="sc">!</span><span class="fu">is.na</span>(prom_score)) <span class="sc">|&gt;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(prom_score)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">tibble</span>(<span class="at">score =</span> koos_1yr), <span class="fu">aes</span>(score)) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">80</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span>   <span class="co"># the target</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"KOOS JR at 1 year (100 = best)"</span>, <span class="at">y =</span> <span class="st">"Patients"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05-one-group-vs-hypothetical_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pingouin <span class="im">as</span> pg</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>proms <span class="op">=</span> pd.read_csv(<span class="st">"data/proms_long.csv"</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>koos_1yr <span class="op">=</span> proms.loc[(proms[<span class="st">"instrument"</span>] <span class="op">==</span> <span class="st">"KOOS JR"</span>) <span class="op">&amp;</span> (proms[<span class="st">"visit"</span>] <span class="op">==</span> <span class="st">"1yr"</span>),</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"prom_score"</span>].dropna()</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">3</span>))</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>ax.hist(koos_1yr, bins<span class="op">=</span>np.arange(<span class="dv">35</span>, <span class="fl">102.5</span>, <span class="fl">2.5</span>))</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="dv">80</span>, linestyle<span class="op">=</span><span class="st">"--"</span>)                         <span class="co"># the target</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"KOOS JR at 1 year (100 = best)"</span>)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Patients"</span>)</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05-one-group-vs-hypothetical_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>A ceiling at 100 and a long tail to the left: the rank-based test is the safer choice.</p>
+</section>
+<section id="run-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-1">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>koos_test <span class="ot">&lt;-</span> <span class="fu">wilcox.test</span>(koos_1yr, <span class="at">mu =</span> <span class="dv">80</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">exact =</span> <span class="cn">FALSE</span>, <span class="at">correct =</span> <span class="cn">FALSE</span>,   <span class="co"># see the R vs Python box</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">conf.int =</span> <span class="cn">TRUE</span>)                  <span class="co"># adds the Hodges-Lehmann estimate and CI</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>koos_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Wilcoxon signed rank test
+
+data:  koos_1yr
+V = 22698, p-value = 2.293e-06
+alternative hypothesis: true location is not equal to 80
+95 percent confidence interval:
+ 82.74996 86.10002
+sample estimates:
+(pseudo)median 
+      84.35003 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pg.wilcoxon() runs scipy's test and adds the rank-biserial effect size</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>koos_test <span class="op">=</span> pg.wilcoxon(koos_1yr <span class="op">-</span> <span class="dv">80</span>, method<span class="op">=</span><span class="st">"approx"</span>, correction<span class="op">=</span><span class="va">False</span>)   <span class="co"># see the R vs Python box</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(koos_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            W_val alternative     p_val       RBC  CLES
+Wilcoxon  11231.5   two-sided  0.000002  0.337961   NaN</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-1" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-1">Read the output</h3>
+<ul>
+<li><strong>V = 22698</strong> (R) or <strong>W_val = 11231.5</strong> (Python): the test statistic, a sum of ranks. The two programs report different sums (see the R vs Python box); the p-values are the same.</li>
+<li><strong>p &lt; 0.001:</strong> scores this far from 80 would be very unlikely if the typical patient really scored 80.</li>
+<li><strong>(pseudo)median 84.35, 95% CI 82.7 to 86.1</strong> (R only): the Hodges-Lehmann estimate of the center of the scores, with its CI.</li>
+<li><strong>RBC = 0.34</strong> (Python): the rank-biserial effect size, below.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-1" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-1">Effect size and 95% CI</h3>
+<p>Two effect sizes are useful here:</p>
+<ul>
+<li>The <strong>Hodges-Lehmann estimate</strong> (the pseudomedian): a center of the scores, in points. It’s the median of all the averages of pairs of scores, so it’s less affected by the ceiling than a mean.</li>
+<li>The <strong>rank-biserial correlation (r)</strong>: from −1 (every patient below 80) through 0 (balanced) to +1 (every patient above 80). As a rough guide, 0.1 is small, 0.3 moderate and 0.5 large.</li>
+</ul>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>koos_test<span class="sc">$</span>estimate                                   <span class="co"># Hodges-Lehmann estimate</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(pseudo)median 
+      84.35003 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>koos_test<span class="sc">$</span>conf.int                                   <span class="co"># its 95% CI</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 82.74996 86.10002
+attr(,"conf.level")
+[1] 0.95</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">rank_biserial</span>(koos_1yr, <span class="at">mu =</span> <span class="dv">80</span>)         <span class="co"># rank-biserial r and 95% CI</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>r (rank biserial) |       95% CI
+--------------------------------
+0.34              | [0.21, 0.46]
+
+- Deviation from a difference of 80.</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Hodges-Lehmann estimate: the median of the averages of every pair of scores</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hodges_lehmann(x):</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.asarray(x)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    i, j <span class="op">=</span> np.triu_indices(<span class="bu">len</span>(x))          <span class="co"># every pair, including each score with itself</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.median((x[i] <span class="op">+</span> x[j]) <span class="op">/</span> <span class="dv">2</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hodges_lehmann(koos_1yr))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>84.35</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># scipy has no CI for it, so use a bootstrap: recompute it on 9999 resampled datasets</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>boot <span class="op">=</span> stats.bootstrap((koos_1yr.to_numpy(),), hodges_lehmann, vectorized<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                       rng<span class="op">=</span>np.random.default_rng(<span class="dv">2026</span>))</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(boot.confidence_interval)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ConfidenceInterval(low=np.float64(82.69999999999999), high=np.float64(86.05))</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(koos_test[<span class="st">"RBC"</span>])                               <span class="co"># rank-biserial r</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Wilcoxon    0.337961
+Name: RBC, dtype: float64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The typical 1-year score was about 4 points above the target (Hodges-Lehmann estimate 84.4), and the rank-biserial r of 0.34 is a moderate effect: noticeably more patients scored above 80 than below.</p>
+</section>
+<section id="how-to-report-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-1">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> Because 1-year KOOS JR scores showed a ceiling effect, they were compared with the 80-point target using a Wilcoxon signed-rank test, with the Hodges-Lehmann estimate and its 95% CI as the effect size.</p>
+<p><strong>Results:</strong> The median 1-year KOOS JR was 85.8 points (IQR 74.7 to 93.9), above the 80-point target (Hodges-Lehmann estimate 84.4, 95% CI 82.7 to 86.1; rank-biserial r = 0.34; p &lt; 0.001).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: two different “Wilcoxon” tests
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <strong>Wilcoxon signed-rank test</strong> (this one) compares one group with a value, or two <strong>paired</strong> measurements (<a href="../catalog/07-two-paired-groups.html#wilcoxon-signed-rank">page 7</a>). The <strong>Wilcoxon rank-sum test</strong> compares two <strong>independent</strong> groups; it’s the same as the <a href="../catalog/06-two-unpaired-groups.html#mann-whitney">Mann-Whitney test</a>. Always write the full name.</p>
+<p>Also: patients who score <strong>exactly</strong> 80 carry no information about the direction and are dropped from the test.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: Wilcoxon defaults
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>The statistic.</strong> R reports V, the sum of the ranks of patients <strong>above</strong> 80 (22698.5, printed as 22698). scipy (and pingouin) report the <strong>smaller</strong> of the two sums (11231.5). The two sums always add up to n(n + 1)/2, here 260 × 261 / 2 = 33,930, so they carry the same information and give the same p-value.</li>
+<li><strong>Exact or approximate.</strong> For small samples without ties, both programs compute an exact p-value; otherwise they use a normal approximation. R adds a <strong>continuity correction</strong> to the approximation by default; scipy doesn’t. We set <code>exact = FALSE, correct = FALSE</code> in R and <code>method="approx", correction=False</code> in Python so they match.</li>
+<li><strong>The Hodges-Lehmann CI.</strong> R computes it by inverting the test. scipy has no function for it, so the Python code uses a bootstrap, a different method, so the two CIs differ slightly (82.75 to 86.10 in R, 82.70 to 86.05 from the bootstrap).</li>
+</ul>
+</div>
+</div>
+</section>
 </section>
 <section id="chi-square-gof" class="level2">
 <h2 class="anchored" data-anchor-id="chi-square-gof">Chi-square goodness-of-fit test</h2>
+<p><strong>The question:</strong> Suppose a national registry reports that its patients are 10% ASA class 1, 55% class 2, 33% class 3 and 2% class 4. Is our mix of ASA classes the same?</p>
+<section id="when-to-use-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-2">When to use it</h3>
+<ul>
+<li>The outcome is <strong>categorical</strong> with two or more categories, and you have hypothetical proportions for every category.</li>
+<li>Each patient falls in exactly one category, and is counted once.</li>
+<li>The <strong>expected count</strong> in every category (total × hypothetical proportion) should be at least 5. Otherwise combine small categories, or with only two categories use the <a href="#binomial-test">binomial test</a>.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-2" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-2">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>registry <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.10</span>, <span class="fl">0.55</span>, <span class="fl">0.33</span>, <span class="fl">0.02</span>)                 <span class="co"># the hypothetical proportions, ASA 1 to 4</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>asa_counts <span class="ot">&lt;-</span> <span class="fu">table</span>(cohort<span class="sc">$</span>asa)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">asa =</span> <span class="fu">names</span>(asa_counts), <span class="at">observed =</span> <span class="fu">as.vector</span>(asa_counts),</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">expected =</span> <span class="fu">sum</span>(asa_counts) <span class="sc">*</span> registry)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  asa   observed expected
+  &lt;chr&gt;    &lt;int&gt;    &lt;dbl&gt;
+1 1           36       60
+2 2          300      330
+3 3          246      198
+4 4           18       12</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>registry <span class="op">=</span> [<span class="fl">0.10</span>, <span class="fl">0.55</span>, <span class="fl">0.33</span>, <span class="fl">0.02</span>]                   <span class="co"># the hypothetical proportions, ASA 1 to 4</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>asa_counts <span class="op">=</span> cohort[<span class="st">"asa"</span>].value_counts().sort_index()</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame({<span class="st">"observed"</span>: asa_counts, <span class="st">"expected"</span>: asa_counts.<span class="bu">sum</span>() <span class="op">*</span> pd.Series(registry, index<span class="op">=</span>asa_counts.index)}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     observed  expected
+asa                    
+1          36      60.0
+2         300     330.0
+3         246     198.0
+4          18      12.0</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>All four expected counts are at least 5 (the smallest is 12). We have fewer ASA 1 and more ASA 3 patients than the registry would predict.</p>
+</section>
+<section id="run-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-2">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>asa_test <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(asa_counts, <span class="at">p =</span> registry)   <span class="co"># p = the hypothetical proportions</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>asa_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Chi-squared test for given probabilities
+
+data:  asa_counts
+X-squared = 26.964, df = 3, p-value = 5.992e-06</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>expected <span class="op">=</span> asa_counts.<span class="bu">sum</span>() <span class="op">*</span> pd.Series(registry, index<span class="op">=</span>asa_counts.index)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>asa_test <span class="op">=</span> stats.chisquare(asa_counts, f_exp<span class="op">=</span>expected)   <span class="co"># f_exp = the expected COUNTS</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(asa_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Power_divergenceResult(statistic=np.float64(26.96363636363636), pvalue=np.float64(5.99160920120808e-06))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-2" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-2">Read the output</h3>
+<ul>
+<li><strong>X-squared = 26.96:</strong> the chi-square statistic, adding up how far each observed count is from its expected count.</li>
+<li><strong>df = 3:</strong> degrees of freedom, the number of categories minus 1.</li>
+<li><strong>p &lt; 0.001:</strong> a mix this different from the registry’s would be very unlikely if our patients came from the same mix.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-2" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-2">Effect size and 95% CI</h3>
+<p>The test says the mix differs, not where. Look at each category’s observed percentage, with a 95% CI, next to the registry’s.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>asa_ci <span class="ot">&lt;-</span> <span class="fu">sapply</span>(asa_counts, <span class="cf">function</span>(k) <span class="fu">prop.test</span>(k, <span class="fu">sum</span>(asa_counts), <span class="at">correct =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>conf.int)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">asa =</span> <span class="fu">names</span>(asa_counts),</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">observed_pct =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">as.vector</span>(asa_counts) <span class="sc">/</span> <span class="fu">sum</span>(asa_counts),</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">ci_low =</span> <span class="dv">100</span> <span class="sc">*</span> asa_ci[<span class="dv">1</span>, ], <span class="at">ci_high =</span> <span class="dv">100</span> <span class="sc">*</span> asa_ci[<span class="dv">2</span>, ],   <span class="co"># Wilson CIs, as on page 4</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">registry_pct =</span> <span class="dv">100</span> <span class="sc">*</span> registry)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 5
+  asa   observed_pct ci_low ci_high registry_pct
+  &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;        &lt;dbl&gt;
+1 1                6   4.37    8.19           10
+2 2               50  46.0    54.0            55
+3 3               41  37.1    45.0            33
+4 4                3   1.91    4.69            2</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> asa_counts.<span class="bu">sum</span>()</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>cis <span class="op">=</span> [stats.binomtest(<span class="bu">int</span>(k), <span class="bu">int</span>(n)).proportion_ci(method<span class="op">=</span><span class="st">"wilson"</span>) <span class="cf">for</span> k <span class="kw">in</span> asa_counts]</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame({</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"observed_pct"</span>: <span class="dv">100</span> <span class="op">*</span> asa_counts <span class="op">/</span> n,</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ci_low"</span>: [<span class="dv">100</span> <span class="op">*</span> ci.low <span class="cf">for</span> ci <span class="kw">in</span> cis],                     <span class="co"># Wilson CIs, as on page 4</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ci_high"</span>: [<span class="dv">100</span> <span class="op">*</span> ci.high <span class="cf">for</span> ci <span class="kw">in</span> cis],</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"registry_pct"</span>: [<span class="dv">100</span> <span class="op">*</span> p <span class="cf">for</span> p <span class="kw">in</span> registry],</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>asa_counts.index))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     observed_pct     ci_low    ci_high  registry_pct
+asa                                                  
+1             6.0   4.365143   8.194687          10.0
+2            50.0  46.011986  53.988014          55.0
+3            41.0  37.133962  44.980549          33.0
+4             3.0   1.905926   4.692074           2.0</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>ASA 3 makes the biggest difference: 41.0% of our patients (95% CI 37.1% to 45.0%) against 33% in the registry. The CI doesn’t include 33%.</p>
+</section>
+<section id="how-to-report-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-2">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> The distribution of ASA classes was compared with the registry’s using a chi-square goodness-of-fit test.</p>
+<p><strong>Results:</strong> Our patients’ ASA classes differed from the registry’s (χ² = 27.0, df = 3, p &lt; 0.001). More of our patients were ASA class 3 (41.0%, 95% CI 37.1% to 45.0%, vs 33% in the registry) and fewer were ASA class 1 (6.0% vs 10%).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: counts, not percentages
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The test needs the <strong>counts</strong> of patients in each category. Feeding it percentages (“6, 50, 41, 3”) gives a wrong p-value, because the test’s precision depends on how many patients there are.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: proportions or counts
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’s <code>chisq.test(counts, p = ...)</code> takes the hypothetical <strong>proportions</strong> (they must add up to 1). scipy’s <code>chisquare(counts, f_exp=...)</code> takes the expected <strong>counts</strong> (they must add up to the observed total). Same test, different inputs.</p>
+</div>
+</div>
+</section>
 </section>
 <section id="binomial-test" class="level2">
 <h2 class="anchored" data-anchor-id="binomial-test">Binomial test</h2>
+<p><strong>The question:</strong> Suppose a state quality report gives a 90-day readmission rate of 6% after primary joint replacement. Is our rate different?</p>
+<section id="when-to-use-it-3" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-3">When to use it</h3>
+<ul>
+<li>The outcome is <strong>yes/no</strong>, and you’re comparing one group’s proportion with a hypothetical proportion.</li>
+<li>Each patient is counted once.</li>
+<li>The binomial test is <strong>exact</strong>: it works for any sample size, including small numbers of events. (The chi-square goodness-of-fit test with two categories is its large-sample approximation.)</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-3" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-3">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(cohort, readmit_90d)   <span class="co"># 1 = readmitted within 90 days</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  readmit_90d     n
+        &lt;dbl&gt; &lt;int&gt;
+1           0   573
+2           1    27</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cohort[<span class="st">"readmit_90d"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>))   <span class="co"># 1 = readmitted within 90 days</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>readmit_90d
+0    573
+1     27
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>27 readmissions after 600 procedures, with no missing values.</p>
+</section>
+<section id="run-it-3" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-3">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>readmitted <span class="ot">&lt;-</span> <span class="fu">sum</span>(cohort<span class="sc">$</span>readmit_90d <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>patients   <span class="ot">&lt;-</span> <span class="fu">nrow</span>(cohort)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>readmit_test <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(readmitted, patients, <span class="at">p =</span> <span class="fl">0.06</span>)   <span class="co"># p = the hypothetical proportion</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>readmit_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Exact binomial test
+
+data:  readmitted and patients
+number of successes = 27, number of trials = 600, p-value = 0.143
+alternative hypothesis: true probability of success is not equal to 0.06
+95 percent confidence interval:
+ 0.02986148 0.06479979
+sample estimates:
+probability of success 
+                 0.045 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>readmitted <span class="op">=</span> <span class="bu">int</span>((cohort[<span class="st">"readmit_90d"</span>] <span class="op">==</span> <span class="dv">1</span>).<span class="bu">sum</span>())</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>patients <span class="op">=</span> <span class="bu">len</span>(cohort)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>readmit_test <span class="op">=</span> stats.binomtest(readmitted, patients, p<span class="op">=</span><span class="fl">0.06</span>)   <span class="co"># p = the hypothetical proportion</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(readmit_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>BinomTestResult(k=27, n=600, alternative='two-sided', statistic=0.045, pvalue=0.14295280432514018)</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(readmit_test.proportion_ci(method<span class="op">=</span><span class="st">"exact"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ConfidenceInterval(low=np.float64(0.029861476429590028), high=np.float64(0.06479978975045417))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-3" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-3">Read the output</h3>
+<ul>
+<li><strong>number of successes = 27, number of trials = 600:</strong> 27 readmissions (“successes” is just the software’s word for the outcome you counted).</li>
+<li><strong>p = 0.143:</strong> a rate this far from 6% wouldn’t be unusual if our true rate were 6%.</li>
+<li><strong>probability of success = 0.045:</strong> our readmission rate, 4.5%.</li>
+<li><strong>95% CI 0.030 to 0.065:</strong> our true rate is plausibly anywhere from 3.0% to 6.5%. This is the exact (Clopper-Pearson) interval.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-3" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-3">Effect size and 95% CI</h3>
+<p>The effect size is the difference from the hypothetical rate: 4.5% − 6% = −1.5 percentage points. Its 95% CI is the CI for our rate minus 6%: −3.0 to +0.5 percentage points. It includes 0, which matches the p-value above 0.05.</p>
+</section>
+<section id="how-to-report-it-3" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-3">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> The 90-day readmission rate was compared with the state benchmark of 6% using an exact binomial test. 95% CIs for proportions are exact (Clopper-Pearson).</p>
+<p><strong>Results:</strong> Readmission within 90 days followed 27 of 600 procedures (4.5%; 95% CI 3.0% to 6.5%). This did not differ significantly from the 6% benchmark (p = 0.143).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: “not significantly different” doesn’t mean “the same”
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Our rate could be as low as 3.0% (half the benchmark) or as high as 6.5%. The data are compatible with being better than the benchmark <em>and</em> with being about the same. Don’t write “our readmission rate was equivalent to the benchmark”, and don’t write “lower” either; report the CI and let it speak.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: exact CIs
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’s <code>binom.test()</code> and scipy’s <code>binomtest()</code> agree on the p-value. R prints the exact (Clopper-Pearson) CI automatically; in scipy, ask for it with <code>proportion_ci(method="exact")</code>. It’s a little wider than the Wilson interval on <a href="../catalog/04-describe-one-group.html#proportion">page 4</a> (3.1% to 6.5% for the same 27 patients). Either is fine; say which you used.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The solutions use the packages and data loaded in the sections above, so run the page from the top first.</p>
+<p><strong>1.</strong> Suppose a registry reports a mean age of 66 years at primary joint replacement. Is our patients’ mean age different? Run the test and report the mean difference with its 95% CI.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>age_test <span class="ot">&lt;-</span> <span class="fu">t.test</span>(cohort<span class="sc">$</span>age, <span class="at">mu =</span> <span class="dv">66</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>age_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    One Sample t-test
+
+data:  cohort$age
+t = -1.2461, df = 599, p-value = 0.2132
+alternative hypothesis: true mean is not equal to 66
+95 percent confidence interval:
+ 64.76351 66.27649
+sample estimates:
+mean of x 
+    65.52 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>age_test<span class="sc">$</span>conf.int <span class="sc">-</span> <span class="dv">66</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -1.2364949  0.2764949
+attr(,"conf.level")
+[1] 0.95</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>age_test <span class="op">=</span> stats.ttest_1samp(cohort[<span class="st">"age"</span>], popmean<span class="op">=</span><span class="dv">66</span>)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(age_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TtestResult(statistic=np.float64(-1.2461253956353107), pvalue=np.float64(0.21320549841639244), df=np.int64(599))</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>ci <span class="op">=</span> age_test.confidence_interval()</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cohort[<span class="st">"age"</span>].mean() <span class="op">-</span> <span class="dv">66</span>, ci.low <span class="op">-</span> <span class="dv">66</span>, ci.high <span class="op">-</span> <span class="dv">66</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>-0.480000000000004 -1.2364948782807943 0.27649487828078634</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Mean age was 65.5 years, 0.5 years younger than the registry (95% CI 1.2 years younger to 0.3 years older; p = 0.213). The data are compatible with no difference, and the CI rules out a difference of more than about a year.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> A state report says 90% of joint replacement patients go home rather than to a facility. After 570 of our 600 procedures, the patient went home. Which test would you use, and what do you conclude?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A yes/no outcome compared with a hypothetical proportion: the <strong>binomial test</strong>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-13-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-1" role="tab" aria-controls="tabset-13-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-2" role="tab" aria-controls="tabset-13-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-13-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-13-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">binom.test</span>(<span class="dv">570</span>, <span class="dv">600</span>, <span class="at">p =</span> <span class="fl">0.90</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Exact binomial test
+
+data:  570 and 600
+number of successes = 570, number of trials = 600, p-value = 1.184e-05
+alternative hypothesis: true probability of success is not equal to 0.9
+95 percent confidence interval:
+ 0.9293886 0.9660145
+sample estimates:
+probability of success 
+                  0.95 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-13-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>home <span class="op">=</span> stats.binomtest(<span class="dv">570</span>, <span class="dv">600</span>, p<span class="op">=</span><span class="fl">0.90</span>)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(home.pvalue, home.proportion_ci(method<span class="op">=</span><span class="st">"exact"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1.1844241573497358e-05 ConfidenceInterval(low=np.float64(0.9293885939673254), high=np.float64(0.9660144527846245))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Discharge home followed 95.0% of our procedures (95% CI 92.9% to 96.6%), more than the 90% in the report (p &lt; 0.001).</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> Suppose a survey of joint replacement patients found 50% never smokers, 40% former smokers and 10% current smokers. Test whether our smoking mix differs, and write the Results sentence.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-14-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-1" role="tab" aria-controls="tabset-14-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-2" role="tab" aria-controls="tabset-14-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-14-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-14-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>smoking <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="fu">factor</span>(cohort<span class="sc">$</span>smoker, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"never"</span>, <span class="st">"former"</span>, <span class="st">"current"</span>)))</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>smoking</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  never  former current 
+    321     230      49 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(smoking, <span class="at">p =</span> <span class="fu">c</span>(<span class="fl">0.50</span>, <span class="fl">0.40</span>, <span class="fl">0.10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Chi-squared test for given probabilities
+
+data:  smoking
+X-squared = 3.9033, df = 2, p-value = 0.142</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-14-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>smoking <span class="op">=</span> cohort[<span class="st">"smoker"</span>].value_counts()[[<span class="st">"never"</span>, <span class="st">"former"</span>, <span class="st">"current"</span>]]</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(smoking)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>smoker
+never      321
+former     230
+current     49
+Name: count, dtype: int64</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.chisquare(smoking, f_exp<span class="op">=</span>smoking.<span class="bu">sum</span>() <span class="op">*</span> pd.Series([<span class="fl">0.50</span>, <span class="fl">0.40</span>, <span class="fl">0.10</span>], index<span class="op">=</span>smoking.index)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Power_divergenceResult(statistic=np.float64(3.9033333333333333), pvalue=np.float64(0.14203714562701292))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>“Our patients’ smoking status (53.5% never, 38.3% former, 8.2% current smokers) did not differ significantly from the survey’s (χ² = 3.9, df = 2, p = 0.142).”</p>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -987,13 +1935,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../catalog/04-describe-one-group.html" class="pagination-link" aria-label="4 · Describe one group (coming soon)">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">4 · Describe one group (coming soon)</span>
+      <a href="../catalog/04-describe-one-group.html" class="pagination-link" aria-label="4 · Describe one group">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">4 · Describe one group</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../catalog/06-two-unpaired-groups.html" class="pagination-link" aria-label="6 · Compare two unpaired groups (coming soon)">
-        <span class="nav-page-text">6 · Compare two unpaired groups (coming soon)</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../catalog/06-two-unpaired-groups.html" class="pagination-link" aria-label="6 · Compare two unpaired groups">
+        <span class="nav-page-text">6 · Compare two unpaired groups</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

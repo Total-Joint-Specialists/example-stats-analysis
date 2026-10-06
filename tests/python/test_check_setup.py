@@ -26,7 +26,8 @@ def test_flags_a_python_outside_the_project_environment():
 def test_r_check_covers_the_packages_the_pages_call():
     script = (ROOT / "getting-started" / "check_setup.R").read_text(encoding="utf-8")
     for pkg in ["tidyverse", "readxl", "tidyxl", "janitor", "gtsummary", "flextable", "smd",
-                "effectsize", "DescTools", "survival", "ggsurvfit", "rstatix"]:
+                "effectsize", "DescTools", "survival", "ggsurvfit", "rstatix", "tidycmprsk",
+                "broom.helpers"]:
         assert f'"{pkg}"' in script, pkg
 
 

@@ -2,6 +2,7 @@ Type: project
 Description: R dependencies for the TJS statistics tutorial site. Not a
     package; renv reads this file to decide what to lock.
 Imports:
+    broom.helpers,
     DescTools,
     dplyr,
     effectsize,
@@ -21,6 +22,7 @@ Imports:
     survival,
     testthat,
     tibble,
+    tidycmprsk,
     tidyr,
     tidyverse,
     tidyxl,

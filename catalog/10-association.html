@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Pearson correlation, Spearman correlation, contingency coefficients.">
+<meta name="description" content="Pearson correlation, Spearman correlation and contingency coefficients: how strongly two things go together.">
 
-<title>10 · Quantify association between two variables (coming soon) – TJS Statistics Tutorials</title>
+<title>10 · Quantify association between two variables – TJS Statistics Tutorials</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -288,7 +323,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/10-association.html">10 · Quantify association between two variables (coming soon)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/10-association.html">10 · Quantify association between two variables</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -412,19 +447,19 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/10-association.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">10 · Quantify association between two variables (coming soon)</span></a>
+ <span class="menu-text">10 · Quantify association between two variables</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/11-predict-from-one.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">11 · Predict a value from another variable (coming soon)</span></a>
+ <span class="menu-text">11 · Predict a value from another variable</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../catalog/12-predict-from-several.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">12 · Predict a value from several variables (coming soon)</span></a>
+ <span class="menu-text">12 · Predict a value from several variables</span></a>
   </div>
 </li>
       </ul>
@@ -507,25 +542,26 @@ ul.task-list li input[type="checkbox"] {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
-  <ul>
+  <ul class="collapse">
   <li><a href="#pearson" id="toc-pearson" class="nav-link active" data-scroll-target="#pearson">Pearson correlation</a></li>
   <li><a href="#spearman" id="toc-spearman" class="nav-link" data-scroll-target="#spearman">Spearman correlation</a></li>
   <li><a href="#contingency-coefficients" id="toc-contingency-coefficients" class="nav-link" data-scroll-target="#contingency-coefficients">Contingency coefficients</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/Total-Joint-Specialists/example-stats-analysis/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/10-association.html">10 · Quantify association between two variables (coming soon)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../catalog/04-describe-one-group.html">Part 2 · Test catalog</a></li><li class="breadcrumb-item"><a href="../catalog/10-association.html">10 · Quantify association between two variables</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">10 · Quantify association between two variables (coming soon)</h1>
+<h1 class="title">10 · Quantify association between two variables</h1>
 </div>
 
 <div>
   <div class="description">
-    Pearson correlation, Spearman correlation, contingency coefficients.
+    Pearson correlation, Spearman correlation and contingency coefficients: how strongly two things go together.
   </div>
 </div>
 
@@ -542,27 +578,740 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="coming-soon callout callout-style-default callout-note callout-titled">
+<!-- data-checksum: 9e548efb7ad4232927ffa99aa2cdeca7 -->
+<p>Two things measured on the same patients: BMI and operative time, PROM improvement and satisfaction, ASA class and hypertension. The tests on this page don’t compare groups. They put <strong>one number on how strongly the two go together</strong>, with a 95% CI. If you want to <strong>predict</strong> one from the other, use regression (<a href="../catalog/11-predict-from-one.html">page 11</a>).</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Coming soon
+<span class="screen-reader-only">Note</span>💡 How every section on this page works
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.</p>
+<p>Each section answers one question about the practice cohort. Its first code block loads the packages and the data, so you can jump straight to the section you need. Run that section’s blocks in order, top to bottom.</p>
+<p>To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them (<a href="../foundations/03-distributions.html#paired">page 3</a>) and say what you did.</p>
 </div>
 </div>
 <section id="pearson" class="level2">
 <h2 class="anchored" data-anchor-id="pearson">Pearson correlation</h2>
+<p><strong>The question:</strong> How closely does operative time track BMI?</p>
+<section id="when-to-use-it" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it">When to use it</h3>
+<ul>
+<li>Two <strong>measurements</strong> on the same patients, and you want one number for how closely they move together along a <strong>straight line</strong>.</li>
+<li>Both are roughly normal, without extreme outliers, and the scatter plot looks like a cloud stretched along a line.</li>
+<li>If either is skewed or ordinal, has outliers, or the points follow a curve → <a href="#spearman">Spearman correlation</a>.</li>
+<li>If you want to predict one from the other, or adjust for other variables → <a href="../catalog/11-predict-from-one.html#linear-regression">linear regression</a>.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cohort, <span class="fu">aes</span>(bmi, op_time_min)) <span class="sc">+</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span>   <span class="co"># see-through points show where they pile up</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"BMI, kg/m²"</span>, <span class="at">y =</span> <span class="st">"Operative time, minutes"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="10-association_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="fl">3.5</span>))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>ax.scatter(cohort[<span class="st">"bmi"</span>], cohort[<span class="st">"op_time_min"</span>], alpha<span class="op">=</span><span class="fl">0.4</span>)   <span class="co"># see-through points show where they pile up</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"BMI, kg/m²"</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Operative time, minutes"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="10-association_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The points drift upward from left to right, along a rough line, with no extreme outliers.</p>
+</section>
+<section id="run-it" class="level3">
+<h3 class="anchored" data-anchor-id="run-it">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>bmi_corr <span class="ot">&lt;-</span> <span class="fu">cor.test</span>(cohort<span class="sc">$</span>bmi, cohort<span class="sc">$</span>op_time_min)   <span class="co"># Pearson is the default</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>bmi_corr</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's product-moment correlation
+
+data:  cohort$bmi and cohort$op_time_min
+t = 12.385, df = 598, p-value &lt; 2.2e-16
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.3857355 0.5133091
+sample estimates:
+      cor 
+0.4518292 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bmi_corr <span class="op">=</span> stats.pearsonr(cohort[<span class="st">"bmi"</span>], cohort[<span class="st">"op_time_min"</span>])</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(bmi_corr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PearsonRResult(statistic=np.float64(0.45182923461553826), pvalue=np.float64(1.600468008421371e-31))</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(bmi_corr.confidence_interval(confidence_level<span class="op">=</span><span class="fl">0.95</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ConfidenceInterval(low=np.float64(0.3857355205072664), high=np.float64(0.5133090740097993))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output">Read the output</h3>
+<ul>
+<li><strong>cor</strong> (R) or <strong>statistic</strong> (Python): Pearson’s <strong>r = 0.45</strong>. It runs from −1 (a perfect falling line) through 0 (no straight-line relationship) to +1 (a perfect rising line).</li>
+<li><strong>t = 12.4, df = 598:</strong> the test statistic, with 600 procedures minus two degrees of freedom. Python doesn’t print it.</li>
+<li><strong>p &lt; 0.001</strong> (R prints <code>&lt; 2.2e-16</code>): a correlation this strong would be very unlikely if BMI and operative time were unrelated.</li>
+<li><strong>95% CI 0.39 to 0.51.</strong></li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci">Effect size and 95% CI</h3>
+<p><strong>r is the effect size</strong>: r = 0.45 (95% CI 0.39 to 0.51). As a rough guide, 0.1 is small, 0.3 medium and 0.5 large. Squaring it gives the share of the variation in operative time that goes with BMI: r² = 0.20, about a fifth.</p>
+</section>
+<section id="how-to-report-it" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> The association between BMI and operative time was measured with Pearson’s correlation coefficient (r).</p>
+<p><strong>Results:</strong> Operative time rose with BMI (Pearson r = 0.45, 95% CI 0.39 to 0.51, p &lt; 0.001; n = 600 procedures).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: r only sees straight lines, and isn’t cause
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A relationship that rises and then falls can have r close to 0, and one outlier can create or hide a correlation, so always look at the scatter plot first. And a correlation doesn’t say which causes which, or whether something else (procedure type, surgeon) drives both. To adjust for other variables, use <a href="../catalog/12-predict-from-several.html#multiple-linear-regression">multiple regression</a>.</p>
+</div>
+</div>
+</section>
 </section>
 <section id="spearman" class="level2">
 <h2 class="anchored" data-anchor-id="spearman">Spearman correlation</h2>
+<p><strong>The question:</strong> Are patients whose HOOS JR or KOOS JR improved more from before surgery to 1 year also more satisfied?</p>
+<section id="when-to-use-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-1">When to use it</h3>
+<ul>
+<li>Two variables on the same patients, at least one of them <strong>ordinal</strong> (satisfaction from 1 to 5), <strong>skewed</strong>, or with <strong>outliers</strong>.</li>
+<li>The relationship goes one way (always up, or always down) but needn’t be a straight line. Spearman’s ρ (rho) is Pearson’s r calculated on the <strong>ranks</strong>.</li>
+<li>If both are roughly normal and the relationship is a straight line → <a href="#pearson">Pearson correlation</a>.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-1" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-1">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>proms <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/proms_long.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>change <span class="ot">&lt;-</span> proms <span class="sc">|&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(visit <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"preop"</span>, <span class="st">"1yr"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(case_id, visit, prom_score) <span class="sc">|&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> visit, <span class="at">values_from =</span> prom_score) <span class="sc">|&gt;</span>   <span class="co"># one row per case: preop and 1yr side by side</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">improvement =</span> <span class="st">`</span><span class="at">1yr</span><span class="st">`</span> <span class="sc">-</span> preop) <span class="sc">|&gt;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(<span class="fu">select</span>(cohort, case_id, satisfaction_1yr), <span class="at">by =</span> <span class="st">"case_id"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(improvement), <span class="sc">!</span><span class="fu">is.na</span>(satisfaction_1yr))          <span class="co"># both answers needed</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(change, <span class="fu">aes</span>(<span class="fu">factor</span>(satisfaction_1yr), improvement)) <span class="sc">+</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Satisfaction at 1 year (1 = very dissatisfied, 5 = very satisfied)"</span>, <span class="at">y =</span> <span class="st">"Improvement, points"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="10-association_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>change <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(satisfaction_1yr) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">median_improvement =</span> <span class="fu">median</span>(improvement))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+  satisfaction_1yr     n median_improvement
+             &lt;dbl&gt; &lt;int&gt;              &lt;dbl&gt;
+1                1    14               25.4
+2                2    18               29.1
+3                3    43               33.8
+4                4   131               35  
+5                5   198               43.8</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>proms <span class="op">=</span> pd.read_csv(<span class="st">"data/proms_long.csv"</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>wide <span class="op">=</span> proms[proms[<span class="st">"visit"</span>].isin([<span class="st">"preop"</span>, <span class="st">"1yr"</span>])].pivot(index<span class="op">=</span><span class="st">"case_id"</span>, columns<span class="op">=</span><span class="st">"visit"</span>, values<span class="op">=</span><span class="st">"prom_score"</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>wide[<span class="st">"improvement"</span>] <span class="op">=</span> wide[<span class="st">"1yr"</span>] <span class="op">-</span> wide[<span class="st">"preop"</span>]   <span class="co"># one row per case: preop and 1yr side by side</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>change <span class="op">=</span> wide.join(cohort.set_index(<span class="st">"case_id"</span>)[<span class="st">"satisfaction_1yr"</span>]).dropna(subset<span class="op">=</span>[<span class="st">"improvement"</span>, <span class="st">"satisfaction_1yr"</span>])</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>levels <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">3</span>))</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>parts <span class="op">=</span> ax.boxplot([change.loc[change[<span class="st">"satisfaction_1yr"</span>] <span class="op">==</span> level, <span class="st">"improvement"</span>] <span class="cf">for</span> level <span class="kw">in</span> levels], tick_labels<span class="op">=</span>levels)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Satisfaction at 1 year (1 = very dissatisfied, 5 = very satisfied)"</span>)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Improvement, points"</span>)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="10-association_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(change.groupby(<span class="st">"satisfaction_1yr"</span>)[<span class="st">"improvement"</span>].agg([<span class="st">"count"</span>, <span class="st">"median"</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  count  median
+satisfaction_1yr               
+1.0                  14   25.35
+2.0                  18   29.10
+3.0                  43   33.80
+4.0                 131   35.00
+5.0                 198   43.75</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>404 procedures have both a pre-op and a 1-year score and a satisfaction answer. The median improvement climbs with each satisfaction level, from 25.4 points among the 14 very dissatisfied to 43.8 among the 198 very satisfied. Satisfaction has only five values, so there are many ties.</p>
+</section>
+<section id="run-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-1">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>satisfaction_corr <span class="ot">&lt;-</span> <span class="fu">cor.test</span>(change<span class="sc">$</span>improvement, change<span class="sc">$</span>satisfaction_1yr,</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">method =</span> <span class="st">"spearman"</span>, <span class="at">exact =</span> <span class="cn">FALSE</span>)   <span class="co"># ties: no exact p-value</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>satisfaction_corr</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Spearman's rank correlation rho
+
+data:  change$improvement and change$satisfaction_1yr
+S = 6764534, p-value = 1.111e-15
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+      rho 
+0.3844721 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>satisfaction_corr <span class="op">=</span> stats.spearmanr(change[<span class="st">"improvement"</span>], change[<span class="st">"satisfaction_1yr"</span>])</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(satisfaction_corr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>SignificanceResult(statistic=np.float64(0.3844721170232049), pvalue=np.float64(1.1107631277074974e-15))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-1" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-1">Read the output</h3>
+<ul>
+<li><strong>rho</strong> (R) or <strong>statistic</strong> (Python): <strong>ρ = 0.38</strong>. Like r, it runs from −1 to +1; here it says patients with larger improvements tend to give higher satisfaction scores.</li>
+<li><strong>S = 6764534</strong> (R only): the test statistic, built from the differences between the two rankings. You don’t need to report it.</li>
+<li><strong>p &lt; 0.001</strong> (R prints <code>1.111e-15</code>): a correlation this strong would be very unlikely if improvement and satisfaction were unrelated.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-1" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-1">Effect size and 95% CI</h3>
+<p><strong>ρ is the effect size.</strong> Neither <code>cor.test()</code> nor scipy gives its 95% CI, so R uses DescTools and Python uses the formula behind it (Fisher’s z transformation).</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>DescTools<span class="sc">::</span><span class="fu">SpearmanRho</span>(change<span class="sc">$</span>improvement, change<span class="sc">$</span>satisfaction_1yr, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      rho    lwr.ci    upr.ci 
+0.3844721 0.2980891 0.4646088 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>rho, n <span class="op">=</span> satisfaction_corr.statistic, <span class="bu">len</span>(change)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> np.arctanh(rho)                                 <span class="co"># Fisher's z: makes the CI symmetric</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>half_width <span class="op">=</span> stats.norm.ppf(<span class="fl">0.975</span>) <span class="op">/</span> np.sqrt(n <span class="op">-</span> <span class="dv">3</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(rho, np.tanh(z <span class="op">-</span> half_width), np.tanh(z <span class="op">+</span> half_width))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.3844721170232049 0.29808911349981776 0.4646088227466071</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>ρ = 0.38 (95% CI 0.30 to 0.46): a moderate association, using the same rough guide as for r.</p>
+</section>
+<section id="how-to-report-it-1" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-1">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> The association between improvement in HOOS JR or KOOS JR from before surgery to 1 year and satisfaction at 1 year was measured with Spearman’s rank correlation coefficient (ρ).</p>
+<p><strong>Results:</strong> Among 404 procedures with both scores and a satisfaction answer, greater improvement went with higher satisfaction (Spearman ρ = 0.38, 95% CI 0.30 to 0.46, p &lt; 0.001).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: two instruments in one number
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Hip patients answer HOOS JR and knee patients KOOS JR. Both run from 0 to 100, but a point on one isn’t guaranteed to mean the same as a point on the other. Pooling them is fine for a first look; in a paper, analyze hips and knees separately or say why you pooled them.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: ties and the CI
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>With fewer than 1290 patients, R’s <code>cor.test()</code> tries an <strong>exact</strong> p-value. With ties it can’t compute one, so it warns and falls back to the usual approximation, the one scipy always uses. <code>exact = FALSE</code> asks for the approximation directly, without the warning.</li>
+<li>Neither gives a CI for ρ. DescTools’ <code>SpearmanRho()</code> and the Python formula use the same method: Fisher’s z with a standard error of 1/√(n − 3).</li>
+</ul>
+</div>
+</div>
+</section>
 </section>
 <section id="contingency-coefficients" class="level2">
 <h2 class="anchored" data-anchor-id="contingency-coefficients">Contingency coefficients</h2>
+<p><strong>The question:</strong> How strongly is ASA class linked with hypertension?</p>
+<section id="when-to-use-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-use-it-2">When to use it</h3>
+<ul>
+<li>Two <strong>categorical</strong> variables on the same patients. The chi-square test (<a href="../catalog/08-three-plus-unmatched.html#chi-square">page 8</a>) asks whether they’re linked at all; a contingency coefficient says <strong>how strongly</strong>.</li>
+<li><strong>Phi (φ)</strong> is for 2 × 2 tables. <strong>Cramér’s V</strong> works for any table size and equals φ (without its sign) on a 2 × 2 table. Both run from 0 (no link) to 1 (each category of one predicts the other exactly).</li>
+<li><strong>Pearson’s contingency coefficient (C)</strong> is older. Its maximum is below 1 and depends on the table’s size (0.71 for a table with two columns), which makes it hard to read, so prefer V.</li>
+<li>The chi-square p-value needs every <strong>expected</strong> count to be at least 5.</li>
+</ul>
+</section>
+<section id="look-at-the-data-first-2" class="level3">
+<h3 class="anchored" data-anchor-id="look-at-the-data-first-2">Look at the data first</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>cohort <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/cohort.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>asa_hypertension <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">asa =</span> cohort<span class="sc">$</span>asa, <span class="at">hypertension =</span> cohort<span class="sc">$</span>hypertension)   <span class="co"># 1 = hypertension</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>asa_hypertension</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   hypertension
+asa   0   1
+  1  24  12
+  2 145 155
+  3  90 156
+  4   2  16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">prop.table</span>(asa_hypertension, <span class="at">margin =</span> <span class="dv">1</span>), <span class="dv">1</span>)   <span class="co"># row percentages</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   hypertension
+asa    0    1
+  1 66.7 33.3
+  2 48.3 51.7
+  3 36.6 63.4
+  4 11.1 88.9</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>cohort <span class="op">=</span> pd.read_csv(<span class="st">"data/cohort.csv"</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>asa_hypertension <span class="op">=</span> pd.crosstab(cohort[<span class="st">"asa"</span>], cohort[<span class="st">"hypertension"</span>])   <span class="co"># 1 = hypertension</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(asa_hypertension)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>hypertension    0    1
+asa                   
+1              24   12
+2             145  155
+3              90  156
+4               2   16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((<span class="dv">100</span> <span class="op">*</span> pd.crosstab(cohort[<span class="st">"asa"</span>], cohort[<span class="st">"hypertension"</span>], normalize<span class="op">=</span><span class="st">"index"</span>)).<span class="bu">round</span>(<span class="dv">1</span>))   <span class="co"># row percentages</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>hypertension     0     1
+asa                     
+1             66.7  33.3
+2             48.3  51.7
+3             36.6  63.4
+4             11.1  88.9</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Hypertension becomes more common with each ASA class: from 12 of 36 (33.3%) in ASA 1 to 16 of 18 (88.9%) in ASA 4.</p>
+</section>
+<section id="run-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="run-it-2">Run it</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>asa_test <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(asa_hypertension)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>asa_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test
+
+data:  asa_hypertension
+X-squared = 23.181, df = 3, p-value = 3.702e-05</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(asa_test<span class="sc">$</span>expected)   <span class="co"># smallest expected count</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 7.83</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>asa_test <span class="op">=</span> stats.chi2_contingency(asa_hypertension)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(asa_test.statistic, asa_test.dof, asa_test.pvalue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>23.181303321526755 3 3.701714266100449e-05</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(asa_test.expected_freq.<span class="bu">min</span>())   <span class="co"># smallest expected count</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>7.83</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="read-the-output-2" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-output-2">Read the output</h3>
+<ul>
+<li><strong>X-squared = 23.18:</strong> the chi-square statistic. <strong>df = 3:</strong> (4 ASA classes − 1) × (2 columns − 1).</li>
+<li><strong>p &lt; 0.001</strong> (R prints <code>3.702e-05</code>): a link this strong would be very unlikely if hypertension were equally common in every ASA class.</li>
+<li><strong>Smallest expected count 7.83</strong> (ASA 4 without hypertension): every expected count is at least 5, so the p-value is reliable.</li>
+</ul>
+</section>
+<section id="effect-size-and-95-ci-2" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-and-95-ci-2">Effect size and 95% CI</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">cramers_v</span>(asa_hypertension, <span class="at">adjust =</span> <span class="cn">FALSE</span>)   <span class="co"># see the R vs Python box</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cramer's V |       95% CI
+-------------------------
+0.20       | [0.12, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">pearsons_c</span>(asa_hypertension)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Pearson's C |       95% CI
+--------------------------
+0.19        | [0.12, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.contingency.association(asa_hypertension, method<span class="op">=</span><span class="st">"cramer"</span>))    <span class="co"># Cramér's V</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.19655916548428345</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.contingency.association(asa_hypertension, method<span class="op">=</span><span class="st">"pearson"</span>))   <span class="co"># Pearson's C</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.19286868402903107</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p><strong>Cramér’s V = 0.20</strong>, a small-to-medium association (as a rough guide for tables with two rows or columns, 0.1 is small, 0.3 medium and 0.5 large). R also prints a one-sided 95% CI (0.12 to 1.00): V can’t be negative, so only its lower bound is informative. scipy doesn’t compute this CI. Pearson’s C is 0.19 here, but its ceiling for this table is 0.71, not 1, so the same number means more than it seems: one more reason to report V.</p>
+</section>
+<section id="how-to-report-it-2" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-report-it-2">How to report it</h3>
+<blockquote class="blockquote">
+<p><strong>Methods:</strong> The association between ASA class and hypertension was tested with the chi-square test, with Cramér’s V as the effect size.</p>
+<p><strong>Results:</strong> Hypertension was more common at higher ASA classes, from 12 of 36 procedures (33.3%) in ASA 1 to 16 of 18 (88.9%) in ASA 4 (χ² = 23.2, df = 3, p &lt; 0.001; Cramér’s V = 0.20, one-sided 95% CI 0.12 to 1.00).</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ Watch out: V gives the strength, not the pattern
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Shuffling the rows of the table doesn’t change V, so V can’t say that hypertension rises <strong>steadily</strong> with ASA class. The row percentages show the pattern; put them in your Results. If the categories are ordered and you expect a trend, a test for trend can be more powerful than the plain chi-square test.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🔀 R vs Python: Cramér’s V has two versions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>effectsize’s <code>cramers_v()</code> and <code>phi()</code> apply a small-sample bias correction by default (here V = 0.18), while scipy’s <code>association()</code> doesn’t. <code>adjust = FALSE</code> turns it off so the two match; whichever you use, say which in your Methods. On a 2 × 2 table, <code>association(method="cramer")</code> gives φ without its sign.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The solutions use the packages and data loaded in the sections above, so run the page from the top first.</p>
+<p><strong>1.</strong> How strongly is operative time linked with <strong>age</strong>? Report Pearson’s r with its 95% CI.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(cohort<span class="sc">$</span>age, cohort<span class="sc">$</span>op_time_min)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's product-moment correlation
+
+data:  cohort$age and cohort$op_time_min
+t = 3.4542, df = 598, p-value = 0.0005911
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.06049575 0.21747258
+sample estimates:
+      cor 
+0.1398629 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>age_corr <span class="op">=</span> stats.pearsonr(cohort[<span class="st">"age"</span>], cohort[<span class="st">"op_time_min"</span>])</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(age_corr, age_corr.confidence_interval(confidence_level<span class="op">=</span><span class="fl">0.95</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PearsonRResult(statistic=np.float64(0.13986286334794956), pvalue=np.float64(0.000591061227095167)) ConfidenceInterval(low=np.float64(0.06049575269507875), high=np.float64(0.21747258144105114))</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Operative time rose only slightly with age (Pearson r = 0.14, 95% CI 0.06 to 0.22, p &lt; 0.001). The association is clear but weak: age goes with about 2% of the variation in operative time (r² = 0.02), against 20% for BMI.</p>
+</div>
+</div>
+</div>
+<p><strong>2.</strong> A colleague asks whether older patients stay in hospital longer. Which correlation would you use, and what do you find?</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Length of stay is strongly right-skewed with many ties (<a href="../foundations/03-distributions.html#transform">page 3</a>): <strong>Spearman correlation</strong>.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(cohort<span class="sc">$</span>los_days, cohort<span class="sc">$</span>age, <span class="at">method =</span> <span class="st">"spearman"</span>, <span class="at">exact =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Spearman's rank correlation rho
+
+data:  cohort$los_days and cohort$age
+S = 30777868, p-value = 0.0003644
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+      rho 
+0.1450568 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>DescTools<span class="sc">::</span><span class="fu">SpearmanRho</span>(cohort<span class="sc">$</span>los_days, cohort<span class="sc">$</span>age, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       rho     lwr.ci     upr.ci 
+0.14505684 0.06577619 0.22251757 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>los_corr <span class="op">=</span> stats.spearmanr(cohort[<span class="st">"los_days"</span>], cohort[<span class="st">"age"</span>])</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>z, half_width <span class="op">=</span> np.arctanh(los_corr.statistic), stats.norm.ppf(<span class="fl">0.975</span>) <span class="op">/</span> np.sqrt(<span class="bu">len</span>(cohort) <span class="op">-</span> <span class="dv">3</span>)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(los_corr, np.tanh(z <span class="op">-</span> half_width), np.tanh(z <span class="op">+</span> half_width))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>SignificanceResult(statistic=np.float64(0.14505684292632762), pvalue=np.float64(0.0003643931688756085)) 0.0657761944392072 0.22251756976389372</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Older patients tended to stay slightly longer (Spearman ρ = 0.15, 95% CI 0.07 to 0.22, p &lt; 0.001), a weak association.</p>
+</div>
+</div>
+</div>
+<p><strong>3.</strong> Is sleep apnea more common in men than in women, and how strongly is it linked with sex? Write the Results sentence with φ.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>apnea <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">sex =</span> cohort<span class="sc">$</span>sex, <span class="at">sleep_apnea =</span> cohort<span class="sc">$</span>sleep_apnea)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>apnea</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        sleep_apnea
+sex        0   1
+  Female 300  43
+  Male   188  69</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(apnea, <span class="at">correct =</span> <span class="cn">FALSE</span>)   <span class="co"># no continuity correction, to match phi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test
+
+data:  apnea
+X-squared = 19.821, df = 1, p-value = 8.504e-06</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>effectsize<span class="sc">::</span><span class="fu">phi</span>(apnea, <span class="at">adjust =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Phi  |       95% CI
+-------------------
+0.18 | [0.11, 1.00]
+
+- One-sided CIs: upper bound fixed at [1.00].</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>apnea <span class="op">=</span> pd.crosstab(cohort[<span class="st">"sex"</span>], cohort[<span class="st">"sleep_apnea"</span>])</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(apnea)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>sleep_apnea    0   1
+sex                 
+Female       300  43
+Male         188  69</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>apnea_test <span class="op">=</span> stats.chi2_contingency(apnea, correction<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(apnea_test.statistic, apnea_test.dof, apnea_test.pvalue)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>19.82118079959507 1 8.50351511285585e-06</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(stats.contingency.association(apnea, method<span class="op">=</span><span class="st">"cramer"</span>))   <span class="co"># phi without its sign, on a 2 × 2 table</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.18175615899511754</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>“Sleep apnea was more common in men (69 of 257, 26.8%) than in women (43 of 343, 12.5%) (χ² = 19.8, df = 1, p &lt; 0.001; φ = 0.18, one-sided 95% CI 0.11 to 1.00).”</p>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -988,8 +1737,8 @@ ul.task-list li input[type="checkbox"] {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../catalog/11-predict-from-one.html" class="pagination-link" aria-label="11 · Predict a value from another variable (coming soon)">
-        <span class="nav-page-text">11 · Predict a value from another variable (coming soon)</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../catalog/11-predict-from-one.html" class="pagination-link" aria-label="11 · Predict a value from another variable">
+        <span class="nav-page-text">11 · Predict a value from another variable</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

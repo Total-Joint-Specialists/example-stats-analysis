@@ -8,6 +8,7 @@ from sitelib import CELL_ANCHORS, ROOT, load
 WRITTEN = [
     "catalog/04-describe-one-group.html",
     "catalog/05-one-group-vs-hypothetical.html",
+    "catalog/06-two-unpaired-groups.html",
 ]
 
 # Spec section 6, steps 2-7, as h3 headings in this order. Page 4 describes a
@@ -89,3 +90,7 @@ def test_survival_sections_point_to_the_full_treatment(site, cell, target):
     page, anchor = cell
     hrefs = [a["href"] for a in section(page, anchor).select("a[href]")]
     assert any(href.endswith(target) for href in hrefs)
+
+
+def test_log_rank_section_names_the_mantel_haenszel_test(site):
+    assert "Mantel-Haenszel" in text_of(section("catalog/06-two-unpaired-groups.html", "log-rank"))

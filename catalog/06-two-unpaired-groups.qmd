@@ -1,17 +1,822 @@
 ---
-title: "6 · Compare two unpaired groups (coming soon)"
-description: "Unpaired t test, Mann-Whitney test, Fisher's exact test, log-rank test."
+title: "6 · Compare two unpaired groups"
+description: "Unpaired (Welch's) t test, Mann-Whitney test, Fisher's exact and chi-square tests, and the log-rank test, each with an effect size and 95% CI."
+engine: knitr
+toc-depth: 2
+execute:
+  message: false
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
+Two groups of **different** patients: THA vs TKA, men vs women, implant A vs implant C. This is the most common comparison in clinical research. If the same patients are measured twice, or patients were matched in pairs, use [page 7](07-two-paired-groups.qmd) instead.
+
+::: {.callout-note}
+## 💡 How every section on this page works
+Each section answers one question about the practice cohort. Its first code block loads the packages and the data, so you can jump straight to the section you need. Run that section's blocks in order, top to bottom.
+
+To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them ([page 3](../foundations/03-distributions.qmd#paired)) and say what you did.
 :::
 
 ## Unpaired t test {#unpaired-t}
 
+**The question:** Do TKA patients have a higher BMI than THA patients?
+
+### When to use it
+
+- The outcome is a **measurement**, compared between **two independent groups**.
+- Within **each group** it's roughly normal, or each group is large (about 30 or more) and not badly skewed ([page 3](../foundations/03-distributions.qmd#within-groups)).
+- Use **Welch's** version, which doesn't assume the two groups have the same spread. It's R's default, but not Python's (see the R vs Python box).
+- If the outcome is skewed, bounded or ordinal → the [Mann-Whitney test](#mann-whitney).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 4
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE) |>
+  mutate(procedure = factor(procedure, levels = c("TKA", "THA")))   # TKA first: differences are TKA minus THA
+
+ggplot(cohort, aes(bmi)) +
+  geom_histogram(binwidth = 1) +
+  facet_wrap(~ procedure, ncol = 1) +
+  labs(x = "BMI, kg/m²", y = "Patients")
+
+cohort |>
+  group_by(procedure) |>
+  summarise(n = n(), mean = mean(bmi), sd = sd(bmi))
+```
+
+## Python
+
+```{python}
+import pandas as pd
+import pingouin as pg
+import matplotlib.pyplot as plt
+from scipy import stats
+
+cohort = pd.read_csv("data/cohort.csv")
+tka = cohort.loc[cohort["procedure"] == "TKA", "bmi"]
+tha = cohort.loc[cohort["procedure"] == "THA", "bmi"]
+
+fig, axes = plt.subplots(2, 1, figsize=(6, 4), sharex=True)
+axes[0].hist(tka, bins=range(18, 46))
+axes[0].set_title("TKA")
+axes[1].hist(tha, bins=range(18, 46))
+axes[1].set_title("THA")
+axes[1].set_xlabel("BMI, kg/m²")
+plt.tight_layout()
+plt.show()
+
+print(cohort.groupby("procedure")["bmi"].agg(["count", "mean", "std"]))
+```
+:::
+
+Both groups are roughly bell-shaped with similar spreads, and both are large. TKA patients sit a little to the right.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+bmi_test <- t.test(bmi ~ procedure, data = cohort)   # Welch's t test is R's default
+bmi_test
+```
+
+## Python
+
+```{python}
+bmi_test = stats.ttest_ind(tka, tha, equal_var=False)   # equal_var=False: Welch's t test
+print(bmi_test)
+print(tka.mean() - tha.mean(), bmi_test.confidence_interval())
+```
+:::
+
+```{python}
+#| include: false
+bmi_ci = bmi_test.confidence_interval()
+chk = {"t": float(bmi_test.statistic), "df": float(bmi_test.df), "p": float(bmi_test.pvalue),
+       "ci_low": float(bmi_ci.low), "ci_high": float(bmi_ci.high)}
+```
+
+```{r}
+#| include: false
+check_agree(list(t = unname(bmi_test$statistic), df = unname(bmi_test$parameter), p = bmi_test$p.value,
+                 ci_low = bmi_test$conf.int[1], ci_high = bmi_test$conf.int[2]), reticulate::py$chk)
+```
+
+### Read the output
+
+- **t = 4.07:** the difference between the means is about 4 standard errors.
+- **df = 580.09:** Welch's test adjusts the degrees of freedom for unequal spreads, so they aren't a whole number.
+- **p < 0.001:** a difference this large would be very unlikely if the two groups had the same mean BMI.
+- **95% CI 0.92 to 2.65:** the CI for the **difference in means**, TKA minus THA.
+- **mean in group TKA 31.2, mean in group THA 29.5:** the two means.
+
+### Effect size and 95% CI
+
+- The **mean difference** with its CI is the effect size readers understand best: 1.8 kg/m² (95% CI 0.9 to 2.6).
+- **Hedges' g** expresses the difference in standard deviations, which lets you compare effects measured on different scales. As a rough guide, 0.2 is small, 0.5 medium and 0.8 large.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+effectsize::hedges_g(bmi ~ procedure, data = cohort)
+```
+
+## Python
+
+```{python}
+g = pg.compute_effsize(tka, tha, eftype="hedges")
+print(g)
+print(pg.compute_esci(stat=g, nx=len(tka), ny=len(tha), eftype="hedges", decimals=3))   # its 95% CI
+```
+:::
+
+```{python}
+#| include: false
+chk = {"g": float(g)}
+```
+
+```{r}
+#| include: false
+bmi_g <- effectsize::hedges_g(bmi ~ procedure, data = cohort)
+check_agree(list(g = bmi_g$Hedges_g), reticulate::py$chk)
+```
+
+Hedges' g is 0.33: TKA patients' BMI is about a third of a standard deviation higher, a small effect.
+
+### How to report it
+
+> **Methods:** BMI was compared between procedures with Welch's unpaired t test.
+>
+> **Results:** TKA patients had a higher BMI than THA patients (mean 31.2 vs 29.5 kg/m²; difference 1.8 kg/m², 95% CI 0.9 to 2.6; Hedges' g = 0.33; p < 0.001).
+
+::: {.callout-warning}
+## ⚠️ Watch out: don't test the variances first
+An old habit is to run a test of equal variances (such as Levene's) and then choose Student's or Welch's t test depending on the result. Don't: the two-step procedure distorts the p-value. Use Welch's test from the start. When the variances really are equal, it gives almost the same answer as Student's.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: Student's or Welch's?
+- **The default differs.** R's `t.test()` runs **Welch's** test unless you add `var.equal = TRUE`. scipy's `ttest_ind()` runs **Student's** test unless you add `equal_var=False`. Always set it explicitly in Python.
+- **The order of the groups.** R subtracts in the order of the factor levels (we put TKA first); scipy subtracts the second argument from the first.
+- **The CI for Hedges' g.** effectsize uses an exact method and pingouin an approximation, so the CIs can differ slightly (0.17 to 0.49 in R, 0.17 to 0.495 in Python). The estimates agree.
+:::
+
 ## Mann-Whitney test {#mann-whitney}
+
+**The question:** Do men and women report different KOOS JR scores 1 year after knee replacement?
+
+### When to use it
+
+- The outcome is **skewed**, has a **ceiling or floor**, or is **ordinal**, and you're comparing **two independent groups**.
+- It asks whether values in one group tend to be **larger** than in the other: if you picked one patient from each group at random, how likely is the first to score higher?
+- It's the same test as the **Wilcoxon rank-sum test**. R calls it `wilcox.test()`.
+- If the outcome is roughly normal within each group → the [unpaired t test](#unpaired-t).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+proms  <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+
+koos_1yr <- proms |>
+  filter(instrument == "KOOS JR", visit == "1yr", !is.na(prom_score)) |>
+  left_join(select(cohort, case_id, sex), by = "case_id") |>
+  mutate(sex = factor(sex, levels = c("Male", "Female")))   # men first: differences are men minus women
+
+ggplot(koos_1yr, aes(sex, prom_score)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, alpha = 0.4) +
+  labs(x = NULL, y = "KOOS JR at 1 year")
+
+koos_1yr |>
+  group_by(sex) |>
+  summarise(n = n(), median = median(prom_score),
+            q1 = quantile(prom_score, 0.25), q3 = quantile(prom_score, 0.75))
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import pingouin as pg
+import matplotlib.pyplot as plt
+from scipy import stats
+
+cohort = pd.read_csv("data/cohort.csv")
+proms = pd.read_csv("data/proms_long.csv")
+
+koos_1yr = proms[(proms["instrument"] == "KOOS JR") & (proms["visit"] == "1yr")].dropna(subset=["prom_score"])
+koos_1yr = koos_1yr.merge(cohort[["case_id", "sex"]], on="case_id")
+men = koos_1yr.loc[koos_1yr["sex"] == "Male", "prom_score"]
+women = koos_1yr.loc[koos_1yr["sex"] == "Female", "prom_score"]
+
+fig, ax = plt.subplots(figsize=(5, 3))
+parts = ax.boxplot([men, women], tick_labels=["Male", "Female"])   # naming the result keeps it out of the output
+ax.set_ylabel("KOOS JR at 1 year")
+plt.show()
+
+print(koos_1yr.groupby("sex")["prom_score"].describe()[["count", "25%", "50%", "75%"]])
+```
+:::
+
+Both groups pile up toward the ceiling of 100, so medians are the fair summary. They're within 2 points of each other.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+koos_test <- wilcox.test(prom_score ~ sex, data = koos_1yr,
+                         exact = FALSE, correct = TRUE,   # see the R vs Python box
+                         conf.int = TRUE)                 # adds the Hodges-Lehmann estimate and CI
+koos_test
+```
+
+## Python
+
+```{python}
+# pg.mwu() runs scipy's Mann-Whitney test and adds the rank-biserial effect size
+koos_test = pg.mwu(men, women, method="asymptotic", use_continuity=True)   # see the R vs Python box
+print(koos_test)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"u": float(koos_test["U_val"].iloc[0]), "p": float(koos_test["p_val"].iloc[0])}
+```
+
+```{r}
+#| include: false
+check_agree(list(u = unname(koos_test$statistic), p = koos_test$p.value), reticulate::py$chk)
+```
+
+### Read the output
+
+- **W = 8926.5** (R) or **U_val = 8926.5** (Python): the Mann-Whitney U statistic for men, the number of (man, woman) pairs in which the man scored higher, counting ties as half. R calls it W.
+- **p = 0.432:** a difference like this would be common if men and women had the same distribution of scores.
+- **difference in location 0.80, 95% CI −1.60 to 4.40** (R only): the Hodges-Lehmann estimate, below.
+- **RBC = 0.056** (Python): the rank-biserial effect size, below.
+
+### Effect size and 95% CI
+
+- The **Hodges-Lehmann estimate** is the median of the differences between every man's score and every woman's score: a typical difference, in points.
+- The **rank-biserial correlation (r)** runs from −1 (every woman scored higher than every man) to +1 (the reverse). 0 means no tendency either way.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+koos_test$estimate                                       # Hodges-Lehmann estimate, men minus women
+koos_test$conf.int                                       # its 95% CI
+
+effectsize::rank_biserial(prom_score ~ sex, data = koos_1yr)
+```
+
+## Python
+
+```{python}
+# Hodges-Lehmann estimate: the median of every man-minus-woman difference
+def hodges_lehmann(x, y):
+    return np.median(np.subtract.outer(np.asarray(x), np.asarray(y)))
+
+print(hodges_lehmann(men, women))
+
+# scipy has no CI for it, so use a bootstrap: recompute it on 9999 resampled datasets
+boot = stats.bootstrap((men.to_numpy(), women.to_numpy()), hodges_lehmann, vectorized=False,
+                       rng=np.random.default_rng(2026))
+print(boot.confidence_interval)
+
+print(koos_test["RBC"])                                  # rank-biserial r
+```
+:::
+
+```{python}
+#| include: false
+chk = {"hl": float(hodges_lehmann(men, women)), "rbc": float(koos_test["RBC"].iloc[0])}
+```
+
+```{r}
+#| include: false
+koos_rb <- effectsize::rank_biserial(prom_score ~ sex, data = koos_1yr)
+check_agree(list(hl = unname(koos_test$estimate), rbc = koos_rb$r_rank_biserial), reticulate::py$chk,
+            tol = 1e-4)   # R finds the Hodges-Lehmann estimate by root-finding, accurate to about 1e-5
+```
+
+Men scored 0.8 points higher (95% CI 1.6 points lower to 4.4 points higher), and r = 0.06 is close to zero. A difference of a few points either way is compatible with the data; a large one isn't.
+
+### How to report it
+
+> **Methods:** Because 1-year KOOS JR scores showed a ceiling effect, they were compared between men and women with the Mann-Whitney test, with the Hodges-Lehmann estimate of the difference and its 95% CI as the effect size.
+>
+> **Results:** 1-year KOOS JR did not differ significantly between men and women (median 87.0 vs 85.0 points; Hodges-Lehmann difference 0.8 points, 95% CI −1.6 to 4.4; rank-biserial r = 0.06; p = 0.432).
+
+::: {.callout-warning}
+## ⚠️ Watch out: it isn't a test of medians
+The Mann-Whitney test asks whether one group's values **tend to be larger**, not whether the medians differ. Two groups can have the same median and a significant Mann-Whitney test (if their shapes differ), or different medians and a non-significant one. Report the medians to describe the groups, but don't write "the medians differed significantly".
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: Mann-Whitney defaults
+- **Exact or approximate.** With ties (as here) both programs use a normal approximation. Without ties, R computes an exact p-value for groups under 50, scipy only for very small groups. We set `exact = FALSE` in R and `method="asymptotic"` in Python so they always match.
+- **Continuity correction.** Both programs apply it by default for the approximation; we set it explicitly anyway.
+- **The Hodges-Lehmann CI.** R computes it by inverting the test; the Python code uses a bootstrap, a different method, so the two CIs differ slightly (−1.60 to 4.40 in R, −1.70 to 4.40 from the bootstrap).
+:::
 
 ## Fisher's exact test and chi-square {#fisher-chi-square}
 
+**The question:** Are men more likely than women to be readmitted within 90 days?
+
+### When to use it
+
+- The outcome is **yes/no**, compared between **two independent groups**: a 2 × 2 table.
+- **Fisher's exact test** is valid for any sample size. The **chi-square test** is a large-sample approximation: use it only when every *expected* count is at least 5. When in doubt, use Fisher's test.
+- If patients were followed for different lengths of time and the event can happen at any time → the [log-rank test](#log-rank).
+
+### Look at the data first
+
+For two yes/no variables, "looking" means the 2 × 2 table, with the percentage in each group.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+
+# Put the comparison group first and the outcome "yes" first
+readmit_table <- table(
+  sex        = factor(cohort$sex, levels = c("Male", "Female")),
+  readmitted = factor(cohort$readmit_90d, levels = c(1, 0), labels = c("yes", "no"))
+)
+readmit_table
+prop.table(readmit_table, margin = 1)    # row percentages: readmitted within each sex
+```
+
+## Python
+
+```{python}
+import pandas as pd
+from scipy import stats
+from scipy.stats.contingency import odds_ratio
+from statsmodels.stats.proportion import confint_proportions_2indep
+
+cohort = pd.read_csv("data/cohort.csv")
+
+# Put the comparison group first and the outcome "yes" (1) first
+readmit_table = pd.crosstab(cohort["sex"], cohort["readmit_90d"]).loc[["Male", "Female"], [1, 0]]
+print(readmit_table)
+print(pd.crosstab(cohort["sex"], cohort["readmit_90d"], normalize="index"))   # row percentages
+```
+:::
+
+12 of 257 men (4.7%) and 15 of 343 women (4.4%) were readmitted.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+readmit_fisher <- fisher.test(readmit_table)
+readmit_fisher
+
+chisq.test(readmit_table)$expected       # all at least 5, so chi-square is also fine
+readmit_chisq <- chisq.test(readmit_table)
+readmit_chisq
+```
+
+## Python
+
+```{python}
+readmit_fisher = stats.fisher_exact(readmit_table)
+print(readmit_fisher.pvalue)
+
+readmit_chisq = stats.chi2_contingency(readmit_table)   # includes the expected counts
+print(readmit_chisq.expected_freq)
+print(readmit_chisq.statistic, readmit_chisq.pvalue)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"fisher_p": float(readmit_fisher.pvalue), "chisq": float(readmit_chisq.statistic),
+       "chisq_p": float(readmit_chisq.pvalue)}
+```
+
+```{r}
+#| include: false
+check_agree(list(fisher_p = readmit_fisher$p.value, chisq = unname(readmit_chisq$statistic),
+                 chisq_p = readmit_chisq$p.value), reticulate::py$chk)
+```
+
+### Read the output
+
+- **Fisher's test, p-value = 1:** this table is exactly what you'd most expect if readmission were unrelated to sex. We report it as p > 0.999.
+- **odds ratio 1.07, 95% CI 0.45 to 2.50** (R): the effect size, below.
+- **Expected counts:** what each cell would hold if readmission were unrelated to sex. All are at least 5 (the smallest is 11.6), so the chi-square test is valid too.
+- **X-squared ≈ 0, p-value = 1:** the chi-square test, with Yates' continuity correction, agrees.
+
+::: {.callout-note collapse="true"}
+## 🔍 Under the hood: Yates' continuity correction
+The chi-square test treats counts as if they could take any value, but counts are whole numbers. For a 2 × 2 table, **Yates' correction** subtracts 0.5 from each |observed − expected| difference before squaring, which makes the p-value a little larger (more cautious) and closer to Fisher's. Here the observed counts are within 0.5 of the expected counts, so the corrected statistic is 0. Both R's `chisq.test()` and scipy's `chi2_contingency()` apply it to 2 × 2 tables by default; without it (`correct = FALSE`, `correction=False`) p = 0.863. Either is acceptable if you say which you used; with small counts, prefer Fisher's test.
+:::
+
+### Effect size and 95% CI
+
+Two effect sizes, and it's worth reporting both:
+
+- The **risk difference**: the difference between the two percentages, in percentage points. It's what patients and clinicians understand.
+- The **odds ratio**: the odds of readmission for men divided by the odds for women. It's what logistic regression reports ([page 11](11-predict-from-one.qmd#logistic-regression)), so it's useful for comparing with other studies.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+readmit_fisher$estimate                  # odds ratio, men vs women
+readmit_fisher$conf.int                  # its 95% CI
+
+risk <- prop.test(readmit_table, correct = FALSE)
+risk$estimate                            # readmission rate in men, then in women
+risk$conf.int                            # 95% CI for the risk difference, men minus women
+```
+
+## Python
+
+```{python}
+readmit_or = odds_ratio(readmit_table.to_numpy(), kind="conditional")   # the same odds ratio as R
+print(readmit_or.statistic, readmit_or.confidence_interval())
+
+men_yes, men_no = readmit_table.loc["Male"]
+women_yes, women_no = readmit_table.loc["Female"]
+print(men_yes / (men_yes + men_no), women_yes / (women_yes + women_no))   # readmission rates
+print(confint_proportions_2indep(men_yes, men_yes + men_no, women_yes, women_yes + women_no,
+                                 method="wald", compare="diff"))           # 95% CI, men minus women
+```
+:::
+
+```{python}
+#| include: false
+or_ci = readmit_or.confidence_interval()
+rd_ci = confint_proportions_2indep(men_yes, men_yes + men_no, women_yes, women_yes + women_no,
+                                   method="wald", compare="diff")
+chk = {"or": float(readmit_or.statistic), "or_low": float(or_ci.low), "or_high": float(or_ci.high),
+       "rd_low": float(rd_ci[0]), "rd_high": float(rd_ci[1])}
+```
+
+```{r}
+#| include: false
+check_agree(list(or = unname(readmit_fisher$estimate), or_low = readmit_fisher$conf.int[1],
+                 or_high = readmit_fisher$conf.int[2], rd_low = risk$conf.int[1], rd_high = risk$conf.int[2]),
+            reticulate::py$chk,
+            tol = 1e-4)   # both programs find the odds ratio and its CI by root-finding, accurate to about 1e-5
+```
+
+Men's readmission rate was 0.3 percentage points higher (95% CI 3.1 points lower to 3.7 points higher), an odds ratio of 1.07 (95% CI 0.45 to 2.50).
+
+### How to report it
+
+> **Methods:** Categorical outcomes were compared with Fisher's exact test. Effect sizes are reported as risk differences with Wald 95% CIs and as odds ratios with exact 95% CIs.
+>
+> **Results:** Ninety-day readmission did not differ significantly between men and women (4.7% vs 4.4%; risk difference 0.3 percentage points, 95% CI −3.1 to 3.7; odds ratio 1.07, 95% CI 0.45 to 2.50; p > 0.999).
+
+::: {.callout-warning}
+## ⚠️ Watch out: "no difference" needs a narrow CI
+The p-value is as large as it can be, but the odds ratio's CI runs from 0.45 to 2.50: the data are compatible with men having half the odds of readmission, or two and a half times the odds. With only 27 readmissions, this study can't tell. "No significant difference" is the honest wording; "men and women have the same risk" isn't.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: two different odds ratios
+scipy's `fisher_exact()` reports the simple **sample** odds ratio (a × d) / (b × c), 1.0710 here. R's `fisher.test()` reports the **conditional maximum-likelihood** odds ratio, 1.0709, which goes with its exact CI. Use `scipy.stats.contingency.odds_ratio(..., kind="conditional")` to get R's number and CI. The two are always close; say which you report.
+:::
+
 ## Log-rank test {#log-rank}
+
+**The question:** Is revision-free survival different between implant A and implant C?
+
+### When to use it
+
+- The outcome is **time until an event** (revision), patients were followed for different lengths of time, and you're comparing **two independent groups**.
+- It compares the whole survival curves, not the survival at one time point.
+- The **Mantel-Haenszel test** (or Mantel-Cox test) in the decision table is the same test under another name.
+- It's most powerful when one group's risk is a steady multiple of the other's over time (proportional hazards). If the curves cross, see [page 14](../survival/14-cox-regression.qmd).
+- To compare three or more groups, or to adjust for other variables → [Cox regression](08-three-plus-unmatched.qmd#cox).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 4.5
+library(tidyverse)
+library(survival)
+library(ggsurvfit)
+
+cohort <- read_csv("data/cohort.csv", show_col_types = FALSE)
+a_vs_c <- cohort |> filter(implant %in% c("A", "C"))   # two groups; page 8 compares all three
+
+survfit2(Surv(followup_years, revised) ~ implant, data = a_vs_c, conf.type = "log-log") |>
+  ggsurvfit() +
+  add_confidence_interval() +
+  add_risktable() +
+  scale_ggsurvfit() +
+  labs(x = "Years since surgery", y = "Revision-free survival")
+```
+
+## Python
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+from lifelines import KaplanMeierFitter, CoxPHFitter
+from lifelines.statistics import logrank_test
+from lifelines.plotting import add_at_risk_counts
+
+cohort = pd.read_csv("data/cohort.csv")
+a_vs_c = cohort[cohort["implant"].isin(["A", "C"])]   # two groups; page 8 compares all three
+a = a_vs_c[a_vs_c["implant"] == "A"]
+c = a_vs_c[a_vs_c["implant"] == "C"]
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+km_a = KaplanMeierFitter(label="A").fit(a["followup_years"], a["revised"])
+km_c = KaplanMeierFitter(label="C").fit(c["followup_years"], c["revised"])
+km_a.plot_survival_function(ax=ax)
+km_c.plot_survival_function(ax=ax)
+ax.set_xlabel("Years since surgery")
+ax.set_ylabel("Revision-free survival")
+add_at_risk_counts(km_a, km_c, ax=ax)
+plt.tight_layout()
+plt.show()
+```
+:::
+
+Implant C's curve falls faster from the start, and the gap keeps growing.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+implant_logrank <- survdiff(Surv(followup_years, revised) ~ implant, data = a_vs_c)
+implant_logrank
+```
+
+## Python
+
+```{python}
+implant_logrank = logrank_test(a["followup_years"], c["followup_years"],
+                               event_observed_A=a["revised"], event_observed_B=c["revised"])
+print(implant_logrank.test_statistic, implant_logrank.p_value)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"chisq": float(implant_logrank.test_statistic), "p": float(implant_logrank.p_value)}
+```
+
+```{r}
+#| include: false
+check_agree(list(chisq = implant_logrank$chisq, p = implant_logrank$pvalue), reticulate::py$chk)
+```
+
+### Read the output
+
+- **N:** patients in each group (246 with implant A, 137 with C).
+- **Observed / Expected:** the revisions each group had, and the number it would have had if both implants carried the same risk. Implant C had 38 revisions where 21.1 were expected; implant A had 25 where 41.9 were expected.
+- **Chisq = 20.5 on 1 degree of freedom, p < 0.001:** curves this different would be very unlikely if the implants had the same revision risk.
+
+### Effect size and 95% CI
+
+The log-rank test has no effect size of its own. The usual one is the **hazard ratio** from a Cox model: how many times higher the risk of revision is, at any moment, with implant C than with implant A. [Page 14](../survival/14-cox-regression.qmd) explains Cox regression in full.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+implant_cox <- coxph(Surv(followup_years, revised) ~ implant, data = a_vs_c)
+summary(implant_cox)$conf.int    # exp(coef) is the hazard ratio, C vs A
+```
+
+## Python
+
+```{python}
+implant_cox = CoxPHFitter().fit(a_vs_c[["followup_years", "revised", "implant"]],
+                                duration_col="followup_years", event_col="revised", formula="implant")
+print(implant_cox.summary[["exp(coef)", "exp(coef) lower 95%", "exp(coef) upper 95%"]])
+```
+:::
+
+```{python}
+#| include: false
+hr_row = implant_cox.summary.iloc[0]
+chk = {"hr": float(hr_row["exp(coef)"]), "hr_low": float(hr_row["exp(coef) lower 95%"]),
+       "hr_high": float(hr_row["exp(coef) upper 95%"])}
+```
+
+```{r}
+#| include: false
+hr <- summary(implant_cox)$conf.int
+check_agree(list(hr = hr[1, "exp(coef)"], hr_low = hr[1, "lower .95"], hr_high = hr[1, "upper .95"]),
+            reticulate::py$chk)
+```
+
+The hazard of revision was about three times higher with implant C (hazard ratio 3.04, 95% CI 1.83 to 5.04).
+
+### How to report it
+
+> **Methods:** Revision-free survival was estimated with the Kaplan-Meier method and compared between implants with the log-rank test. Hazard ratios were estimated with Cox proportional hazards regression.
+>
+> **Results:** Revision-free survival was lower with implant C than with implant A (5-year survival 71.1% vs 89.9%; log-rank p < 0.001; hazard ratio 3.04, 95% CI 1.83 to 5.04).
+
+::: {.callout-warning}
+## ⚠️ Watch out: overlapping CIs aren't a test
+Comparing the two curves' CIs at one time point ("the 5-year CIs overlap, so there's no difference") isn't a valid test, and neither is comparing the crude percentages revised. Use the log-rank test on the whole curves. And as on [page 4](04-describe-one-group.qmd#kaplan-meier), deaths here are treated as censored; [page 13](../survival/13-kaplan-meier.qmd) covers competing risks.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: one formula or two groups
+R's `survdiff()` takes a formula with a grouping variable. lifelines' `logrank_test()` takes each group's follow-up times and events separately (`multivariate_logrank_test()` takes a grouping column). They compute the same test. Both Cox models handle tied revision times with Efron's method, so the hazard ratios agree.
+:::
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+bmi_means <- tapply(cohort$bmi, cohort$procedure, mean)
+koos_medians <- tapply(koos_1yr$prom_score, koos_1yr$sex, median)
+km5 <- summary(survfit(Surv(followup_years, revised) ~ implant, data = a_vs_c), times = 5)
+expected_counts <- chisq.test(readmit_table)$expected
+op_tka <- cohort$op_time_min[cohort$procedure == "TKA"]
+op_tha <- cohort$op_time_min[cohort$procedure == "THA"]
+comp <- table(factor(cohort$anesthesia, levels = c("general", "spinal")),
+              factor(cohort$complication_90d, levels = c(1, 0), labels = c("yes", "no")))
+stopifnot(
+  sum(table(cohort$patient_id) == 2) == 80,
+  round(unname(bmi_test$statistic), 2) == 4.07, round(unname(bmi_test$parameter), 2) == 580.09,
+  bmi_test$p.value < 0.001,
+  round(bmi_test$conf.int, 2) == c(0.92, 2.65), round(bmi_test$conf.int, 1) == c(0.9, 2.6),
+  round(bmi_means[c("TKA", "THA")], 1) == c(31.2, 29.5), round(bmi_means[["TKA"]] - bmi_means[["THA"]], 1) == 1.8,
+  round(bmi_g$Hedges_g, 2) == 0.33, round(bmi_g$CI_low, 2) == 0.17, round(bmi_g$CI_high, 2) == 0.49,
+  reticulate::py_eval("float(pg.compute_esci(stat=g, nx=len(tka), ny=len(tha), eftype='hedges', decimals=3)[1])") == 0.495,
+  unname(koos_test$statistic) == 8926.5, round(koos_test$p.value, 3) == 0.432,
+  round(unname(koos_test$estimate), 2) == 0.80, round(koos_test$conf.int, 2) == c(-1.60, 4.40),
+  round(reticulate::py_eval("[float(boot.confidence_interval.low), float(boot.confidence_interval.high)]"), 2) == c(-1.70, 4.40),
+  round(koos_rb$r_rank_biserial, 3) == 0.056, round(koos_rb$r_rank_biserial, 2) == 0.06,
+  round(koos_medians[c("Male", "Female")], 1) == c(87.0, 85.0), max(abs(diff(koos_medians))) < 2,
+  readmit_table["Male", "yes"] == 12, sum(readmit_table["Male", ]) == 257,
+  readmit_table["Female", "yes"] == 15, sum(readmit_table["Female", ]) == 343,
+  round(100 * prop.table(readmit_table, 1)[, "yes"], 1) == c(4.7, 4.4),
+  readmit_fisher$p.value > 0.999,
+  min(expected_counts) >= 5, round(min(expected_counts), 1) == 11.6,
+  unname(readmit_chisq$statistic) < 1e-6,
+  round(chisq.test(readmit_table, correct = FALSE)$p.value, 3) == 0.863,
+  round(unname(readmit_fisher$estimate), 2) == 1.07, round(readmit_fisher$conf.int, 2) == c(0.45, 2.50),
+  round(unname(readmit_fisher$estimate), 4) == 1.0709,
+  round(12 * 328 / (15 * 245), 4) == 1.0710,
+  round(100 * unname(diff(rev(risk$estimate))), 1) == 0.3, round(100 * risk$conf.int, 1) == c(-3.1, 3.7),
+  implant_logrank$n == c(246, 137), implant_logrank$obs == c(25, 38),
+  round(implant_logrank$exp, 1) == c(41.9, 21.1),
+  round(implant_logrank$chisq, 1) == 20.5, implant_logrank$pvalue < 0.001,
+  round(hr[1, c("exp(coef)", "lower .95", "upper .95")], 2) == c(3.04, 1.83, 5.04),
+  round(100 * km5$surv, 1) == c(89.9, 71.1),
+  # exercise solutions (recomputed here: the guard runs before the solution chunks)
+  round(c(mean(op_tka), mean(op_tha)), 1) == c(88.3, 79.8), round(mean(op_tka) - mean(op_tha), 1) == 8.5,
+  round(t.test(op_tka, op_tha)$conf.int, 1) == c(6.0, 11.1),
+  round(wilcox.test(los_days ~ site, data = cohort, exact = FALSE)$p.value, 3) == 0.020,
+  round(effectsize::rank_biserial(los_days ~ site, data = cohort)$r_rank_biserial, 2) == 0.10,
+  median(outer(cohort$los_days[cohort$site == "Site A"], cohort$los_days[cohort$site == "Site B"], "-")) == 0,
+  round(100 * prop.table(comp, 1)[, "yes"], 1) == c(12.0, 7.3),
+  round(100 * (prop.table(comp, 1)["general", "yes"] - prop.table(comp, 1)["spinal", "yes"]), 1) == 4.7,
+  round(100 * prop.test(comp, correct = FALSE)$conf.int, 1) == c(-1.1, 10.4),
+  round(unname(fisher.test(comp)$estimate), 2) == 1.72, round(fisher.test(comp)$conf.int, 2) == c(0.88, 3.27),
+  round(fisher.test(comp)$p.value, 3) == 0.090
+)
+```
+
+## Exercises {#exercises}
+
+The solutions use the packages and data loaded in the sections above, so run the page from the top first.
+
+**1.** Compare **operative time** between TKA and THA with Welch's t test. Report the mean difference with its 95% CI.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+op_data <- cohort |> mutate(procedure = factor(procedure, levels = c("TKA", "THA")))   # TKA first
+t.test(op_time_min ~ procedure, data = op_data)
+```
+
+## Python
+
+```{python}
+op_tka = cohort.loc[cohort["procedure"] == "TKA", "op_time_min"]
+op_tha = cohort.loc[cohort["procedure"] == "THA", "op_time_min"]
+op_test = stats.ttest_ind(op_tka, op_tha, equal_var=False)
+print(op_test, op_tka.mean() - op_tha.mean(), op_test.confidence_interval())
+```
+:::
+
+TKAs took longer (mean 88.3 vs 79.8 minutes; difference 8.5 minutes, 95% CI 6.0 to 11.1; p < 0.001).
+:::
+
+**2.** A colleague wants to know whether **length of stay** differs between Site A and Site B. Which test would you choose, and what do you find?
+
+::: {.callout-tip collapse="true"}
+## Solution
+Length of stay is strongly skewed, with most patients going home on day 0 or 1: the **Mann-Whitney test**.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+los_test <- wilcox.test(los_days ~ site, data = cohort, exact = FALSE, correct = TRUE)
+los_test
+effectsize::rank_biserial(los_days ~ site, data = cohort)
+cohort |> group_by(site) |> summarise(median = median(los_days),
+                                      q1 = quantile(los_days, 0.25), q3 = quantile(los_days, 0.75))
+```
+
+## Python
+
+```{python}
+site_a = cohort.loc[cohort["site"] == "Site A", "los_days"]
+site_b = cohort.loc[cohort["site"] == "Site B", "los_days"]
+print(pg.mwu(site_a, site_b, method="asymptotic", use_continuity=True))
+print(cohort.groupby("site")["los_days"].describe()[["25%", "50%", "75%"]])
+```
+:::
+
+Stays were longer at Site A (median 1 day, IQR 0 to 2) than at Site B (median 0 days, IQR 0 to 1; rank-biserial r = 0.10; p = 0.020).
+
+Notice that we didn't report a Hodges-Lehmann estimate. With whole days and so many ties, most of the Site A − Site B differences are exactly 0 days, so the estimate is 0 even though Site A's stays tend to run longer. For data like these, the medians with IQRs and the rank-biserial r describe the difference better.
+:::
+
+**3.** Is the 90-day complication rate different after general and spinal anesthesia? Choose the test, run it, and write the Results sentence with the risk difference and odds ratio.
+
+::: {.callout-tip collapse="true"}
+## Solution
+Yes/no outcome, two independent groups: **Fisher's exact test**.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+comp_table <- table(anesthesia = factor(cohort$anesthesia, levels = c("general", "spinal")),
+                    complication = factor(cohort$complication_90d, levels = c(1, 0), labels = c("yes", "no")))
+comp_table
+fisher.test(comp_table)
+prop.test(comp_table, correct = FALSE)
+```
+
+## Python
+
+```{python}
+comp_table = pd.crosstab(cohort["anesthesia"], cohort["complication_90d"]).loc[["general", "spinal"], [1, 0]]
+print(comp_table)
+print(stats.fisher_exact(comp_table).pvalue)
+comp_or = odds_ratio(comp_table.to_numpy(), kind="conditional")
+print(comp_or.statistic, comp_or.confidence_interval())
+print(confint_proportions_2indep(18, 150, 33, 450, method="wald", compare="diff"))
+```
+:::
+
+"Complications within 90 days were more frequent after general than spinal anesthesia, but the difference was not statistically significant (12.0% vs 7.3%; risk difference 4.7 percentage points, 95% CI −1.1 to 10.4; odds ratio 1.72, 95% CI 0.88 to 3.27; p = 0.090)."
+:::

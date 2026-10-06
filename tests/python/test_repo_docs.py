@@ -26,5 +26,5 @@ def test_claude_md_states_the_golden_rules():
     text = read("CLAUDE.md")
     for rule in ["engine: knitr", "group=\"language\"", "check_agree", "_freeze", "Synthetic data only",
                  "never assign to `_`", "**The question:**", "override-dependencies",
-                 'a ceiling of "p > 0.999"']:
+                 'a ceiling of "p > 0.999"', "Bootstrap CIs are seeded"]:
         assert rule in text, rule

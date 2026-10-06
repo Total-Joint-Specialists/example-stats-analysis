@@ -9,6 +9,7 @@ WRITTEN = [
     "catalog/04-describe-one-group.html",
     "catalog/05-one-group-vs-hypothetical.html",
     "catalog/06-two-unpaired-groups.html",
+    "catalog/07-two-paired-groups.html",
 ]
 
 # Spec section 6, steps 2-7, as h3 headings in this order. Page 4 describes a

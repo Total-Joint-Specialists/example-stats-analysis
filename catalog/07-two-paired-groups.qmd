@@ -1,17 +1,789 @@
 ---
-title: "7 · Compare two paired groups (coming soon)"
-description: "Paired t test, Wilcoxon signed-rank test, McNemar's test, stratified Cox regression."
+title: "7 · Compare two paired groups"
+description: "Paired t test, Wilcoxon signed-rank test, McNemar's test and stratified Cox regression: the same patients measured twice, or matched pairs."
+engine: knitr
+toc-depth: 2
+execute:
+  message: false
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
+**Paired** data come in twos that belong together: the same patient before and after surgery, two raters measuring the same X-ray, or two patients matched to each other on age, sex and BMI. Paired tests compare each patient with themselves (or with their match), which removes the patient-to-patient variation that unpaired tests have to wade through. If your two groups are different patients, use [page 6](06-two-unpaired-groups.qmd) instead.
+
+::: {.callout-note}
+## 💡 How every section on this page works
+Each section answers one question about the practice data. Its first code block loads the packages and the data, so you can jump straight to the section you need. Run that section's blocks in order, top to bottom.
+
+To keep the code short, the examples use every case, including the 80 patients who had both sides operated on. In a real study, decide how to handle them ([page 3](../foundations/03-distributions.qmd#paired)) and say what you did.
+:::
+
+::: {.callout-warning}
+## ⚠️ Watch out: only complete pairs count
+A paired test can only use patients measured at **both** times. Patients who missed a visit drop out, and if they differ from the rest (for example, the patients who did badly stop coming back), the result is biased. Always report how many patients had both measurements. [Mixed models](../beyond/16-mixed-models.qmd) can use everyone's data, including incomplete follow-up.
 :::
 
 ## Paired t test {#paired-t}
 
+**The question:** Does patients' physical health, measured by the VR-12 physical component score (PCS), improve from before surgery to 1 year after?
+
+### When to use it
+
+- Each patient (or matched pair) gives **two measurements** of the same thing.
+- The **differences** between the two measurements are roughly normal, or there are about 30 or more pairs. The assumption is about the differences, not about each measurement on its own.
+- Pairs are independent of each other.
+- If the differences are skewed, or the measurements are bounded or ordinal → the [Wilcoxon signed-rank test](#wilcoxon-signed-rank).
+
+### Look at the data first
+
+Paired data need to be **wide**: one row per patient, with the two measurements side by side ([page 1](../foundations/01-tidy-data.qmd#reshaping) shows how to reshape).
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3
+library(tidyverse)
+
+proms <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+
+pcs <- proms |>
+  filter(visit %in% c("preop", "1yr")) |>
+  select(case_id, visit, vr12_pcs) |>
+  pivot_wider(names_from = visit, values_from = vr12_pcs, names_prefix = "pcs_") |>   # one row per patient
+  filter(!is.na(pcs_preop), !is.na(pcs_1yr)) |>                                       # complete pairs only
+  mutate(change = pcs_1yr - pcs_preop)
+
+nrow(pcs)
+
+ggplot(pcs, aes(change)) +
+  geom_histogram(binwidth = 2) +
+  geom_vline(xintercept = 0, linetype = "dashed") +   # no change
+  labs(x = "Change in VR-12 PCS, 1 year minus pre-op", y = "Patients")
+```
+
+## Python
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+
+proms = pd.read_csv("data/proms_long.csv")
+
+pcs = (proms[proms["visit"].isin(["preop", "1yr"])]
+       .pivot(index="case_id", columns="visit", values="vr12_pcs")   # one row per patient
+       .dropna())                                                      # complete pairs only
+pcs["change"] = pcs["1yr"] - pcs["preop"]
+
+print(len(pcs))
+
+fig, ax = plt.subplots(figsize=(6, 3))
+ax.hist(pcs["change"], bins=range(-20, 46, 2))
+ax.axvline(0, linestyle="--")                                          # no change
+ax.set_xlabel("Change in VR-12 PCS, 1 year minus pre-op")
+ax.set_ylabel("Patients")
+plt.show()
+```
+:::
+
+436 patients have both scores. The changes form a roughly symmetric bell, centered well to the right of zero.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+pcs_test <- t.test(pcs$pcs_1yr, pcs$pcs_preop, paired = TRUE)   # 1 year minus pre-op
+pcs_test
+```
+
+## Python
+
+```{python}
+pcs_test = stats.ttest_rel(pcs["1yr"], pcs["preop"])           # 1 year minus pre-op
+print(pcs_test)
+print(pcs["change"].mean(), pcs_test.confidence_interval())
+```
+:::
+
+```{python}
+#| include: false
+pcs_ci = pcs_test.confidence_interval()
+chk = {"t": float(pcs_test.statistic), "df": float(pcs_test.df), "p": float(pcs_test.pvalue),
+       "mean_change": float(pcs["change"].mean()), "ci_low": float(pcs_ci.low), "ci_high": float(pcs_ci.high)}
+```
+
+```{r}
+#| include: false
+check_agree(list(t = unname(pcs_test$statistic), df = unname(pcs_test$parameter), p = pcs_test$p.value,
+                 mean_change = unname(pcs_test$estimate), ci_low = pcs_test$conf.int[1],
+                 ci_high = pcs_test$conf.int[2]), reticulate::py$chk)
+```
+
+### Read the output
+
+- **t = 31.2, df = 435:** the mean change is 31 standard errors away from zero; df is the number of pairs minus 1.
+- **p < 0.001** (R prints "p < 2.2e-16", the smallest p-value it displays): a change this large would be essentially impossible if PCS didn't change on average.
+- **mean difference 13.7:** PCS rose by 13.7 points on average.
+- **95% CI 12.8 to 14.5:** the CI for the mean change.
+
+### Effect size and 95% CI
+
+- The **mean change** with its CI, in points: 13.7 (95% CI 12.8 to 14.5).
+- **Cohen's d~z~** divides the mean change by the standard deviation of the changes: how consistent the improvement was across patients. The usual guide (0.2 small, 0.5 medium, 0.8 large) applies.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+effectsize::repeated_measures_d(pcs$pcs_1yr, pcs$pcs_preop, method = "z", adjust = FALSE)
+```
+
+## Python
+
+```{python}
+d_z = pcs["change"].mean() / pcs["change"].std()   # mean change / SD of the changes
+print(d_z)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"d_z": float(d_z)}
+```
+
+```{r}
+#| include: false
+pcs_d <- effectsize::repeated_measures_d(pcs$pcs_1yr, pcs$pcs_preop, method = "z", adjust = FALSE)
+check_agree(list(d_z = pcs_d$d_z), reticulate::py$chk)
+```
+
+d~z~ = 1.49 is a very large effect: 93% of patients' PCS went up.
+
+### How to report it
+
+> **Methods:** Change in VR-12 PCS from before surgery to 1 year was assessed with a paired t test in patients with both measurements.
+>
+> **Results:** Of 574 patients with a pre-op PCS, 436 also had a 1-year score. PCS improved from a mean of 31.2 (SD 6.3) to 44.9 (SD 6.8) (mean change 13.7 points, 95% CI 12.8 to 14.5; d~z~ = 1.49; p < 0.001).
+
+::: {.callout-warning}
+## ⚠️ Watch out: don't analyze paired data as unpaired
+Running an unpaired t test on the pre-op and 1-year columns ignores which scores belong to the same patient. That's wrong even when it happens to give a similar answer, because the test's standard error assumes 872 independent patients when there are only 436. When the two measurements are correlated, as they usually are, the paired test is also more precise.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: paired effect sizes
+pingouin's `compute_effsize(x, y, paired=True)` does **not** return d~z~: it returns d~av~ (the mean change divided by the average of the two SDs), 2.08 here. Both are legitimate, but they answer different questions and aren't interchangeable. We compute d~z~ directly so the two languages match; say which one you report.
+:::
+
 ## Wilcoxon signed-rank test {#wilcoxon-signed-rank}
+
+**The question:** Did KOOS JR improve from before surgery to 1 year after knee replacement?
+
+### When to use it
+
+- Two paired measurements, and the outcome is **skewed** or has a **ceiling or floor**. The 1-year KOOS JR has a ceiling ([page 3](../foundations/03-distributions.qmd#transform)).
+- For an **ordinal** scale (satisfaction from 1 to 5), count the patients who went up and down and compare the two counts with a binomial test (the **sign test**, [page 5](05-one-group-vs-hypothetical.qmd#binomial-test)).
+- It ranks the sizes of the changes and compares the ranks of improvements with the ranks of declines.
+- Changes of exactly zero carry no information about direction and are dropped.
+- If the changes are roughly normal → the [paired t test](#paired-t).
+
+### Look at the data first
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+#| fig-height: 3
+library(tidyverse)
+
+proms <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+
+koos <- proms |>
+  filter(instrument == "KOOS JR", visit %in% c("preop", "1yr")) |>
+  select(case_id, visit, prom_score) |>
+  pivot_wider(names_from = visit, values_from = prom_score, names_prefix = "koos_") |>
+  filter(!is.na(koos_preop), !is.na(koos_1yr)) |>
+  mutate(change = koos_1yr - koos_preop)
+
+ggplot(koos, aes(change)) +
+  geom_histogram(binwidth = 2.5) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(x = "Change in KOOS JR, 1 year minus pre-op", y = "Patients")
+
+koos |> summarise(n = n(), improved = sum(change > 0),
+                  median_preop = median(koos_preop), median_1yr = median(koos_1yr))
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import pingouin as pg
+import matplotlib.pyplot as plt
+from scipy import stats
+
+proms = pd.read_csv("data/proms_long.csv")
+
+koos = (proms[(proms["instrument"] == "KOOS JR") & proms["visit"].isin(["preop", "1yr"])]
+        .pivot(index="case_id", columns="visit", values="prom_score")
+        .dropna())
+koos["change"] = koos["1yr"] - koos["preop"]
+
+fig, ax = plt.subplots(figsize=(6, 3))
+ax.hist(koos["change"], bins=np.arange(0, 72.5, 2.5))
+ax.axvline(0, linestyle="--")
+ax.set_xlabel("Change in KOOS JR, 1 year minus pre-op")
+ax.set_ylabel("Patients")
+plt.show()
+
+print(len(koos), (koos["change"] > 0).sum(), koos["preop"].median(), koos["1yr"].median())
+```
+:::
+
+All 246 patients with both scores improved. (Real data are rarely this tidy: usually a minority of patients get worse. These data are synthetic.)
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+koos_test <- wilcox.test(koos$koos_1yr, koos$koos_preop, paired = TRUE,
+                         exact = FALSE, correct = FALSE,   # see the R vs Python box
+                         conf.int = TRUE)                  # adds the Hodges-Lehmann estimate and CI
+koos_test
+```
+
+## Python
+
+```{python}
+# pg.wilcoxon() runs scipy's test and adds the rank-biserial effect size
+koos_test = pg.wilcoxon(koos["1yr"], koos["preop"], method="approx", correction=False)   # see the R vs Python box
+print(koos_test)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"p": float(koos_test["p_val"].iloc[0]), "rbc": float(koos_test["RBC"].iloc[0])}
+```
+
+```{r}
+#| include: false
+koos_rb <- effectsize::rank_biserial(koos$koos_1yr, koos$koos_preop, paired = TRUE)
+check_agree(list(p = koos_test$p.value, rbc = koos_rb$r_rank_biserial), reticulate::py$chk)
+```
+
+### Read the output
+
+- **V = 30381** (R): the sum of the ranks of the improvements. With 246 patients the ranks add up to 246 × 247 / 2 = 30381, so every rank belongs to an improvement. Python reports the smaller sum, the declines: **W_val = 0**.
+- **p < 0.001.**
+- **(pseudo)median 34.1, 95% CI 32.3 to 35.9:** the Hodges-Lehmann estimate of the typical change, below.
+- **RBC = 1.0** (Python): the rank-biserial effect size, below.
+
+### Effect size and 95% CI
+
+- The **Hodges-Lehmann estimate** of the change (the median of the averages of every pair of changes), with its CI, in points.
+- The **matched-pairs rank-biserial correlation (r)**: +1 if every patient improved, −1 if every patient got worse, 0 if improvements and declines balance out. Here it's exactly 1.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+koos_test$estimate                                                # Hodges-Lehmann estimate of the change
+koos_test$conf.int                                                # its 95% CI
+
+effectsize::rank_biserial(koos$koos_1yr, koos$koos_preop, paired = TRUE)
+```
+
+## Python
+
+```{python}
+# Hodges-Lehmann estimate: the median of the averages of every pair of changes
+def hodges_lehmann(x):
+    x = np.asarray(x)
+    i, j = np.triu_indices(len(x))          # every pair, including each change with itself
+    return np.median((x[i] + x[j]) / 2)
+
+print(hodges_lehmann(koos["change"]))
+
+# scipy has no CI for it, so use a bootstrap: recompute it on 9999 resampled datasets
+boot = stats.bootstrap((koos["change"].to_numpy(),), hodges_lehmann, vectorized=False,
+                       rng=np.random.default_rng(2026))
+print(boot.confidence_interval)
+
+print(koos_test["RBC"])                                           # rank-biserial r
+```
+:::
+
+```{python}
+#| include: false
+chk = {"hl": float(hodges_lehmann(koos["change"]))}
+```
+
+```{r}
+#| include: false
+check_agree(list(hl = unname(koos_test$estimate)), reticulate::py$chk,
+            tol = 1e-4)   # R finds the Hodges-Lehmann estimate by root-finding, accurate to about 1e-5
+```
+
+### How to report it
+
+> **Methods:** Because 1-year KOOS JR scores showed a ceiling effect, change from before surgery was assessed with the Wilcoxon signed-rank test, with the Hodges-Lehmann estimate of the change and its 95% CI as the effect size.
+>
+> **Results:** All 246 patients with both scores improved. Median KOOS JR rose from 50.0 (IQR 40.8 to 58.2) before surgery to 85.8 (IQR 75.0 to 94.0) at 1 year (Hodges-Lehmann estimate of the change 34.1 points, 95% CI 32.3 to 35.9; p < 0.001).
+
+::: {.callout-warning}
+## ⚠️ Watch out: "significant improvement" isn't the whole story
+A tiny p-value says the scores went up on average; it doesn't say how many patients improved by a **meaningful** amount. For PROMs, also report the proportion of patients whose change reached the minimal clinically important difference (MCID), a within-patient threshold ([page 3](../foundations/03-distributions.qmd#effect-sizes)).
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: Wilcoxon defaults
+- **The statistic.** R reports V, the sum of the ranks of the positive changes. scipy (and pingouin) report the **smaller** of the two sums. The p-values agree.
+- **Exact or approximate.** R uses an exact p-value for fewer than 50 pairs without ties and adds a continuity correction to the normal approximation; scipy's defaults differ. We set `exact = FALSE, correct = FALSE` in R and `method="approx", correction=False` in Python so they match.
+- **The Hodges-Lehmann CI.** R computes it by inverting the test; the Python code uses a bootstrap, a different method. Here they agree to two decimals (32.30 to 35.90); on [page 6](06-two-unpaired-groups.qmd#mann-whitney) they differ a little.
+:::
 
 ## McNemar's test {#mcnemar}
 
+**The question:** Are patients more likely to use a walking aid 6 weeks after surgery than before it?
+
+### When to use it
+
+- A **yes/no** outcome measured **twice in the same patients** (or once in each member of a matched pair).
+- It uses only the **discordant pairs**: the patients who changed (no → yes, or yes → no). Patients who stayed the same tell you nothing about the direction of change.
+- The chi-square version needs at least about 10 discordant pairs in total. With fewer, use the **exact** version (see the R vs Python box).
+
+### Look at the data first
+
+For paired yes/no data, "looking" means a 2 × 2 table of **before × after**: each patient appears once.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+
+proms <- read_csv("data/proms_long.csv", show_col_types = FALSE)
+
+aid <- proms |>
+  filter(visit %in% c("preop", "6wk")) |>
+  select(case_id, visit, walking_aid) |>
+  pivot_wider(names_from = visit, values_from = walking_aid, names_prefix = "aid_") |>
+  filter(!is.na(aid_preop), !is.na(aid_6wk))
+
+aid_table <- table(preop = aid$aid_preop, six_weeks = aid$aid_6wk)   # 1 = uses a walking aid
+aid_table
+colMeans(aid[, c("aid_preop", "aid_6wk")])                          # proportion using an aid
+```
+
+## Python
+
+```{python}
+import pandas as pd
+from scipy import stats
+from statsmodels.stats.contingency_tables import mcnemar
+
+proms = pd.read_csv("data/proms_long.csv")
+
+aid = (proms[proms["visit"].isin(["preop", "6wk"])]
+       .pivot(index="case_id", columns="visit", values="walking_aid")
+       .dropna())
+
+aid_table = pd.crosstab(aid["preop"], aid["6wk"])   # 1 = uses a walking aid
+print(aid_table)
+print(aid[["preop", "6wk"]].mean())                 # proportion using an aid
+```
+:::
+
+Of 505 patients seen at both visits, 134 never used an aid and 108 used one at both times. The other 263 changed: **193 started** using an aid and **70 stopped**.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+aid_test <- mcnemar.test(aid_table)   # with a continuity correction, R's default
+aid_test
+```
+
+## Python
+
+```{python}
+aid_test = mcnemar(aid_table.to_numpy(), exact=False, correction=True)   # chi-square version, as in R
+print(aid_test)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"chisq": float(aid_test.statistic), "p": float(aid_test.pvalue)}
+```
+
+```{r}
+#| include: false
+check_agree(list(chisq = unname(aid_test$statistic), p = aid_test$p.value), reticulate::py$chk)
+```
+
+### Read the output
+
+- **McNemar's chi-squared = 56.6, df = 1:** how lopsided the 193 vs 70 split is, compared with the even split you'd expect if walking-aid use hadn't changed.
+- **p < 0.001.**
+
+### Effect size and 95% CI
+
+The effect size for McNemar's test is the **discordant-pair odds ratio**: patients who started using an aid divided by patients who stopped, 193 / 70. Its exact CI comes from a binomial test on the discordant pairs.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+started <- aid_table["0", "1"]    # no aid before, aid at 6 weeks
+stopped <- aid_table["1", "0"]    # aid before, no aid at 6 weeks
+
+started / stopped                                    # discordant-pair odds ratio
+
+ci <- binom.test(started, started + stopped)$conf.int  # CI for the share of changers who started
+ci / (1 - ci)                                        # turned into a CI for the odds ratio
+```
+
+## Python
+
+```{python}
+started = int(aid_table.loc[0, 1])    # no aid before, aid at 6 weeks
+stopped = int(aid_table.loc[1, 0])    # aid before, no aid at 6 weeks
+
+print(started / stopped)                                                # discordant-pair odds ratio
+
+ci = stats.binomtest(started, started + stopped).proportion_ci(method="exact")   # share of changers who started
+print(ci.low / (1 - ci.low), ci.high / (1 - ci.high))                   # turned into a CI for the odds ratio
+```
+:::
+
+```{python}
+#| include: false
+chk = {"or": float(started / stopped), "or_low": float(ci.low / (1 - ci.low)),
+       "or_high": float(ci.high / (1 - ci.high))}
+```
+
+```{r}
+#| include: false
+check_agree(list(or = started / stopped, or_low = ci[1] / (1 - ci[1]), or_high = ci[2] / (1 - ci[2])),
+            reticulate::py$chk)
+```
+
+Patients were 2.8 times as likely to start using an aid as to stop (95% CI 2.1 to 3.7).
+
+### How to report it
+
+> **Methods:** Walking-aid use before surgery and at 6 weeks was compared with McNemar's test, with the discordant-pair odds ratio and its exact 95% CI as the effect size.
+>
+> **Results:** Among 505 patients assessed at both visits, walking-aid use increased from 35.2% before surgery to 59.6% at 6 weeks: 193 patients started and 70 stopped using an aid (discordant-pair odds ratio 2.76, 95% CI 2.09 to 3.68; p < 0.001).
+
+::: {.callout-warning}
+## ⚠️ Watch out: no chi-square or Fisher's test on paired yes/no data
+A common mistake is to tabulate "aid yes/no" against "pre-op / 6 weeks" and run an ordinary chi-square test. That table counts each patient twice, as if 1010 independent patients had been studied. McNemar's test uses each patient once, through the before × after table.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: chi-square or exact?
+R's `mcnemar.test()` gives the chi-square version, with a continuity correction unless `correct = FALSE`. statsmodels' `mcnemar()` gives the **exact** (binomial) version unless you set `exact=False`. With few discordant pairs (under about 10), the exact version is the right one: in R, run `binom.test(started, started + stopped)`.
+:::
+
 ## Stratified Cox regression {#stratified-cox}
+
+**The question:** Among patients matched on procedure, age, sex, BMI and ASA class, is the revision risk higher with implant C than with implant A?
+
+### When to use it
+
+- The outcome is **time until an event**, and the patients come in **matched pairs** (or sets), or the two "patients" are the two joints of one person.
+- A Cox model **stratified** by pair lets each pair have its own baseline risk, and compares implants only **within** pairs. The decision table calls this *conditional proportional hazards regression*.
+- Only pairs in which one patient was revised while the other was still being followed tell the model anything; with few events, expect a wide CI.
+- [Page 14](../survival/14-cox-regression.qmd) covers Cox regression in full.
+
+### Look at the data first
+
+The matched file has one row per patient and a `set_id` shared by each matched set. Each set holds one patient with each implant (A, B and C); here we keep A and C, which makes pairs.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+library(survival)
+
+matched <- read_csv("data/matched_sets.csv", show_col_types = FALSE)
+
+pairs <- matched |>
+  filter(implant %in% c("A", "C")) |>
+  mutate(revised = as.integer(event_status == 1))   # 1 = revised; deaths and censoring = 0
+
+pairs |> select(set_id, implant, age, sex, bmi, followup_years, revised) |> head(4)
+pairs |> group_by(implant) |> summarise(patients = n(), revisions = sum(revised))
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+from lifelines import CoxPHFitter
+
+matched = pd.read_csv("data/matched_sets.csv")
+
+pairs = matched[matched["implant"].isin(["A", "C"])].copy()
+pairs["revised"] = (pairs["event_status"] == 1).astype(int)   # 1 = revised; deaths and censoring = 0
+
+print(pairs[["set_id", "implant", "age", "sex", "bmi", "followup_years", "revised"]].head(4))
+print(pairs.groupby("implant")["revised"].agg(["count", "sum"]))
+```
+:::
+
+52 pairs: 5 revisions with implant A and 17 with implant C.
+
+### Run it
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+pair_cox <- coxph(Surv(followup_years, revised) ~ implant + strata(set_id), data = pairs)
+summary(pair_cox)
+```
+
+## Python
+
+```{python}
+pair_cox = CoxPHFitter().fit(
+    pairs[["followup_years", "revised", "implant", "set_id"]],
+    duration_col="followup_years", event_col="revised",
+    formula="implant", strata=["set_id"],    # one stratum per matched pair
+    fit_options={"precision": 1e-9},         # stop only when fully converged; see the R vs Python box
+)
+print(pair_cox.summary[["exp(coef)", "exp(coef) lower 95%", "exp(coef) upper 95%", "p"]])
+```
+:::
+
+```{python}
+#| include: false
+row = pair_cox.summary.iloc[0]
+chk = {"hr": float(row["exp(coef)"]), "hr_low": float(row["exp(coef) lower 95%"]),
+       "hr_high": float(row["exp(coef) upper 95%"]), "p": float(row["p"])}
+```
+
+```{r}
+#| include: false
+pair_hr <- summary(pair_cox)$conf.int
+check_agree(list(hr = pair_hr[1, "exp(coef)"], hr_low = pair_hr[1, "lower .95"], hr_high = pair_hr[1, "upper .95"],
+                 p = summary(pair_cox)$coefficients[1, "Pr(>|z|)"]), reticulate::py$chk)
+```
+
+### Read the output
+
+- **n = 104, number of events = 22:** 52 pairs, 22 revisions.
+- **exp(coef) = 3.5:** the hazard ratio, implant C vs implant A, within pairs.
+- **lower .95 = 1.15, upper .95 = 10.63:** its 95% CI. Wide, because only 22 revisions inform it.
+- **Pr(>|z|) = 0.027:** the p-value for implant.
+- R also prints a likelihood ratio, Wald and score test for the whole model; with one predictor they all test the same thing.
+
+### Effect size and 95% CI
+
+The **hazard ratio** is the effect size: within matched pairs, the hazard of revision was 3.5 times as high with implant C (95% CI 1.15 to 10.63).
+
+### How to report it
+
+> **Methods:** Revision risk was compared between implants in matched pairs using Cox regression stratified by pair.
+>
+> **Results:** In 52 pairs matched on procedure, age, sex, BMI and ASA class, implant C had a higher hazard of revision than implant A (17 vs 5 revisions; hazard ratio 3.50, 95% CI 1.15 to 10.63; p = 0.027).
+
+::: {.callout-warning}
+## ⚠️ Watch out: don't ignore the matching
+An ordinary Cox model on the same 104 patients (without `strata()`) treats them as unrelated. That throws away the matching you worked to create. Here it gives a slightly different answer (hazard ratio 3.60); with stronger matching factors the difference can be large. Analyze matched data as matched.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: strata and convergence
+R puts `strata(set_id)` in the model formula; lifelines takes `strata=["set_id"]` as a separate argument. With so few events and many strata, lifelines' default convergence rule stops a little early (a hazard ratio of 3.4997 instead of 3.5), so we tighten it with `fit_options={"precision": 1e-9}`.
+:::
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+n_pcs_preop <- sum(!is.na(proms$vr12_pcs[proms$visit == "preop"]))
+wide_pair <- function(data, value, first, second) {   # complete pairs of two visits, one row per case
+  data |> filter(visit %in% c(first, second)) |> select(case_id, visit, value = all_of(value)) |>
+    pivot_wider(names_from = visit, values_from = value) |> filter(!is.na(.data[[first]]), !is.na(.data[[second]]))
+}
+ex_mcs_wide <- wide_pair(proms, "vr12_mcs", "preop", "1yr")
+ex_mcs <- t.test(ex_mcs_wide$`1yr`, ex_mcs_wide$preop, paired = TRUE)
+ex_mcs_change <- ex_mcs_wide$`1yr` - ex_mcs_wide$preop
+ex_hka <- read_csv("data/radiographic_reliability.csv", show_col_types = FALSE) |>
+  filter(session == 1) |> select(knee_id, rater, hka_deg) |> pivot_wider(names_from = rater, values_from = hka_deg)
+ex_hka_test <- t.test(ex_hka$R2, ex_hka$R1, paired = TRUE)
+ex_later <- wide_pair(filter(proms, instrument == "KOOS JR"), "prom_score", "3mo", "1yr") |>
+  rename(koos_3mo = `3mo`, koos_1yr = `1yr`)
+ex_later_test <- wilcox.test(ex_later$koos_1yr, ex_later$koos_3mo, paired = TRUE, exact = FALSE, correct = FALSE,
+                             conf.int = TRUE)
+stopifnot(
+  sum(table(distinct(proms, case_id, patient_id)$patient_id) == 2) == 80,
+  nrow(pcs) == 436, n_pcs_preop == 574,
+  round(unname(pcs_test$statistic), 1) == 31.2, unname(pcs_test$parameter) == 435, pcs_test$p.value < 0.001,
+  round(unname(pcs_test$estimate), 1) == 13.7, round(pcs_test$conf.int, 1) == c(12.8, 14.5),
+  round(c(mean(pcs$pcs_preop), sd(pcs$pcs_preop), mean(pcs$pcs_1yr), sd(pcs$pcs_1yr)), 1) == c(31.2, 6.3, 44.9, 6.8),
+  round(pcs_d$d_z, 2) == 1.49, round(100 * mean(pcs$change > 0)) == 93,
+  round(reticulate::py_eval("float(pg.compute_effsize(pcs['1yr'], pcs['preop'], paired=True, eftype='cohen'))"), 2) == 2.08,
+  nrow(koos) == 246, all(koos$change > 0),
+  unname(koos_test$statistic) == 246 * 247 / 2, unname(koos_test$statistic) == 30381,
+  koos_test$p.value < 0.001,
+  round(unname(koos_test$estimate), 1) == 34.1, round(koos_test$conf.int, 1) == c(32.3, 35.9),
+  round(koos_test$conf.int, 2) == c(32.30, 35.90),
+  round(reticulate::py_eval("[float(boot.confidence_interval.low), float(boot.confidence_interval.high)]"), 2) == c(32.30, 35.90),
+  koos_rb$r_rank_biserial == 1,
+  round(median(koos$koos_preop), 1) == 50.0, round(quantile(koos$koos_preop, c(0.25, 0.75)), 1) == c(40.8, 58.2),
+  round(median(koos$koos_1yr), 1) == 85.8, round(quantile(koos$koos_1yr, c(0.25, 0.75)), 1) == c(75.0, 94.0),
+  nrow(aid) == 505, aid_table["0", "0"] == 134, aid_table["1", "1"] == 108,
+  started == 193, stopped == 70, started + stopped == 263,
+  round(unname(aid_test$statistic), 1) == 56.6, aid_test$p.value < 0.001,
+  round(100 * mean(aid$aid_preop), 1) == 35.2, round(100 * mean(aid$aid_6wk), 1) == 59.6,
+  round(started / stopped, 2) == 2.76, round(ci / (1 - ci), 2) == c(2.09, 3.68), round(ci / (1 - ci), 1) == c(2.1, 3.7),
+  round(started / stopped, 1) == 2.8,
+  n_distinct(pairs$set_id) == 52, nrow(pairs) == 104, sum(pairs$revised) == 22,
+  sum(pairs$revised[pairs$implant == "A"]) == 5, sum(pairs$revised[pairs$implant == "C"]) == 17,
+  round(pair_hr[1, "exp(coef)"], 2) == 3.50, round(pair_hr[1, c("lower .95", "upper .95")], 2) == c(1.15, 10.63),
+  round(summary(pair_cox)$coefficients[1, "Pr(>|z|)"], 3) == 0.027,
+  round(exp(coef(coxph(Surv(followup_years, revised) ~ implant, data = pairs))), 2) == 3.60,
+  round(reticulate::py_eval("float(np.exp(CoxPHFitter().fit(pairs[['followup_years', 'revised', 'implant', 'set_id']], duration_col='followup_years', event_col='revised', formula='implant', strata=['set_id']).params_.iloc[0]))"), 4) == 3.4997,
+  # exercise solutions (recomputed here: the guard runs before the solution chunks)
+  round(unname(ex_mcs$estimate), 1) == 3.4, round(ex_mcs$conf.int, 1) == c(2.3, 4.6), ex_mcs$p.value < 0.001,
+  round(mean(ex_mcs_change) / sd(ex_mcs_change), 2) == 0.28,
+  nrow(ex_hka) == 60, round(unname(ex_hka_test$estimate), 2) == 0.50,
+  round(ex_hka_test$conf.int, 2) == c(0.08, 0.93), round(ex_hka_test$p.value, 3) == 0.022,
+  nrow(ex_later) == 225, sum(ex_later$koos_1yr > ex_later$koos_3mo) == 176, sum(ex_later$koos_1yr < ex_later$koos_3mo) == 46,
+  round(c(median(ex_later$koos_3mo), median(ex_later$koos_1yr)), 1) == c(73.1, 85.2),
+  round(unname(ex_later_test$estimate), 1) == 9.9, round(ex_later_test$conf.int, 1) == c(8.2, 11.6),
+  ex_later_test$p.value < 0.001,
+  round(effectsize::rank_biserial(ex_later$koos_1yr, ex_later$koos_3mo, paired = TRUE)$r_rank_biserial, 2) == 0.74
+)
+```
+
+## Exercises {#exercises}
+
+The solutions use the packages and data loaded in the sections above, so run the page from the top first.
+
+**1.** Repeat the paired t test for the VR-12 **mental** component score (`vr12_mcs`), pre-op vs 1 year. Report the mean change with its 95% CI and d~z~.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+mcs <- proms |>
+  filter(visit %in% c("preop", "1yr")) |>
+  select(case_id, visit, vr12_mcs) |>
+  pivot_wider(names_from = visit, values_from = vr12_mcs, names_prefix = "mcs_") |>
+  filter(!is.na(mcs_preop), !is.na(mcs_1yr))
+
+t.test(mcs$mcs_1yr, mcs$mcs_preop, paired = TRUE)
+effectsize::repeated_measures_d(mcs$mcs_1yr, mcs$mcs_preop, method = "z", adjust = FALSE)
+```
+
+## Python
+
+```{python}
+mcs = proms[proms["visit"].isin(["preop", "1yr"])].pivot(index="case_id", columns="visit", values="vr12_mcs").dropna()
+mcs_test = stats.ttest_rel(mcs["1yr"], mcs["preop"])
+change = mcs["1yr"] - mcs["preop"]
+print(mcs_test, change.mean(), mcs_test.confidence_interval(), change.mean() / change.std())
+```
+:::
+
+The mental component improved much less than the physical one: mean change 3.4 points (95% CI 2.3 to 4.6; d~z~ = 0.28, a small effect; p < 0.001).
+:::
+
+**2.** Two raters measured the hip-knee-ankle (HKA) angle on the same 60 knee X-rays (`radiographic_reliability.csv`, session 1). Does rater 2 measure systematically higher than rater 1? Choose the test and run it.
+
+::: {.callout-tip collapse="true"}
+## Solution
+Two measurements of the same X-ray are **paired**, and HKA angles are measurements that are roughly normal: the **paired t test**.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+readings <- read_csv("data/radiographic_reliability.csv", show_col_types = FALSE) |>
+  filter(session == 1) |>
+  select(knee_id, rater, hka_deg) |>
+  pivot_wider(names_from = rater, values_from = hka_deg)
+
+t.test(readings$R2, readings$R1, paired = TRUE)   # rater 2 minus rater 1
+```
+
+## Python
+
+```{python}
+readings = pd.read_csv("data/radiographic_reliability.csv")
+readings = readings[readings["session"] == 1].pivot(index="knee_id", columns="rater", values="hka_deg")
+hka_test = stats.ttest_rel(readings["R2"], readings["R1"])   # rater 2 minus rater 1
+print(hka_test, (readings["R2"] - readings["R1"]).mean(), hka_test.confidence_interval())
+```
+:::
+
+Rater 2 measured 0.50° higher on average (95% CI 0.08° to 0.93°; p = 0.022). A systematic difference this small may not matter clinically; [page 17](../beyond/17-agreement.qmd) shows how to judge agreement between raters properly.
+:::
+
+**3.** Patients improve a lot in the first 3 months. Do they keep improving between 3 months and 1 year? Test it for KOOS JR and write the Results sentence.
+
+::: {.callout-tip collapse="true"}
+## Solution
+KOOS JR has a ceiling at 1 year, so use the **Wilcoxon signed-rank test**.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+later <- proms |>
+  filter(instrument == "KOOS JR", visit %in% c("3mo", "1yr")) |>
+  select(case_id, visit, prom_score) |>
+  pivot_wider(names_from = visit, values_from = prom_score, names_prefix = "koos_") |>
+  filter(!is.na(koos_3mo), !is.na(koos_1yr))
+
+wilcox.test(later$koos_1yr, later$koos_3mo, paired = TRUE, exact = FALSE, correct = FALSE, conf.int = TRUE)
+effectsize::rank_biserial(later$koos_1yr, later$koos_3mo, paired = TRUE)
+later |> summarise(n = n(), better = sum(koos_1yr > koos_3mo), worse = sum(koos_1yr < koos_3mo),
+                   median_3mo = median(koos_3mo), median_1yr = median(koos_1yr))
+```
+
+## Python
+
+```{python}
+later = (proms[(proms["instrument"] == "KOOS JR") & proms["visit"].isin(["3mo", "1yr"])]
+         .pivot(index="case_id", columns="visit", values="prom_score").dropna())
+print(pg.wilcoxon(later["1yr"], later["3mo"], method="approx", correction=False))
+print(len(later), (later["1yr"] > later["3mo"]).sum(), (later["1yr"] < later["3mo"]).sum())
+```
+:::
+
+"Between 3 months and 1 year, KOOS JR improved further in 176 of 225 patients and declined in 46 (median 73.1 to 85.2; Hodges-Lehmann estimate of the change 9.9 points, 95% CI 8.2 to 11.6; rank-biserial r = 0.74; p < 0.001)."
+:::

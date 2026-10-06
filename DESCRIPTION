@@ -16,6 +16,7 @@ Imports:
     readxl,
     reticulate,
     rmarkdown,
+    rstatix,
     smd,
     survival,
     testthat,

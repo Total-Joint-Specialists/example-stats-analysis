@@ -429,7 +429,7 @@ print(marginal_means(hip_model, visit_grid).round(2))
 Of 270 hips, 136 had all four scores; all 906 scores were used. The estimated mean HOOS JR rose from 45.5 before surgery to 68.6 at 6 weeks, 80.1 at 3 months and 88.2 (95% CI 86.7 to 89.7) at 1 year.
 :::
 
-**2.** [Page 9](../catalog/09-three-plus-matched.qmd#repeated-measures-anova) analyzed the VR-12 physical component score (PCS) with repeated-measures ANOVA in the 328 patients measured at all four visits. Fit a mixed model with every PCS score instead. How many patients does it use, and do the visit means change?
+**2.** [Page 9](../catalog/09-three-plus-matched.qmd#repeated-measures-anova) analyzed the VR-12 physical component score (PCS) with repeated-measures ANOVA in the 328 joint replacements measured at all four visits. Fit a mixed model with every PCS score instead. How many joint replacements does it use, and do the visit means change?
 
 ::: {.callout-tip collapse="true"}
 ## Solution
@@ -441,7 +441,7 @@ Of 270 hips, 136 had all four scores; all 906 scores were used. The estimated me
 pcs_all <- proms |>
   filter(!is.na(vr12_pcs)) |>
   mutate(visit = factor(visit, levels = c("preop", "6wk", "3mo", "1yr")))
-c(patients = n_distinct(pcs_all$case_id), scores = nrow(pcs_all))
+c(joint_replacements = n_distinct(pcs_all$case_id), scores = nrow(pcs_all))
 
 pcs_model <- lmer(vr12_pcs ~ visit + (1 | case_id), data = pcs_all)
 emmeans(pcs_model, ~ visit, lmer.df = "satterthwaite")
@@ -459,7 +459,7 @@ print(marginal_means(pcs_model, visit_grid).round(2))
 ```
 :::
 
-The mixed model uses all 600 patients (2052 scores) instead of 328. Its visit means, 31.2, 35.3, 41.0 and 44.9, are almost the same as page 9's complete-patient means (31.2, 34.9, 41.0 and 44.9): in this synthetic cohort visits were missed almost entirely at random, so dropping patients cost precision rather than accuracy.
+The mixed model uses all 600 joint replacements (2052 scores) instead of the 328 with all four scores. Its visit means, 31.2, 35.3, 41.0 and 44.9, are almost the same as page 9's means for those 328 (31.2, 34.9, 41.0 and 44.9): in this synthetic cohort visits were missed almost entirely at random, so dropping incomplete cases cost precision rather than accuracy.
 :::
 
 **3.** Does knee recovery differ by age group (under 65, 65 to 74, 75 and over)? Fit the visit × age group model and write the Results sentence.

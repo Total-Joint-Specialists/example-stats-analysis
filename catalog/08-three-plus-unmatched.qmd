@@ -593,7 +593,7 @@ The tests above answer "is there any difference among the groups?". When the ans
 | Chi-square | Pairwise Fisher or chi-square tests with Holm's adjustment | [15](../beyond/15-post-hoc.qmd#after-chi-square) |
 | Cox regression | Hazard ratios against a chosen reference, or contrasts between groups | [14](../survival/14-cox-regression.qmd) |
 
-Tukey's HSD, Dunn's test and Holm-adjusted pairwise tests control false positives on their own, so they don't need a significant overall test first. Decide before you see the data which comparisons you'll make, and say so in your Methods ([page 15](../beyond/15-post-hoc.qmd#overall-test-first)).
+Tukey's HSD controls false positives on its own, and so do Dunn's test and other pairwise tests once Holm's adjustment is applied, so none of them needs a significant overall test first. Decide before you see the data which comparisons you'll make, and say so in your Methods ([page 15](../beyond/15-post-hoc.qmd#overall-test-first)).
 
 ```{r}
 #| include: false

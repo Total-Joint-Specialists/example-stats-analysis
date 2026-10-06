@@ -27,7 +27,7 @@ Run the code blocks in order, from the top: later blocks use the packages and da
 
 The two words are often used as if they meant the same thing. They don't:
 - **Reliability** asks whether a measurement can tell patients apart: are the real differences between knees large compared with the disagreement between readings? It's measured with the **intraclass correlation coefficient** (ICC), a number from 0 to 1. Because it compares the disagreement with how much the knees differ, the same raters look more reliable in a cohort with a wider range of deformities.
-- **Agreement** asks how close two readings are, in the measurement's own units. If rater 2 reads 3° higher than rater 1 for some knees, that's poor agreement, however reliable the ranking. It's measured with the **Bland-Altman limits of agreement**, in degrees.
+- **Agreement** asks how close two readings are, in the measurement's own units. If rater 2 reads every knee 3° higher than rater 1, that's poor agreement, even though the two raters put the knees in exactly the same order. It's measured with the **Bland-Altman limits of agreement**, in degrees.
 
 Report both. A clinician deciding whether a knee is in varus needs to know the agreement in degrees, not only that the ICC was 0.9.
 

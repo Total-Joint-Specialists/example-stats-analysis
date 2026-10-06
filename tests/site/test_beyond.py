@@ -224,3 +224,31 @@ def test_interaction_results_give_the_marginal_means_with_cis(site):
     """Page 16's ⚠️ box says a non-significant interaction is reported with the EMMs and their CIs."""
     results = next(text_of(q) for q in section(MIXED, "reporting").select("blockquote") if "Results:" in text_of(q))
     assert "84.4 (95% CI 82.4 to 86.4) in men" in results and "83.4 (95% CI 81.3 to 85.4) in women" in results
+
+
+def test_agreement_example_is_a_systematic_offset(site):
+    text = text_of(section(AGREEMENT, "reliability-vs-agreement"))
+    assert "for some knees" not in text and "reads every knee 3° higher" in text
+
+
+def test_dunn_controls_false_positives_only_with_holm(site):
+    page_8 = text_of(section("catalog/08-three-plus-unmatched.html", "which-groups-differ"))
+    page_15 = text_of(section(POST_HOC, "overall-test-first"))
+    assert "Tukey's HSD, Dunn's test and Holm-adjusted" not in page_8
+    assert "Dunn's test and any Holm-adjusted" not in page_15
+    assert "once Holm's adjustment is applied" in page_8 and "once Holm's adjustment is applied" in page_15
+
+
+def test_mixed_model_exercise_counts_joint_replacements_not_patients(site):
+    text = text_of(section(MIXED, "exercises"))
+    assert "patients" not in text and "600 joint replacements" in text
+
+
+def test_walking_aid_answer_gives_counts_with_percentages(site):
+    text = text_of(section(POST_HOC, "exercises"))
+    assert re.search(r"\d+ \(58\.8%\) at 6 weeks to \d+ \(25\.2%\) at 3 months and \d+ \(10\.7%\)", text)
+
+
+def test_log_rank_box_says_lifelines_needs_a_tighter_convergence_setting(site):
+    box = next(text_of(c) for c in section(POST_HOC, "after-log-rank").select(".callout") if "R vs Python" in text_of(c))
+    assert "precision" in box and "stops iterating slightly early" in box

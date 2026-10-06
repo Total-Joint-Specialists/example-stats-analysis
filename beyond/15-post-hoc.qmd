@@ -554,14 +554,14 @@ Implant C differs from both A and B (adjusted p < 0.001 for each). There was no 
 
 ::: {.callout-tip}
 ## 🔀 R vs Python: pairwise log-rank tests
-lifelines has `pairwise_logrank_test()`, which runs every pair at once and leaves the adjustment to you. R's survival package has no pairwise function, so the R code loops over the pairs; the survminer package's `pairwise_survdiff()` does the same in one call. To change the reference group, R uses `relevel()`; lifelines uses the first category of a pandas `Categorical`.
+lifelines has `pairwise_logrank_test()`, which runs every pair at once and leaves the adjustment to you. lifelines' Cox model stops iterating slightly early by default, so, as on [page 14](../survival/14-cox-regression.qmd), the Python Cox fit passes `fit_options={"precision": 1e-12}` to match R's hazard ratios. R's survival package has no pairwise function, so the R code loops over the pairs; the survminer package's `pairwise_survdiff()` does the same in one call. To change the reference group, R uses `relevel()`; lifelines uses the first category of a pandas `Categorical`.
 :::
 
 ## Do you need a significant overall test first? {#overall-test-first}
 
 A common rule says: only run post-hoc tests if the overall test (the ANOVA, Kruskal-Wallis or chi-square) is significant. It comes from **Fisher's least significant difference** method, which runs unadjusted pairwise tests and relies on the overall test as a gate. That gate only fully protects you with three groups.
 
-The tests on this page don't need the gate. Tukey's HSD, Games-Howell, Dunn's test and any Holm-adjusted set of pairwise tests control the family-wise error rate on their own. Requiring a significant overall test first just makes them stricter than they need to be.
+The tests on this page don't need the gate. Tukey's HSD and Games-Howell control the family-wise error rate on their own, and so do Dunn's test and any other set of pairwise tests once Holm's adjustment is applied. Requiring a significant overall test first just makes them stricter than they need to be.
 
 The two kinds of test can also disagree, and that's not a contradiction:
 - **A significant overall test with no significant pair**, as with complications by ASA class above (overall p = 0.016; no pair below 0.05 after adjustment). The overall test pools the evidence from all four classes, while each pair uses only two of them, and the ASA 1 and ASA 4 groups are small. Report it as it is: complication rates differed across ASA classes overall, but no single pair of classes differed clearly.
@@ -637,7 +637,8 @@ stopifnot(
   names(which(p.adjust(sex_p, "holm") < 0.05)) == "sleep_apnea", round(sex_p[["hypertension"]], 3) == 0.135,
   all(p.adjust(sex_p, "BH")[names(sex_p) != "sleep_apnea"] > 0.4),
   nrow(aid3) == 345, all(p.adjust(aid3_p, "holm") < 0.001),
-  round(100 * colMeans(aid3[, c("6wk", "3mo", "1yr")]), 1) == c(58.8, 25.2, 10.7)
+  round(100 * colMeans(aid3[, c("6wk", "3mo", "1yr")]), 1) == c(58.8, 25.2, 10.7),
+  colSums(aid3[, c("6wk", "3mo", "1yr")]) == c(203, 87, 37)
 )
 ```
 
@@ -714,7 +715,8 @@ later <- proms |>
   ungroup() |>
   pivot_wider(names_from = visit, values_from = walking_aid)
 nrow(later)
-colMeans(later[, c("6wk", "3mo", "1yr")])
+colSums(later[, c("6wk", "3mo", "1yr")])                     # walking-aid users at each visit
+round(100 * colMeans(later[, c("6wk", "3mo", "1yr")]), 1)    # the same, as percentages
 
 later_pairs <- combn(c("6wk", "3mo", "1yr"), 2)
 later_p <- apply(later_pairs, 2, function(pair) {
@@ -727,7 +729,8 @@ p.adjust(later_p, method = "holm")
 
 ```{python}
 later = proms[proms["visit"] != "preop"].pivot(index="case_id", columns="visit", values="walking_aid").dropna()
-print(len(later), later[["6wk", "3mo", "1yr"]].mean().round(3).to_list())
+print(len(later), later[["6wk", "3mo", "1yr"]].sum().astype(int).to_list())    # walking-aid users at each visit
+print((100 * later[["6wk", "3mo", "1yr"]].mean()).round(1).to_list())             # the same, as percentages
 
 later_p = []
 for first, second in itertools.combinations(["6wk", "3mo", "1yr"], 2):
@@ -737,5 +740,5 @@ print(multipletests(later_p, method="holm")[1])
 ```
 :::
 
-Among 345 patients assessed at all three visits, walking-aid use fell from 58.8% at 6 weeks to 25.2% at 3 months and 10.7% at 1 year; every pair of visits differed in McNemar tests with Holm's adjustment (all p < 0.001).
+Among 345 patients assessed at all three visits, walking-aid use fell from 203 (58.8%) at 6 weeks to 87 (25.2%) at 3 months and 37 (10.7%) at 1 year; every pair of visits differed in McNemar tests with Holm's adjustment (all p < 0.001).
 :::

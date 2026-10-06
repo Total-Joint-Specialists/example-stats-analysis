@@ -1,10 +1,495 @@
 ---
-title: "17 · Agreement & reliability (coming soon)"
-description: "ICC, Bland-Altman, and kappa for radiographic measurements."
+title: "17 · Agreement & reliability"
+description: "ICC, Bland-Altman limits of agreement, and kappa for radiographic measurements: how well two raters, or one rater on two days, agree."
+engine: knitr
 ---
 
-::: {.callout-note .coming-soon}
-## Coming soon
-This page is being written. Links from the decision table already point at its sections, so they will keep working when the content arrives.
+```{r}
+#| include: false
+source("R/check_agree.R")
+```
+
+```{r}
+#| echo: false
+#| output: asis
+# Stamp the data version into the page; tests/site/test_freshness.py checks it.
+cat(sprintf("<!-- data-checksum: %s -->", unname(tools::md5sum("data/CHECKSUMS.md5"))))
+```
+
+Before a measurement goes into a study, someone should ask: if it were measured again, would you get the same answer? Alignment angles on long-leg radiographs are a good example. Two surgeons can place the same landmarks a little differently, and one surgeon can place them differently on another day. This page shows how to measure that, using the practice data's reliability study: 60 knees, each measured by two raters (R1 and R2), twice, at least two weeks apart.
+
+::: {.callout-note}
+## 💡 How this page works
+Run the code blocks in order, from the top: later blocks use the packages and data loaded in the first one.
 :::
 
+## Reliability or agreement? {#reliability-vs-agreement}
+
+The two words are often used as if they meant the same thing. They don't:
+- **Reliability** asks whether a measurement can tell patients apart: are the real differences between knees large compared with the disagreement between readings? It's measured with the **intraclass correlation coefficient** (ICC), a number from 0 to 1. Because it compares the disagreement with how much the knees differ, the same raters look more reliable in a cohort with a wider range of deformities.
+- **Agreement** asks how close two readings are, in the measurement's own units. If rater 2 reads 3° higher than rater 1 for some knees, that's poor agreement, however reliable the ranking. It's measured with the **Bland-Altman limits of agreement**, in degrees.
+
+Report both. A clinician deciding whether a knee is in varus needs to know the agreement in degrees, not only that the ICC was 0.9.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+library(tidyverse)
+
+readings <- read_csv("data/radiographic_reliability.csv", show_col_types = FALSE)
+readings |> head(4)
+readings |> count(rater, session)                      # 60 knees in every rater x session
+```
+
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import pingouin as pg
+import matplotlib.pyplot as plt
+from scipy import stats
+from statsmodels.stats.inter_rater import cohens_kappa
+
+readings = pd.read_csv("data/radiographic_reliability.csv")
+print(readings.head(4))
+print(readings.groupby(["rater", "session"]).size())     # 60 knees in every rater x session
+```
+:::
+
+```{python}
+#| include: false
+chk = {"knees": float(readings["knee_id"].nunique()), "rows": float(len(readings))}
+```
+
+```{r}
+#| include: false
+check_agree(list(knees = n_distinct(readings$knee_id), rows = nrow(readings)), reticulate::py$chk)
+```
+
+The data are long: one row per knee, rater and session, with the hip-knee-ankle angle (HKA, 180° is neutral, below 180° is varus), the medial proximal tibial angle (MPTA), the lateral distal femoral angle (LDFA) and the CPAK class those angles give.
+
+## The intraclass correlation coefficient {#icc}
+
+There are several ICCs, and the right one depends on the design. Three choices define it (Koo & Li, 2016):
+- **Model:** are the raters a random sample of the raters who might use this measurement (**two-way random**), or the only raters you care about (**two-way mixed**)? For a measurement other surgeons will use, choose random.
+- **Type:** should a rater who always reads higher count against the measurement (**absolute agreement**) or not (**consistency**)? For angles that feed clinical decisions, it should: choose absolute agreement.
+- **Unit:** will the study use one rater's reading (**single**) or the average of several (**average**)? Usually single.
+
+For inter-rater reliability of HKA, that gives a two-way random, absolute-agreement, single-rater ICC, written ICC(A,1) (or ICC(2,1) in Shrout and Fleiss's older naming). Using each rater's first-session readings:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+inter_hka <- readings |>
+  filter(session == 1) |>
+  select(knee_id, rater, hka_deg) |>
+  pivot_wider(names_from = rater, values_from = hka_deg)     # one column per rater
+
+inter_icc <- irr::icc(inter_hka[, c("R1", "R2")], model = "twoway", type = "agreement", unit = "single")
+inter_icc
+```
+
+## Python
+
+```{python}
+first_session = readings[readings["session"] == 1]
+inter_icc = pg.intraclass_corr(data=first_session, targets="knee_id", raters="rater", ratings="hka_deg")
+print(inter_icc[["Type", "ICC", "CI95"]])     # ICC(A,1): two-way random, absolute agreement, single rater
+```
+:::
+
+```{python}
+#| include: false
+row = inter_icc.set_index("Type").loc["ICC(A,1)"]
+chk = {"icc": float(row["ICC"]), "low": float(row["CI95"][0]), "high": float(row["CI95"][1])}
+```
+
+```{r}
+#| include: false
+# pingouin rounds its CI to 2 decimals, so R's bounds are rounded to match
+check_agree(list(icc = inter_icc$value, low = round(inter_icc$lbound, 2), high = round(inter_icc$ubound, 2)),
+            reticulate::py$chk)
+```
+
+- **ICC(A,1) = 0.889** (Python's `ICC(A,1)` row; R prints 0.889).
+- **95% CI 0.82 to 0.93.** Koo and Li's guide: below 0.5 poor, 0.5 to 0.75 moderate, 0.75 to 0.9 good, above 0.9 excellent. Judge by the CI, not the point estimate: this one runs from good to excellent.
+- **The F test** (R) tests whether the ICC is above 0. It nearly always is, so it's rarely worth reporting.
+
+::: {.callout-warning}
+## ⚠️ Watch out: always say which ICC
+The same data give a different ICC for every model, type and unit: here 0.889 for absolute agreement and 0.896 for consistency, and 0.94 for the average of the two raters. "ICC = 0.94" with no form named can't be interpreted. Write the form out in the Methods.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: one ICC or all of them
+R's `irr::icc()` computes the one ICC you ask for. pingouin's `intraclass_corr()` computes all six forms at once; pick the row. It labels them two ways: `ICC(A,1)` in McGraw and Wong's naming, which matches R's arguments, or `ICC2` in older pingouin versions. pingouin rounds the CI to 2 decimals.
+:::
+
+## Inter-rater and intra-rater reliability {#inter-intra-rater}
+
+The ICC above is **inter-rater** reliability: two raters, same films. **Intra-rater** (test-retest) reliability uses one rater reading the same films twice, far enough apart that they don't remember their first answers. The same ICC form applies, with the two sessions in place of the two raters:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+intra_hka <- readings |>
+  filter(rater == "R1") |>
+  select(knee_id, session, hka_deg) |>
+  pivot_wider(names_from = session, values_from = hka_deg, names_prefix = "session_")
+
+intra_icc <- irr::icc(intra_hka[, c("session_1", "session_2")], model = "twoway", type = "agreement", unit = "single")
+intra_icc
+```
+
+## Python
+
+```{python}
+rater_1 = readings[readings["rater"] == "R1"]
+intra_icc = pg.intraclass_corr(data=rater_1, targets="knee_id", raters="session", ratings="hka_deg")
+print(intra_icc.set_index("Type").loc["ICC(A,1)", ["ICC", "CI95"]])
+```
+:::
+
+```{python}
+#| include: false
+row = intra_icc.set_index("Type").loc["ICC(A,1)"]
+chk = {"icc": float(row["ICC"]), "low": float(row["CI95"][0]), "high": float(row["CI95"][1])}
+```
+
+```{r}
+#| include: false
+# pingouin rounds its CI to 2 decimals
+check_agree(list(icc = intra_icc$value, low = round(intra_icc$lbound, 2), high = round(intra_icc$ubound, 2)),
+            reticulate::py$chk)
+```
+
+Rater 1 agreed with themselves a little better than with rater 2: intra-rater ICC(A,1) = 0.915 (95% CI 0.86 to 0.95), excellent at its point estimate and good to excellent across its CI.
+
+## Bland-Altman: how far apart are the readings? {#bland-altman}
+
+The ICC is a ratio and has no units. To see how far apart two readings can be, in degrees, plot the **difference** between them against their **mean**, one point per knee. Then add three lines:
+- **The bias:** the mean difference, showing whether one rater reads systematically higher.
+- **The 95% limits of agreement:** bias ± 1.96 × SD of the differences. For 95% of knees, rater 2's reading will fall between these limits relative to rater 1's.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| fig-height: 4
+inter_hka <- inter_hka |> mutate(difference = R2 - R1, mean = (R1 + R2) / 2)
+
+n_knees <- nrow(inter_hka)
+bias <- mean(inter_hka$difference)
+sd_diff <- sd(inter_hka$difference)
+limits <- bias + c(-1.96, 1.96) * sd_diff
+se_limit <- sqrt(3 * sd_diff^2 / n_knees)                      # Bland and Altman's SE for each limit
+limit_cis <- rbind(lower = limits[1] + c(-1, 1) * qt(0.975, n_knees - 1) * se_limit,
+                   upper = limits[2] + c(-1, 1) * qt(0.975, n_knees - 1) * se_limit)
+
+c(bias = bias, bias_ci = t.test(inter_hka$difference)$conf.int, sd = sd_diff, limits = limits)
+limit_cis
+
+ggplot(inter_hka, aes(mean, difference)) +
+  geom_point() +
+  geom_hline(yintercept = bias) +
+  geom_hline(yintercept = limits, linetype = "dashed") +
+  labs(x = "Mean of the two readings (°)", y = "Rater 2 − rater 1 (°)")
+```
+
+## Python
+
+```{python}
+inter = first_session.pivot(index="knee_id", columns="rater", values="hka_deg")
+difference = inter["R2"] - inter["R1"]
+mean = (inter["R1"] + inter["R2"]) / 2
+
+n_knees = len(difference)
+bias = difference.mean()
+sd_diff = difference.std()                                     # pandas uses n - 1, like R
+limits = bias + np.array([-1.96, 1.96]) * sd_diff
+se_limit = np.sqrt(3 * sd_diff**2 / n_knees)                   # Bland and Altman's SE for each limit
+t_crit = stats.t.ppf(0.975, n_knees - 1)
+bias_ci = stats.ttest_1samp(difference, 0).confidence_interval()
+print(round(bias, 3), round(float(bias_ci.low), 3), round(float(bias_ci.high), 3), round(sd_diff, 3), limits.round(3))
+print((limits - t_crit * se_limit).round(3), (limits + t_crit * se_limit).round(3))   # CI of each limit: lower ends, upper ends
+
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.scatter(mean, difference)
+ax.axhline(bias)
+for limit in limits:
+    ax.axhline(limit, linestyle="--")
+ax.set_xlabel("Mean of the two readings (°)")
+ax.set_ylabel("Rater 2 − rater 1 (°)")
+plt.tight_layout()
+plt.show()
+```
+:::
+
+```{python}
+#| include: false
+chk = {"bias": float(bias), "bias_low": float(bias_ci.low), "sd": float(sd_diff), "limit_low": float(limits[0]),
+       "limit_high": float(limits[1]), "limit_high_ci_high": float(limits[1] + t_crit * se_limit)}
+```
+
+```{r}
+#| include: false
+check_agree(list(bias = bias, bias_low = t.test(inter_hka$difference)$conf.int[1], sd = sd_diff, limit_low = limits[1],
+                 limit_high = limits[2], limit_high_ci_high = limit_cis["upper", 2]),
+            reticulate::py$chk)
+```
+
+- **Bias = 0.50°** (95% CI 0.08° to 0.93°): rater 2 reads half a degree higher than rater 1 on average, the same difference [page 7's exercise 2](../catalog/07-two-paired-groups.qmd#exercises) found with a paired t test.
+- **Limits of agreement, −2.74° to 3.74°:** for 95% of knees, rater 2's reading will be between 2.7° below and 3.7° above rater 1's.
+- **The CIs of the limits** (−3.48° to −2.00° and 3.00° to 4.48°) show how precisely 60 knees pin the limits down.
+- **The plot:** the points scatter evenly around the bias line, with no trend up or down as the mean angle changes. A trend would mean the raters disagree more for some knees (more varus, say) than others, and a single pair of limits wouldn't describe them.
+
+Whether limits of ±3.7° are good enough is a clinical question, not a statistical one. If a 3° difference moves a knee from "neutral" to "varus" in your study, it matters. Decide the acceptable limits **before** you run the reliability study, and compare the limits (and their CIs) with them.
+
+## Kappa for categories {#kappa}
+
+For a category, like CPAK class, use **Cohen's kappa**: the agreement between two raters beyond what chance alone would produce. Kappa is 1 for perfect agreement and 0 for agreement no better than chance.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+cpak_levels <- c("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+cpak <- readings |>
+  filter(session == 1) |>
+  select(knee_id, rater, cpak_class) |>
+  pivot_wider(names_from = rater, values_from = cpak_class) |>
+  mutate(R1 = factor(R1, levels = cpak_levels), R2 = factor(R2, levels = cpak_levels))
+
+mean(cpak$R1 == cpak$R2)                                     # simple percentage agreement
+cpak_kappa <- DescTools::CohenKappa(cpak$R1, cpak$R2, conf.level = 0.95)
+cpak_kappa
+```
+
+## Python
+
+```{python}
+cpak_levels = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+cpak = first_session.pivot(index="knee_id", columns="rater", values="cpak_class")
+print((cpak["R1"] == cpak["R2"]).mean())                       # simple percentage agreement
+
+cpak_table = pd.crosstab(pd.Categorical(cpak["R1"], categories=cpak_levels),
+                         pd.Categorical(cpak["R2"], categories=cpak_levels), dropna=False)
+cpak_kappa = cohens_kappa(cpak_table.to_numpy())
+print(cpak_kappa.kappa, cpak_kappa.kappa_low, cpak_kappa.kappa_upp)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"agreement": float((cpak["R1"] == cpak["R2"]).mean()), "kappa": float(cpak_kappa.kappa),
+       "low": float(cpak_kappa.kappa_low), "high": float(cpak_kappa.kappa_upp)}
+```
+
+```{r}
+#| include: false
+check_agree(list(agreement = mean(cpak$R1 == cpak$R2), kappa = cpak_kappa[["kappa"]], low = cpak_kappa[["lwr.ci"]],
+                 high = cpak_kappa[["upr.ci"]]),
+            reticulate::py$chk)
+```
+
+The raters gave the same CPAK class to 40 of the 60 knees (66.7%), but some of that would happen by chance. Kappa = 0.58 (95% CI 0.44 to 0.73): moderate agreement on Landis and Koch's scale (0.41 to 0.60 moderate, 0.61 to 0.80 substantial, above 0.80 almost perfect).
+
+**Weighted kappa for ordered categories.** Plain kappa treats every disagreement as equally bad. When the categories have an order, a near miss should count less than a big miss. CPAK class has no single order (it's a 3 × 3 grid of two angles), but each axis does. The arithmetic HKA group goes varus, neutral, valgus. A **weighted kappa** gives a disagreement between varus and neutral half the penalty of one between varus and valgus (linear weights):
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+hka_group <- function(cpak_class) {
+  # CPAK classes I-III, IV-VI and VII-IX each run varus, neutral, valgus
+  factor(c("varus", "neutral", "valgus")[(as.integer(cpak_class) - 1) %% 3 + 1],
+         levels = c("varus", "neutral", "valgus"))                # in order
+}
+hka_table <- table(R1 = hka_group(cpak$R1), R2 = hka_group(cpak$R2))
+hka_table
+unweighted_kappa <- DescTools::CohenKappa(hka_table, conf.level = 0.95)                            # unweighted
+weighted_kappa <- DescTools::CohenKappa(hka_table, weights = "Equal-Spacing", conf.level = 0.95)   # linear weights
+rbind(unweighted = unweighted_kappa, weighted = weighted_kappa)
+```
+
+## Python
+
+```{python}
+hka_group = {cls: ["varus", "neutral", "valgus"][i % 3] for i, cls in enumerate(cpak_levels)}   # I-III, IV-VI, VII-IX
+order = ["varus", "neutral", "valgus"]
+hka_table = pd.crosstab(pd.Categorical(cpak["R1"].map(hka_group), categories=order),
+                        pd.Categorical(cpak["R2"].map(hka_group), categories=order), dropna=False)
+print(hka_table)
+
+unweighted = cohens_kappa(hka_table.to_numpy())
+weighted = cohens_kappa(hka_table.to_numpy(), wt="linear")     # linear weights
+print(unweighted.kappa, weighted.kappa, weighted.kappa_low, weighted.kappa_upp)
+```
+:::
+
+```{python}
+#| include: false
+chk = {"unweighted": float(unweighted.kappa), "weighted": float(weighted.kappa),
+       "low": float(weighted.kappa_low), "high": float(weighted.kappa_upp)}
+```
+
+```{r}
+#| include: false
+check_agree(list(unweighted = unweighted_kappa[["kappa"]], weighted = weighted_kappa[["kappa"]],
+                 low = weighted_kappa[["lwr.ci"]], high = weighted_kappa[["upr.ci"]]),
+            reticulate::py$chk)
+```
+
+The raters agreed on the HKA group for 48 of 60 knees, and every disagreement was a near miss: no knee was called varus by one rater and valgus by the other. Unweighted kappa is 0.68; the weighted kappa, which gives near misses partial credit, is 0.73 (95% CI 0.58 to 0.87), substantial agreement.
+
+::: {.callout-warning}
+## ⚠️ Watch out: weighted kappa needs the categories in order
+The weights depend on the order of the categories. Put them in their real order (varus, neutral, valgus) yourself. Some functions sort categories alphabetically, which would put "neutral" before "valgus" before "varus" and weight the wrong disagreements: `irr::kappa2(weight = "equal")` does, and gives 0.63 here instead of 0.73. Never use weighted kappa for categories with no order, like CPAK class itself.
+:::
+
+::: {.callout-tip}
+## 🔀 R vs Python: kappa and its CI
+DescTools' `CohenKappa()` and statsmodels' `cohens_kappa()` give the same kappa and the same CI. DescTools calls linear weights "Equal-Spacing" and quadratic weights "Fleiss-Cohen"; statsmodels uses `wt="linear"` and `wt="quadratic"`. scikit-learn's `cohen_kappa_score()` gives the kappa but no CI.
+:::
+
+## How to report it {#reporting}
+
+> **Methods:** Two raters measured the hip-knee-ankle angle, MPTA and LDFA on 60 long-leg radiographs, twice, at least 2 weeks apart. Inter- and intra-rater reliability were assessed with two-way random-effects, absolute-agreement, single-rater intraclass correlation coefficients (ICC(A,1)) and interpreted according to Koo and Li. Agreement was assessed with Bland-Altman 95% limits of agreement. Agreement on CPAK class was assessed with Cohen's kappa, and on the ordered arithmetic HKA group with linearly weighted kappa.
+>
+> **Results:** Inter-rater reliability of the hip-knee-ankle angle was good to excellent (ICC 0.89, 95% CI 0.82 to 0.93), and intra-rater reliability excellent at its point estimate (ICC 0.91, 95% CI 0.86 to 0.95). Rater 2 measured 0.50° higher than rater 1 on average (95% CI 0.08° to 0.93°), with 95% limits of agreement from −2.74° to 3.74°. Agreement on CPAK class was moderate (κ = 0.58, 95% CI 0.44 to 0.73), and on the arithmetic HKA group substantial (weighted κ = 0.73, 95% CI 0.58 to 0.87).
+
+```{r}
+#| include: false
+# Prose guard: numbers quoted in the text above. If the data change, update the text.
+inter_c <- irr::icc(inter_hka[, c("R1", "R2")], model = "twoway", type = "consistency", unit = "single")
+inter_k <- irr::icc(inter_hka[, c("R1", "R2")], model = "twoway", type = "agreement", unit = "average")
+irr_weighted <- irr::kappa2(data.frame(hka_group(cpak$R1), hka_group(cpak$R2)), weight = "equal")
+mpta <- readings |> filter(session == 1) |> select(knee_id, rater, mpta_deg) |> pivot_wider(names_from = rater, values_from = mpta_deg)
+mpta_icc <- irr::icc(mpta[, c("R1", "R2")], model = "twoway", type = "agreement", unit = "single")
+retest <- intra_hka$session_2 - intra_hka$session_1
+retest_limits <- mean(retest) + c(-1.96, 1.96) * sd(retest)
+shifted <- inter_hka |> mutate(R2_shifted = R2 + 5)
+shifted_icc <- irr::icc(shifted[, c("R1", "R2_shifted")], model = "twoway", type = "agreement", unit = "single")
+pearson <- cor.test(inter_hka$R1, inter_hka$R2)
+stopifnot(
+  n_distinct(readings$knee_id) == 60, nrow(readings) == 240,
+  round(inter_icc$value, 3) == 0.889, round(c(inter_icc$lbound, inter_icc$ubound), 2) == c(0.82, 0.93),
+  round(inter_c$value, 3) == 0.896, round(inter_k$value, 2) == 0.94,
+  round(intra_icc$value, 3) == 0.915, round(intra_icc$value, 2) == 0.91, round(c(intra_icc$lbound, intra_icc$ubound), 2) == c(0.86, 0.95),
+  round(c(bias, t.test(inter_hka$difference)$conf.int), 2) == c(0.50, 0.08, 0.93),
+  round(limits, 2) == c(-2.74, 3.74), round(limits, 1) == c(-2.7, 3.7),
+  round(c(limit_cis["lower", ], limit_cis["upper", ]), 2) == c(-3.48, -2.00, 3.00, 4.48),
+  cor.test(inter_hka$difference, inter_hka$mean)$p.value > 0.5,
+  sum(cpak$R1 == cpak$R2) == 40, round(100 * mean(cpak$R1 == cpak$R2), 1) == 66.7,
+  round(cpak_kappa[c("kappa", "lwr.ci", "upr.ci")], 2) == c(0.58, 0.44, 0.73),
+  sum(diag(hka_table)) == 48, hka_table["varus", "valgus"] == 0, hka_table["valgus", "varus"] == 0,
+  round(unweighted_kappa[["kappa"]], 2) == 0.68,
+  round(weighted_kappa[c("kappa", "lwr.ci", "upr.ci")], 2) == c(0.73, 0.58, 0.87),
+  round(irr_weighted$value, 2) == 0.63,
+  # exercise solutions (recomputed here: the guard runs before the solution chunks)
+  round(mpta_icc$value, 2) == 0.93, round(c(mpta_icc$lbound, mpta_icc$ubound), 2) == c(0.89, 0.96),
+  round(c(mean(retest), t.test(retest)$conf.int), 2) == c(-0.26, -0.65, 0.12),
+  round(retest_limits, 2) == c(-3.20, 2.67),
+  round(c(pearson$estimate, pearson$conf.int), 2) == c(0.90, 0.83, 0.94),
+  round(cor(shifted$R1, shifted$R2_shifted), 2) == 0.90,
+  round(shifted_icc$value, 2) == 0.42, round(c(shifted_icc$lbound, shifted_icc$ubound), 2) == c(-0.04, 0.78)
+)
+```
+
+## Exercises {#exercises}
+
+The solutions use the packages and data loaded in the sections above, so run the page from the top first.
+
+**1.** Calculate the inter-rater ICC for the MPTA, using each rater's first-session readings, and describe it with Koo and Li's guide.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+mpta <- readings |>
+  filter(session == 1) |>
+  select(knee_id, rater, mpta_deg) |>
+  pivot_wider(names_from = rater, values_from = mpta_deg)
+irr::icc(mpta[, c("R1", "R2")], model = "twoway", type = "agreement", unit = "single")
+```
+
+## Python
+
+```{python}
+mpta_icc = pg.intraclass_corr(data=first_session, targets="knee_id", raters="rater", ratings="mpta_deg")
+print(mpta_icc.set_index("Type").loc["ICC(A,1)", ["ICC", "CI95"]])
+```
+:::
+
+Inter-rater reliability of the MPTA was excellent at its point estimate (ICC(A,1) = 0.93, 95% CI 0.89 to 0.96); the CI runs from good to excellent.
+:::
+
+**2.** Using rater 1's two sessions, calculate the Bland-Altman bias and 95% limits of agreement for HKA, and write the Results sentence.
+
+::: {.callout-tip collapse="true"}
+## Solution
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+retest <- intra_hka$session_2 - intra_hka$session_1
+c(bias = mean(retest), t.test(retest)$conf.int, limits = mean(retest) + c(-1.96, 1.96) * sd(retest))
+```
+
+## Python
+
+```{python}
+sessions = rater_1.pivot(index="knee_id", columns="session", values="hka_deg")
+retest = sessions[2] - sessions[1]
+retest_ci = stats.ttest_1samp(retest, 0).confidence_interval()
+print(retest.mean(), retest_ci.low, retest_ci.high, retest.mean() + np.array([-1.96, 1.96]) * retest.std())
+```
+:::
+
+Rater 1's second readings were 0.26° lower than the first on average (95% CI −0.65° to 0.12°), with 95% limits of agreement from −3.20° to 2.67°.
+:::
+
+**3.** A colleague reports that the two raters' HKA readings correlate well (Pearson's r = 0.90, 95% CI 0.83 to 0.94) as evidence that they agree. What's wrong with that? Show it by adding 5° to every one of rater 2's readings and recalculating r and the ICC.
+
+::: {.callout-tip collapse="true"}
+## Solution
+Correlation measures whether two readings rise and fall together, not whether they're equal. A rater who reads every knee 5° too high correlates perfectly well with an accurate one.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+cor.test(inter_hka$R1, inter_hka$R2)
+
+shifted <- inter_hka |> mutate(R2_shifted = R2 + 5)
+cor(shifted$R1, shifted$R2_shifted)
+irr::icc(shifted[, c("R1", "R2_shifted")], model = "twoway", type = "agreement", unit = "single")
+```
+
+## Python
+
+```{python}
+pearson = stats.pearsonr(inter["R1"], inter["R2"])
+pearson_ci = pearson.confidence_interval()
+print(round(pearson.statistic, 3), round(float(pearson_ci.low), 3), round(float(pearson_ci.high), 3))
+
+shifted = first_session.copy()
+shifted.loc[shifted["rater"] == "R2", "hka_deg"] += 5
+shifted_wide = shifted.pivot(index="knee_id", columns="rater", values="hka_deg")
+print(stats.pearsonr(shifted_wide["R1"], shifted_wide["R2"]).statistic)
+shifted_icc = pg.intraclass_corr(data=shifted, targets="knee_id", raters="rater", ratings="hka_deg")
+print(shifted_icc.set_index("Type").loc["ICC(A,1)", ["ICC", "CI95"]])
+```
+:::
+
+Pearson's r is 0.90 (95% CI 0.83 to 0.94) before and after the shift: it can't see a systematic difference. The absolute-agreement ICC drops from 0.89 to 0.42 (95% CI −0.04 to 0.78), because a 5° disagreement on every knee is poor agreement. Report the ICC and the Bland-Altman limits, not r.
+:::

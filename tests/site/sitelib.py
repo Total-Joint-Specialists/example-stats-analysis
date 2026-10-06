@@ -72,6 +72,9 @@ FREE_FORM_SECTIONS = {
     "beyond/16-mixed-models.html": [
         "why-mixed-models", "random-intercept", "estimated-marginal-means", "time", "group-by-time",
         "bilateral", "reporting", "exercises"],
+    "beyond/17-agreement.html": [
+        "reliability-vs-agreement", "icc", "inter-intra-rater", "bland-altman", "kappa", "reporting",
+        "exercises"],
 }
 
 

@@ -7,6 +7,7 @@ from sitelib import code_of, load, section, text_of
 
 POST_HOC = "beyond/15-post-hoc.html"
 MIXED = "beyond/16-mixed-models.html"
+AGREEMENT = "beyond/17-agreement.html"
 
 
 # ---- page 15: post-hoc tests and multiple comparisons ----------------------------
@@ -82,3 +83,32 @@ def test_bilateral_patients_get_a_nested_model_and_a_pointer(site):
     found = section(MIXED, "bilateral")
     assert "(1 | patient_id/case_id)" in text_of(found)
     assert any(a["href"].endswith("survival/14-cox-regression.html#stratified-cox") for a in found.select("a[href]"))
+
+
+# ---- page 17: agreement and reliability ----------------------------------------------
+
+def test_icc_form_is_named_and_interpreted_with_koo_and_li(site):
+    text = text_of(section(AGREEMENT, "icc"))
+    for phrase in ["two-way random", "absolute agreement", "single", "Koo and Li", "ICC(A,1)"]:
+        assert phrase in text, phrase
+
+
+def test_inter_and_intra_rater_reliability_are_both_measured(site):
+    assert "inter-rater" in text_of(section(AGREEMENT, "icc"))
+    text = text_of(section(AGREEMENT, "inter-intra-rater"))
+    assert "intra-rater" in text.lower() and "0.915" in text
+
+
+def test_bland_altman_plot_and_limits_in_both_languages(site):
+    found = section(AGREEMENT, "bland-altman")
+    plotted = [tabset for tabset in found.select("div.panel-tabset")
+               if all(pane.select("img") for pane in tabset.select("div.tab-pane"))]
+    assert plotted, "the Bland-Altman plot is drawn in both languages"
+    assert "limits of agreement" in text_of(found).lower() and "−2.74° to 3.74°" in text_of(found)
+
+
+def test_kappa_and_weighted_kappa_with_ordered_categories(site):
+    found = section(AGREEMENT, "kappa")
+    code = code_of(found)
+    assert "CohenKappa(" in code and "cohens_kappa(" in code and "Equal-Spacing" in code and 'wt="linear"' in code
+    assert "alphabetically" in text_of(found)

@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <link href="../survival/13-kaplan-meier.html" rel="next">
 <link href="../catalog/11-predict-from-one.html" rel="prev">
+<link href="../images/tjs-icon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -333,6 +334,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/tjs-logo.png" alt="Total Joint Specialists" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/tjs-logo-dark.png" alt="Total Joint Specialists" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -729,7 +736,7 @@ Dep. Variable:            op_time_min   R-squared:                       0.266
 Model:                            OLS   Adj. R-squared:                  0.261
 Method:                 Least Squares   F-statistic:                     53.97
 Date:                Tue, 06 Oct 2026   Prob (F-statistic):           8.05e-39
-Time:                        13:31:12   Log-Likelihood:                -2437.7
+Time:                        16:01:47   Log-Likelihood:                -2437.7
 No. Observations:                 600   AIC:                             4885.
 Df Residuals:                     595   BIC:                             4907.
 Df Model:                           4                                         
@@ -777,7 +784,7 @@ Notes:
 <h3 class="anchored" data-anchor-id="how-to-report-it">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> Operative time was modeled with multiple linear regression on BMI, age, sex and procedure, chosen before the analysis.</p>
-<p><strong>Results:</strong> Adjusted for age, sex and procedure, each 1 kg/m² of BMI was associated with 1.27 minutes longer operative time (95% CI 1.06 to 1.49, p &lt; 0.001). TKAs took 6.74 minutes longer than THAs (95% CI 4.40 to 9.08), and each year of age added 0.27 minutes (95% CI 0.15 to 0.39). The model explained 27% of the variation in operative time (R² = 0.27).</p>
+<p><strong>Results:</strong> Adjusted for age, sex and procedure, the coefficient for BMI was 1.27 minutes of operative time per kg/m² (95% CI 1.06 to 1.49; p &lt; 0.001). The coefficient for TKA (vs THA) was 6.74 minutes (95% CI 4.40 to 9.08) and for age 0.27 minutes per year (95% CI 0.15 to 0.39). The model explained 27% of the variation in operative time (R² = 0.27).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1082,7 +1089,7 @@ tau_diff      15.286584  39.693240</code></pre>
 <h3 class="anchored" data-anchor-id="how-to-report-it-1">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> HOOS JR (hips) and KOOS JR (knees) were modeled against days since surgery with an exponential recovery curve whose start, plateau and time constant could differ between hips and knees, fitted by nonlinear least squares. Whether BMI’s effect on operative time was linear was checked by adding a natural cubic spline (3 degrees of freedom) and comparing the models with an F test.</p>
-<p><strong>Results:</strong> Knees recovered more slowly than hips: the time constant was 27.5 days longer (95% CI 15.9 to 40.1), so half of the eventual gain took about 56 days after knee replacement and 37 days after hip replacement. Allowing BMI’s effect on operative time to bend did not clearly improve the fit (F = 0.58, df = 2 and 593, p = 0.562).</p>
+<p><strong>Results:</strong> The difference in the time constant between knees and hips was 27.5 days (95% CI 15.9 to 40.1); half of the change was reached at about 56 days after knee replacement and 37 days after hip replacement. For BMI and operative time, comparing a spline with a straight line gave F = 0.58 (df = 2 and 593, p = 0.562).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1233,7 +1240,7 @@ Dep. Variable:       complication_90d   No. Observations:                  600
 Model:                          Logit   Df Residuals:                      594
 Method:                           MLE   Df Model:                            5
 Date:                Tue, 06 Oct 2026   Pseudo R-squ.:                 0.08141
-Time:                        13:31:13   Log-Likelihood:                -160.28
+Time:                        16:01:49   Log-Likelihood:                -160.28
 converged:                       True   LL-Null:                       -174.49
 Covariance Type:            nonrobust   LLR p-value:                 3.027e-05
 ===============================================================================
@@ -1304,7 +1311,7 @@ diabetes       0.877025  0.334938  2.296460</code></pre>
 <h3 class="anchored" data-anchor-id="how-to-report-it-2">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> Complications within 90 days were modeled with multiple logistic regression on age (per 10 years), BMI (per 5 kg/m²), ASA class, diabetes and sex, chosen before the analysis.</p>
-<p><strong>Results:</strong> Complications followed 51 of 600 procedures (8.5%). Older age (odds ratio 2.08 per 10 years, 95% CI 1.46 to 3.02) and higher BMI (odds ratio 1.39 per 5 kg/m², 95% CI 1.03 to 1.86) were independently associated with complications. The estimates for ASA class (1.16 per class, 95% CI 0.68 to 2.00), diabetes (0.88, 95% CI 0.31 to 2.15) and male sex (0.94, 95% CI 0.51 to 1.72) were imprecise.</p>
+<p><strong>Results:</strong> Complications followed 51 of 600 procedures (8.5%). In the multivariable model, the odds ratios for a complication were 2.08 per 10 years of age (95% CI 1.46 to 3.02), 1.39 per 5 kg/m² of BMI (95% CI 1.03 to 1.86), 1.16 per ASA class (95% CI 0.68 to 2.00), 0.88 for diabetes (95% CI 0.31 to 2.15) and 0.94 for male sex (95% CI 0.51 to 1.72).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1480,7 +1487,7 @@ bmi_5          1.030844             0.838625             1.267121  0.772960</cod
 <h3 class="anchored" data-anchor-id="how-to-report-it-3">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> Revision was modeled with Cox proportional hazards regression on implant (reference A), age (per 10 years), sex and BMI (per 5 kg/m²), chosen before the analysis.</p>
-<p><strong>Results:</strong> After adjustment for age, sex and BMI, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.19, 95% CI 1.92 to 5.29, p &lt; 0.001); the estimate for implant B was imprecise (0.83, 95% CI 0.45 to 1.52). In an unplanned, exploratory finding, men had a lower hazard of revision than women (hazard ratio 0.51, 95% CI 0.32 to 0.81).</p>
+<p><strong>Results:</strong> After adjustment for age, sex and BMI, the hazard ratio for revision compared with implant A was 3.19 (95% CI 1.92 to 5.29; p &lt; 0.001) for implant C and 0.83 (95% CI 0.45 to 1.52) for implant B. In an unplanned, exploratory analysis, the hazard ratio for men compared with women was 0.51 (95% CI 0.32 to 0.81).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1580,7 +1587,10 @@ surgeon[T.S3]  0.599270 -2.277658  3.476199</code></pre>
 </div>
 </div>
 </div>
-<p>There’s no clear evidence that adding surgeon improves the model (F = 0.09, df = 2 and 593, p = 0.911): compared with S1, S2’s operations took 0.07 minutes longer (95% CI −2.57 to 2.72) and S3’s 0.60 minutes longer (95% CI −2.28 to 3.48). BMI’s coefficient is unchanged at 1.27 minutes per kg/m² (95% CI 1.06 to 1.49).</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> Compared with surgeon S1, the coefficients were 0.07 minutes for S2 (95% CI −2.57 to 2.72) and 0.60 minutes for S3 (95% CI −2.28 to 3.48) (F test for adding surgeon, F = 0.09, df = 2 and 593, p = 0.911). The coefficient for BMI was 1.27 minutes per kg/m² (95% CI 1.06 to 1.49).</p>
+</blockquote>
+<p>There’s no clear evidence that adding surgeon improves the model, and BMI’s coefficient doesn’t change.</p>
 </div>
 </div>
 </div>
@@ -1632,7 +1642,10 @@ asa            1.061689  0.582593  1.934767</code></pre>
 </div>
 </div>
 </div>
-<p>Older age was associated with discharge to a facility (odds ratio 2.08 per 10 years, 95% CI 1.34 to 3.31; R’s profile CI). The estimates for male sex (1.36, 95% CI 0.63 to 2.89) and ASA class (1.06 per class, 95% CI 0.58 to 1.94) were imprecise.</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> The odds ratios for discharge to a facility were 2.08 per 10 years of age (95% CI 1.34 to 3.31), 1.36 for male sex (95% CI 0.63 to 2.89) and 1.06 per ASA class (95% CI 0.58 to 1.94).</p>
+</blockquote>
+<p>The CIs are R’s profile CIs. Only age’s CI excludes 1.</p>
 </div>
 </div>
 </div>
@@ -1684,7 +1697,9 @@ Model 2: complication_90d ~ ns(age, df = 3)
 </div>
 </div>
 </div>
-<p>“Allowing the effect of age to bend, with a natural cubic spline, did not clearly improve the fit over a straight line (likelihood ratio χ² = 3.49, df = 2, p = 0.175), so age was modeled as linear: each 10 years multiplied the odds of a complication by 2.12 (95% CI 1.53 to 2.98).”</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> Comparing a natural cubic spline for age with a straight line gave a likelihood ratio χ² of 3.49 (df = 2, p = 0.175). With age modeled as linear, the odds ratio for a complication per 10 years of age was 2.12 (95% CI 1.53 to 2.98).</p>
+</blockquote>
 <p>The jump after 80 rests on 14 complications in 53 patients, too few to pin down a curve.</p>
 </div>
 </div>

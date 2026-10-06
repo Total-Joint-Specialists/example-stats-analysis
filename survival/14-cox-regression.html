@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <link href="../beyond/15-post-hoc.html" rel="next">
 <link href="../survival/13-kaplan-meier.html" rel="prev">
+<link href="../images/tjs-icon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -333,6 +334,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/tjs-logo.png" alt="Total Joint Specialists" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/tjs-logo-dark.png" alt="Total Joint Specialists" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -1082,7 +1089,7 @@ posterior_late    0.426285             0.156127             1.163921</code></pre
 <p>Choose the cut point before you look, from clinical reasoning: here, the period of highest dislocation risk after hip replacement. Trying several cut points until one gives a striking result is data dredging. R can also let a hazard ratio change smoothly with time (the <code>tt()</code> argument of <code>coxph()</code>), which avoids choosing a cut point.</p>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> Proportional hazards were checked with scaled Schoenfeld residuals. Because the effect of surgical approach changed over time, its hazard ratio was estimated separately for the first 6 months after surgery and thereafter.</p>
-<p><strong>Results:</strong> The posterior approach was associated with a higher hazard of revision in the first 6 months (hazard ratio 8.47, 95% CI 1.93 to 37.3); after 6 months the estimate was imprecise (0.43, 95% CI 0.16 to 1.16).</p>
+<p><strong>Results:</strong> The hazard ratio for revision with the posterior approach compared with the anterior approach was 8.47 (95% CI 1.93 to 37.3) in the first 6 months and 0.43 (95% CI 0.16 to 1.16) after 6 months.</p>
 </blockquote>
 </section>
 <section id="stratified-cox" class="level2">
@@ -1224,23 +1231,23 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
 <span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a><span class="fu">tbl_merge</span>(<span class="fu">list</span>(univariable_table, multivariable_table),</span>
 <span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>          <span class="at">tab_spanner =</span> <span class="fu">c</span>(<span class="st">"**Univariable**"</span>, <span class="st">"**Multivariable**"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div id="tfvalmrkin" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#tfvalmrkin table {
+<div id="xxyxyzoyqg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#xxyxyzoyqg table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#tfvalmrkin thead, #tfvalmrkin tbody, #tfvalmrkin tfoot, #tfvalmrkin tr, #tfvalmrkin td, #tfvalmrkin th {
+#xxyxyzoyqg thead, #xxyxyzoyqg tbody, #xxyxyzoyqg tfoot, #xxyxyzoyqg tr, #xxyxyzoyqg td, #xxyxyzoyqg th {
   border-style: none;
 }
 
-#tfvalmrkin p {
+#xxyxyzoyqg p {
   margin: 0;
   padding: 0;
 }
 
-#tfvalmrkin .gt_table {
+#xxyxyzoyqg .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1266,12 +1273,12 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-left-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_caption {
+#xxyxyzoyqg .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#tfvalmrkin .gt_title {
+#xxyxyzoyqg .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1283,7 +1290,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-bottom-width: 0;
 }
 
-#tfvalmrkin .gt_subtitle {
+#xxyxyzoyqg .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1295,7 +1302,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-top-width: 0;
 }
 
-#tfvalmrkin .gt_heading {
+#xxyxyzoyqg .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1307,13 +1314,13 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-right-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_bottom_border {
+#xxyxyzoyqg .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_col_headings {
+#xxyxyzoyqg .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1328,7 +1335,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-right-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_col_heading {
+#xxyxyzoyqg .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1348,7 +1355,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   overflow-x: hidden;
 }
 
-#tfvalmrkin .gt_column_spanner_outer {
+#xxyxyzoyqg .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1360,15 +1367,15 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   padding-right: 4px;
 }
 
-#tfvalmrkin .gt_column_spanner_outer:first-child {
+#xxyxyzoyqg .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#tfvalmrkin .gt_column_spanner_outer:last-child {
+#xxyxyzoyqg .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#tfvalmrkin .gt_column_spanner {
+#xxyxyzoyqg .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1380,11 +1387,11 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   width: 100%;
 }
 
-#tfvalmrkin .gt_spanner_row {
+#xxyxyzoyqg .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#tfvalmrkin .gt_group_heading {
+#xxyxyzoyqg .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1410,7 +1417,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   text-align: left;
 }
 
-#tfvalmrkin .gt_empty_group_heading {
+#xxyxyzoyqg .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1425,15 +1432,15 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   vertical-align: middle;
 }
 
-#tfvalmrkin .gt_from_md > :first-child {
+#xxyxyzoyqg .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#tfvalmrkin .gt_from_md > :last-child {
+#xxyxyzoyqg .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#tfvalmrkin .gt_row {
+#xxyxyzoyqg .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1452,7 +1459,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   overflow-x: hidden;
 }
 
-#tfvalmrkin .gt_stub {
+#xxyxyzoyqg .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1465,7 +1472,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   padding-right: 5px;
 }
 
-#tfvalmrkin .gt_stub_row_group {
+#xxyxyzoyqg .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1479,15 +1486,15 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   vertical-align: top;
 }
 
-#tfvalmrkin .gt_row_group_first td {
+#xxyxyzoyqg .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#tfvalmrkin .gt_row_group_first th {
+#xxyxyzoyqg .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#tfvalmrkin .gt_summary_row {
+#xxyxyzoyqg .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1497,16 +1504,16 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   padding-right: 5px;
 }
 
-#tfvalmrkin .gt_first_summary_row {
+#xxyxyzoyqg .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_first_summary_row.thick {
+#xxyxyzoyqg .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#tfvalmrkin .gt_last_summary_row {
+#xxyxyzoyqg .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1516,7 +1523,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_grand_summary_row {
+#xxyxyzoyqg .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1526,7 +1533,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   padding-right: 5px;
 }
 
-#tfvalmrkin .gt_first_grand_summary_row {
+#xxyxyzoyqg .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1536,7 +1543,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-top-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_last_grand_summary_row_top {
+#xxyxyzoyqg .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1546,11 +1553,11 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_striped {
+#xxyxyzoyqg .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#tfvalmrkin .gt_table_body {
+#xxyxyzoyqg .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1559,7 +1566,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_footnotes {
+#xxyxyzoyqg .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1573,7 +1580,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-right-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_footnote {
+#xxyxyzoyqg .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1582,7 +1589,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   padding-right: 5px;
 }
 
-#tfvalmrkin .gt_sourcenotes {
+#xxyxyzoyqg .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1596,7 +1603,7 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   border-right-color: #D3D3D3;
 }
 
-#tfvalmrkin .gt_sourcenote {
+#xxyxyzoyqg .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1604,72 +1611,72 @@ bmi_5      0.023    0.103   1.02   0.84, 1.25   0.82       </code></pre>
   padding-right: 5px;
 }
 
-#tfvalmrkin .gt_left {
+#xxyxyzoyqg .gt_left {
   text-align: left;
 }
 
-#tfvalmrkin .gt_center {
+#xxyxyzoyqg .gt_center {
   text-align: center;
 }
 
-#tfvalmrkin .gt_right {
+#xxyxyzoyqg .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#tfvalmrkin .gt_font_normal {
+#xxyxyzoyqg .gt_font_normal {
   font-weight: normal;
 }
 
-#tfvalmrkin .gt_font_bold {
+#xxyxyzoyqg .gt_font_bold {
   font-weight: bold;
 }
 
-#tfvalmrkin .gt_font_italic {
+#xxyxyzoyqg .gt_font_italic {
   font-style: italic;
 }
 
-#tfvalmrkin .gt_super {
+#xxyxyzoyqg .gt_super {
   font-size: 65%;
 }
 
-#tfvalmrkin .gt_footnote_marks {
+#xxyxyzoyqg .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#tfvalmrkin .gt_asterisk {
+#xxyxyzoyqg .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#tfvalmrkin .gt_indent_1 {
+#xxyxyzoyqg .gt_indent_1 {
   text-indent: 5px;
 }
 
-#tfvalmrkin .gt_indent_2 {
+#xxyxyzoyqg .gt_indent_2 {
   text-indent: 10px;
 }
 
-#tfvalmrkin .gt_indent_3 {
+#xxyxyzoyqg .gt_indent_3 {
   text-indent: 15px;
 }
 
-#tfvalmrkin .gt_indent_4 {
+#xxyxyzoyqg .gt_indent_4 {
   text-indent: 20px;
 }
 
-#tfvalmrkin .gt_indent_5 {
+#xxyxyzoyqg .gt_indent_5 {
   text-indent: 25px;
 }
 
-#tfvalmrkin .katex-display {
+#xxyxyzoyqg .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#tfvalmrkin div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#xxyxyzoyqg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1863,7 +1870,7 @@ bmi_5            1.05 (0.87 to 1.28)       1.03 (0.84 to 1.27)</code></pre>
 </div>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> The association between implant and revision for any reason was estimated with Cox proportional hazards regression, with time from surgery as the time scale and implant A as the reference. Age, sex and body mass index were chosen in advance as covariates. Age entered the model as a linear term after a natural cubic spline showed no clear evidence of non-linearity. Proportional hazards were checked with scaled Schoenfeld residuals. In the Cox models, robust standard errors clustered on patient accounted for patients who had both sides replaced. A Fine-Gray model, treating death as a competing risk, was fitted as a sensitivity analysis.</p>
-<p><strong>Results:</strong> During follow-up, 81 of 600 procedures (13.5%) were revised. After adjustment for age, sex and body mass index, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.19, 95% CI 1.92 to 5.28), while the estimate for implant B was imprecise (0.83, 95% CI 0.45 to 1.52). There was no clear evidence that any hazard ratio changed over time (global test p = 0.359). With death treated as a competing risk, the subdistribution hazard ratio for implant C was 3.09 (95% CI 1.86 to 5.14).</p>
+<p><strong>Results:</strong> During follow-up, 81 of 600 procedures (13.5%) were revised. After adjustment for age, sex and body mass index, the hazard ratio for revision compared with implant A was 3.19 (95% CI 1.92 to 5.28) for implant C and 0.83 (95% CI 0.45 to 1.52) for implant B (test of proportional hazards, global p = 0.359). With death treated as a competing risk, the subdistribution hazard ratio for implant C was 3.09 (95% CI 1.86 to 5.14).</p>
 </blockquote>
 <p>Before you submit, check that the paper states: - the number of patients, procedures and events - time zero and the event definition (<a href="../survival/13-kaplan-meier.html#time-zero">page 13</a>) - which covariates were adjusted for, and why - how continuous predictors were modeled, and how proportional hazards were checked - how bilateral patients and deaths were handled</p>
 </section>
@@ -1914,7 +1921,10 @@ asa         1.379391             0.986966             1.927847  0.05968</code></
 </div>
 </div>
 </div>
-<p>Each one-class increase in ASA class was associated with a hazard ratio for revision of 1.38 (95% CI 0.99 to 1.93, p = 0.060). The estimate is imprecise: the data are compatible with no association and with a near doubling of the hazard per class.</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> The hazard ratio for revision per ASA class was 1.38 (95% CI 0.99 to 1.93; p = 0.060).</p>
+</blockquote>
+<p>The estimate is imprecise: the data are compatible with no association and with a near doubling of the hazard per class.</p>
 </div>
 </div>
 </div>
@@ -1971,7 +1981,10 @@ asa         1.379391             0.986966             1.927847  0.05968</code></
 </div>
 </div>
 </div>
-<p>There was no clear evidence that BMI’s effect bends (likelihood ratio χ² = 2.64, df = 2, p = 0.267), so the straight line stands.</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> Comparing a natural cubic spline for BMI with a straight line gave a likelihood ratio χ² of 2.64 (df = 2, p = 0.267).</p>
+</blockquote>
+<p>There’s no clear evidence that BMI’s effect bends, so the straight line stands.</p>
 </div>
 </div>
 </div>
@@ -2019,7 +2032,10 @@ Name: implant[T.C], dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<p>Barely. In a Cox model stratified by procedure and adjusted for age, sex and BMI, implant C was associated with a higher hazard of revision than implant A (hazard ratio 3.16, 95% CI 1.90 to 5.24), close to the unstratified estimate of 3.19.</p>
+<p>Barely.</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> In a Cox model stratified by procedure and adjusted for age, sex and BMI, the hazard ratio for revision with implant C compared with implant A was 3.16 (95% CI 1.90 to 5.24); without stratification it was 3.19.</p>
+</blockquote>
 </div>
 </div>
 </div>

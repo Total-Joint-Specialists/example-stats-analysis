@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <link href="../survival/14-cox-regression.html" rel="next">
 <link href="../catalog/12-predict-from-several.html" rel="prev">
+<link href="../images/tjs-icon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -362,6 +363,12 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/tjs-logo.png" alt="Total Joint Specialists" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/tjs-logo-dark.png" alt="Total Joint Specialists" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -1225,7 +1232,7 @@ implant=C 137       38     16.9     26.17     33.18
 </ul>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> Revision-free survival was compared between groups with the log-rank test.</p>
-<p><strong>Results:</strong> Revision-free survival differed between implants (log-rank χ² = 33.5, df = 2, p &lt; 0.001). Over the whole follow-up there was no clear evidence of a difference between surgical approaches in total hip arthroplasty (log-rank χ² = 0.9, df = 1, p = 0.340), but the difference was concentrated early: survivorship at 6 months was 88.7% (95% CI 81.7% to 93.2%) after the posterior approach and 98.6% (95% CI 94.5% to 99.6%) after the anterior approach.</p>
+<p><strong>Results:</strong> The log-rank test for revision-free survival across implants gave χ² = 33.5 (df = 2, p &lt; 0.001). In total hip arthroplasty, survivorship at 6 months was 88.7% (95% CI 81.7% to 93.2%) after the posterior approach and 98.6% (95% CI 94.5% to 99.6%) after the anterior approach (log-rank test over the whole follow-up, χ² = 0.9, df = 1, p = 0.340).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1361,7 +1368,7 @@ implant=C 137       38     16.9     26.17     33.18
 <p>The cumulative incidence of revision differed between implants (Gray’s test χ² = 31.5, df = 2, p &lt; 0.001); there was no clear evidence that the cumulative incidence of death differed (χ² = 0.97, p = 0.616).</p>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> The cumulative incidence of revision was estimated with the Aalen-Johansen method, treating death as a competing risk, and compared between implants with Gray’s test.</p>
-<p><strong>Results:</strong> The cumulative incidence of revision was 12.8% (95% CI 10.0% to 15.9%) at 5 years and 19.3% (95% CI 15.3% to 23.7%) at 10 years, when the cumulative incidence of death was 24.0% (95% CI 19.3% to 29.0%). It differed between implants (Gray’s test χ² = 31.5, df = 2, p &lt; 0.001).</p>
+<p><strong>Results:</strong> The cumulative incidence of revision was 12.8% (95% CI 10.0% to 15.9%) at 5 years and 19.3% (95% CI 15.3% to 23.7%) at 10 years, when the cumulative incidence of death was 24.0% (95% CI 19.3% to 29.0%). Gray’s test for the cumulative incidence of revision across implants gave χ² = 31.5 (df = 2, p &lt; 0.001).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1469,7 +1476,9 @@ TKA 0.859 [0.809, 0.896]</code></pre>
 </div>
 </div>
 </div>
-<p>Survivorship free of revision at 5 years was 86.9% (95% CI 81.4% to 90.8%) after THA and 85.9% (95% CI 80.9% to 89.6%) after TKA. There was no clear evidence of a difference between the procedures (log-rank χ² = 0.01, df = 1, p = 0.937).</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> Survivorship free of revision at 5 years was 86.9% (95% CI 81.4% to 90.8%) after THA and 85.9% (95% CI 80.9% to 89.6%) after TKA (log-rank χ² = 0.01, df = 1, p = 0.937).</p>
+</blockquote>
 </div>
 </div>
 </div>
@@ -1546,7 +1555,10 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<p>Of the 100 procedures in patients aged 75 and over, 41 ended in death and only 13 in revision. The cumulative incidence of revision at 5 years was 13.9% (95% CI 7.8% to 21.8%). 1 − Kaplan-Meier gives 16.5%, overstating it by about a fifth.</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> Of the 100 procedures in patients aged 75 and over, 41 ended in death and 13 in revision. The cumulative incidence of revision at 5 years was 13.9% (95% CI 7.8% to 21.8%); 1 − Kaplan-Meier at 5 years was 16.5%.</p>
+</blockquote>
+<p>1 − Kaplan-Meier overstates the real proportion revised by about a fifth.</p>
 </div>
 </div>
 </div>
@@ -1600,7 +1612,9 @@ C 0.273 0.195 0.356</code></pre>
 </div>
 </div>
 </div>
-<p>The cumulative incidence of revision at 5 years, with death as a competing risk, was 9.7% (95% CI 6.2% to 14.1%) with implant A, 6.8% (95% CI 3.7% to 11.2%) with implant B and 27.3% (95% CI 19.5% to 35.6%) with implant C (Gray’s test χ² = 31.5, df = 2, p &lt; 0.001).</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> The cumulative incidence of revision at 5 years, with death as a competing risk, was 9.7% (95% CI 6.2% to 14.1%) with implant A, 6.8% (95% CI 3.7% to 11.2%) with implant B and 27.3% (95% CI 19.5% to 35.6%) with implant C (Gray’s test χ² = 31.5, df = 2, p &lt; 0.001).</p>
+</blockquote>
 </div>
 </div>
 </div>

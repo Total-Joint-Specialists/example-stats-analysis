@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <link href="../beyond/16-mixed-models.html" rel="next">
 <link href="../survival/14-cox-regression.html" rel="prev">
+<link href="../images/tjs-icon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -333,6 +334,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/tjs-logo.png" alt="Total Joint Specialists" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/tjs-logo-dark.png" alt="Total Joint Specialists" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -833,7 +840,7 @@ group1 group2 meandiff p-adj   lower   upper  reject
 <p>Four of the six pairs differ clearly (p &lt; 0.001 or, for ASA 2 vs 4 in the Games-Howell test, p = 0.001). Two don’t: ASA 2 patients were 3.6 years older than ASA 1 patients (95% CI −0.4 to 7.7, p = 0.096), and ASA 4 patients 5.3 years older than ASA 3 patients (95% CI −0.3 to 10.9, p = 0.072). Both CIs include 0, and both comparisons involve one of the two small classes. The SDs are similar (8.7 to 9.3 years), so Games-Howell reaches the same conclusions.</p>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> Age was compared across ASA classes with one-way ANOVA, followed by Tukey’s honestly significant difference test for pairwise comparisons.</p>
-<p><strong>Results:</strong> Mean age differed across ASA classes (F(3, 596) = 23.9, p &lt; 0.001). In pairwise comparisons, ASA 3 patients were 5.0 years older than ASA 2 patients (95% CI 3.0 to 6.9, p &lt; 0.001); the differences between ASA 1 and 2 (3.6 years, 95% CI −0.4 to 7.7, p = 0.096) and between ASA 3 and 4 (5.3 years, 95% CI −0.3 to 10.9, p = 0.072) were imprecise. Table 2 gives all six pairwise comparisons.</p>
+<p><strong>Results:</strong> Across ASA classes, one-way ANOVA gave F(3, 596) = 23.9 (p &lt; 0.001). In pairwise comparisons, the difference in mean age was 5.0 years between ASA 3 and ASA 2 (95% CI 3.0 to 6.9; p &lt; 0.001), 3.6 years between ASA 2 and ASA 1 (95% CI −0.4 to 7.7; p = 0.096) and 5.3 years between ASA 4 and ASA 3 (95% CI −0.3 to 10.9; p = 0.072). Table 2 gives all six pairwise comparisons.</p>
 </blockquote>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -930,7 +937,7 @@ asa
 <li><strong>The statistic</strong> in R’s output is a z score: positive means the second group’s ranks are higher (longer stays).</li>
 </ul>
 <blockquote class="blockquote">
-<p><strong>Results:</strong> Length of stay rose with ASA class, from a median of 0 days (IQR 0 to 0) in ASA 1 to 1 day (IQR 0.25 to 3.5) in ASA 4 (Kruskal-Wallis H = 24.3, df = 3, p &lt; 0.001). In Dunn’s tests with Holm’s adjustment, ASA 1 differed from every other class (p ≤ 0.011); the difference between ASA 3 and 4 was imprecise (p = 0.061).</p>
+<p><strong>Results:</strong> The median length of stay was 0 days (IQR 0 to 0) in ASA 1 and 1 day (IQR 0.25 to 3.5) in ASA 4 (Kruskal-Wallis H = 24.3, df = 3, p &lt; 0.001). In Dunn’s tests with Holm’s adjustment, p ≤ 0.011 for ASA 1 against each other class and p = 0.061 for ASA 3 against ASA 4.</p>
 </blockquote>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1301,7 +1308,7 @@ implant_vs_b[T.C]   3.753982             2.141331             6.581132</code></p
 </div>
 <p>Implant C differs from both A and B (adjusted p &lt; 0.001 for each). There was no clear evidence of a difference between A and B (p = 0.520). Against implant B, implant C’s hazard ratio was 3.75 (95% CI 2.14 to 6.58); against implant A it was 3.07 (95% CI 1.85 to 5.09; <a href="../catalog/08-three-plus-unmatched.html#cox">page 8</a>).</p>
 <blockquote class="blockquote">
-<p><strong>Results:</strong> Revision-free survival differed across implants (log-rank χ² = 33.5, df = 2, p &lt; 0.001). In pairwise log-rank tests with Holm’s adjustment, implant C differed from implant A and from implant B (both p &lt; 0.001), with no clear evidence of a difference between A and B (p = 0.520).</p>
+<p><strong>Results:</strong> The log-rank test for revision-free survival across implants gave χ² = 33.5 (df = 2, p &lt; 0.001). In pairwise log-rank tests with Holm’s adjustment, p &lt; 0.001 for implant C against implant A and against implant B, and p = 0.520 for implant A against implant B.</p>
 </blockquote>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1330,7 +1337,7 @@ implant_vs_b[T.C]   3.753982             2.141331             6.581132</code></p
 <p>Everything else is <strong>exploratory</strong>: comparisons chosen after seeing the data, or a scan across many outcomes. Adjust for every comparison you looked at, not only the ones you report, and label the results exploratory: they suggest questions for the next study, not conclusions.</p>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> Pairwise comparisons after the omnibus tests used Tukey’s honestly significant difference test (after ANOVA), Dunn’s test (after Kruskal-Wallis) and Fisher’s exact tests (after chi-square), with Holm’s adjustment for multiple comparisons where the method did not adjust itself. All pairwise comparisons were exploratory.</p>
-<p><strong>Results:</strong> Mean age differed across ASA classes (F(3, 596) = 23.9, p &lt; 0.001); ASA 3 patients were 5.0 years older than ASA 2 patients (95% CI 3.0 to 6.9, p &lt; 0.001). Table 2 gives all six pairwise comparisons.</p>
+<p><strong>Results:</strong> Across ASA classes, one-way ANOVA gave F(3, 596) = 23.9 (p &lt; 0.001); in pairwise comparisons, the difference in mean age between ASA 3 and ASA 2 was 5.0 years (95% CI 3.0 to 6.9; p &lt; 0.001). Table 2 gives all six pairwise comparisons.</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1405,7 +1412,10 @@ group1 group2 meandiff p-adj  lower   upper  reject
 </div>
 </div>
 </div>
-<p>Every pair differs (all adjusted p &lt; 0.01): mean BMI rises with each step in ASA class. The least certain differences involve the two small classes: ASA 2 vs 1 (2.9 kg/m², 95% CI 0.6 to 5.2, p = 0.007) and ASA 4 vs 3 (4.1 kg/m², 95% CI 0.9 to 7.2, p = 0.006).</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> In Tukey’s HSD, all six pairwise differences in mean BMI had adjusted p &lt; 0.01, including ASA 2 vs 1 (2.9 kg/m², 95% CI 0.6 to 5.2; p = 0.007) and ASA 4 vs 3 (4.1 kg/m², 95% CI 0.9 to 7.2; p = 0.006).</p>
+</blockquote>
+<p>Every pair differs, and mean BMI rises with each step in ASA class. The least certain differences involve the two small classes, ASA 1 and ASA 4.</p>
 </div>
 </div>
 </div>
@@ -1539,7 +1549,9 @@ facility              0.7072  1.0000  0.8487</code></pre>
 </div>
 </div>
 </div>
-<p>Among 345 patients assessed at all three visits, walking-aid use fell from 203 (58.8%) at 6 weeks to 87 (25.2%) at 3 months and 37 (10.7%) at 1 year; every pair of visits differed in McNemar tests with Holm’s adjustment (all p &lt; 0.001).</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> Among 345 patients assessed at all three visits, 203 (58.8%) used a walking aid at 6 weeks, 87 (25.2%) at 3 months and 37 (10.7%) at 1 year; in McNemar tests with Holm’s adjustment, p &lt; 0.001 for every pair of visits.</p>
+</blockquote>
 </div>
 </div>
 </div>

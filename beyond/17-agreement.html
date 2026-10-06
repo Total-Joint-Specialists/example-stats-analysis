@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <link href="../report/18-example-report.html" rel="next">
 <link href="../beyond/16-mixed-models.html" rel="prev">
+<link href="../images/tjs-icon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -333,6 +334,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/tjs-logo.png" alt="Total Joint Specialists" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/tjs-logo-dark.png" alt="Total Joint Specialists" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -1022,7 +1029,7 @@ valgus       0        2       9</code></pre>
 <h2 class="anchored" data-anchor-id="reporting">How to report it</h2>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> Two raters measured the hip-knee-ankle angle, MPTA and LDFA on 60 long-leg radiographs, twice, at least 2 weeks apart. Inter- and intra-rater reliability were assessed with two-way random-effects, absolute-agreement, single-rater intraclass correlation coefficients (ICC(A,1)) and interpreted according to Koo and Li. Inter-rater reliability used each rater’s first reading; intra-rater reliability compared rater 1’s two readings. Agreement was assessed with Bland-Altman 95% limits of agreement. Agreement on CPAK class was assessed with Cohen’s kappa, and on the ordered arithmetic HKA group with linearly weighted kappa.</p>
-<p><strong>Results:</strong> Inter-rater reliability of the hip-knee-ankle angle was good to excellent (ICC 0.89, 95% CI 0.82 to 0.93), and rater 1’s intra-rater reliability excellent at its point estimate (ICC 0.91, 95% CI 0.86 to 0.95). Rater 2 measured 0.50° higher than rater 1 on average (95% CI 0.08° to 0.93°), with 95% limits of agreement from −2.74° (95% CI −3.48° to −2.00°) to 3.74° (95% CI 3.00° to 4.48°). Agreement on CPAK class was moderate to substantial (κ = 0.58, 95% CI 0.44 to 0.73), and on the arithmetic HKA group moderate to almost perfect (weighted κ = 0.73, 95% CI 0.58 to 0.87).</p>
+<p><strong>Results:</strong> For the hip-knee-ankle angle, the inter-rater ICC was 0.89 (95% CI 0.82 to 0.93) and rater 1’s intra-rater ICC 0.91 (95% CI 0.86 to 0.95). The mean difference between rater 2 and rater 1 was 0.50° (95% CI 0.08° to 0.93°), with 95% limits of agreement from −2.74° (95% CI −3.48° to −2.00°) to 3.74° (95% CI 3.00° to 4.48°). For CPAK class, κ = 0.58 (95% CI 0.44 to 0.73); for the arithmetic HKA group, weighted κ = 0.73 (95% CI 0.58 to 0.87).</p>
 </blockquote>
 </section>
 <section id="exercises" class="level2">
@@ -1082,7 +1089,10 @@ Name: ICC(A,1), dtype: object</code></pre>
 </div>
 </div>
 </div>
-<p>Inter-rater reliability of the MPTA was excellent at its point estimate (ICC(A,1) = 0.93, 95% CI 0.89 to 0.96); the CI runs from good to excellent.</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> The inter-rater ICC(A,1) for the MPTA was 0.93 (95% CI 0.89 to 0.96).</p>
+</blockquote>
+<p>On Koo and Li’s guide, that’s excellent at the point estimate, and the CI runs from good to excellent.</p>
 </div>
 </div>
 </div>
@@ -1125,7 +1135,9 @@ Name: ICC(A,1), dtype: object</code></pre>
 </div>
 </div>
 </div>
-<p>Rater 1’s second readings were 0.26° lower than the first on average (95% CI −0.65° to 0.12°), with 95% limits of agreement from −3.20° to 2.67°.</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> The mean difference between rater 1’s second and first readings was −0.26° (95% CI −0.65° to 0.12°), with 95% limits of agreement from −3.20° to 2.67°.</p>
+</blockquote>
 </div>
 </div>
 </div>

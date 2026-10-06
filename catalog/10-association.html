@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <link href="../catalog/11-predict-from-one.html" rel="next">
 <link href="../catalog/09-three-plus-matched.html" rel="prev">
+<link href="../images/tjs-icon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -333,6 +334,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/tjs-logo.png" alt="Total Joint Specialists" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/tjs-logo-dark.png" alt="Total Joint Specialists" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -712,7 +719,7 @@ sample estimates:
 <h3 class="anchored" data-anchor-id="how-to-report-it">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> The association between BMI and operative time was measured with Pearson’s correlation coefficient (r).</p>
-<p><strong>Results:</strong> Operative time rose with BMI (Pearson r = 0.45, 95% CI 0.39 to 0.51, p &lt; 0.001; n = 600 procedures).</p>
+<p><strong>Results:</strong> The correlation between BMI and operative time was r = 0.45 (Pearson; 95% CI 0.39 to 0.51; p &lt; 0.001; n = 600 procedures).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -905,7 +912,7 @@ sample estimates:
 <h3 class="anchored" data-anchor-id="how-to-report-it-1">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> The association between improvement in HOOS JR or KOOS JR from before surgery to 1 year and satisfaction at 1 year was measured with Spearman’s rank correlation coefficient (ρ).</p>
-<p><strong>Results:</strong> Among 404 procedures with both scores and a satisfaction answer, greater improvement went with higher satisfaction (Spearman ρ = 0.38, 95% CI 0.30 to 0.46, p &lt; 0.001).</p>
+<p><strong>Results:</strong> Among 404 procedures with both scores and a satisfaction answer, the correlation between the change in HOOS JR or KOOS JR and satisfaction was ρ = 0.38 (Spearman; 95% CI 0.30 to 0.46; p &lt; 0.001).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1105,7 +1112,7 @@ X-squared = 23.181, df = 3, p-value = 3.702e-05</code></pre>
 <h3 class="anchored" data-anchor-id="how-to-report-it-2">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> The association between ASA class and hypertension was tested with the chi-square test, with Cramér’s V as the effect size.</p>
-<p><strong>Results:</strong> Hypertension was more common at higher ASA classes, from 12 of 36 procedures (33.3%) in ASA 1 to 16 of 18 (88.9%) in ASA 4 (χ² = 23.2, df = 3, p &lt; 0.001; Cramér’s V = 0.20, one-sided 95% CI 0.12 to 1.00).</p>
+<p><strong>Results:</strong> Hypertension was present in 12 of 36 procedures (33.3%) in ASA 1 and 16 of 18 (88.9%) in ASA 4 (χ² = 23.2, df = 3, p &lt; 0.001; Cramér’s V = 0.20, one-sided 95% CI 0.12 to 1.00).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1183,7 +1190,10 @@ sample estimates:
 </div>
 </div>
 </div>
-<p>Operative time rose only slightly with age (Pearson r = 0.14, 95% CI 0.06 to 0.22, p &lt; 0.001). The association is clear but weak: age goes with about 2% of the variation in operative time (r² = 0.02), against 20% for BMI.</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> The correlation between age and operative time was r = 0.14 (Pearson; 95% CI 0.06 to 0.22; p &lt; 0.001).</p>
+</blockquote>
+<p>The association is clear but weak: age goes with about 2% of the variation in operative time (r² = 0.02), against 20% for BMI.</p>
 </div>
 </div>
 </div>
@@ -1237,7 +1247,10 @@ sample estimates:
 </div>
 </div>
 </div>
-<p>Older patients tended to stay slightly longer (Spearman ρ = 0.15, 95% CI 0.07 to 0.22, p &lt; 0.001), a weak association.</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> The correlation between age and length of stay was ρ = 0.15 (Spearman; 95% CI 0.07 to 0.22; p &lt; 0.001).</p>
+</blockquote>
+<p>Older patients tended to stay slightly longer, but the association is weak.</p>
 </div>
 </div>
 </div>
@@ -1308,7 +1321,9 @@ Male         188  69</code></pre>
 </div>
 </div>
 </div>
-<p>“Sleep apnea was more common in men (69 of 257, 26.8%) than in women (43 of 343, 12.5%) (χ² = 19.8, df = 1, p &lt; 0.001; φ = 0.18, one-sided 95% CI 0.11 to 1.00).”</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> Sleep apnea was present in 69 of 257 men (26.8%) and 43 of 343 women (12.5%) (χ² = 19.8, df = 1, p &lt; 0.001; φ = 0.18, one-sided 95% CI 0.11 to 1.00).</p>
+</blockquote>
 </div>
 </div>
 </div>

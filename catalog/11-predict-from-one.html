@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <link href="../catalog/12-predict-from-several.html" rel="next">
 <link href="../catalog/10-association.html" rel="prev">
+<link href="../images/tjs-icon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -362,6 +363,12 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/tjs-logo.png" alt="Total Joint Specialists" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/tjs-logo-dark.png" alt="Total Joint Specialists" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -739,7 +746,7 @@ Dep. Variable:            op_time_min   R-squared:                       0.204
 Model:                            OLS   Adj. R-squared:                  0.203
 Method:                 Least Squares   F-statistic:                     153.4
 Date:                Tue, 06 Oct 2026   Prob (F-statistic):           1.60e-31
-Time:                        13:31:00   Log-Likelihood:                -2462.0
+Time:                        16:01:36   Log-Likelihood:                -2462.0
 No. Observations:                 600   AIC:                             4928.
 Df Residuals:                     598   BIC:                             4937.
 Df Model:                           1                                         
@@ -823,7 +830,7 @@ Notes:
 <h3 class="anchored" data-anchor-id="how-to-report-it">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> Operative time was modeled on BMI with simple linear regression.</p>
-<p><strong>Results:</strong> Operative time rose by 1.37 minutes for each 1 kg/m² of BMI (95% CI 1.15 to 1.58, p &lt; 0.001; R² = 0.20), or 6.8 minutes (95% CI 5.8 to 7.9) per 5 kg/m².</p>
+<p><strong>Results:</strong> The slope of operative time on BMI was 1.37 minutes per kg/m² (95% CI 1.15 to 1.58; p &lt; 0.001; R² = 0.20), or 6.8 minutes (95% CI 5.8 to 7.9) per 5 kg/m².</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1039,7 +1046,7 @@ tau      69.941098  91.787025</code></pre>
 <h3 class="anchored" data-anchor-id="how-to-report-it-1">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> KOOS JR was modeled against days since surgery with an exponential recovery curve fitted by nonlinear least squares, counting the pre-op score as the score on the day of surgery.</p>
-<p><strong>Results:</strong> In 330 knees (1146 scores), KOOS JR rose from an estimated 49.8 points (95% CI 48.5 to 51.2) at surgery toward a plateau of 84.2 points (95% CI 82.6 to 85.9), with half of the gain reached by about 56 days (95% CI 49 to 64).</p>
+<p><strong>Results:</strong> In 330 knees (1146 scores), the fitted curve gave an estimated KOOS JR of 49.8 points (95% CI 48.5 to 51.2) at surgery and a plateau of 84.2 points (95% CI 82.6 to 85.9); half of the change was reached at about 56 days (95% CI 49 to 64).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1226,7 +1233,7 @@ tau      69.941098  91.787025</code></pre>
 <h3 class="anchored" data-anchor-id="how-to-report-it-2">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> Because 1-year KOOS JR clustered at the ceiling, its relationship with pre-op KOOS JR was described with a LOWESS smoother and summarized with the Theil-Sen slope.</p>
-<p><strong>Results:</strong> Among 246 knees, 37 (15.0%) scored 100 at 1 year. KOOS JR at 1 year rose with KOOS JR before surgery (Theil-Sen slope 0.39 points per point, 95% CI 0.27 to 0.52).</p>
+<p><strong>Results:</strong> Among 246 knees, 37 (15.0%) scored 100 at 1 year. The Theil-Sen slope of the 1-year KOOS JR on the pre-op KOOS JR was 0.39 points per point (95% CI 0.27 to 0.52).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1392,7 +1399,7 @@ Dep. Variable:       complication_90d   No. Observations:                  600
 Model:                          Logit   Df Residuals:                      598
 Method:                           MLE   Df Model:                            1
 Date:                Tue, 06 Oct 2026   Pseudo R-squ.:                 0.06076
-Time:                        13:31:02   Log-Likelihood:                -163.89
+Time:                        16:01:38   Log-Likelihood:                -163.89
 converged:                       True   LL-Null:                       -174.49
 Covariance Type:            nonrobust   LLR p-value:                 4.132e-06
 ==============================================================================
@@ -1452,7 +1459,7 @@ age_10       2.116483  1.517255  2.952369</code></pre>
 <h3 class="anchored" data-anchor-id="how-to-report-it-3">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> The association between age and complications within 90 days was estimated with logistic regression, with age in 10-year units.</p>
-<p><strong>Results:</strong> Complications followed 51 of 600 procedures (8.5%). Each 10 years of age was associated with higher odds of a complication (odds ratio 2.12, 95% CI 1.53 to 2.98, p &lt; 0.001).</p>
+<p><strong>Results:</strong> Complications followed 51 of 600 procedures (8.5%). The odds ratio for a complication per 10 years of age was 2.12 (95% CI 1.53 to 2.98; p &lt; 0.001).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1625,7 +1632,7 @@ age_10       1.24801             0.979206             1.590605  0.073426</code><
 <h3 class="anchored" data-anchor-id="how-to-report-it-4">How to report it</h3>
 <blockquote class="blockquote">
 <p><strong>Methods:</strong> The association between age at surgery and revision was estimated with Cox proportional hazards regression, with age in 10-year units.</p>
-<p><strong>Results:</strong> The hazard of revision was 1.25 times higher per 10 years of age, but the estimate was imprecise (95% CI 0.98 to 1.59, p = 0.073).</p>
+<p><strong>Results:</strong> The hazard ratio for revision per 10 years of age was 1.25 (95% CI 0.98 to 1.59; p = 0.073).</p>
 </blockquote>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1699,7 +1706,10 @@ age         0.105113   0.382165
 </div>
 </div>
 </div>
-<p>Operative time rose by 0.24 minutes per year of age (95% CI 0.11 to 0.38, p &lt; 0.001), or about 2.4 minutes per decade. Age explains only 2% of the variation (R² = 0.02), against 20% for BMI.</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> The slope of operative time on age was 0.24 minutes per year (95% CI 0.11 to 0.38; p &lt; 0.001; R² = 0.02).</p>
+</blockquote>
+<p>That’s about 2.4 minutes per decade, and age explains only 2% of the variation, against 20% for BMI.</p>
 </div>
 </div>
 </div>
@@ -1756,7 +1766,10 @@ dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<p>Each 10 years of age was associated with higher odds of discharge to a facility (odds ratio 2.06, 95% CI 1.37 to 3.17, p &lt; 0.001; R’s profile CI).</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> The odds ratio for discharge to a facility per 10 years of age was 2.06 (95% CI 1.37 to 3.17; p &lt; 0.001).</p>
+</blockquote>
+<p>The CI is R’s profile CI.</p>
 </div>
 </div>
 </div>
@@ -1824,7 +1837,9 @@ tau     47.70662 59.52986</code></pre>
 </div>
 </div>
 </div>
-<p>“In 270 hips (906 scores), HOOS JR rose from an estimated 45.6 points (95% CI 44.2 to 46.9) at surgery toward a plateau of 87.9 points (95% CI 86.3 to 89.4), with half of the gain reached by about 37 days (95% CI 33 to 41).”</p>
+<blockquote class="blockquote">
+<p><strong>Results:</strong> In 270 hips (906 scores), the fitted curve gave an estimated HOOS JR of 45.6 points (95% CI 44.2 to 46.9) at surgery and a plateau of 87.9 points (95% CI 86.3 to 89.4); half of the change was reached at about 37 days (95% CI 33 to 41).</p>
+</blockquote>
 <p>Hips seem to recover faster than knees (half the gain by about 5 weeks, against 8). To test that difference, fit both in one model (<a href="../catalog/12-predict-from-several.html#multiple-nonlinear-regression">page 12</a>).</p>
 </div>
 </div>

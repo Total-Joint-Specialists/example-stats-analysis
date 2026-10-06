@@ -107,7 +107,8 @@ def code_of(found):
 # A wide CI or a non-significant check is "no clear evidence of a difference", never "similar" or "held".
 NO_EVIDENCE_AS_NO_DIFFERENCE = re.compile(
     r"\b(similar|no difference|held|not violated|(?:did not|does not|doesn't) improve)\b", re.IGNORECASE)
-EFFECT_SIZE = re.compile(r"(ω²|ε²|η²( p)?|Kendall's W|Cramér's V|\br|ρ|φ) = [\d.]+|(odds|hazard) ratio [\d.]+")
+EFFECT_SIZE = re.compile(r"(ω²|ε²|η²( p)?|Kendall's W|Cramér's V|\br|ρ|φ|κ) = [\d.]+|(odds|hazard) ratio [\d.]+"
+                         r"|\bICC(\([^)]*\))?( =)? [\d.]+")
 
 
 def unreported(text):

@@ -153,6 +153,7 @@ def test_post_hoc_tests_are_no_longer_gated_on_the_overall_test(site):
     """Phase 3b's deferred question, settled on page 15: adjusted post-hoc tests don't need a significant overall test."""
     found = section("catalog/08-three-plus-unmatched.html", "which-groups-differ")
     assert "Only run post-hoc tests when the overall test is significant" not in text_of(found)
+    assert "none of them needs a significant overall test first" in text_of(found)
     assert any(a["href"].endswith("beyond/15-post-hoc.html#overall-test-first") for a in found.select("a[href]"))
 
 

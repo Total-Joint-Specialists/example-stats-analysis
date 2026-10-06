@@ -42,6 +42,13 @@ def test_outputs_are_short_and_never_dump_objects(site, page):
         assert len(text.splitlines()) <= 40, f"{page}: {len(text.splitlines())}-line output"
 
 
+def test_conventions_rule_catches_kappa_and_icc_without_a_ci():
+    for sentence in ["Agreement was moderate (κ = 0.58).", "Agreement was moderate (weighted κ = 0.73).",
+                     "Reliability was good (ICC 0.89).", "Reliability was good (ICC(A,1) = 0.889)."]:
+        assert unreported(sentence) == ["effect size without a CI"], sentence
+    assert unreported("Reliability was good (ICC 0.89, 95% CI 0.82 to 0.93).") == []
+
+
 @pytest.mark.parametrize("page", FREE_FORM_SECTIONS)
 def test_reports_follow_the_reporting_conventions(site, page):
     """Methods and Results blockquotes and exercise answers: CIs with effect sizes, and no

@@ -28,7 +28,8 @@ test_that("R points reticulate at the project's uv environment", {
 })
 
 test_that("the Python packages the pages rely on import from R", {
-  for (m in c("pandas", "numpy", "matplotlib", "scipy", "openpyxl", "tableone", "docx")) {
+  for (m in c("pandas", "numpy", "matplotlib", "scipy", "openpyxl", "tableone", "docx",
+             "statsmodels", "pingouin", "lifelines")) {
     expect_true(reticulate::py_module_available(m), label = m)
   }
 })

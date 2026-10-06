@@ -4,12 +4,15 @@ version = "0.1.0"
 description = "Python environment for the TJS statistics tutorial site"
 requires-python = ">=3.12"
 dependencies = [
+    "lifelines>=0.30.3",
     "matplotlib>=3.9",
     "numpy>=2.0",
     "openpyxl>=3.1.5",
     "pandas>=2.2",
+    "pingouin>=0.7.0",
     "python-docx>=1.2.0",
     "scipy>=1.18.1",
+    "statsmodels>=0.15.0",
     "tableone>=0.9.6",
 ]
 
@@ -21,6 +24,10 @@ dev = [
 
 [tool.uv]
 package = false
+# lifelines 0.30.3 declares pandas<3.0 but works with pandas 3 (every survival
+# number on the site is checked against R on each render). Remove this when
+# lifelines supports pandas 3 officially.
+override-dependencies = ["pandas>=3.0"]
 
 [tool.pytest.ini_options]
 addopts = "-ra"

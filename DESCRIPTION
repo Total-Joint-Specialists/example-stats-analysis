@@ -2,8 +2,11 @@ Type: project
 Description: R dependencies for the TJS statistics tutorial site. Not a
     package; renv reads this file to decide what to lock.
 Imports:
+    DescTools,
     dplyr,
+    effectsize,
     flextable,
+    ggsurvfit,
     gtsummary,
     irr,
     janitor,

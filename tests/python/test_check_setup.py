@@ -25,5 +25,13 @@ def test_flags_a_python_outside_the_project_environment():
 
 def test_r_check_covers_the_packages_the_pages_call():
     script = (ROOT / "getting-started" / "check_setup.R").read_text(encoding="utf-8")
-    for pkg in ["tidyverse", "readxl", "tidyxl", "janitor", "gtsummary", "flextable", "smd"]:
+    for pkg in ["tidyverse", "readxl", "tidyxl", "janitor", "gtsummary", "flextable", "smd",
+                "effectsize", "DescTools", "survival", "ggsurvfit"]:
         assert f'"{pkg}"' in script, pkg
+
+
+def test_project_python_uses_pandas_3():
+    """The pages are written for pandas 3. lifelines declares pandas<3, so pyproject.toml overrides it."""
+    import pandas
+
+    assert int(pandas.__version__.split(".")[0]) >= 3, pandas.__version__

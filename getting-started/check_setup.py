@@ -21,7 +21,8 @@ report(f"Python version {version}", sys.version_info >= (3, 12),
        "run `uv python install 3.13`, then `uv sync`")
 report("using the project's .venv", ".venv" in sys.prefix,
        "run this with `uv run python ...` from the repository folder")
-for name in ["pandas", "numpy", "matplotlib", "scipy", "openpyxl", "tableone", "docx"]:
+for name in ["pandas", "numpy", "matplotlib", "scipy", "openpyxl", "tableone", "docx",
+             "statsmodels", "pingouin", "lifelines"]:
     report(f"Python package {name}", importlib.util.find_spec(name) is not None, "run `uv sync`")
 
 cohort = Path("data/cohort.csv")
